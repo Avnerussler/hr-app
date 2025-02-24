@@ -4,9 +4,9 @@ services:
     mongo:
         image: mongo
         container_name: mongo-recorder
-        environment:
-            MONGO_INITDB_ROOT_USERNAME: root
-            MONGO_INITDB_ROOT_PASSWORD: password
+        # environment:
+        #     MONGO_INITDB_ROOT_USERNAME: root
+        #     MONGO_INITDB_ROOT_PASSWORD: password
         ports:
             - 27017:27017
     minio:

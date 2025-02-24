@@ -13,23 +13,21 @@ export const ControlledInputField = ({
     ...props
 }: ControlledInputFieldProps) => {
     return (
-        <Field.Root orientation="horizontal">
-            <Controller
-                name={name}
-                control={control}
-                defaultValue={props.defaultValue}
-                render={({ field }) => (
-                    <Field.Root key={id} orientation="horizontal">
-                        <Field.Label>{label}</Field.Label>
-                        <Input
-                            {...field}
-                            {...props}
-                            type={type}
-                            id={id.toString()}
-                        />
-                    </Field.Root>
-                )}
-            />
-        </Field.Root>
+        <Controller
+            name={name}
+            control={control}
+            defaultValue={props.defaultValue}
+            render={({ field }) => (
+                <Field.Root key={id} orientation="vertical">
+                    <Field.Label>{label}</Field.Label>
+                    <Input
+                        {...field}
+                        // {...props}
+                        type={type}
+                        id={id.toString()}
+                    />
+                </Field.Root>
+            )}
+        />
     )
 }

@@ -24,16 +24,15 @@ export const ControlledSelectField = ({
             items: options,
         })
     return (
-        <Field.Root orientation="horizontal">
-            <Controller
-                name={name}
-                control={control}
-                defaultValue={props.defaultValue}
-                render={({ field }) => (
+        <Controller
+            name={name}
+            control={control}
+            defaultValue={props.defaultValue}
+            render={({ field }) => (
+                <Field.Root orientation="vertical">
                     <SelectRoot
                         collection={frameworks(options)}
                         size="sm"
-                        width="320px"
                         {...field}
                         {...props}
                         onValueChange={({ items }) => field.onChange(items)}
@@ -51,8 +50,8 @@ export const ControlledSelectField = ({
                             ))}
                         </SelectContent>
                     </SelectRoot>
-                )}
-            />
-        </Field.Root>
+                </Field.Root>
+            )}
+        />
     )
 }

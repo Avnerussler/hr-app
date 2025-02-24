@@ -61,7 +61,7 @@ The server should now be running at `http://localhost:3001`.
 2. Start MongoDB and Minio using Docker Compose:
 
    ```sh
-   docker compose up
+   docker compose up OR cd server npm run docker:compose
    ```
 
 MongoDB and Minio should now be running.

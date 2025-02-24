@@ -1,27 +1,20 @@
 import { Request, Response, Router } from 'express'
-import multer from 'multer'
-import { uploadFileToMinio } from '../../utils'
 import { FormSubmissions } from '../../models'
-import { parseFields } from '../../utils/parseFields'
 
-const upload = multer({ storage: multer.memoryStorage() })
 const router = Router()
-router.post('/', upload.single('file'), async (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
     try {
-        const fileUrl = req.file ? await uploadFileToMinio(req.file) : ''
-        const formName = req.body.formName
+        const { formData, formId, formName } = req.body
 
-        const { formName: _, ...formFields } = req.body
-        const updatedFormFields = { ...formFields, fileUrl }
-
-        delete updatedFormFields.formId
+        console.log(' formFields:', formData)
         const form = await FormSubmissions.create({
-            formFields: parseFields(updatedFormFields),
-            formId: formFields.formId,
+            formData,
+            formId,
             formName,
         })
 
-        res.status(201).json(form)
+        await form.save()
+        res.status(201).json({ form })
     } catch (error) {
         console.error('Error submitting form:', error)
         res.status(500).json({ message: 'Error submitting form', error })

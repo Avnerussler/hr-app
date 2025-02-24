@@ -1,35 +1,26 @@
-import { FormSubmissions } from '../../models'
 import { Request, Response, Router } from 'express'
+import { FormSubmissions } from '../../models'
+import mongoose from 'mongoose'
 
 const router = Router()
-
-router.put('/:id', async (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
     try {
-        const id = req.params.id
-        const newFirstName = req.body
-
-        console.log(' :11 ~ newFirstName:', newFirstName)
-
-        console.log(' :10 ~ id:', id)
-
-        // const forms = await FormSubmissions.findByIdAndUpdate({
-        //     _id: id,
-        //     FirstName: 'avner',
-        // })
-
+        console.log('Start updating form')
+        const { id, formData } = req.body
         const updatedForm = await FormSubmissions.findByIdAndUpdate(
-            id,
-            { $set: { 'formFields.FirstName': 'blblbl' } },
+            mongoose.Types.ObjectId.createFromHexString(id),
+            { $set: { formData } },
             { new: true } // Return the updated document
         )
 
-        // if (!updatedForm) {
-        //     return res.status(404).json({ message: 'Form not found' })
-        // }
-        res.status(200).json({ updatedForm })
+        if (!updatedForm) {
+            res.status(404).json({ message: 'Form not found' })
+        }
+        res.status(200).json({ form: updatedForm })
     } catch (error) {
-        console.error('Error getting forms:', error)
-        res.status(500).json({ message: 'Error getting forms', error })
+        console.error('Error submitting form:', error)
+        res.status(500).json({ message: 'Error submitting form', error })
     }
 })
+
 export { router as UpdateFormSubmissionsRouter }

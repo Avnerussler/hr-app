@@ -17,7 +17,7 @@ const FormSubmissionsSchema: Schema = new Schema(
             type: String,
             required: true,
         },
-        formFields: { type: Object, required: true },
+        formData: { type: Object, required: true },
     },
     { timestamps: true }
 )

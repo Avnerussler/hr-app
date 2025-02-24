@@ -17,7 +17,6 @@ const OptionSchema: Schema = new Schema({
  * Form Field Schema - Defines individual fields within a form.
  */
 const FormFieldSchema: Schema = new Schema({
-    id: { type: Number, required: true },
     name: { type: String, required: true },
     type: { type: String, required: true },
     label: { type: String },

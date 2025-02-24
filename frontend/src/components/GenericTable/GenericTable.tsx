@@ -63,29 +63,10 @@ export const GenericTable: FC<GenericTableProps> = ({
         })
     }
 
-    // const handleEdit = (rowId: string) => {
-    //     if (!submittedData?.forms[parseInt(rowId)]._id) {
-    //         return
-    //     }
-
-    //     return (
-    //         <Dialog title="Edit Form" buttonText="Edit">
-    //             <GenericForm
-    //                 formId={submittedData?.forms[parseInt(rowId)]._id}
-    //             />
-    //         </Dialog>
-    //     )
-    //     // mutation.mutate({
-    //     //     url: 'formSubmission/edit/',
-    //     //     method: 'PUT',
-    //     //     params: submittedData?.forms[parseInt(rowId)]._id,
-    //     // })
-    // }
-
     const columns = useMemo(
         () =>
             isSuccess && submittedData?.forms?.length
-                ? Object.keys(submittedData?.forms[0].formFields as object).map(
+                ? Object.keys(submittedData?.forms[0].formData as object).map(
                       (key) =>
                           columnHelper.accessor(key as keyof FormFields, {
                               header: key,
@@ -105,7 +86,7 @@ export const GenericTable: FC<GenericTableProps> = ({
     const data = useMemo(
         () =>
             isSuccess && submittedData?.forms?.length
-                ? submittedData.forms.flatMap((form) => form.formFields)
+                ? submittedData.forms.flatMap((form) => form.formData)
                 : [],
         [isSuccess, submittedData]
     )
@@ -153,7 +134,7 @@ export const GenericTable: FC<GenericTableProps> = ({
                                 </Table.Cell>
                             )
                         })}
-                        {isEditable && (
+                        {isCanBeDeleted && (
                             <Table.Cell>
                                 <Button
                                     onClick={() => handleDelete(row.id)}
@@ -164,7 +145,7 @@ export const GenericTable: FC<GenericTableProps> = ({
                                 </Button>
                             </Table.Cell>
                         )}
-                        {isCanBeDeleted && (
+                        {isEditable && (
                             <Table.Cell>
                                 <Dialog title="Edit Form" buttonText="Edit">
                                     <GenericForm
