@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-table'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { FC, useMemo } from 'react'
-import { Button, Table } from '@chakra-ui/react'
+import { Box, Button, Link, Table } from '@chakra-ui/react'
 
 import { AllFormSubmission } from '@/types/formType'
 import { FormFields } from '@/types/fieldsType'
@@ -29,7 +29,14 @@ export const GenericTable: FC<GenericTableProps> = ({
 }) => {
     const queryClient = useQueryClient()
 
-    const { data: submittedData, isSuccess } = useQuery<AllFormSubmission>({
+    const { data: formFields, isSuccess } = useQuery<{
+        form: { formFields: FormFields[] }
+    }>({
+        queryKey: ['formFields/get', id],
+        staleTime: 1000 * 60 * 5,
+    })
+
+    const { data: submittedData } = useQuery<AllFormSubmission>({
         queryKey: ['formSubmission/get', id],
     })
 
@@ -62,27 +69,79 @@ export const GenericTable: FC<GenericTableProps> = ({
             params: submittedData?.forms[parseInt(rowId)]._id,
         })
     }
+    const indexColumn = columnHelper.display({
+        id: 'index',
+        header: 'מספר שורה',
+        cell: (info) => info.row.index + 1,
+        enableSorting: false,
+    })
 
-    const columns = useMemo(
-        () =>
-            isSuccess && submittedData?.forms?.length
-                ? Object.keys(submittedData?.forms[0].formData as object).map(
-                      (key) =>
-                          columnHelper.accessor(key as keyof FormFields, {
-                              header: key,
-                          })
-                  )
-                : [],
-        [isSuccess, submittedData]
-    )
+    const deleteColumn = columnHelper.display({
+        id: 'delete',
+        header: 'מחיקה',
+        cell: (info) => {
+            return (
+                <Button
+                    onClick={() => handleDelete(info.row.id)}
+                    variant="outline"
+                    colorScheme="red"
+                >
+                    מחיקת שורה
+                </Button>
+            )
+        },
+    })
 
-    const getDataFromCell = (cell: unknown) => {
-        if (!cell) return
-        if (Array.isArray(cell)) {
-            return cell[0].label
-        }
-        return cell
-    }
+    const editColumn = columnHelper.display({
+        id: 'edit',
+        header: 'עריכה',
+        cell: (info) => (
+            <Dialog title="עריכת טופס" buttonText="עריכה">
+                <GenericForm
+                    formMode="update"
+                    defaultValues={submittedData?.forms[info.row.index]}
+                    formId={id}
+                />
+            </Dialog>
+        ),
+    })
+
+    const columns = useMemo(() => {
+        return isSuccess && formFields.form.formFields.length
+            ? formFields?.form.formFields.map((field) =>
+                  columnHelper.accessor(field.name as keyof FormFields, {
+                      header: () => <Box>{field.label}</Box>,
+                      id: field._id,
+                      cell: (info) => {
+                          const value = info.getValue() as string
+
+                          if (field.type === 'file' && value) {
+                              return <Link href={value}>קובץ</Link>
+                          }
+                          if (field.type === 'select') {
+                              return (
+                                  <Box>
+                                      {
+                                          field.options?.find(
+                                              (option) => option.value === value
+                                          )?.label
+                                      }
+                                  </Box>
+                              )
+                          }
+
+                          // For other field types, just render the value as text
+                          return value
+                      },
+                  })
+              )
+            : []
+    }, [formFields, isSuccess])
+
+    const mergeColumns = withIndex
+        ? [editColumn, deleteColumn, ...columns, indexColumn]
+        : columns
+
     const data = useMemo(
         () =>
             isSuccess && submittedData?.forms?.length
@@ -93,7 +152,7 @@ export const GenericTable: FC<GenericTableProps> = ({
 
     const table = useReactTable({
         data,
-        columns,
+        columns: mergeColumns,
         getCoreRowModel: getCoreRowModel(),
     })
 
@@ -102,9 +161,6 @@ export const GenericTable: FC<GenericTableProps> = ({
             <Table.Header>
                 {table.getHeaderGroups().map((headerGroup) => (
                     <Table.Row key={headerGroup.id}>
-                        {withIndex && (
-                            <Table.ColumnHeader>index</Table.ColumnHeader>
-                        )}
                         {headerGroup.headers.map((header) => (
                             <Table.ColumnHeader key={header.id}>
                                 {header.isPlaceholder
@@ -119,45 +175,16 @@ export const GenericTable: FC<GenericTableProps> = ({
                 ))}
             </Table.Header>
             <Table.Body>
-                {table.getRowModel().rows.map((row, index) => (
+                {table.getRowModel().rows.map((row) => (
                     <Table.Row key={row.id}>
-                        {withIndex && <Table.Cell>{index}</Table.Cell>}
-
-                        {row.getVisibleCells().map((cell) => {
-                            return (
-                                <Table.Cell key={cell.id}>
-                                    {getDataFromCell(cell.getValue())}
-                                    {/* {flexRender(
-                                            cell.column.columnDef.cell,
-                                            cell.getContext()
-                                        )} */}
-                                </Table.Cell>
-                            )
-                        })}
-                        {isCanBeDeleted && (
-                            <Table.Cell>
-                                <Button
-                                    onClick={() => handleDelete(row.id)}
-                                    variant="outline"
-                                    colorScheme="red"
-                                >
-                                    Delete
-                                </Button>
+                        {row.getVisibleCells().map((cell) => (
+                            <Table.Cell key={cell.id}>
+                                {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext()
+                                )}
                             </Table.Cell>
-                        )}
-                        {isEditable && (
-                            <Table.Cell>
-                                <Dialog title="Edit Form" buttonText="Edit">
-                                    <GenericForm
-                                        formMode="update"
-                                        defaultValues={
-                                            submittedData?.forms[row.index]
-                                        }
-                                        formId={id}
-                                    />
-                                </Dialog>
-                            </Table.Cell>
-                        )}
+                        ))}
                     </Table.Row>
                 ))}
             </Table.Body>

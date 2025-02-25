@@ -8,9 +8,11 @@ import {
     ControlledSelectField,
 } from '../ControlledFields'
 import { Control, FieldValues } from 'react-hook-form'
+import { RefObject } from 'react'
 
 export interface FormGeneratorProps extends FieldValues {
     control: Control
+    contentRef?: RefObject<HTMLElement>
 }
 
 export const FormGenerator = ({
@@ -18,6 +20,7 @@ export const FormGenerator = ({
     type,
     options,
     control,
+    contentRef,
     ...props
 }: FormGeneratorProps) => {
     const renderField = (type: FieldType) => {
@@ -64,6 +67,7 @@ export const FormGenerator = ({
                         key={id}
                         options={options}
                         id={id}
+                        contentRef={contentRef}
                     />
                 )
             default:

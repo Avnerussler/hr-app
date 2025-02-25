@@ -1,22 +1,25 @@
+import { createListCollection, Field } from '@chakra-ui/react'
 import {
-    createListCollection,
-    Field,
     SelectContent,
     SelectItem,
     SelectLabel,
     SelectRoot,
     SelectTrigger,
     SelectValueText,
-} from '@chakra-ui/react'
+} from '@/components/ui/select'
+
 import { Control, Controller, FieldValues } from 'react-hook-form'
+import { RefObject } from 'react'
 
 interface ControlledSelectFieldProps extends FieldValues {
     control: Control
+    contentRef?: RefObject<HTMLElement>
 }
 export const ControlledSelectField = ({
     control,
     name,
     options,
+    contentRef,
     ...props
 }: ControlledSelectFieldProps) => {
     const frameworks = (options: { label: string; value: string }[]) =>
@@ -35,14 +38,16 @@ export const ControlledSelectField = ({
                         size="sm"
                         {...field}
                         {...props}
-                        onValueChange={({ items }) => field.onChange(items)}
+                        onValueChange={({ items }) =>
+                            field.onChange(items[0].label)
+                        }
                         onInteractOutside={() => field.onBlur()}
                     >
                         <SelectLabel>{props.label}</SelectLabel>
                         <SelectTrigger>
                             <SelectValueText placeholder={props.placeholder} />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent portalRef={contentRef}>
                             {frameworks(options).items.map((option) => (
                                 <SelectItem item={option} key={option.value}>
                                     {option.label}

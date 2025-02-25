@@ -1,3 +1,4 @@
+import { FC, ReactNode, RefObject } from 'react'
 import { Button } from '@chakra-ui/react'
 import {
     DialogBody,
@@ -8,17 +9,22 @@ import {
     DialogContent,
     DialogRoot,
 } from '../ui/dialog'
-import { FC, ReactNode } from 'react'
 
 interface DialogProps {
     buttonText?: string
     title?: string
     children?: ReactNode
+    contentRef?: RefObject<HTMLDivElement | null>
 }
-export const Dialog: FC<DialogProps> = ({ buttonText, title, children }) => {
+export const Dialog: FC<DialogProps> = ({
+    buttonText,
+    title,
+    children,
+    contentRef,
+}) => {
     return (
         <DialogRoot
-            size="cover"
+            size="sm"
             placement="center"
             scrollBehavior={['inside']}
             // motionPreset="slide-in-bottom"
@@ -28,7 +34,7 @@ export const Dialog: FC<DialogProps> = ({ buttonText, title, children }) => {
                     {buttonText}
                 </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent ref={contentRef}>
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                     <DialogCloseTrigger />

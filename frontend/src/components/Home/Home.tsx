@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react'
 import {
     AbsoluteCenter,
     Box,
@@ -7,7 +8,6 @@ import {
     VStack,
 } from '@chakra-ui/react'
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
 
 import { GenericTable } from '../GenericTable'
 
@@ -16,6 +16,7 @@ import { Dialog } from '../Dialog'
 import { GenericForm } from '../GenericForm'
 export const Home = () => {
     const [selectedTab, setSelectedTab] = useState('')
+    const contentRef = useRef<HTMLDivElement>(null)
 
     const { data, isSuccess, isLoading, isFetching } =
         useQuery<AllFormSubmission>({
@@ -76,8 +77,12 @@ export const Home = () => {
                                 <Dialog
                                     buttonText={`Open ${formName} Form`}
                                     title={formName}
+                                    contentRef={contentRef}
                                 >
                                     <GenericForm
+                                        contentRef={
+                                            contentRef as React.RefObject<HTMLDivElement>
+                                        }
                                         formMode="create"
                                         formId={
                                             selectedTab || data?.forms[0]._id

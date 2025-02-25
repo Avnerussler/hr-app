@@ -1,22 +1,23 @@
-import { FC } from 'react'
+import { FC, RefObject } from 'react'
 import { Button, Stack } from '@chakra-ui/react'
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import { FormGenerator } from '../FormGenerator'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { AllFormSubmission, FormSubmission } from '@/types/formType'
-import { updateObjectInArray } from '@/utils'
 
 interface GenericFormProps {
     formId: string
     defaultValues?: FieldValues
     formMode: 'create' | 'update'
+    contentRef?: RefObject<HTMLElement>
 }
 
 export const GenericForm: FC<GenericFormProps> = ({
     formId,
     defaultValues,
     formMode,
+    contentRef,
 }) => {
     const queryClient = useQueryClient()
     const { control, handleSubmit } = useForm<FieldValues>({
@@ -29,6 +30,7 @@ export const GenericForm: FC<GenericFormProps> = ({
     } = useQuery<FormSubmission>({
         queryKey: ['formFields/get', formId],
         enabled: !!formId,
+        staleTime: 1000 * 60 * 5,
     })
 
     const createMutation = useMutation({
@@ -59,13 +61,12 @@ export const GenericForm: FC<GenericFormProps> = ({
             queryClient.setQueryData(
                 ['formSubmission/get', formId],
                 (oldData: AllFormSubmission) => {
-                    const newData = data.form.formData
-                    const idToUpdate = data.form._id
-                    const updatedData = updateObjectInArray(
-                        oldData.forms,
-                        idToUpdate,
-                        newData
-                    )
+                    const updatedData = oldData.forms.map((form) => {
+                        if (form._id === defaultValues?._id) {
+                            return data.form
+                        }
+                        return form
+                    })
 
                     return { forms: updatedData }
                 }
@@ -107,6 +108,7 @@ export const GenericForm: FC<GenericFormProps> = ({
                             required={field.required}
                             type={field.type}
                             options={field.options}
+                            contentRef={contentRef}
                         />
                     ))}
 
