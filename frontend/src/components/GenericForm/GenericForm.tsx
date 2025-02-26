@@ -1,4 +1,4 @@
-import { FC, RefObject } from 'react'
+import { FC } from 'react'
 import { Button, Stack } from '@chakra-ui/react'
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import { FormGenerator } from '../FormGenerator'
@@ -10,14 +10,12 @@ interface GenericFormProps {
     formId: string
     defaultValues?: FieldValues
     formMode: 'create' | 'update'
-    contentRef?: RefObject<HTMLElement>
 }
 
 export const GenericForm: FC<GenericFormProps> = ({
     formId,
     defaultValues,
     formMode,
-    contentRef,
 }) => {
     const queryClient = useQueryClient()
     const { control, handleSubmit } = useForm<FieldValues>({
@@ -108,7 +106,6 @@ export const GenericForm: FC<GenericFormProps> = ({
                             required={field.required}
                             type={field.type}
                             options={field.options}
-                            contentRef={contentRef}
                         />
                     ))}
 

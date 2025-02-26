@@ -1,4 +1,4 @@
-import { FC, ReactNode, RefObject } from 'react'
+import { FC, ReactNode, RefObject, useContext } from 'react'
 import { Button } from '@chakra-ui/react'
 import {
     DialogBody,
@@ -9,19 +9,16 @@ import {
     DialogContent,
     DialogRoot,
 } from '../ui/dialog'
+import ContentRefContext from '@/providers/ContentRefContext'
 
 interface DialogProps {
     buttonText?: string
     title?: string
     children?: ReactNode
-    contentRef?: RefObject<HTMLDivElement | null>
 }
-export const Dialog: FC<DialogProps> = ({
-    buttonText,
-    title,
-    children,
-    contentRef,
-}) => {
+export const Dialog: FC<DialogProps> = ({ buttonText, title, children }) => {
+    const contentRef = useContext(ContentRefContext)
+
     return (
         <DialogRoot
             size="sm"
@@ -34,7 +31,7 @@ export const Dialog: FC<DialogProps> = ({
                     {buttonText}
                 </Button>
             </DialogTrigger>
-            <DialogContent ref={contentRef}>
+            <DialogContent ref={contentRef as RefObject<HTMLDivElement>}>
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                     <DialogCloseTrigger />

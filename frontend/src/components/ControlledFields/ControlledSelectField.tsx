@@ -1,3 +1,4 @@
+import { RefObject, useContext } from 'react'
 import { createListCollection, Field } from '@chakra-ui/react'
 import {
     SelectContent,
@@ -9,7 +10,7 @@ import {
 } from '@/components/ui/select'
 
 import { Control, Controller, FieldValues } from 'react-hook-form'
-import { RefObject } from 'react'
+import ContentRefContext from '@/providers/ContentRefContext'
 
 interface ControlledSelectFieldProps extends FieldValues {
     control: Control
@@ -19,13 +20,14 @@ export const ControlledSelectField = ({
     control,
     name,
     options,
-    contentRef,
     ...props
 }: ControlledSelectFieldProps) => {
     const frameworks = (options: { label: string; value: string }[]) =>
         createListCollection({
             items: options,
         })
+    const contentRef = useContext(ContentRefContext)
+
     return (
         <Controller
             name={name}
@@ -47,7 +49,11 @@ export const ControlledSelectField = ({
                         <SelectTrigger>
                             <SelectValueText placeholder={props.placeholder} />
                         </SelectTrigger>
-                        <SelectContent portalRef={contentRef}>
+                        <SelectContent
+                            portalRef={
+                                contentRef as React.RefObject<HTMLDivElement>
+                            }
+                        >
                             {frameworks(options).items.map((option) => (
                                 <SelectItem item={option} key={option.value}>
                                     {option.label}

@@ -20,7 +20,6 @@ export const FormGenerator = ({
     type,
     options,
     control,
-    contentRef,
     ...props
 }: FormGeneratorProps) => {
     const renderField = (type: FieldType) => {
@@ -54,7 +53,7 @@ export const FormGenerator = ({
                 return (
                     <Field.Root key={id} orientation="horizontal">
                         <Field.Label>{props.label}</Field.Label>
-                        <Switch {...props} />
+                        <Switch />
                     </Field.Root>
                 )
             case 'select':
@@ -67,7 +66,6 @@ export const FormGenerator = ({
                         key={id}
                         options={options}
                         id={id}
-                        contentRef={contentRef}
                     />
                 )
             default:
