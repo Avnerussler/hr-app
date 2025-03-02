@@ -1,18 +1,33 @@
 import {
     createColumnHelper,
+    DisplayColumnDef,
+    FilterFn,
     flexRender,
     getCoreRowModel,
+    getFilteredRowModel,
     useReactTable,
 } from '@tanstack/react-table'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { FC, useMemo } from 'react'
-import { Box, Button, Link, Table } from '@chakra-ui/react'
+import { FC, useMemo, useState } from 'react'
+import { Box, Link, Table } from '@chakra-ui/react'
 
 import { AllFormSubmission } from '@/types/formType'
 import { FormFields } from '@/types/fieldsType'
 import { Dialog } from '../Dialog'
 import { GenericForm } from '../GenericForm'
-
+import {
+    // RankingInfo,
+    rankItem,
+    // compareItems,
+} from '@tanstack/match-sorter-utils'
+import { DeleteCell } from './CustomsCells'
+import { Filter } from './Filter'
+declare module '@tanstack/react-table' {
+    //add fuzzy filter to the filterFns
+    interface FilterFns {
+        fuzzy: FilterFn<unknown>
+    }
+}
 const columnHelper = createColumnHelper<FormFields>()
 
 interface GenericTableProps {
@@ -27,6 +42,7 @@ export const GenericTable: FC<GenericTableProps> = ({
     isCanBeDeleted = true,
     withIndex = true,
 }) => {
+    const [globalFilter, setGlobalFilter] = useState<string>('')
     const queryClient = useQueryClient()
 
     const { data: formFields, isSuccess } = useQuery<{
@@ -40,12 +56,11 @@ export const GenericTable: FC<GenericTableProps> = ({
         queryKey: ['formSubmission/get', id],
     })
 
-    const deleteMutation = useMutation<
-        void,
-        unknown,
-        { url: string; method: string; params: string }
-    >({
-        onSuccess(_, variables) {
+    const deleteMutation = useMutation({
+        onSuccess(
+            _,
+            variables: { params: string; url: string; method: string }
+        ) {
             queryClient.setQueryData(
                 ['formSubmission/get', id],
                 (oldData: AllFormSubmission | undefined) => {
@@ -76,21 +91,7 @@ export const GenericTable: FC<GenericTableProps> = ({
         enableSorting: false,
     })
 
-    const deleteColumn = columnHelper.display({
-        id: 'delete',
-        header: 'מחיקה',
-        cell: (info) => {
-            return (
-                <Button
-                    onClick={() => handleDelete(info.row.id)}
-                    variant="outline"
-                    colorScheme="red"
-                >
-                    מחיקת שורה
-                </Button>
-            )
-        },
-    })
+    // const deleteCustomColumn = deleteColumn(columnHelper)
 
     const editColumn = columnHelper.display({
         id: 'edit',
@@ -119,15 +120,9 @@ export const GenericTable: FC<GenericTableProps> = ({
                               return <Link href={value}>קובץ</Link>
                           }
                           if (field.type === 'select') {
-                              return (
-                                  <Box>
-                                      {
-                                          field.options?.find(
-                                              (option) => option.value === value
-                                          )?.label
-                                      }
-                                  </Box>
-                              )
+                              return field.options?.find(
+                                  (option) => option.value === value
+                              )?.label
                           }
 
                           // For other field types, just render the value as text
@@ -138,9 +133,26 @@ export const GenericTable: FC<GenericTableProps> = ({
             : []
     }, [formFields, isSuccess])
 
-    const mergeColumns = withIndex
-        ? [editColumn, deleteColumn, ...columns, indexColumn]
-        : columns
+    const mergeColumns: (
+        | (typeof columns)[number]
+        | DisplayColumnDef<FormFields, unknown>
+    )[] = [...columns]
+
+    const columnsToAdd = () => {
+        if (isEditable) {
+            mergeColumns.unshift(editColumn)
+        }
+        if (isCanBeDeleted) {
+            mergeColumns.unshift(
+                DeleteCell({ columnHelper, onClick: handleDelete })
+            )
+        }
+        if (withIndex) {
+            mergeColumns.push(indexColumn)
+        }
+
+        return mergeColumns
+    }
 
     const data = useMemo(
         () =>
@@ -150,44 +162,74 @@ export const GenericTable: FC<GenericTableProps> = ({
         [isSuccess, submittedData]
     )
 
+    // Define a custom fuzzy filter function that will apply ranking info to rows (using match-sorter utils)
+    const fuzzyFilter: FilterFn<FormFields> = (
+        row,
+        columnId,
+        value,
+        addMeta
+    ) => {
+        // Rank the item
+        const itemRank = rankItem(row.getValue(columnId), value)
+
+        // Store the itemRank info
+        addMeta({
+            itemRank,
+        })
+
+        // Return if the item should be filtered in/out
+        return itemRank.passed
+    }
     const table = useReactTable({
         data,
-        columns: mergeColumns,
+        columns: columnsToAdd(),
         getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        state: {
+            globalFilter,
+        },
+        onGlobalFilterChange: setGlobalFilter,
+        globalFilterFn: 'fuzzy',
+        filterFns: {
+            fuzzy: fuzzyFilter, //define as a filter function that can be used in column definitions
+        },
     })
 
     return (
-        <Table.Root size="sm" interactive>
-            <Table.Header>
-                {table.getHeaderGroups().map((headerGroup) => (
-                    <Table.Row key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => (
-                            <Table.ColumnHeader key={header.id}>
-                                {header.isPlaceholder
-                                    ? null
-                                    : flexRender(
-                                          header.column.columnDef.header,
-                                          header.getContext()
-                                      )}
-                            </Table.ColumnHeader>
-                        ))}
-                    </Table.Row>
-                ))}
-            </Table.Header>
-            <Table.Body>
-                {table.getRowModel().rows.map((row) => (
-                    <Table.Row key={row.id}>
-                        {row.getVisibleCells().map((cell) => (
-                            <Table.Cell key={cell.id}>
-                                {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext()
-                                )}
-                            </Table.Cell>
-                        ))}
-                    </Table.Row>
-                ))}
-            </Table.Body>
-        </Table.Root>
+        <>
+            <Filter globalFilter={globalFilter} table={table} />
+            <Table.Root size="sm" interactive>
+                <Table.Header>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <Table.Row key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => (
+                                <Table.ColumnHeader key={header.id}>
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(
+                                              header.column.columnDef.header,
+                                              header.getContext()
+                                          )}
+                                </Table.ColumnHeader>
+                            ))}
+                        </Table.Row>
+                    ))}
+                </Table.Header>
+                <Table.Body>
+                    {table.getRowModel().rows.map((row) => (
+                        <Table.Row key={row.id}>
+                            {row.getVisibleCells().map((cell) => (
+                                <Table.Cell key={cell.id}>
+                                    {flexRender(
+                                        cell.column.columnDef.cell,
+                                        cell.getContext()
+                                    )}
+                                </Table.Cell>
+                            ))}
+                        </Table.Row>
+                    ))}
+                </Table.Body>
+            </Table.Root>{' '}
+        </>
     )
 }

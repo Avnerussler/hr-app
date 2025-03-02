@@ -6,7 +6,6 @@ router.post('/', async (req: Request, res: Response) => {
     try {
         const { formData, formId, formName } = req.body
 
-        console.log(' formFields:', formData)
         const form = await FormSubmissions.create({
             formData,
             formId,

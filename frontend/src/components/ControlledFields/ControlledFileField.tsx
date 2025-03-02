@@ -55,7 +55,6 @@ export const ControlledFileInput: FC<ControlledFileInputProps> = ({
             const BUCKET_URL = 'http://localhost:9000'
             const BUCKET_NAME = 'uploads'
             const fileUrl = `${BUCKET_URL}/${BUCKET_NAME}/${file.name}`
-            console.log(' fileUrl:', fileUrl)
             onChange(fileUrl)
         } else {
             throw new Error('Upload failed')
