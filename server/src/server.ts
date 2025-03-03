@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import router from './routes'
 import connectDB from './config/db'
+import { createForms } from './migrations'
 dotenv.config()
 
 const app = express()
@@ -20,8 +21,14 @@ app.use(
 
 // Connect to MongoDB
 connectDB()
+const runMigrations = process.env.RUN_MIGRATIONS
+
+if (runMigrations === 'true') {
+    console.log('Running migrations')
+    createForms()
+}
+
 app.use(express.json()) // Middleware to parse JSON requests
-// app.use(express.urlencoded({ extended: true })) // Add this for form data parsing
 
 // Basic route
 app.get('/', (req: Request, res: Response) => {
