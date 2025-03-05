@@ -17,7 +17,7 @@ export const DeleteCell = ({ columnHelper, onClick }: deleteCellProps) => {
                     variant="outline"
                     colorScheme="red"
                 >
-                    מחיקת שורה
+                    מחיקה
                 </Button>
             )
         },

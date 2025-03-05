@@ -1,21 +1,31 @@
-import { Input } from '@chakra-ui/react'
-import { Table } from '@tanstack/react-table'
-import { ChangeEvent, FC } from 'react'
+import { memo, useCallback } from 'react'
+import { Column } from '@tanstack/react-table'
+import { DebouncedInput } from '@/components/DebounceInput'
 import { FormFields } from '@/types/fieldsType'
 
 interface FilterProps {
-    table: Table<FormFields>
-    globalFilter: string
+    column: Column<FormFields, unknown>
 }
-export const Filter: FC<FilterProps> = ({ globalFilter, table }) => {
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        table.setGlobalFilter(String(e.target.value))
-    }
+
+export const Filter = memo(({ column }: FilterProps) => {
+    const columnFilterValue = column.getFilterValue() as string
+
+    const handleFilterChange = useCallback(
+        (value: string) => {
+            column.setFilterValue(value)
+        },
+        [column]
+    )
+
     return (
-        <Input
-            placeholder="חפש..."
-            value={globalFilter}
-            onChange={handleChange}
+        <DebouncedInput
+            value={columnFilterValue ?? ''}
+            onChange={handleFilterChange}
+            placeholder="Search..."
+            debounceTime={400}
+            width="90%"
+            size="sm"
+            variant="outline"
         />
     )
-}
+})

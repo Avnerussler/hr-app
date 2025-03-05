@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-table'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { FC, useMemo, useState } from 'react'
-import { Box, Link, Table } from '@chakra-ui/react'
+import { Box, Link, Table, VStack } from '@chakra-ui/react'
 
 import { AllFormSubmission } from '@/types/formType'
 import { FormFields } from '@/types/fieldsType'
@@ -22,12 +22,14 @@ import {
 } from '@tanstack/match-sorter-utils'
 import { DeleteCell } from './CustomsCells'
 import { Filter } from './Filter'
+import { DebouncedInput } from '../DebounceInput'
 declare module '@tanstack/react-table' {
     //add fuzzy filter to the filterFns
     interface FilterFns {
         fuzzy: FilterFn<unknown>
     }
 }
+
 const columnHelper = createColumnHelper<FormFields>()
 
 interface GenericTableProps {
@@ -84,14 +86,54 @@ export const GenericTable: FC<GenericTableProps> = ({
             params: submittedData?.forms[parseInt(rowId)]._id,
         })
     }
+
+    const fuzzyFilter: FilterFn<FormFields> = (
+        row,
+        columnId,
+        value,
+        addMeta
+    ) => {
+        // Find the current column
+        const column = row
+            .getAllCells()
+            .find((cell) => cell.column.id === columnId)
+
+        // Check if the column has `options` in `meta` (for select fields)
+        const options =
+            (
+                column?.column.columnDef.meta as {
+                    options?: { value: string; label: string }[]
+                }
+            )?.options ?? []
+
+        // Get the raw cell value
+        const rawValue = row.getValue(columnId) as string
+
+        // If options exist, map value to label, otherwise use raw value
+        const valueToFilter =
+            options.length > 0
+                ? (options.find((option) => option.value === rawValue)?.label ??
+                  rawValue)
+                : rawValue
+
+        // Rank the item based on the label (or raw value if no options exist)
+        const itemRank = rankItem(valueToFilter, value)
+
+        // Add meta data (for highlighting matched text if you need it)
+        addMeta({
+            itemRank,
+        })
+
+        return itemRank.passed
+    }
+
     const indexColumn = columnHelper.display({
         id: 'index',
         header: 'מספר שורה',
         cell: (info) => info.row.index + 1,
         enableSorting: false,
+        filterFn: 'equalsString',
     })
-
-    // const deleteCustomColumn = deleteColumn(columnHelper)
 
     const editColumn = columnHelper.display({
         id: 'edit',
@@ -117,16 +159,21 @@ export const GenericTable: FC<GenericTableProps> = ({
                           const value = info.getValue() as string
 
                           if (field.type === 'file' && value) {
-                              return <Link href={value}>קובץ</Link>
+                              return <Link href={value}>{value}</Link>
                           }
                           if (field.type === 'select') {
                               return field.options?.find(
                                   (option) => option.value === value
                               )?.label
                           }
-
-                          // For other field types, just render the value as text
                           return value
+                      },
+                      filterFn: fuzzyFilter,
+                      meta: {
+                          options:
+                              field.type === 'select'
+                                  ? field.options
+                                  : undefined,
                       },
                   })
               )
@@ -162,25 +209,14 @@ export const GenericTable: FC<GenericTableProps> = ({
         [isSuccess, submittedData]
     )
 
-    // Define a custom fuzzy filter function that will apply ranking info to rows (using match-sorter utils)
-    const fuzzyFilter: FilterFn<FormFields> = (
-        row,
-        columnId,
-        value,
-        addMeta
-    ) => {
-        // Rank the item
-        const itemRank = rankItem(row.getValue(columnId), value)
-
-        // Store the itemRank info
-        addMeta({
-            itemRank,
-        })
-
-        // Return if the item should be filtered in/out
-        return itemRank.passed
-    }
     const table = useReactTable({
+        defaultColumn: {
+            size: 100, // starting column size
+            minSize: 50, // enforced during column resizing
+            maxSize: 100, // enforced during column resizing
+        },
+        columnResizeDirection: 'rtl',
+
         data,
         columns: columnsToAdd(),
         getCoreRowModel: getCoreRowModel(),
@@ -197,19 +233,30 @@ export const GenericTable: FC<GenericTableProps> = ({
 
     return (
         <>
-            <Filter globalFilter={globalFilter} table={table} />
+            <DebouncedInput
+                value={globalFilter ?? ''}
+                onChange={(value) => setGlobalFilter(String(value))}
+                className="p-2 font-lg shadow border border-block"
+                placeholder="Search all columns..."
+            />
             <Table.Root size="sm" interactive>
                 <Table.Header>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <Table.Row key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Table.ColumnHeader key={header.id}>
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(
-                                              header.column.columnDef.header,
-                                              header.getContext()
-                                          )}
+                                    <VStack justifyContent="center">
+                                        {header.column.getCanFilter() && (
+                                            <Filter column={header.column} />
+                                        )}
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                  header.column.columnDef
+                                                      .header,
+                                                  header.getContext()
+                                              )}
+                                    </VStack>
                                 </Table.ColumnHeader>
                             ))}
                         </Table.Row>
@@ -229,7 +276,7 @@ export const GenericTable: FC<GenericTableProps> = ({
                         </Table.Row>
                     ))}
                 </Table.Body>
-            </Table.Root>{' '}
+            </Table.Root>
         </>
     )
 }
