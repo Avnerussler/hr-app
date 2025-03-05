@@ -16,6 +16,7 @@ export type FieldType =
     | 'number'
     | 'tel'
     | 'url'
+    | 'multipleSelect'
 
 export interface Option {
     value: string

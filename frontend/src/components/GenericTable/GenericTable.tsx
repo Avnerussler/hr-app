@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-table'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { FC, useMemo, useState } from 'react'
-import { Box, Link, Table, VStack } from '@chakra-ui/react'
+import { Box, Link, Table, Tag, VStack } from '@chakra-ui/react'
 
 import { AllFormSubmission } from '@/types/formType'
 import { FormFields } from '@/types/fieldsType'
@@ -156,15 +156,34 @@ export const GenericTable: FC<GenericTableProps> = ({
                       header: () => <Box>{field.label}</Box>,
                       id: field._id,
                       cell: (info) => {
-                          const value = info.getValue() as string
+                          const value = info.getValue()
 
                           if (field.type === 'file' && value) {
-                              return <Link href={value}>{value}</Link>
+                              return (
+                                  <Link href={value as string}>
+                                      {value as string}
+                                  </Link>
+                              )
                           }
                           if (field.type === 'select') {
                               return field.options?.find(
                                   (option) => option.value === value
                               )?.label
+                          }
+                          if (field.type === 'multipleSelect') {
+                              if (!Array.isArray(value)) return
+                              const commonItems = field.options?.filter(
+                                  (item) =>
+                                      (value as unknown as string[])?.includes(
+                                          item.value
+                                      )
+                              )
+
+                              return commonItems?.map((item) => (
+                                  <Tag.Root>
+                                      <Tag.Label>{item.label}</Tag.Label>
+                                  </Tag.Root>
+                              ))
                           }
                           return value
                       },

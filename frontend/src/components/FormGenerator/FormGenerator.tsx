@@ -5,6 +5,7 @@ import { FieldType } from '@/types/fieldsType'
 import {
     ControlledFileInput,
     ControlledInputField,
+    ControlledMultipleSelectField,
     ControlledSelectField,
 } from '../ControlledFields'
 import { Control, FieldValues } from 'react-hook-form'
@@ -68,6 +69,18 @@ export const FormGenerator = ({
                         id={id}
                     />
                 )
+
+            case 'multipleSelect':
+                return (
+                    <ControlledMultipleSelectField
+                        {...props}
+                        control={control}
+                        key={id}
+                        options={options}
+                        id={id}
+                    />
+                )
+
             default:
                 return null
         }
