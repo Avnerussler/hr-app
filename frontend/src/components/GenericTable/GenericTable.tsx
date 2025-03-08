@@ -110,14 +110,17 @@ export const GenericTable: FC<GenericTableProps> = ({
         const rawValue = row.getValue(columnId) as string
 
         // If options exist, map value to label, otherwise use raw value
-        const valueToFilter =
-            options.length > 0
-                ? (options.find((option) => option.value === rawValue)?.label ??
-                  rawValue)
-                : rawValue
 
+        const valueToFilter = (options: { value: string; label: string }[]) => {
+            if (options) {
+                return options.find((option) => rawValue.includes(option.value))
+                    ?.label
+            }
+
+            return rawValue
+        }
         // Rank the item based on the label (or raw value if no options exist)
-        const itemRank = rankItem(valueToFilter, value)
+        const itemRank = rankItem(valueToFilter(options), value)
 
         // Add meta data (for highlighting matched text if you need it)
         addMeta({
@@ -180,7 +183,7 @@ export const GenericTable: FC<GenericTableProps> = ({
                               )
 
                               return commonItems?.map((item) => (
-                                  <Tag.Root>
+                                  <Tag.Root key={item.value}>
                                       <Tag.Label>{item.label}</Tag.Label>
                                   </Tag.Root>
                               ))
@@ -190,7 +193,8 @@ export const GenericTable: FC<GenericTableProps> = ({
                       filterFn: fuzzyFilter,
                       meta: {
                           options:
-                              field.type === 'select'
+                              field.type === 'select' ||
+                              field.type === 'multipleSelect'
                                   ? field.options
                                   : undefined,
                       },

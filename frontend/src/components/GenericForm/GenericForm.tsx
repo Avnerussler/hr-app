@@ -67,20 +67,22 @@ export const GenericForm: FC<GenericFormProps> = ({
                     // maxW="sm"
                     css={{ '--field-label-width': '96px' }}
                 >
-                    {formFields?.form?.formFields.map((field) => (
-                        <FormGenerator
-                            {...field}
-                            control={control}
-                            key={field._id}
-                            id={field._id}
-                            label={field.label}
-                            name={field.name}
-                            placeholder={field.placeholder}
-                            required={field.required}
-                            type={field.type}
-                            options={field.options}
-                        />
-                    ))}
+                    {formFields?.form?.formFields.map((field) => {
+                        return (
+                            <FormGenerator
+                                {...field}
+                                control={control}
+                                key={field._id}
+                                id={field._id}
+                                label={field.label}
+                                name={field.name}
+                                placeholder={field.placeholder}
+                                required={field.required}
+                                type={field.type}
+                                options={field.options}
+                            />
+                        )
+                    })}
 
                     <Button type="submit">
                         {formMode === 'create' ? 'Create' : 'Update'}

@@ -31,36 +31,44 @@ export const ControlledMultipleSelectField: FC<
             name={name}
             control={control}
             defaultValue={props.defaultValue}
-            render={({ field }) => (
-                <Field.Root orientation="vertical">
-                    <SelectRoot
-                        multiple
-                        collection={frameworks(options)}
-                        size="sm"
-                        {...props}
-                        onValueChange={({ items }) =>
-                            field.onChange(items.map((item) => item.value))
-                        }
-                        onInteractOutside={() => field.onBlur()}
-                    >
-                        <SelectLabel>{props.label}</SelectLabel>
-                        <SelectTrigger>
-                            <SelectValueText placeholder={props.placeholder} />
-                        </SelectTrigger>
-                        <SelectContent
-                            portalRef={
-                                contentRef as React.RefObject<HTMLDivElement>
+            render={({ field }) => {
+                return (
+                    <Field.Root orientation="vertical">
+                        <SelectRoot
+                            multiple
+                            value={field.value ? field.value : []}
+                            collection={frameworks(options)}
+                            size="sm"
+                            {...props}
+                            onValueChange={({ items }) =>
+                                field.onChange(items.map((item) => item.value))
                             }
+                            onInteractOutside={() => field.onBlur()}
                         >
-                            {frameworks(options).items.map((option) => (
-                                <SelectItem item={option} key={option.value}>
-                                    {option.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </SelectRoot>
-                </Field.Root>
-            )}
+                            <SelectLabel>{props.label}</SelectLabel>
+                            <SelectTrigger>
+                                <SelectValueText
+                                    placeholder={props.placeholder}
+                                />
+                            </SelectTrigger>
+                            <SelectContent
+                                portalRef={
+                                    contentRef as React.RefObject<HTMLDivElement>
+                                }
+                            >
+                                {frameworks(options).items.map((option) => (
+                                    <SelectItem
+                                        item={option}
+                                        key={option.value}
+                                    >
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </SelectRoot>
+                    </Field.Root>
+                )
+            }}
         />
     )
 }
