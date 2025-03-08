@@ -13,6 +13,7 @@ import { MdDeleteForever } from 'react-icons/md'
 import { CloseButton } from '../ui/close-button'
 import axios from 'axios'
 import { Box, Field, Flex, IconButton, Link } from '@chakra-ui/react'
+import { BASE_URL } from '@/config'
 
 // const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 // const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'application/pdf']
@@ -30,7 +31,6 @@ export const ControlledFileInput: FC<ControlledFileInputProps> = ({
         onChange('')
     }
     const handleChange = async (
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onChange: (fileUrl: string) => void,
         event: ChangeEvent<HTMLInputElement>
     ) => {
@@ -38,23 +38,22 @@ export const ControlledFileInput: FC<ControlledFileInputProps> = ({
         if (!file) return
 
         const { data } = await axios.get(
-            'http://localhost:3001/api/file/generate-presigned-url',
+            `${BASE_URL}/file/generate-presigned-url`,
             {
                 params: {
-                    fileName: file.name,
-                    fileType: file.type,
+                    filename: file.name,
+                    filetype: file.type,
                 },
             }
         )
 
-        const uploadResponse = await axios.put(data, file, {
+        const { presignedUrl, bucketUrl, bucketName } = data
+        const uploadResponse = await axios.put(presignedUrl, file, {
             headers: { 'Content-Type': file.type },
         })
 
         if (uploadResponse.status === 200) {
-            const BUCKET_URL = 'http://localhost:9000'
-            const BUCKET_NAME = 'uploads'
-            const fileUrl = `${BUCKET_URL}/${BUCKET_NAME}/${file.name}`
+            const fileUrl = `${bucketUrl}/${bucketName}/${file.name}`
             onChange(fileUrl)
         } else {
             throw new Error('Upload failed')
