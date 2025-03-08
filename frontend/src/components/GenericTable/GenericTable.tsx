@@ -112,7 +112,7 @@ export const GenericTable: FC<GenericTableProps> = ({
         // If options exist, map value to label, otherwise use raw value
 
         const valueToFilter = (options: { value: string; label: string }[]) => {
-            if (options) {
+            if (options.length > 0) {
                 return options.find((option) => rawValue.includes(option.value))
                     ?.label
             }
