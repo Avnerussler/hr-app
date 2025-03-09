@@ -24,7 +24,7 @@ export interface IFormFields extends Document {
 
 const FormFieldsSchema: Schema = new Schema(
     {
-        formName: { type: String, required: true },
+        formName: { type: String, required: true, unique: true },
         formFields: [
             {
                 name: { type: String, required: true },
@@ -33,24 +33,30 @@ const FormFieldsSchema: Schema = new Schema(
                 placeholder: { type: String },
                 required: { type: Boolean },
                 defaultValue: { type: String },
-                options: [
-                    {
-                        value: {
-                            type: String,
-                            required: true,
-                            default: uuidv4,
+                options: {
+                    type: [
+                        {
+                            value: {
+                                type: String,
+                                required: true,
+                                default: uuidv4,
+                            },
+                            label: { type: String, required: true },
+                            name: { type: String, required: true },
+                            _id: false,
                         },
-                        label: { type: String, required: true },
-                        name: { type: String, required: true },
-                        _id: false,
-                    },
-                ],
+                    ],
+                    required: false,
+                    default: undefined,
+                },
             },
         ],
     },
     { timestamps: true }
 )
+
 export const FormFields = mongoose.model<IFormFields>(
     'form_fields',
     FormFieldsSchema
 )
+FormFields.collection.createIndex({ formName: 1 }, { unique: true })
