@@ -100,11 +100,17 @@ export const GenericTable: FC<GenericTableProps> = ({
 
         // Check if the column has `options` in `meta` (for select fields)
         const options =
-            (
+            ((
                 column?.column.columnDef.meta as {
                     options?: { value: string; label: string }[]
                 }
-            )?.options ?? []
+            )?.options ||
+                (
+                    column?.column.columnDef.meta as {
+                        items?: { value: string; label: string }[]
+                    }
+                )?.items) ??
+            []
 
         // Get the raw cell value
         const rawValue = row.getValue(columnId) as string
@@ -188,6 +194,11 @@ export const GenericTable: FC<GenericTableProps> = ({
                                   </Tag.Root>
                               ))
                           }
+                          if (field.type === 'radio') {
+                              return field.items?.find(
+                                  (item) => item.value === value
+                              )?.label
+                          }
                           return value
                       },
                       filterFn: fuzzyFilter,
@@ -197,6 +208,8 @@ export const GenericTable: FC<GenericTableProps> = ({
                               field.type === 'multipleSelect'
                                   ? field.options
                                   : undefined,
+                          items:
+                              field.type === 'radio' ? field.items : undefined,
                       },
                   })
               )

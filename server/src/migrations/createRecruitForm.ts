@@ -3,10 +3,10 @@ import { checkIfFormExist } from './utils'
 
 export const createRecruitForm = async () => {
     try {
-        const formName = 'Recruit'
+        const formName = 'תהליך גיוס'
         const isFormExist = await checkIfFormExist(formName)
         if (isFormExist) {
-            console.log('From Recruit exist! passing on migration')
+            console.log(`${formName} exist! passing on migration`)
             return
         }
         console.log('Running on create form migration')
@@ -180,12 +180,69 @@ export const createRecruitForm = async () => {
                     required: false,
                     defaultValue: '',
                 },
-
                 {
                     name: 'Resume',
                     type: 'file',
                     label: 'רזומה',
                     placeholder: 'רזומה',
+                    required: false,
+                    defaultValue: '',
+                },
+                {
+                    name: 'RecruitmentYear',
+                    type: 'date',
+                    label: 'שנת גיוס',
+                    placeholder: 'שנת גיוס',
+                    required: false,
+                    defaultValue: '',
+                },
+                {
+                    name: 'DismissYear',
+                    type: 'date',
+                    label: 'שנת שחרור',
+                    placeholder: 'שנת שחרור',
+                    required: false,
+                    defaultValue: '',
+                },
+                {
+                    name: 'reserveUnit',
+                    type: 'text',
+                    label: 'שיוך יחידה במילואים',
+                    placeholder: 'שיוך יחידה במילואים',
+                    required: false,
+                    defaultValue: '',
+                },
+                {
+                    name: 'hasClassification',
+                    type: 'radio',
+                    label: 'האם מסווג',
+                    placeholder: 'האם מסווג',
+                    required: false,
+                    defaultValue: '',
+                    items: [{ label: 'כן' }, { label: 'לא' }],
+                },
+                {
+                    name: 'classificationClass',
+                    type: 'text',
+                    label: 'רמת סיווג',
+                    placeholder: 'רמת סיווג',
+                    required: false,
+                    defaultValue: '',
+                },
+                {
+                    name: 'canBeRecited',
+                    type: 'radio',
+                    label: 'האם ניתן לזמן למילואים',
+                    placeholder: 'האם ניתן לזמן למילואים',
+                    required: false,
+                    defaultValue: '',
+                    items: [{ label: 'כן' }, { label: 'לא' }],
+                },
+                {
+                    name: 'degree',
+                    type: 'text',
+                    label: 'תואר אקדמי',
+                    placeholder: 'תואר אקדמי',
                     required: false,
                     defaultValue: '',
                 },

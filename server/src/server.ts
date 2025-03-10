@@ -3,7 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import router from './routes'
 import connectDB from './config/db'
-import { createRecruitForm } from './migrations'
+import { createRecruitForm, createStudioForm } from './migrations'
 dotenv.config()
 
 const app = express()
@@ -26,6 +26,7 @@ const runMigrations = process.env.RUN_MIGRATIONS
 if (runMigrations === 'true') {
     console.log('Running migrations')
     createRecruitForm()
+    createStudioForm()
 }
 
 app.use(express.json()) // Middleware to parse JSON requests

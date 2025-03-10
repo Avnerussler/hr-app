@@ -10,6 +10,8 @@ import {
 } from '../ControlledFields'
 import { Control, FieldValues } from 'react-hook-form'
 import { RefObject } from 'react'
+import { ControlledTextareaField } from '../ControlledFields/ControlledTextareaField'
+import { ControlledRadioField } from '../ControlledFields/ControlledRadioField'
 
 export interface FormGeneratorProps extends FieldValues {
     control: Control
@@ -20,6 +22,7 @@ export const FormGenerator = ({
     id,
     type,
     options,
+    items,
     control,
     ...props
 }: FormGeneratorProps) => {
@@ -31,6 +34,7 @@ export const FormGenerator = ({
             case 'tel':
             case 'number':
             case 'url':
+            case 'date':
                 return (
                     <ControlledInputField
                         {...props}
@@ -80,7 +84,27 @@ export const FormGenerator = ({
                         id={id}
                     />
                 )
+            case 'textarea':
+                return (
+                    <ControlledTextareaField
+                        {...props}
+                        control={control}
+                        key={id}
+                        options={options}
+                        id={id}
+                    />
+                )
 
+            case 'radio':
+                return (
+                    <ControlledRadioField
+                        {...props}
+                        control={control}
+                        key={id}
+                        items={items}
+                        id={id}
+                    />
+                )
             default:
                 return null
         }

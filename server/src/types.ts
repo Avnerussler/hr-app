@@ -38,3 +38,8 @@ export interface FormFields {
     items?: Item[]
     errorMessages?: string
 }
+
+export interface IForm {
+    formName: string
+    formFields: FormFields[]
+}
