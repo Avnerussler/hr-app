@@ -9,7 +9,7 @@ export interface IFormSubmissions extends Document {
 const FormSubmissionsSchema: Schema = new Schema(
     {
         formId: {
-            type: String,
+            type: mongoose.Types.ObjectId,
             required: true,
             ref: 'form_fields',
         },

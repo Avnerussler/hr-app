@@ -14,6 +14,8 @@ const FormFieldsSchema: Schema = new Schema<TFormFields>(
                 placeholder: { type: String },
                 required: { type: Boolean },
                 defaultValue: { type: String },
+                foreignFormId: { type: mongoose.Types.ObjectId },
+                foreignField: { type: String },
                 options: {
                     type: [
                         {
@@ -28,15 +30,15 @@ const FormFieldsSchema: Schema = new Schema<TFormFields>(
                         },
                     ],
 
-                    validate: {
-                        validator: function (this: any, options: any) {
-                            return (
-                                this.type !== 'select' ||
-                                (Array.isArray(options) && options.length > 0)
-                            )
-                        },
-                        message: 'Options are required when type is "select"',
-                    },
+                    // validate: {
+                    //     validator: function (this: any, options: any) {
+                    //         return (
+                    //             this.type !== 'select' ||
+                    //             (Array.isArray(options) && options.length > 0)
+                    //         )
+                    //     },
+                    //     message: 'Options are required when type is "select"',
+                    // },
                 },
                 items: {
                     type: [

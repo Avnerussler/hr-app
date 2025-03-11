@@ -15,11 +15,14 @@ export const createStudioForm = async () => {
             formFields: [
                 {
                     name: 'fullName',
-                    type: 'text',
+                    type: 'select',
+                    foreignFormId: '67cf2ff809fc7f33e5a2caf9',
+                    foreignField: 'fullName',
                     label: 'שם פרטי מלא',
                     placeholder: 'הזן שם פרטי מלא',
                     required: false,
                     defaultValue: '',
+                    options: [],
                 },
                 {
                     name: 'currentRoll',
