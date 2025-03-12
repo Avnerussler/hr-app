@@ -16,17 +16,11 @@ router.get('/partialData', async (req: Request, res: Response) => {
 
 router.get('/:id', async (req: Request, res: Response) => {
     try {
-        const id = req.params.id
-        console.log(' id:', id)
-        const form = await FormFields.aggregate([
-            {
-                $match: {
-                    _id: mongoose.Types.ObjectId.createFromHexString(id),
-                },
-            },
-            {
-                $unwind: '$formFields', // Unwind formFields array
-            },
+        const { id } = req.params
+
+        const pipeline = [
+            { $match: { _id: new mongoose.Types.ObjectId(id) } },
+            { $unwind: '$formFields' },
             {
                 $lookup: {
                     from: 'form_submissions',
@@ -58,8 +52,9 @@ router.get('/:id', async (req: Request, res: Response) => {
                                 ],
                             },
                             then: {
-                                $sortArray: {
-                                    input: {
+                                $cond: {
+                                    if: { $gt: [{ $size: '$foreignData' }, 0] }, // If foreignData exists
+                                    then: {
                                         $map: {
                                             input: '$foreignData',
                                             as: 'doc',
@@ -75,10 +70,10 @@ router.get('/:id', async (req: Request, res: Response) => {
                                             },
                                         },
                                     },
-                                    sortBy: { label: 1 }, // Sort ascending (A-Z)
+                                    else: '$formFields.options', // Keep existing options if no foreignData
                                 },
                             },
-                            else: '$formFields.options',
+                            else: '$formFields.options', // Preserve static options
                         },
                     },
                 },
@@ -87,14 +82,20 @@ router.get('/:id', async (req: Request, res: Response) => {
                 $group: {
                     _id: '$_id',
                     formName: { $first: '$formName' },
-                    formFields: { $push: '$formFields' }, // Reconstruct the array
+                    formFields: { $push: '$formFields' },
                     createdAt: { $first: '$createdAt' },
                     updatedAt: { $first: '$updatedAt' },
                 },
             },
-        ])
+        ]
 
-        console.log(' form:', form[0].formFields)
+        const form = await FormFields.aggregate(pipeline)
+
+        if (!form.length) {
+            res.status(404).json({ message: 'Form not found' })
+            return
+        }
+
         res.status(200).json({ form: form[0] })
     } catch (error) {
         console.error('Error getting form:', error)

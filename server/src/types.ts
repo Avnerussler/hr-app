@@ -37,6 +37,8 @@ export interface FormFields {
     options?: Option[]
     items?: Item[]
     errorMessages?: string
+    foreignFormId?: string
+    foreignField?: string
 }
 
 export interface IForm {
