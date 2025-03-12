@@ -223,15 +223,15 @@ export const GenericTable: FC<GenericTableProps> = ({
 
     const columnsToAdd = () => {
         if (isEditable) {
-            mergeColumns.unshift(editColumn)
+            mergeColumns.push(editColumn)
         }
         if (isCanBeDeleted) {
-            mergeColumns.unshift(
+            mergeColumns.push(
                 DeleteCell({ columnHelper, onClick: handleDelete })
             )
         }
         if (withIndex) {
-            mergeColumns.push(indexColumn)
+            mergeColumns.unshift(indexColumn)
         }
 
         return mergeColumns
@@ -273,7 +273,7 @@ export const GenericTable: FC<GenericTableProps> = ({
                 value={globalFilter ?? ''}
                 onChange={(value) => setGlobalFilter(String(value))}
                 className="p-2 font-lg shadow border border-block"
-                placeholder="Search all columns..."
+                placeholder="חפש בכל העמודות..."
             />
             <Table.Root size="sm" interactive>
                 <Table.Header>

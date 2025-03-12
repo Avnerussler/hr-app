@@ -21,10 +21,8 @@ export const Filter = memo(({ column }: FilterProps) => {
         <DebouncedInput
             value={columnFilterValue ?? ''}
             onChange={handleFilterChange}
-            placeholder="Search..."
+            placeholder="חפש..."
             debounceTime={400}
-            width="90%"
-            size="sm"
             variant="outline"
         />
     )

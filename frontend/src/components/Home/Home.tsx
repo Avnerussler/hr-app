@@ -74,7 +74,7 @@ export const Home = () => {
                                 key={selectedTab}
                             >
                                 <Dialog
-                                    buttonText={`Open ${formName} Form`}
+                                    buttonText={`${formName}`}
                                     title={formName}
                                 >
                                     <GenericForm
