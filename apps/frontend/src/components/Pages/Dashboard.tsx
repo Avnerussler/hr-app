@@ -1,4 +1,4 @@
-import { Box, Grid, Flex, Text, Stack, Card } from '@chakra-ui/react'
+import { Box, Grid, Stack } from '@chakra-ui/react'
 
 import {
     BarChart,
@@ -13,9 +13,12 @@ import {
     Legend,
 } from 'recharts'
 
-import { useColorModeValue } from '../ui/color-mode'
 import { FiCalendar, FiClock, FiUsers } from 'react-icons/fi'
 import { HiFolderOpen } from 'react-icons/hi'
+import { PageHeader } from '../common/PageHeader'
+import { MetricCard } from '../common/MetricCard'
+import { ChartCard } from '../common/ChartCard'
+import { SummaryCard } from '../common/SummaryCard'
 
 export function Dashboard() {
     const activeDaysData = [
@@ -78,94 +81,37 @@ export function Dashboard() {
         'Project Delta': '#ff7c7c',
     }
 
-    const mutedBg = useColorModeValue('gray.50', 'gray.700')
-
     return (
         <Box p={6}>
             <Stack gap={6}>
-                <Box>
-                    <Text fontSize="3xl" fontWeight="bold">
-                        Dashboard
-                    </Text>
-                    <Text color="gray.500">
-                        Analytics and insights for project management and
-                        resource allocation.
-                    </Text>
-                </Box>
+                <PageHeader
+                    title="Dashboard"
+                    description="Analytics and insights for project management and resource allocation."
+                />
 
                 {/* Key Metrics */}
                 <Grid
                     templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
                     gap={4}
                 >
-                    <Card.Root>
-                        <Card.Header pb={3}>
-                            <Flex justify="space-between" align="center">
-                                <Card.Title fontSize="sm">
-                                    Total Days Allocated
-                                </Card.Title>
-                                <FiClock className="w-4 h-4 text-blue-600" />
-                            </Flex>
-                        </Card.Header>
-                        <Card.Body>
-                            <Text
-                                fontSize="3xl"
-                                fontWeight="bold"
-                                color="blue.600"
-                            >
-                                {totalDays.toLocaleString()}
-                            </Text>
-                            <Text fontSize="sm" color="gray.500" mt={1}>
-                                Across all active projects
-                            </Text>
-                        </Card.Body>
-                    </Card.Root>
-
-                    <Card.Root>
-                        <Card.Header pb={3}>
-                            <Flex justify="space-between" align="center">
-                                <Card.Title fontSize="sm">
-                                    Active Projects
-                                </Card.Title>
-                                <HiFolderOpen className="w-4 h-4 text-green-600" />
-                            </Flex>
-                        </Card.Header>
-                        <Card.Body>
-                            <Text
-                                fontSize="3xl"
-                                fontWeight="bold"
-                                color="green.600"
-                            >
-                                {activeProjects}
-                            </Text>
-                            <Text fontSize="sm" color="gray.500" mt={1}>
-                                Currently in progress
-                            </Text>
-                        </Card.Body>
-                    </Card.Root>
-
-                    <Card.Root>
-                        <Card.Header pb={3}>
-                            <Flex justify="space-between" align="center">
-                                <Card.Title fontSize="sm">
-                                    Active Employees
-                                </Card.Title>
-                                <FiUsers className="w-4 h-4 text-purple-600" />
-                            </Flex>
-                        </Card.Header>
-                        <Card.Body>
-                            <Text
-                                fontSize="3xl"
-                                fontWeight="bold"
-                                color="purple.600"
-                            >
-                                {activeEmployees}
-                            </Text>
-                            <Text fontSize="sm" color="gray.500" mt={1}>
-                                Working on projects
-                            </Text>
-                        </Card.Body>
-                    </Card.Root>
+                    <MetricCard
+                        icon={FiClock}
+                        label="Total Days Allocated"
+                        value={totalDays}
+                        color="blue.600"
+                    />
+                    <MetricCard
+                        icon={HiFolderOpen}
+                        label="Active Projects"
+                        value={activeProjects}
+                        color="green.600"
+                    />
+                    <MetricCard
+                        icon={FiUsers}
+                        label="Active Employees"
+                        value={activeEmployees}
+                        color="purple.600"
+                    />
                 </Grid>
 
                 {/* Charts Row */}
@@ -173,181 +119,97 @@ export function Dashboard() {
                     templateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }}
                     gap={6}
                 >
-                    <Card.Root>
-                        <Card.Header>
-                            <Card.Title
-                                display="flex"
-                                alignItems="center"
-                                gap={2}
-                            >
-                                <FiCalendar className="w-5 h-5" />
-                                Active Days Across Time
-                            </Card.Title>
-                            <Card.Description>
-                                Weekly active days by project over the past
-                                month
-                            </Card.Description>
-                        </Card.Header>
-                        <Card.Body>
-                            <ResponsiveContainer width="100%" height={350}>
-                                <LineChart data={activeDaysData}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="week" />
-                                    <YAxis
-                                        label={{
-                                            value: 'Active Days',
-                                            angle: -90,
-                                            position: 'insideLeft',
-                                        }}
-                                    />
-                                    <Tooltip />
-                                    <Legend />
-                                    {Object.entries(projectColors).map(
-                                        ([key, color]) => (
-                                            <Line
-                                                key={key}
-                                                type="monotone"
-                                                dataKey={key}
-                                                stroke={color}
-                                                strokeWidth={2}
-                                                dot={{ r: 4 }}
-                                            />
-                                        )
-                                    )}
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </Card.Body>
-                    </Card.Root>
+                    <ChartCard
+                        title="Active Days Across Time"
+                        description="Weekly active days by project over the past month"
+                        icon={<FiCalendar className="w-5 h-5" />}
+                    >
+                        <ResponsiveContainer width="100%" height={350}>
+                            <LineChart data={activeDaysData}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="week" />
+                                <YAxis
+                                    label={{
+                                        value: 'Active Days',
+                                        angle: -90,
+                                        position: 'insideLeft',
+                                    }}
+                                />
+                                <Tooltip />
+                                <Legend />
+                                {Object.entries(projectColors).map(
+                                    ([key, color]) => (
+                                        <Line
+                                            key={key}
+                                            type="monotone"
+                                            dataKey={key}
+                                            stroke={color}
+                                            strokeWidth={2}
+                                            dot={{ r: 4 }}
+                                        />
+                                    )
+                                )}
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </ChartCard>
 
-                    <Card.Root>
-                        <Card.Header>
-                            <Card.Title
-                                display="flex"
-                                alignItems="center"
-                                gap={2}
-                            >
-                                <HiFolderOpen className="w-5 h-5" />
-                                Days Per Project
-                            </Card.Title>
-                            <Card.Description>
-                                Total allocated days across all projects
-                            </Card.Description>
-                        </Card.Header>
-                        <Card.Body>
-                            <ResponsiveContainer width="100%" height={350}>
-                                <BarChart data={daysPerProjectData}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis
-                                        dataKey="project"
-                                        angle={-45}
-                                        textAnchor="end"
-                                        height={80}
-                                    />
-                                    <YAxis
-                                        label={{
-                                            value: 'Days',
-                                            angle: -90,
-                                            position: 'insideLeft',
-                                        }}
-                                    />
-                                    <Tooltip />
-                                    <Bar dataKey="days" radius={[4, 4, 0, 0]}>
-                                        {daysPerProjectData.map((entry) => (
-                                            <Bar
-                                                key={entry.project}
-                                                dataKey="days"
-                                                fill={entry.color}
-                                            />
-                                        ))}
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </Card.Body>
-                    </Card.Root>
+                    <ChartCard
+                        title="Days Per Project"
+                        description="Total allocated days across all projects"
+                        icon={<HiFolderOpen className="w-5 h-5" />}
+                    >
+                        <ResponsiveContainer width="100%" height={350}>
+                            <BarChart data={daysPerProjectData}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis
+                                    dataKey="project"
+                                    angle={-45}
+                                    textAnchor="end"
+                                    height={80}
+                                />
+                                <YAxis
+                                    label={{
+                                        value: 'Days',
+                                        angle: -90,
+                                        position: 'insideLeft',
+                                    }}
+                                />
+                                <Tooltip />
+                                <Bar dataKey="days" radius={[4, 4, 0, 0]}>
+                                    {daysPerProjectData.map((entry) => (
+                                        <Bar
+                                            key={entry.project}
+                                            dataKey="days"
+                                            fill={entry.color}
+                                        />
+                                    ))}
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </ChartCard>
                 </Grid>
 
-                {/* Funded by Other Companies */}
-                <Card.Root>
-                    <Card.Header>
-                        <Card.Title display="flex" alignItems="center" gap={2}>
-                            <HiFolderOpen className="w-5 h-5" />
-                            Funded by Other Companies
-                        </Card.Title>
-                        <Card.Description>
-                            Projects receiving external funding and support
-                        </Card.Description>
-                    </Card.Header>
-                    <Card.Body>
-                        <Stack gap={4}>
-                            {fundedProjectsData.map((item, index) => (
-                                <Flex
-                                    key={index}
-                                    justify="space-between"
-                                    p={4}
-                                    borderWidth="1px"
-                                    borderRadius="lg"
-                                    bg={mutedBg}
-                                >
-                                    <Box>
-                                        <Text fontWeight="medium">
-                                            {item.project}
-                                        </Text>
-                                        <Text fontSize="sm" color="gray.500">
-                                            Funded by {item.company}
-                                        </Text>
-                                    </Box>
-                                    <Box textAlign="right">
-                                        <Text
-                                            fontSize="xl"
-                                            fontWeight="bold"
-                                            color="green.600"
-                                        >
-                                            {item.days}
-                                        </Text>
-                                        <Text fontSize="sm" color="gray.500">
-                                            days funded
-                                        </Text>
-                                    </Box>
-                                </Flex>
-                            ))}
-
-                            <Flex
-                                justify="space-between"
-                                p={4}
-                                borderWidth="2px"
-                                borderRadius="lg"
-                                borderColor="blue.200"
-                                bg="blue.50"
-                            >
-                                <Box>
-                                    <Text fontWeight="semibold">
-                                        Funding Summary
-                                    </Text>
-                                    <Text fontSize="sm" color="gray.500">
-                                        {fundedProjectsData.length} funded
-                                        projects • {fundedProjectsData.length}{' '}
-                                        partner companies
-                                    </Text>
-                                </Box>
-                                <Box textAlign="right">
-                                    <Text
-                                        fontSize="xl"
-                                        fontWeight="bold"
-                                        color="blue.600"
-                                    >
-                                        {fundedProjectsData.reduce(
-                                            (sum, p) => sum + p.days,
-                                            0
-                                        )}
-                                    </Text>
-                                    <Text fontSize="sm" color="gray.500">
-                                        total days funded
-                                    </Text>
-                                </Box>
-                            </Flex>
-                        </Stack>
-                    </Card.Body>
-                </Card.Root>
+                <SummaryCard
+                    title="Funded by Other Companies"
+                    description="Projects receiving external funding and support"
+                    icon={<HiFolderOpen className="w-5 h-5" />}
+                    items={fundedProjectsData.map((item, index) => ({
+                        id: index,
+                        title: item.project,
+                        subtitle: `Funded by ${item.company}`,
+                        value: item.days,
+                        valueLabel: 'days funded',
+                    }))}
+                    summaryItem={{
+                        title: 'Funding Summary',
+                        subtitle: `${fundedProjectsData.length} funded projects • ${fundedProjectsData.length} partner companies`,
+                        value: fundedProjectsData.reduce(
+                            (sum, p) => sum + p.days,
+                            0
+                        ),
+                        valueLabel: 'total days funded',
+                    }}
+                />
             </Stack>
         </Box>
     )

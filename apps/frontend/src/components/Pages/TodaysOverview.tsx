@@ -1,14 +1,5 @@
 import { useState } from 'react'
-import {
-    Box,
-    Flex,
-    Text,
-    Badge,
-    Icon,
-    VStack,
-    HStack,
-    Button,
-} from '@chakra-ui/react'
+import { Box, Flex, Text, Badge, Icon, HStack } from '@chakra-ui/react'
 import {
     FiUsers,
     FiCheckCircle,
@@ -16,6 +7,8 @@ import {
     FiAlertCircle,
     FiDownload,
 } from 'react-icons/fi'
+import { PageHeader } from '../common/PageHeader'
+import { StatusSection } from '../common/StatusSection'
 
 export function TodaysOverview() {
     // const toast = useToastStyles()
@@ -185,208 +178,124 @@ export function TodaysOverview() {
         (t) => getDaysUntilDue(t.dueDate) <= 1
     ).length
 
+    const activePeopleItems = activePeople.map((person) => ({
+        id: person.id,
+        title: person.name,
+        subtitle: person.role,
+        badge:
+            person.status === 'confirmed'
+                ? {
+                      text: 'Confirmed',
+                      colorScheme: 'green',
+                  }
+                : undefined,
+        action:
+            person.status !== 'confirmed'
+                ? {
+                      label: 'Confirm Arrival',
+                      icon: <FiCheckCircle style={{ marginRight: 4 }} />,
+                      onClick: () => confirmArrival(person.id),
+                  }
+                : undefined,
+    }))
+
+    const taskItems = pendingTasks.map((task) => {
+        const daysLeft = getDaysUntilDue(task.dueDate)
+        return {
+            id: task.id,
+            title: task.title,
+            subtitle: (
+                <Box>
+                    <HStack gap={2} mt={1}>
+                        <Badge colorScheme={getPriorityColor(task.priority)}>
+                            {task.priority}
+                        </Badge>
+                        <Text fontSize="sm" color="gray.500">
+                            {new Date(task.dueDate).toLocaleDateString()}
+                        </Text>
+                        {daysLeft <= 1 && (
+                            <Badge colorScheme="red">
+                                {daysLeft === 0 ? 'Due Today' : 'Due Tomorrow'}
+                            </Badge>
+                        )}
+                    </HStack>
+                    <HStack gap={1} mt={1} fontSize="sm" color="gray.500">
+                        <Icon as={FiMapPin} boxSize={4} />
+                        <Text>Assigned to {task.assignee}</Text>
+                    </HStack>
+                </Box>
+            ),
+            action: {
+                label: 'Complete',
+                icon: <FiCheckCircle style={{ marginRight: 4 }} />,
+                onClick: () => markTaskComplete(task.id),
+            },
+        }
+    })
+
     return (
         <Box p={6}>
-            <Text fontSize="2xl" fontWeight="bold">
-                Dashboard
-            </Text>
-            <Text mb={6} color="gray.500">
-                Today’s overview -{' '}
-                {new Date().toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                })}
-            </Text>
+            <PageHeader
+                title="Dashboard"
+                description={`Today's overview - ${new Date().toLocaleDateString(
+                    'en-US',
+                    {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                    }
+                )}`}
+            />
 
             <Flex direction={{ base: 'column', lg: 'row' }} gap={6}>
-                {/* Active People */}
-                <Box flex="1" p={5} borderWidth="1px" rounded="md" bg="white">
-                    <Flex justify="space-between" mb={4}>
-                        <HStack>
-                            <Box p={2} bg="blue.100" rounded="xl">
-                                <Icon
-                                    as={FiUsers}
-                                    color="blue.600"
-                                    boxSize={5}
-                                />
-                            </Box>
-                            <Box>
-                                <Text fontSize="xl" fontWeight="bold">
-                                    {activePeople.length}
-                                </Text>
-                                <Text fontSize="sm" color="gray.500">
-                                    Active People Today
-                                </Text>
-                            </Box>
-                        </HStack>
-                        <HStack>
-                            <Badge colorScheme="green">
-                                {confirmedCount} Confirmed
-                            </Badge>
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={exportActivePeople}
-                            >
+                <StatusSection
+                    title="Active People Today"
+                    icon={<Icon as={FiUsers} color="blue.600" boxSize={5} />}
+                    iconBg="blue.100"
+                    totalCount={activePeople.length}
+                    badge={{
+                        text: `${confirmedCount} Confirmed`,
+                        colorScheme: 'green',
+                    }}
+                    exportAction={{
+                        label: (
+                            <>
                                 <FiDownload style={{ marginRight: 4 }} />
                                 Export
-                            </Button>
-                        </HStack>
-                    </Flex>
-                    <VStack gap={3} align="stretch">
-                        {activePeople.map((person) => (
-                            <Flex
-                                key={person.id}
-                                justify="space-between"
-                                p={3}
-                                bg="gray.50"
-                                rounded="md"
-                            >
-                                <Box>
-                                    <Text fontWeight="medium">
-                                        {person.name}
-                                    </Text>
-                                    <Text fontSize="sm" color="gray.500">
-                                        {person.role}
-                                    </Text>
-                                </Box>
-                                {person.status === 'confirmed' ? (
-                                    <Badge
-                                        colorScheme="green"
-                                        display="flex"
-                                        alignItems="center"
-                                    >
-                                        <FiCheckCircle
-                                            style={{ marginRight: 4 }}
-                                        />
-                                        Confirmed
-                                    </Badge>
-                                ) : (
-                                    <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() =>
-                                            confirmArrival(person.id)
-                                        }
-                                    >
-                                        <FiCheckCircle
-                                            style={{ marginRight: 4 }}
-                                        />
-                                        Confirm Arrival
-                                    </Button>
-                                )}
-                            </Flex>
-                        ))}
-                    </VStack>
-                </Box>
+                            </>
+                        ),
+                        onClick: exportActivePeople,
+                    }}
+                    items={activePeopleItems}
+                />
 
-                {/* Open Tasks */}
-                <Box flex="1" p={5} borderWidth="1px" rounded="md" bg="white">
-                    <Flex justify="space-between" mb={4}>
-                        <HStack>
-                            <Box p={2} bg="orange.100" rounded="xl">
-                                <Icon
-                                    as={FiAlertCircle}
-                                    color="orange.600"
-                                    boxSize={5}
-                                />
-                            </Box>
-                            <Box>
-                                <Text fontSize="xl" fontWeight="bold">
-                                    {pendingTasks.length}
-                                </Text>
-                                <Text fontSize="sm" color="gray.500">
-                                    Open Tasks
-                                </Text>
-                            </Box>
-                        </HStack>
-                        <HStack>
-                            <Badge colorScheme="red">
-                                {dueSoonCount} Due Soon
-                            </Badge>
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={exportOpenTasks}
-                            >
+                <StatusSection
+                    title="Open Tasks"
+                    icon={
+                        <Icon
+                            as={FiAlertCircle}
+                            color="orange.600"
+                            boxSize={5}
+                        />
+                    }
+                    iconBg="orange.100"
+                    totalCount={pendingTasks.length}
+                    badge={{
+                        text: `${dueSoonCount} Due Soon`,
+                        colorScheme: 'red',
+                    }}
+                    exportAction={{
+                        label: (
+                            <>
                                 <FiDownload style={{ marginRight: 4 }} />
                                 Export
-                            </Button>
-                        </HStack>
-                    </Flex>
-                    <VStack gap={3} align="stretch">
-                        {pendingTasks.map((task) => {
-                            const daysLeft = getDaysUntilDue(task.dueDate)
-                            return (
-                                <Box
-                                    key={task.id}
-                                    p={3}
-                                    bg="gray.50"
-                                    rounded="md"
-                                >
-                                    <Flex justify="space-between">
-                                        <Box>
-                                            <Text fontWeight="medium">
-                                                {task.title}
-                                            </Text>
-                                            <HStack gap={2} mt={1}>
-                                                <Badge
-                                                    colorScheme={getPriorityColor(
-                                                        task.priority
-                                                    )}
-                                                >
-                                                    {task.priority}
-                                                </Badge>
-                                                <Text
-                                                    fontSize="sm"
-                                                    color="gray.500"
-                                                >
-                                                    {new Date(
-                                                        task.dueDate
-                                                    ).toLocaleDateString()}
-                                                </Text>
-                                                {daysLeft <= 1 && (
-                                                    <Badge colorScheme="red">
-                                                        {daysLeft === 0
-                                                            ? 'Due Today'
-                                                            : 'Due Tomorrow'}
-                                                    </Badge>
-                                                )}
-                                            </HStack>
-                                            <HStack
-                                                gap={1}
-                                                mt={1}
-                                                fontSize="sm"
-                                                color="gray.500"
-                                            >
-                                                <Icon
-                                                    as={FiMapPin}
-                                                    boxSize={4}
-                                                />
-                                                <Text>
-                                                    Assigned to {task.assignee}
-                                                </Text>
-                                            </HStack>
-                                        </Box>
-                                        <Button
-                                            size="sm"
-                                            onClick={() =>
-                                                markTaskComplete(task.id)
-                                            }
-                                        >
-                                            <FiCheckCircle
-                                                style={{ marginRight: 4 }}
-                                            />
-                                            Complete
-                                        </Button>
-                                    </Flex>
-                                </Box>
-                            )
-                        })}
-                    </VStack>
-                </Box>
+                            </>
+                        ),
+                        onClick: exportOpenTasks,
+                    }}
+                    items={taskItems}
+                />
             </Flex>
         </Box>
     )

@@ -10,7 +10,7 @@ import {
     AvatarFallback,
 } from '@chakra-ui/react'
 import { Link as RouterLink, useLocation, Outlet } from 'react-router-dom'
-import { useColorModeValue } from './ui/color-mode'
+import { useColorModeValue } from '../ui/color-mode'
 
 // React Icons
 import {
@@ -23,6 +23,7 @@ import {
     FiLogOut,
     FiUser,
 } from 'react-icons/fi'
+import { TopBar } from './TopBar'
 
 const menuItems = [
     {
@@ -172,6 +173,7 @@ export function Layout() {
                 bg={useColorModeValue('gray.50', 'gray.800')}
                 p="6"
             >
+                <TopBar />
                 <Outlet />
             </Box>
         </Flex>

@@ -1,27 +1,16 @@
 import { useState } from 'react'
-import {
-    Box,
-    Flex,
-    Heading,
-    Icon,
-    Text,
-    VStack,
-    HStack,
-    Stack,
-    SimpleGrid,
-    Input,
-    Card,
-    Button,
-} from '@chakra-ui/react'
+import { Box, VStack, SimpleGrid, Card, Text } from '@chakra-ui/react'
 
 import {
-    FaSearch as Search,
     FaPlus as Plus,
     FaFolder as Folder,
     FaFolderOpen as FolderOpen,
     FaPause as Pause,
 } from 'react-icons/fa'
 import { LuFolderCheck } from 'react-icons/lu'
+import { PageHeader } from '../common/PageHeader'
+import { MetricCard } from '../common/MetricCard'
+import { SearchAndFilters } from '../common/SearchAndFilters'
 
 interface Project {
     id: number
@@ -58,80 +47,54 @@ export function Projects() {
 
     return (
         <VStack gap={6} align="stretch" p={6}>
-            <Flex justify="space-between" align="center">
-                <Box>
-                    <Heading size="lg">Projects</Heading>
-                    <Text color="gray.500">
-                        Track and manage all your team projects.
-                    </Text>
-                </Box>
-                <Button>
-                    <Plus />
-                    New Project
-                </Button>
-            </Flex>
+            <PageHeader
+                title="Projects"
+                description="Track and manage all your team projects."
+                action={{
+                    label: 'New Project',
+                    icon: <Plus />,
+                    onClick: () => {},
+                }}
+            />
 
             <SimpleGrid columns={{ base: 2, md: 4 }} gap={4}>
-                <ProjectStat
-                    icon={<Folder />}
+                <MetricCard
+                    icon={Folder}
                     label="Total Projects"
                     value={totalProjects}
+                    color="blue.500"
                 />
-                <ProjectStat
-                    icon={<FolderOpen />}
+                <MetricCard
+                    icon={FolderOpen}
                     label="Active"
                     value={activeProjects}
+                    color="green.500"
                 />
-                <ProjectStat
-                    icon={<Pause />}
+                <MetricCard
+                    icon={Pause}
                     label="Paused"
                     value={pausedProjects}
+                    color="yellow.500"
                 />
-                <ProjectStat
-                    icon={<LuFolderCheck />}
+                <MetricCard
+                    icon={LuFolderCheck}
                     label="Completed"
                     value={doneProjects}
+                    color="gray.500"
                 />
             </SimpleGrid>
 
-            <Stack
-                direction={{ base: 'column', sm: 'row' }}
-                gap={4}
-                align="center"
-                justify="space-between"
-            >
-                <Box position="relative" flex={1}>
-                    <Icon
-                        as={Search}
-                        position="absolute"
-                        left={3}
-                        top={3}
-                        color="gray.400"
-                    />
-                    <Input
-                        placeholder="Search projects by name..."
-                        pl={10}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </Box>
-                {/* <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger width="32">
-                        <SelectValue placeholder="Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                       <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="paused">Paused</SelectItem>
-                        <SelectItem value="done">Done</SelectItem>
-                        <SelectItem value="inactive">Inactive</SelectItem> 
-                    </SelectContent>
-                </Select> */}
-            </Stack>
+            <SearchAndFilters
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+            />
 
-            <Text fontSize="sm" color="gray.500">
-                Showing {filteredProjects.length} of {totalProjects} projects
-            </Text>
+            <Box>
+                <Text fontSize="sm" color="gray.500">
+                    Showing {filteredProjects.length} of {totalProjects}{' '}
+                    projects
+                </Text>
+            </Box>
 
             <Card.Root>
                 <Card.Header>
@@ -214,41 +177,5 @@ export function Projects() {
                 </Card.Body>
             </Card.Root>
         </VStack>
-    )
-}
-
-function ProjectStat({
-    icon,
-    label,
-    value,
-}: {
-    icon: React.ReactNode
-    label: string
-    value: number
-}) {
-    return (
-        <Card.Root>
-            <Card.Body>
-                <HStack gap={2} align="center">
-                    <Box
-                        w={8}
-                        h={8}
-                        bg="gray.100"
-                        borderRadius="lg"
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                    >
-                        {icon}
-                    </Box>
-                    <Box>
-                        <Text fontSize="sm" color="gray.500">
-                            {label}
-                        </Text>
-                        <Text fontWeight="semibold">{value}</Text>
-                    </Box>
-                </HStack>
-            </Card.Body>
-        </Card.Root>
     )
 }

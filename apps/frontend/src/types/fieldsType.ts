@@ -33,7 +33,7 @@ export interface FormFields {
     type: FieldType
     label: string
     placeholder: string
-    required: true
+    required: boolean
     options?: Option[]
     items?: Item[]
     errorMessages?: string
