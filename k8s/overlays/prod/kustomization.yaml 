@@ -1,0 +1,15 @@
+resources:
+  - ../../base/frontend
+  - ../../base/backend
+
+images:
+  - name: frontend
+    newName: gcr.io/YOUR_PROJECT_ID/frontend
+    newTag: REPLACE_ME
+  - name: backend
+    newName: gcr.io/YOUR_PROJECT_ID/backend
+    newTag: REPLACE_ME
+
+patchesStrategicMerge:
+  - frontend-patch.yaml
+  - backend-patch.yaml

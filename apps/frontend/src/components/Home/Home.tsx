@@ -57,6 +57,7 @@ export const Home = () => {
                         value={selectedTab || data?.forms[0]._id}
                         variant="outline"
                         size="sm"
+                        width="fit-content"
                         onValueChange={handleClick}
                         defaultValue={data?.forms[0]._id}
                     >

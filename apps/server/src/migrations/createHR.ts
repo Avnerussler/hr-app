@@ -3,7 +3,7 @@ import { checkIfFormExist } from './utils'
 
 export const createRecruitForm = async () => {
     try {
-        const formName = 'תהליך גיוס'
+        const formName = 'כוח אדם'
         const isFormExist = await checkIfFormExist(formName)
         if (isFormExist) {
             console.log(`${formName} exist! passing on migration`)
@@ -110,7 +110,6 @@ export const createRecruitForm = async () => {
                     ],
                     defaultValue: '',
                 },
-
                 {
                     name: 'FieldOfExpertise',
                     type: 'select',
@@ -243,6 +242,62 @@ export const createRecruitForm = async () => {
                     type: 'text',
                     label: 'תואר אקדמי',
                     placeholder: 'תואר אקדמי',
+                    required: false,
+                    defaultValue: '',
+                },
+                {
+                    name: 'University',
+                    type: 'text',
+                    label: 'מוסד לימודים',
+                    placeholder: 'מוסד לימודים',
+                    required: false,
+                    defaultValue: '',
+                },
+                {
+                    name: 'studyArea',
+                    type: 'text',
+                    label: 'תחום לימודים',
+                    placeholder: 'תחום לימודים',
+                    required: false,
+                    defaultValue: '',
+                },
+                {
+                    name: 'yearOfGradation',
+                    type: 'date',
+                    label: 'תאריך סיום לימודים',
+                    placeholder: 'תאריך סיום לימודים',
+                    required: false,
+                    defaultValue: '',
+                },
+                {
+                    name: 'extraCourses',
+                    type: 'textarea',
+                    label: 'קורסים והסמכות נוספות',
+                    placeholder: 'קורסים והסמכות נוספות',
+                    required: false,
+                    defaultValue: '',
+                },
+                {
+                    name: 'workExperience',
+                    type: 'textarea',
+                    label: 'ניסיון תעסוקתי',
+                    placeholder: 'ניסיון תעסוקתי',
+                    required: false,
+                    defaultValue: '',
+                },
+                {
+                    name: 'talentAndSkills',
+                    type: 'textarea',
+                    label: 'כישרון ומיומניות',
+                    placeholder: 'כישרון ומיומניות',
+                    required: false,
+                    defaultValue: '',
+                },
+                {
+                    name: 'referralSource',
+                    type: 'text',
+                    label: 'מקור הפניה',
+                    placeholder: 'מקור הפניה',
                     required: false,
                     defaultValue: '',
                 },

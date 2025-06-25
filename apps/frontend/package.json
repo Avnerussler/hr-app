@@ -11,7 +11,7 @@
         "prepare": "husky"
     },
     "dependencies": {
-        "@chakra-ui/react": "^3.8.0",
+        "@chakra-ui/react": "^3.21.0",
         "@emotion/react": "^11.14.0",
         "@tanstack/match-sorter-utils": "^8.19.4",
         "@tanstack/react-query": "^5.66.0",
@@ -26,7 +26,8 @@
         "react-dom": "^19.0.0",
         "react-hook-form": "^7.54.2",
         "react-icons": "^5.4.0",
-        "react-router-dom": "^7.3.0"
+        "react-router-dom": "^7.3.0",
+        "recharts": "^3.0.0"
     },
     "devDependencies": {
         "@chakra-ui/cli": "^3.8.0",

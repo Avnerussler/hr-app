@@ -54,7 +54,6 @@ const FormFieldsSchema: Schema = new Schema<TFormFields>(
                     ],
                     validate: {
                         validator: function (this: any, items: any) {
-                            console.log(' items:', items)
                             return (
                                 this.type !== 'radio' ||
                                 (Array.isArray(items) && items.length > 0)
