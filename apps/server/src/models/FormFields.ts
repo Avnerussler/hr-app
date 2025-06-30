@@ -3,70 +3,82 @@ import { v4 as uuidv4 } from 'uuid'
 import { IForm } from '../types'
 
 type TFormFields = IForm & Document
-const FormFieldsSchema: Schema = new Schema<TFormFields>(
+
+// Subschema for options (select dropdown)
+const OptionSchema = new Schema(
+    {
+        value: {
+            type: String,
+            required: true,
+            default: uuidv4,
+        },
+        label: { type: String, required: true },
+        name: { type: String, required: true },
+    },
+    { _id: false }
+)
+
+// Subschema for items (radio buttons)
+const ItemSchema = new Schema(
+    {
+        value: {
+            type: String,
+            required: true,
+            default: uuidv4,
+        },
+        label: { type: String, required: true },
+    },
+    { _id: false }
+)
+
+// Subschema for fields inside sections
+const FieldSchema = new Schema(
+    {
+        name: { type: String, required: true },
+        type: { type: String, required: true },
+        label: { type: String },
+        placeholder: { type: String },
+        required: { type: Boolean },
+        defaultValue: { type: String },
+        foreignFormId: { type: mongoose.Types.ObjectId },
+        foreignField: { type: String },
+        options: [OptionSchema],
+        items: {
+            type: [ItemSchema],
+            validate: {
+                validator: function (this: any, items: any) {
+                    return (
+                        this.type !== 'radio' ||
+                        (Array.isArray(items) && items.length > 0)
+                    )
+                },
+                message: 'Items are required when type is "radio"',
+            },
+        },
+    },
+    { _id: false }
+)
+
+// Subschema for sections
+const SectionSchema = new Schema(
+    {
+        id: { type: String, required: true },
+        name: { type: String, required: true },
+        fields: [FieldSchema],
+    },
+    { _id: false }
+)
+
+// Top-level schema
+const FormSchema: Schema = new Schema<TFormFields>(
     {
         formName: { type: String, required: true, unique: true },
-        formFields: [
-            {
-                name: { type: String, required: true },
-                type: { type: String, required: true },
-                label: { type: String },
-                placeholder: { type: String },
-                required: { type: Boolean },
-                defaultValue: { type: String },
-                foreignFormId: { type: mongoose.Types.ObjectId },
-                foreignField: { type: String },
-                options: {
-                    type: [
-                        {
-                            value: {
-                                type: String,
-                                required: true,
-                                default: uuidv4,
-                            },
-                            label: { type: String, required: true },
-                            name: { type: String, required: true },
-                            _id: false,
-                        },
-                    ],
-
-                    // validate: {
-                    //     validator: function (this: any, options: any) {
-                    //         return (
-                    //             this.type !== 'select' ||
-                    //             (Array.isArray(options) && options.length > 0)
-                    //         )
-                    //     },
-                    //     message: 'Options are required when type is "select"',
-                    // },
-                },
-                items: {
-                    type: [
-                        {
-                            value: {
-                                type: String,
-                                required: true,
-                                default: uuidv4,
-                            },
-                            label: { type: String, required: true },
-                            _id: false,
-                        },
-                    ],
-                    validate: {
-                        validator: function (this: any, items: any) {
-                            return (
-                                this.type !== 'radio' ||
-                                (Array.isArray(items) && items.length > 0)
-                            )
-                        },
-                        message: 'Items are required when type is "radio"',
-                    },
-                },
-            },
-        ],
+        sections: [SectionSchema],
     },
     { timestamps: true }
 )
 
-export const FormFields = mongoose.model<IForm>('form_fields', FormFieldsSchema)
+export const FormFields = mongoose.model<IForm>('form_fields', FormSchema)
+
+// Ensure formName is unique
 FormFields.collection.createIndex({ formName: 1 }, { unique: true })

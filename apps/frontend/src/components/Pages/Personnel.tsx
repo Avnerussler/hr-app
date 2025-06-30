@@ -1,17 +1,20 @@
 import { Box, Grid, createListCollection } from '@chakra-ui/react'
-
+import { useQuery } from '@tanstack/react-query'
 import { FaUsers, FaUserCheck, FaUserTimes, FaPlus } from 'react-icons/fa'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useDisclosure } from '@chakra-ui/react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { PageHeader } from '../common/PageHeader'
 import { MetricCard } from '../common/MetricCard'
-import { SearchAndFilters } from '../common/SearchAndFilters'
-import { DataTable } from '../common/DataTable'
-import { DetailsDrawer, Section } from '../common/DetailsDrawer'
-import { createEmployeeFormSections } from '@/utils/employeeFormSections'
-import { employeesData, Employee } from '@/data/employeeData'
+import { DetailsDrawer } from '../common/DetailsDrawer'
 
-type EmployeeType = 'Consultant' | 'Reserve' | 'All Types'
+import { AllFormSubmission, Filter, FilterOption } from '@/types/formType'
+import { SearchAndFilters } from '../common/SearchAndFilters'
+import { GenericTable } from '../GenericTable'
+import { IForm } from '@/types/fieldsType'
+
+// Employee form configuration
+const EMPLOYEE_FORM_ID = '685ec2b38ee85d51bd55233b'
 
 const employeeTypeOptions = createListCollection({
     items: [
@@ -28,53 +31,88 @@ const employeeStatusOptions = createListCollection({
     ],
 })
 
-
 export default function PersonnelPage() {
     const [searchTerm, setSearchTerm] = useState('')
     const [statusFilter, setStatusFilter] = useState('all')
     const [typeFilter, setTypeFilter] = useState('all')
-    const [selectedEmployee, setSelectedEmployee] = useState<Employee>()
-    const [formSections, setFormSections] = useState<Section[]>([])
-    console.log(' typeFilter:', typeFilter)
+
+    const navigate = useNavigate()
+    const { employeeId } = useParams<{ employeeId?: string }>()
+
     const { open, onOpen, onClose } = useDisclosure()
 
-    const [employees] = useState<Employee[]>(employeesData)
+    // Query for form fields (table columns)
+    const { data: formFields } = useQuery<IForm>({
+        queryKey: ['formFields/get', EMPLOYEE_FORM_ID],
+        staleTime: 1000 * 60 * 5,
+    })
+    console.log(' formFields:', formFields)
+
+    // console.log(' formFields:', formFields)
+    // Query for submitted data (table rows)
+    const { data: submittedData } = useQuery<AllFormSubmission>({
+        queryKey: ['formSubmission/get', EMPLOYEE_FORM_ID],
+    })
 
     // Initialize form sections based on Employee interface
-    useEffect(() => {
-        setFormSections(createEmployeeFormSections())
-    }, [])
 
-    const handleOpenDrawer = (emp: Employee) => {
-        setSelectedEmployee(emp)
+    const handleAddNewEmployee = () => {
+        navigate('/personnel/new')
         onOpen()
     }
 
-    const formatDateTime = (datetime: string) => {
-        const date = new Date(datetime)
-        return date.toLocaleString()
+    const handleRowClick = (employeeId: string) => {
+        navigate(`/personnel/${employeeId}`)
+        onOpen()
     }
 
-    const filteredEmployees = employees.filter((emp) => {
-        const matchSearch =
-            searchTerm === '' ||
-            `${emp.firstName} ${emp.lastName}`
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
-            emp.role.toLowerCase().includes(searchTerm.toLowerCase())
+    const handleCloseDrawer = () => {
+        navigate('/personnel')
 
-        const matchStatus =
-            statusFilter === 'all' || emp.status.toLowerCase() === statusFilter
-        const matchType =
-            typeFilter === 'all' || emp.type.toLowerCase() === typeFilter
-        return matchSearch && matchStatus && matchType
-    })
+        onClose()
+    }
 
-    const filters = [
+    // Calculate metrics from submitted data
+    const totalEmployees = submittedData?.forms?.length || 0
+    const activeEmployees =
+        submittedData?.forms?.filter(
+            (form) =>
+                Array.isArray(form?.formData) &&
+                form.formData.find((field) => field.name === 'status')
+                    ?.value === 'Active'
+        )?.length || 0
+    const inactiveEmployees = totalEmployees - activeEmployees
+
+    // Helper function to render cell value based on field type
+
+    // const formatDateTime = (datetime: string) => {
+    //     const date = new Date(datetime)
+    //     return date.toLocaleString()
+    // }
+
+    // const filteredEmployees =
+    //     // employees
+    //     [].filter((emp) => {
+    //         const matchSearch =
+    //             searchTerm === '' ||
+    //             `${emp.firstName} ${emp.lastName}`
+    //                 .toLowerCase()
+    //                 .includes(searchTerm.toLowerCase()) ||
+    //             emp.role.toLowerCase().includes(searchTerm.toLowerCase())
+
+    //         const matchStatus =
+    //             statusFilter === 'all' ||
+    //             emp.status.toLowerCase() === statusFilter
+    //         const matchType =
+    //             typeFilter === 'all' || emp.type.toLowerCase() === typeFilter
+    //         return matchSearch && matchStatus && matchType
+    //     })
+
+    const filters: Filter[] = [
         {
             label: 'Status',
             collection: employeeStatusOptions,
-            onValueChange: (value: any) => {
+            onValueChange: (value: FilterOption[] | { value: string[] }) => {
                 setStatusFilter(
                     Array.isArray(value) ? value[0]?.value : value.value[0]
                 )
@@ -84,7 +122,7 @@ export default function PersonnelPage() {
         {
             label: 'Type',
             collection: employeeTypeOptions,
-            onValueChange: (value: any) => {
+            onValueChange: (value: FilterOption[] | { value: string[] }) => {
                 setTypeFilter(
                     Array.isArray(value) ? value[0]?.value : value.value[0]
                 )
@@ -101,7 +139,7 @@ export default function PersonnelPage() {
                 action={{
                     label: 'Add Employee',
                     icon: <FaPlus />,
-                    onClick: () => {},
+                    onClick: handleAddNewEmployee,
                 }}
             />
 
@@ -113,23 +151,19 @@ export default function PersonnelPage() {
                 <MetricCard
                     icon={FaUsers}
                     label="Total Employees"
-                    value={employees.length}
+                    value={totalEmployees}
                     color="blue.500"
                 />
                 <MetricCard
                     icon={FaUserCheck}
                     label="Active"
-                    value={
-                        employees.filter((e) => e.status === 'Active').length
-                    }
+                    value={activeEmployees}
                     color="green.500"
                 />
                 <MetricCard
                     icon={FaUserTimes}
                     label="Inactive"
-                    value={
-                        employees.filter((e) => e.status === 'Inactive').length
-                    }
+                    value={inactiveEmployees}
                     color="red.500"
                 />
             </Grid>
@@ -140,23 +174,18 @@ export default function PersonnelPage() {
                 filters={filters}
             />
 
-            <DataTable
-                employees={filteredEmployees}
-                onEmployeeClick={handleOpenDrawer}
-                formatDateTime={formatDateTime}
-            />
+            <GenericTable onRowClick={handleRowClick} id={EMPLOYEE_FORM_ID} />
 
             <DetailsDrawer
                 isOpen={open}
-                onClose={onClose}
-                title={selectedEmployee ? `${selectedEmployee.firstName} ${selectedEmployee.lastName}` : 'Employee Details'}
-                sections={formSections}
-                initialData={selectedEmployee || {}}
-                onSubmit={(data) => {
-                    console.log('Updated employee data:', data)
-                    console.log('Employee ID:', selectedEmployee?.id)
-                    // Here you would typically make an API call to update the employee
-                }}
+                onClose={handleCloseDrawer}
+                title={
+                    employeeId && employeeId !== 'new'
+                        ? 'Employee Details'
+                        : 'Add New Employee'
+                }
+                sections={formFields?.sections || []}
+                initialData={submittedData}
             />
         </Box>
     )

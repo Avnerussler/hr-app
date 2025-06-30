@@ -26,7 +26,7 @@ export const ControlledSelectField = ({
         createListCollection({
             items: options,
         })
-    const contentRef = useContext(ContentRefContext)
+    // const contentRef = useContext(ContentRefContext)
 
     return (
         <Controller
@@ -39,11 +39,10 @@ export const ControlledSelectField = ({
                         <SelectRoot
                             collection={frameworks(options)}
                             size="sm"
-                            {...field}
                             {...props}
-                            value={field.value}
+                            value={field.value ? [field.value] : []}
                             onValueChange={({ items }) =>
-                                field.onChange(items[0].value)
+                                field.onChange(items[0]?.value || '')
                             }
                             onInteractOutside={() => field.onBlur()}
                         >
@@ -61,11 +60,7 @@ export const ControlledSelectField = ({
                                     }
                                 />
                             </SelectTrigger>
-                            <SelectContent
-                                portalRef={
-                                    contentRef as RefObject<HTMLDivElement>
-                                }
-                            >
+                            <SelectContent portalled={false}>
                                 {frameworks(options).items.map((option) => (
                                     <SelectItem
                                         item={option}

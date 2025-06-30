@@ -1,23 +1,22 @@
 import { Box, Table, Badge, Text } from '@chakra-ui/react'
-import { Employee } from '@/data/employeeData'
 
 interface DataTableProps {
-    employees: Employee[]
-    onEmployeeClick: (employee: Employee) => void
+    data: any[]
+    onEmployeeClick: (employee: any) => void
     formatDateTime: (datetime: string) => string
 }
 
 export function DataTable({
-    employees,
+    data,
     onEmployeeClick,
     formatDateTime,
 }: DataTableProps) {
     return (
         <>
             <Text color="gray.500" fontSize="sm" mb={2}>
-                Showing {employees.length} employees
+                Showing {data.length} employees
             </Text>
-            
+
             <Box borderWidth="1px" borderRadius="md" overflowX="auto">
                 <Table.Root>
                     <Table.Header>
@@ -33,7 +32,7 @@ export function DataTable({
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                        {employees.map((emp) => (
+                        {data.map((emp) => (
                             <Table.Row
                                 key={emp.id}
                                 onClick={() => onEmployeeClick(emp)}

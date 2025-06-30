@@ -62,8 +62,6 @@ export const FormGenerator = ({
                     </Field.Root>
                 )
             case 'select':
-                if (!options) throw new Error('Options are required for select')
-
                 return (
                     <ControlledSelectField
                         {...props}

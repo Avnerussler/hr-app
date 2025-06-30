@@ -170,9 +170,9 @@ export function TodaysOverview() {
     const confirmedCount = activePeople.filter(
         (p) => p.status === 'confirmed'
     ).length
-    const expectedCount = activePeople.filter(
-        (p) => p.status === 'expected'
-    ).length
+    // const expectedCount = activePeople.filter(
+    //     (p) => p.status === 'expected'
+    // ).length
     const pendingTasks = openTasks.filter((t) => t.status === 'pending')
     const dueSoonCount = pendingTasks.filter(
         (t) => getDaysUntilDue(t.dueDate) <= 1

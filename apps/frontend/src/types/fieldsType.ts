@@ -34,7 +34,23 @@ export interface FormFields {
     label: string
     placeholder: string
     required: boolean
+    defaultValue?: string
     options?: Option[]
     items?: Item[]
     errorMessages?: string
+    foreignFormId?: string
+    foreignField?: string
+}
+
+export interface FormSection {
+    id: string
+    name: string
+    fields: FormFields[]
+}
+
+export interface IForm {
+    formName: string
+    description: string
+    _id: string
+    sections: FormSection[]
 }

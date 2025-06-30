@@ -1,4 +1,11 @@
-import { VStack, Tabs, Button, Flex, SimpleGrid } from '@chakra-ui/react'
+import {
+    VStack,
+    Tabs,
+    Button,
+    Flex,
+    SimpleGrid,
+    Select,
+} from '@chakra-ui/react'
 import {
     DrawerRoot,
     DrawerContent,
@@ -6,10 +13,23 @@ import {
     DrawerBody,
     DrawerFooter,
 } from '../ui/drawer'
-import { useForm, FormProvider } from 'react-hook-form'
-import { useEffect, useState } from 'react'
+import {
+    useForm,
+    FormProvider,
+    FieldValues,
+    SubmitHandler,
+} from 'react-hook-form'
+import { RefObject, useContext, useEffect } from 'react'
 import { FormGenerator } from '../FormGenerator/FormGenerator'
 import { FormFields } from '@/types/fieldsType'
+import { useLocation, useParams } from 'react-router-dom'
+import { AllFormSubmission } from '@/types/formType'
+import {
+    useCreateFormSubmission,
+    useUpdateFormSubmission,
+} from '@/hooks/mutations'
+import { ControlledSelectField } from '../ControlledFields'
+import ContentRefContext from '@/providers/ContentRefContext'
 
 export interface Section {
     id: string
@@ -22,8 +42,7 @@ interface DetailsDrawerProps {
     onClose: () => void
     title: string
     sections: Section[]
-    initialData?: Record<string, any>
-    onSubmit: (data: any, sectionId?: string) => void
+    initialData?: AllFormSubmission
 }
 
 export function DetailsDrawer({
@@ -31,47 +50,62 @@ export function DetailsDrawer({
     onClose,
     title,
     sections,
-    initialData = {},
-    onSubmit,
+    initialData,
 }: DetailsDrawerProps) {
     const methods = useForm()
-    const {
-        reset,
-        handleSubmit,
-        formState: { isDirty },
-    } = methods
-    const [hasChanges, setHasChanges] = useState(false)
+    const { reset, handleSubmit } = methods
 
+    const { employeeId } = useParams<{ employeeId?: string }>()
+    const location = useLocation()
+    const formName = location.pathname.split('/')[1]
+    const EMPLOYEE_FORM_ID = '685ec2b38ee85d51bd55233b'
+    // Initialize mutation hooks
+    const createEmployeeMutation = useCreateFormSubmission()
+    const updateEmployeeMutation = useUpdateFormSubmission()
     useEffect(() => {
-        if (initialData && Object.keys(initialData).length > 0) {
-            const formData: any = {}
+        // Reset form with initial data if provided
 
-            // Map initial data to form fields across all sections
-            sections.forEach((section) => {
-                section.fields.forEach((field) => {
-                    if (initialData[field.name] !== undefined) {
-                        formData[field.name] = initialData[field.name]
-                    }
-                })
-            })
+        if (initialData?.forms.length && employeeId) {
+            const employeeData = initialData.forms.find(
+                (item) => item._id === employeeId
+            )
 
-            reset(formData)
-            setHasChanges(false)
+            // Reset the form with the initial
+            if (employeeData?.formData) {
+                reset(employeeData.formData)
+            }
         }
-    }, [initialData, sections, reset])
+    }, [initialData, employeeId, reset])
 
-    useEffect(() => {
-        setHasChanges(isDirty)
-    }, [isDirty])
-
-    const handleFormSubmit = (data: any) => {
-        onSubmit(data)
-        setHasChanges(false)
+    const handleFormSubmit: SubmitHandler<FieldValues> = (data) => {
+        if (employeeId) {
+            // Update existing employee
+            updateEmployeeMutation.mutate(
+                {
+                    formData: data,
+                    formId: EMPLOYEE_FORM_ID,
+                    id: employeeId,
+                },
+                {
+                    onSuccess: () => {
+                        onClose()
+                    },
+                }
+            )
+        } else {
+            // Create new employee
+            createEmployeeMutation.mutate({
+                formId: EMPLOYEE_FORM_ID,
+                formData: data,
+                formName: formName,
+            })
+        }
         reset(data)
     }
 
     // Get default active tab (first section)
     const defaultTab = sections.length > 0 ? sections[0].id : ''
+    const contentRef = useContext(ContentRefContext)
 
     return (
         <DrawerRoot size="lg" open={isOpen} onOpenChange={onClose}>
@@ -97,6 +131,9 @@ export function DetailsDrawer({
                                     <Tabs.Content
                                         key={section.id}
                                         value={section.id}
+                                        ref={
+                                            contentRef as RefObject<HTMLDivElement>
+                                        }
                                     >
                                         <VStack gap={4} align="stretch" mt={4}>
                                             <SimpleGrid
@@ -118,11 +155,7 @@ export function DetailsDrawer({
                                                         }
                                                         options={field.options}
                                                         items={field.items}
-                                                        defaultValue={
-                                                            initialData[
-                                                                field.name
-                                                            ] || ''
-                                                        }
+                                                        defaultValue={''}
                                                     />
                                                 ))}
                                             </SimpleGrid>
@@ -132,18 +165,18 @@ export function DetailsDrawer({
                             </Tabs.Root>
                         </DrawerBody>
 
-                        {hasChanges && (
-                            <DrawerFooter borderTopWidth="1px">
-                                <Flex justify="space-between" width="100%">
-                                    <Button variant="outline" onClick={onClose}>
-                                        Cancel
-                                    </Button>
-                                    <Button type="submit" colorScheme="blue">
-                                        Update
-                                    </Button>
-                                </Flex>
-                            </DrawerFooter>
-                        )}
+                        {/* {hasChanges && ( */}
+                        <DrawerFooter borderTopWidth="1px">
+                            <Flex justify="space-between" width="100%">
+                                <Button variant="outline" onClick={onClose}>
+                                    Cancel
+                                </Button>
+                                <Button type="submit" colorScheme="blue">
+                                    Update
+                                </Button>
+                            </Flex>
+                        </DrawerFooter>
+                        {/* )} */}
                     </form>
                 </FormProvider>
             </DrawerContent>

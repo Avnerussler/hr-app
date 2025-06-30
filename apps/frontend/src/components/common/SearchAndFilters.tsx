@@ -7,21 +7,12 @@ import {
     SelectItem,
 } from '../ui/select'
 import { ListCollection } from '@chakra-ui/react'
-
-interface FilterOption {
-    value: string
-    label: string
-}
+import { Filter } from '@/types/formType'
 
 interface SearchAndFiltersProps {
     searchTerm: string
     onSearchChange: (value: string) => void
-    filters?: {
-        label: string
-        collection: ListCollection<FilterOption>
-        onValueChange: (value: any) => void
-        placeholder?: string
-    }[]
+    filters?: Filter[]
 }
 
 export function SearchAndFilters({
@@ -36,7 +27,7 @@ export function SearchAndFilters({
                 value={searchTerm}
                 onChange={(e) => onSearchChange(e.target.value)}
             />
-            
+
             {filters.map((filter, index) => (
                 <SelectRoot
                     key={index}
@@ -44,7 +35,9 @@ export function SearchAndFilters({
                     onValueChange={filter.onValueChange}
                 >
                     <SelectTrigger>
-                        <SelectValueText placeholder={filter.placeholder || 'Select...'} />
+                        <SelectValueText
+                            placeholder={filter.placeholder || 'Select...'}
+                        />
                     </SelectTrigger>
                     <SelectContent>
                         {filter.collection.items.map((option) => (

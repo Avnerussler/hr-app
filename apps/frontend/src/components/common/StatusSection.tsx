@@ -12,7 +12,7 @@ import { ReactNode } from 'react'
 export interface StatusItem {
     id: string | number
     title: string
-    subtitle?: string
+    subtitle?: string | ReactNode
     status?: string
     badge?: {
         text: string
@@ -97,9 +97,15 @@ export function StatusSection({
                         <Box>
                             <Text fontWeight="medium">{item.title}</Text>
                             {item.subtitle && (
-                                <Text fontSize="sm" color="gray.500">
-                                    {item.subtitle}
-                                </Text>
+                                typeof item.subtitle === 'string' ? (
+                                    <Text fontSize="sm" color="gray.500">
+                                        {item.subtitle}
+                                    </Text>
+                                ) : (
+                                    <Box fontSize="sm" color="gray.500">
+                                        {item.subtitle}
+                                    </Box>
+                                )
                             )}
                         </Box>
                         {item.badge ? (

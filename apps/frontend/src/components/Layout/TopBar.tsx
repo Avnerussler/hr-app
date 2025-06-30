@@ -1,16 +1,11 @@
-import {
-    Box,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbSeparator,
-    Button,
-    HStack,
-    Input,
-    Text,
-} from '@chakra-ui/react'
+import { Box, Button, HStack, Input } from '@chakra-ui/react'
 import { FaBell } from 'react-icons/fa'
 import { useLocation } from 'react-router-dom'
-import { BreadcrumbRoot } from '../ui/breadcrumb'
+import {
+    BreadcrumbRoot,
+    BreadcrumbLink,
+    BreadcrumbCurrentLink,
+} from '../ui/breadcrumb'
 
 interface TopBarProps {
     pageName?: string
@@ -52,23 +47,18 @@ export function TopBar({ pageName }: TopBarProps) {
         >
             <HStack justifyContent="space-between" alignItems="center">
                 <BreadcrumbRoot>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink href="/" color="gray.500">
-                            Pulse
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbItem>
-                        {/* <BreadcrumbLink href="#" fontWeight="medium"> */}
-                        {moduleName}
-                        {/* </BreadcrumbLink> */}
-                    </BreadcrumbItem>
+                    <BreadcrumbLink href="/" color="gray.500">
+                        Pulse
+                    </BreadcrumbLink>
+                    {moduleName && (
+                        <BreadcrumbCurrentLink fontWeight="medium">
+                            {moduleName}
+                        </BreadcrumbCurrentLink>
+                    )}
                     {pageName && (
-                        <>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <Text fontWeight="medium">{pageName}</Text>
-                            </BreadcrumbItem>
-                        </>
+                        <BreadcrumbCurrentLink fontWeight="medium">
+                            {pageName}
+                        </BreadcrumbCurrentLink>
                     )}
                 </BreadcrumbRoot>
 

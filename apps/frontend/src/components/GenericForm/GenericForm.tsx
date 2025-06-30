@@ -3,11 +3,11 @@ import { Button, Stack } from '@chakra-ui/react'
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import { FormGenerator } from '../FormGenerator'
 import { useQuery } from '@tanstack/react-query'
-import { FormSubmission } from '@/types/formType'
 import {
     useCreateFormSubmission,
     useUpdateFormSubmission,
 } from '@/hooks/mutations'
+import { IForm } from '@/types/fieldsType'
 
 interface GenericFormProps {
     formId: string
@@ -27,7 +27,7 @@ export const GenericForm: FC<GenericFormProps> = ({
         data: formFields,
         isSuccess,
         isLoading,
-    } = useQuery<FormSubmission>({
+    } = useQuery<IForm>({
         queryKey: ['formFields/get', formId],
         enabled: !!formId,
         staleTime: 1000 * 60 * 5,
@@ -37,18 +37,23 @@ export const GenericForm: FC<GenericFormProps> = ({
     const updateMutation = useUpdateFormSubmission()
 
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
-        if (formMode === 'update' && defaultValues?._id) {
-            updateMutation.mutate({
-                formData: data,
-                id: defaultValues._id,
-                formId,
-            })
-        } else {
-            createMutation.mutate({
-                formData: data,
-                formId,
-                formName: formFields?.form.formName,
-            })
+        try {
+            if (formMode === 'update' && defaultValues?._id) {
+                console.log(' data:', data)
+                updateMutation.mutate({
+                    formData: data,
+                    id: defaultValues._id,
+                    formId,
+                })
+            } else {
+                createMutation.mutate({
+                    formData: data,
+                    formId,
+                    formName: 'formFields?.form.formName',
+                })
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error)
         }
     }
 
@@ -56,18 +61,14 @@ export const GenericForm: FC<GenericFormProps> = ({
         if (isLoading) {
             return <div>Loading...</div>
         }
-        if (!formFields?.form) {
+        if (!formFields?.sections?.length) {
             return <div>No Form Available</div>
         }
 
-        if (isSuccess && formFields.form) {
+        if (isSuccess && formFields.sections.length > 0) {
             return (
-                <Stack
-                    gap="8"
-                    // maxW="sm"
-                    css={{ '--field-label-width': '96px' }}
-                >
-                    {formFields?.form?.formFields.map((field) => {
+                <Stack>
+                    {formFields.sections[0].fields.map((field) => {
                         return (
                             <FormGenerator
                                 {...field}

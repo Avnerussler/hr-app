@@ -24,7 +24,7 @@ export const ControlledMultipleSelectField: FC<
         createListCollection({
             items: options,
         })
-    const contentRef = useContext(ContentRefContext)
+    // const contentRef = useContext(ContentRefContext)
 
     return (
         <Controller
@@ -52,9 +52,10 @@ export const ControlledMultipleSelectField: FC<
                                 />
                             </SelectTrigger>
                             <SelectContent
-                                portalRef={
-                                    contentRef as React.RefObject<HTMLDivElement>
-                                }
+                                // portalRef={
+                                //     contentRef as React.RefObject<HTMLDivElement>
+                                // }
+                                portalled={false}
                             >
                                 {frameworks(options).items.map((option) => (
                                     <SelectItem
