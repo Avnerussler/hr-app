@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo } from 'react'
+import { memo, useMemo } from 'react'
 import { Column } from '@tanstack/react-table'
 import { DebouncedInput } from '@/components/DebounceInput'
 import { FormFields } from '@/types/fieldsType'
@@ -15,17 +15,44 @@ export const Filter = memo(({ column }: FilterProps) => {
         const uniqueValues = column.getFacetedUniqueValues?.()
         if (!uniqueValues) return []
 
-        return Array.from(uniqueValues.keys()).sort().slice(0, 5000)
+        const options = (
+            column.columnDef.meta as {
+                options?: { value: string; label: string }[]
+            }
+        )?.options
+        const allValues = new Set<string>()
+
+        Array.from(uniqueValues.keys()).forEach((value) => {
+            if (Array.isArray(value)) {
+                value.forEach((item) => {
+                    if (typeof item === 'string') {
+                        if (options) {
+                            const option = options.find(
+                                (opt) => opt.value === item
+                            )
+                            allValues.add(option?.label || item)
+                        } else {
+                            allValues.add(item)
+                        }
+                    }
+                })
+            } else if (typeof value === 'string') {
+                if (options) {
+                    const option = options.find((opt) => opt.value === value)
+                    allValues.add(option?.label || value)
+                } else {
+                    allValues.add(value)
+                }
+            }
+        })
+
+        return Array.from(allValues).sort().slice(0, 5000)
     }, [column])
 
-    const handleTextFilterChange = useCallback(
-        (value: string) => {
-            column.setFilterValue(value || undefined)
-        },
-        [column]
-    )
+    const handleTextFilterChange = (value: string) => {
+        column.setFilterValue(value || undefined)
+    }
 
-    // Default text filter with autocomplete
     return (
         <Box position="relative">
             <DebouncedInput
