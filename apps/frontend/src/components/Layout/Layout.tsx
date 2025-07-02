@@ -23,7 +23,7 @@ import { Avatar } from '../ui/avatar'
 
 const menuItems = [
     {
-        id: '',
+        id: 'overview',
         label: "Today's Overview",
         icon: FiCalendar,
         description: 'Daily Operations',
@@ -56,7 +56,6 @@ const menuItems = [
 
 export function Layout() {
     const { pathname } = useLocation()
-    const currentModule = pathname.slice(1) || ''
 
     return (
         <Flex h="100vh" w="full">
@@ -121,7 +120,7 @@ export function Layout() {
 
                         {menuItems.map((item) => {
                             const Icon = item.icon
-                            const isActive = currentModule === item.id
+                            const isActive = pathname.includes(item.id)
 
                             return (
                                 <Button

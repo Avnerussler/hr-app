@@ -13,7 +13,7 @@ const useRouter = () => {
             path: '/',
             element: <Layout />,
             children: [
-                { index: true, element: <TodaysOverview /> },
+                { path: 'overview', element: <TodaysOverview /> },
                 { path: 'dashboard', element: <Dashboard /> },
                 { path: 'personnel', element: <PersonnelPage /> },
                 { path: 'personnel/:employeeId', element: <PersonnelPage /> },
