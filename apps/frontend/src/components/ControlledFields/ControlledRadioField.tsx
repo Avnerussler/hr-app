@@ -21,6 +21,7 @@ export const ControlledRadioField: FC<ControlledRadioFieldProps> = ({
             <Controller
                 name={name}
                 control={control}
+                defaultValue={props.defaultValue}
                 render={({ field }) => (
                     <RadioGroup.Root
                         id={id}

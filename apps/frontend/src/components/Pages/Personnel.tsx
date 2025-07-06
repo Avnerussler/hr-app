@@ -46,9 +46,7 @@ export default function PersonnelPage() {
         queryKey: ['formFields/get', EMPLOYEE_FORM_ID],
         staleTime: 1000 * 60 * 5,
     })
-    console.log(' formFields:', formFields)
 
-    // console.log(' formFields:', formFields)
     // Query for submitted data (table rows)
     const { data: submittedData } = useQuery<AllFormSubmission>({
         queryKey: ['formSubmission/get', EMPLOYEE_FORM_ID],
@@ -76,19 +74,13 @@ export default function PersonnelPage() {
     const totalEmployees = submittedData?.forms?.length || 0
     const activeEmployees =
         submittedData?.forms?.filter(
-            (form) =>
-                Array.isArray(form?.formData) &&
-                form.formData.find((field) => field.name === 'status')
-                    ?.value === 'Active'
-        )?.length || 0
+            (form) => (form.formData as any)?.personnelStatus === 'active'
+        ).length || 0
     const inactiveEmployees = totalEmployees - activeEmployees
 
-    // Helper function to render cell value based on field type
+    // If you need to count inactive employees by 'personnelStatus', use this:
 
-    // const formatDateTime = (datetime: string) => {
-    //     const date = new Date(datetime)
-    //     return date.toLocaleString()
-    // }
+    // Helper function to render cell value based on field type
 
     // const filteredEmployees =
     //     // employees

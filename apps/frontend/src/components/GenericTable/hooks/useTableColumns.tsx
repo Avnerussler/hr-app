@@ -12,15 +12,18 @@ interface UseTableColumnsProps {
     isSuccess: boolean
 }
 
-export const useTableColumns = ({ formFields, isSuccess }: UseTableColumnsProps) => {
+export const useTableColumns = ({
+    formFields,
+    isSuccess,
+}: UseTableColumnsProps) => {
     const columns = useMemo(() => {
         if (!formFields?.sections?.length) return []
-        
+
         // TODO: Make it more dynamic to handle different sections
         const sectionToRender = formFields?.sections?.find(
-            (section) => section.id === 'professionalDetails'
+            (section) => section.id === 'personalInformation'
         )
-        
+
         return isSuccess && formFields?.sections?.length
             ? sectionToRender!.fields.map((field) =>
                   columnHelper.accessor(

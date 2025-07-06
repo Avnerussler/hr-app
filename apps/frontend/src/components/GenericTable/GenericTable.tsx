@@ -6,6 +6,7 @@ import {
     getFacetedRowModel,
     getFacetedUniqueValues,
     getFacetedMinMaxValues,
+    getPaginationRowModel,
 } from '@tanstack/react-table'
 import { FC, useEffect } from 'react'
 import { VStack } from '@chakra-ui/react'
@@ -18,6 +19,7 @@ import { fuzzyFilter } from './utils/fuzzyFilter'
 import { globalFilter as customGlobalFilter } from './utils/globalFilter'
 import { TableControls } from './components/TableControls'
 import { TableContainer } from './components/TableContainer'
+import { TablePagination } from './components/TablePagination'
 
 declare module '@tanstack/react-table' {
     //add fuzzy filter to the filterFns
@@ -65,6 +67,7 @@ export const GenericTable: FC<GenericTableProps> = ({ id, onRowClick }) => {
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
         getFacetedMinMaxValues: getFacetedMinMaxValues(),
+        getPaginationRowModel: getPaginationRowModel(),
         state: {
             globalFilter,
             sorting,
@@ -81,6 +84,11 @@ export const GenericTable: FC<GenericTableProps> = ({ id, onRowClick }) => {
         enableSorting: true,
         enableColumnFilters: true,
         enableGlobalFilter: true,
+        initialState: {
+            pagination: {
+                pageSize: 10,
+            },
+        },
     })
 
     const handleClearFilters = () => {
@@ -107,6 +115,7 @@ export const GenericTable: FC<GenericTableProps> = ({ id, onRowClick }) => {
                 submittedData={submittedData}
                 onRowClick={onRowClick}
             />
+            <TablePagination table={table} />
         </VStack>
     )
 }

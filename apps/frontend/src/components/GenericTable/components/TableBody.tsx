@@ -10,10 +10,10 @@ interface TableBodyProps {
     onRowClick?: (rowId: string) => void
 }
 
-export const TableBody: FC<TableBodyProps> = ({ 
-    table, 
-    submittedData, 
-    onRowClick 
+export const TableBody: FC<TableBodyProps> = ({
+    table,
+    submittedData,
+    onRowClick,
 }) => {
     return (
         <Box as="tbody">
@@ -32,13 +32,8 @@ export const TableBody: FC<TableBodyProps> = ({
                         borderBottom: 'none',
                     }}
                     onClick={() => {
-                        if (
-                            onRowClick &&
-                            submittedData?.forms?.[index]?._id
-                        ) {
-                            onRowClick(
-                                submittedData.forms[index]._id
-                            )
+                        if (onRowClick && submittedData?.forms?.[index]?._id) {
+                            onRowClick(submittedData.forms[index]._id)
                         }
                     }}
                 >

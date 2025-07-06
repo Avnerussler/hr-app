@@ -63,17 +63,19 @@ export function DetailsDrawer({
     const createEmployeeMutation = useCreateFormSubmission()
     const updateEmployeeMutation = useUpdateFormSubmission()
     useEffect(() => {
-        // Reset form with initial data if provided
-
+        console.log(' initialData?.forms.length:', initialData?.forms.length)
         if (initialData?.forms.length && employeeId) {
             const employeeData = initialData.forms.find(
                 (item) => item._id === employeeId
             )
 
-            // Reset the form with the initial
+            // Reset the form with the initial data
             if (employeeData?.formData) {
                 reset(employeeData.formData)
             }
+        } else {
+            // Clear the form when no employeeId (adding new employee)
+            reset({})
         }
     }, [initialData, employeeId, reset])
 
@@ -142,6 +144,7 @@ export function DetailsDrawer({
                                             >
                                                 {section.fields.map((field) => (
                                                     <FormGenerator
+                                                        {...field}
                                                         key={field._id}
                                                         control={
                                                             methods.control
@@ -155,7 +158,6 @@ export function DetailsDrawer({
                                                         }
                                                         options={field.options}
                                                         items={field.items}
-                                                        defaultValue={''}
                                                     />
                                                 ))}
                                             </SimpleGrid>
