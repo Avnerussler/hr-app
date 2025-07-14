@@ -1,3 +1,5 @@
+import { MetricConfig } from './metricsType'
+
 export type FieldType =
     | 'text'
     | 'email'
@@ -53,4 +55,5 @@ export interface IForm {
     description: string
     _id: string
     sections: FormSection[]
+    metrics?: MetricConfig[]
 }

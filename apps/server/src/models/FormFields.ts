@@ -59,6 +59,42 @@ const FieldSchema = new Schema(
     { _id: false }
 )
 
+// Subschema for metric calculations
+const MetricCalculationSchema = new Schema(
+    {
+        type: { 
+            type: String, 
+            required: true,
+            enum: ['total', 'filtered', 'aggregated']
+        },
+        field: { type: String },
+        value: { type: Schema.Types.Mixed },
+        aggregateField: { type: String },
+        operator: { 
+            type: String,
+            enum: ['=', '!=', '>', '<', '>=', '<=', 'includes', 'excludes']
+        }
+    },
+    { _id: false }
+)
+
+// Subschema for metrics
+const MetricConfigSchema = new Schema(
+    {
+        id: { type: String, required: true },
+        title: { type: String, required: true },
+        icon: { type: String },
+        color: { type: String },
+        type: { 
+            type: String, 
+            required: true,
+            enum: ['count', 'sum', 'average', 'percentage']
+        },
+        calculation: { type: MetricCalculationSchema, required: true }
+    },
+    { _id: false }
+)
+
 // Subschema for sections
 const SectionSchema = new Schema(
     {
@@ -74,6 +110,7 @@ const FormSchema: Schema = new Schema<TFormFields>(
     {
         formName: { type: String, required: true, unique: true },
         sections: [SectionSchema],
+        metrics: [MetricConfigSchema],
     },
     { timestamps: true }
 )

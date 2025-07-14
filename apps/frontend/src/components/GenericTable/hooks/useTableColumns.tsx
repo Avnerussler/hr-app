@@ -20,12 +20,12 @@ export const useTableColumns = ({
         if (!formFields?.sections?.length) return []
 
         // TODO: Make it more dynamic to handle different sections
-        const sectionToRender = formFields?.sections?.find(
-            (section) => section.id === 'personalInformation'
-        )
+        // const sectionToRender = formFields?.sections?.find(
+        //     (section) => section.id === 'personalInformation'
+        // )
 
         return isSuccess && formFields?.sections?.length
-            ? sectionToRender!.fields.map((field) =>
+            ? formFields?.sections[0]!.fields.map((field) =>
                   columnHelper.accessor(
                       (row) => row[field.name as keyof typeof row],
                       {

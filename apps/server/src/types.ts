@@ -48,7 +48,25 @@ export interface FormSection {
     fields: FormFields[]
 }
 
+export interface MetricCalculation {
+    type: 'total' | 'filtered' | 'aggregated'
+    field?: string
+    value?: string | number
+    aggregateField?: string
+    operator?: '=' | '!=' | '>' | '<' | '>=' | '<=' | 'includes' | 'excludes'
+}
+
+export interface MetricConfig {
+    id: string
+    title: string
+    icon?: string
+    color?: string
+    type: 'count' | 'sum' | 'average' | 'percentage'
+    calculation: MetricCalculation
+}
+
 export interface IForm {
     formName: string
     sections: FormSection[]
+    metrics?: MetricConfig[]
 }

@@ -8,54 +8,22 @@ import {
     IconButton,
 } from '@chakra-ui/react'
 import { Link as RouterLink, useLocation, Outlet } from 'react-router-dom'
+import { generateFormPath } from '@/types/routeTypes'
 import {
-    FiCalendar,
-    FiBarChart2,
-    FiUsers,
-    FiFolder,
-    FiSettings,
     FiActivity,
     FiLogOut,
     FiUser,
 } from 'react-icons/fi'
 import { TopBar } from './TopBar'
 import { Avatar } from '../ui/avatar'
+import { useFormsQuery } from '@/hooks/queries/useFormQueries'
 
-const menuItems = [
-    {
-        id: 'overview',
-        label: "Today's Overview",
-        icon: FiCalendar,
-        description: 'Daily Operations',
-    },
-    {
-        id: 'dashboard',
-        label: 'Dashboard',
-        icon: FiBarChart2,
-        description: 'Analytics & Insights',
-    },
-    {
-        id: 'personnel',
-        label: 'Personnel',
-        icon: FiUsers,
-        description: 'Employee Management',
-    },
-    {
-        id: 'projects',
-        label: 'Projects',
-        icon: FiFolder,
-        description: 'Project Tracking',
-    },
-    {
-        id: 'settings',
-        label: 'Settings',
-        icon: FiSettings,
-        description: 'System Configuration',
-    },
-]
 
 export function Layout() {
     const { pathname } = useLocation()
+
+    const { data, isSuccess } = useFormsQuery()
+    console.log(' data:', data)
 
     return (
         <Flex h="100vh" w="full">
@@ -118,76 +86,77 @@ export function Layout() {
                             </Text>
                         </Box>
 
-                        {menuItems.map((item) => {
-                            const Icon = item.icon
-                            const isActive = pathname.includes(item.id)
+                        {isSuccess &&
+                            data.forms.map((item) => {
+                                // const Icon = item.icon
+                                const isActive = pathname.includes(item._id)
 
-                            return (
-                                <Button
-                                    key={item.id}
-                                    as={RouterLink}
-                                    // @ts-expect-error: 'to' is valid when 'as' is RouterLink
-                                    to={`/${item.id}`}
-                                    variant="ghost"
-                                    justifyContent="flex-start"
-                                    h="48px"
-                                    px={3}
-                                    borderRadius="lg"
-                                    bg={
-                                        isActive
-                                            ? 'sidebar.accent'
-                                            : 'transparent'
-                                    }
-                                    _hover={{
-                                        bg: 'sidebar.accent',
-                                    }}
-                                    transition="all 0.2s"
-                                    role="group"
-                                >
-                                    <HStack gap={3} w="full">
-                                        <Box
-                                            display="flex"
-                                            alignItems="center"
-                                            justifyContent="center"
-                                            w="32px"
-                                            h="32px"
-                                            borderRadius="lg"
-                                            bg={
-                                                isActive
-                                                    ? 'sidebar.primary'
-                                                    : 'sidebar.accent'
-                                            }
-                                            color={
-                                                isActive
-                                                    ? 'sidebar.primary.foreground'
-                                                    : 'sidebar.accent.foreground'
-                                            }
-                                            _groupHover={{
-                                                bg: 'sidebar.primary',
-                                                color: 'sidebar.primary.foreground',
-                                            }}
-                                            transition="colors 0.2s"
-                                        >
-                                            <Icon size="16px" />
-                                        </Box>
-                                        <Box flex="1" textAlign="left">
-                                            <Text
-                                                fontWeight="medium"
-                                                color="sidebar.foreground"
+                                return (
+                                    <Button
+                                        key={item._id}
+                                        as={RouterLink}
+                                        // @ts-expect-error: 'to' is valid when 'as' is RouterLink
+                                        to={generateFormPath(item.formName, item._id)}
+                                        variant="ghost"
+                                        justifyContent="flex-start"
+                                        h="48px"
+                                        px={3}
+                                        borderRadius="lg"
+                                        bg={
+                                            isActive
+                                                ? 'sidebar.accent'
+                                                : 'transparent'
+                                        }
+                                        _hover={{
+                                            bg: 'sidebar.accent',
+                                        }}
+                                        transition="all 0.2s"
+                                        role="group"
+                                    >
+                                        <HStack gap={3} w="full">
+                                            <Box
+                                                display="flex"
+                                                alignItems="center"
+                                                justifyContent="center"
+                                                w="32px"
+                                                h="32px"
+                                                borderRadius="lg"
+                                                bg={
+                                                    isActive
+                                                        ? 'sidebar.primary'
+                                                        : 'sidebar.accent'
+                                                }
+                                                color={
+                                                    isActive
+                                                        ? 'sidebar.primary.foreground'
+                                                        : 'sidebar.accent.foreground'
+                                                }
+                                                _groupHover={{
+                                                    bg: 'sidebar.primary',
+                                                    color: 'sidebar.primary.foreground',
+                                                }}
+                                                transition="colors 0.2s"
                                             >
-                                                {item.label}
-                                            </Text>
-                                            <Text
-                                                fontSize="xs"
-                                                color="muted.foreground"
-                                            >
-                                                {item.description}
-                                            </Text>
-                                        </Box>
-                                    </HStack>
-                                </Button>
-                            )
-                        })}
+                                                {/* <Icon size="16px" /> */}
+                                            </Box>
+                                            <Box flex="1" textAlign="left">
+                                                <Text
+                                                    fontWeight="medium"
+                                                    color="sidebar.foreground"
+                                                >
+                                                    {item.formName}
+                                                </Text>
+                                                <Text
+                                                    fontSize="xs"
+                                                    color="muted.foreground"
+                                                >
+                                                    {item.description}
+                                                </Text>
+                                            </Box>
+                                        </HStack>
+                                    </Button>
+                                )
+                            })}
                     </VStack>
                 </Box>
 

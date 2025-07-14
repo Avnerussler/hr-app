@@ -5,7 +5,11 @@ const router = express.Router()
 
 router.get('/partialData', async (req: Request, res: Response) => {
     try {
-        const forms = await FormFields.find().select(['formName', '_id'])
+        const forms = await FormFields.find().select([
+            'formName',
+            '_id',
+            'description',
+        ])
         console.log('Got partialData of forms')
         res.status(200).json({ forms })
     } catch (error) {
@@ -142,6 +146,7 @@ router.get('/:id', async (req: Request, res: Response) => {
                         },
                     },
                     formName: { $first: '$formName' },
+                    metrics: { $first: '$metrics' },
                     createdAt: { $first: '$createdAt' },
                     updatedAt: { $first: '$updatedAt' },
                 },
@@ -152,6 +157,7 @@ router.get('/:id', async (req: Request, res: Response) => {
                 $group: {
                     _id: null,
                     formName: { $first: '$formName' },
+                    metrics: { $first: '$metrics' },
                     sections: {
                         $push: {
                             id: '$_id.sectionId',
@@ -168,6 +174,7 @@ router.get('/:id', async (req: Request, res: Response) => {
                     _id: 0,
                     formName: 1,
                     sections: 1,
+                    metrics: 1,
                 },
             },
         ]

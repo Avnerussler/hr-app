@@ -1,11 +1,4 @@
-import {
-    VStack,
-    Tabs,
-    Button,
-    Flex,
-    SimpleGrid,
-    Select,
-} from '@chakra-ui/react'
+import { VStack, Tabs, Button, Flex, SimpleGrid } from '@chakra-ui/react'
 import {
     DrawerRoot,
     DrawerContent,
@@ -19,17 +12,16 @@ import {
     FieldValues,
     SubmitHandler,
 } from 'react-hook-form'
-import { RefObject, useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 import { FormGenerator } from '../FormGenerator/FormGenerator'
-import { FormFields } from '@/types/fieldsType'
-import { useLocation, useParams } from 'react-router-dom'
+import { FormFields, IForm } from '@/types/fieldsType'
 import { AllFormSubmission } from '@/types/formType'
 import {
     useCreateFormSubmission,
     useUpdateFormSubmission,
 } from '@/hooks/mutations'
-import { ControlledSelectField } from '../ControlledFields'
-import ContentRefContext from '@/providers/ContentRefContext'
+import { useQuery } from '@tanstack/react-query'
+import { useRouteContext } from '@/hooks/useRouteContext'
 
 export interface Section {
     id: string
@@ -41,52 +33,46 @@ interface DetailsDrawerProps {
     isOpen: boolean
     onClose: () => void
     title: string
-    sections: Section[]
-    initialData?: AllFormSubmission
 }
 
-export function DetailsDrawer({
-    isOpen,
-    onClose,
-    title,
-    sections,
-    initialData,
-}: DetailsDrawerProps) {
+export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
     const methods = useForm()
     const { reset, handleSubmit } = methods
 
-    const { employeeId } = useParams<{ employeeId?: string }>()
-    const location = useLocation()
-    const formName = location.pathname.split('/')[1]
-    const EMPLOYEE_FORM_ID = '685ec2b38ee85d51bd55233b'
+    const { formName, formId, formState, itemId } = useRouteContext()
     // Initialize mutation hooks
     const createEmployeeMutation = useCreateFormSubmission()
     const updateEmployeeMutation = useUpdateFormSubmission()
-    useEffect(() => {
-        console.log(' initialData?.forms.length:', initialData?.forms.length)
-        if (initialData?.forms.length && employeeId) {
-            const employeeData = initialData.forms.find(
-                (item) => item._id === employeeId
-            )
+    const { data: submittedData } = useQuery<AllFormSubmission>({
+        queryKey: ['formSubmission/get', formId],
+    })
 
-            // Reset the form with the initial data
-            if (employeeData?.formData) {
-                reset(employeeData.formData)
+    const { data: formFields, isLoading: formFieldsLoading } = useQuery<IForm>({
+        queryKey: ['formFields/get', formId],
+        staleTime: 1000 * 60 * 5,
+    })
+
+    useEffect(() => {
+        if (formState === 'edit' && itemId && submittedData?.forms) {
+            const formData = submittedData.forms.find(
+                (form) => form._id === itemId
+            )?.formData
+            if (formData) {
+                reset(formData)
             }
-        } else {
-            // Clear the form when no employeeId (adding new employee)
+        } else if (formState === 'new') {
             reset({})
         }
-    }, [initialData, employeeId, reset])
+    }, [formState, reset, itemId, submittedData?.forms])
 
     const handleFormSubmit: SubmitHandler<FieldValues> = (data) => {
-        if (employeeId) {
+        if (itemId) {
             // Update existing employee
             updateEmployeeMutation.mutate(
                 {
                     formData: data,
-                    formId: EMPLOYEE_FORM_ID,
-                    id: employeeId,
+                    formId: formId,
+                    id: itemId,
                 },
                 {
                     onSuccess: () => {
@@ -97,7 +83,7 @@ export function DetailsDrawer({
         } else {
             // Create new employee
             createEmployeeMutation.mutate({
-                formId: EMPLOYEE_FORM_ID,
+                formId: formId,
                 formData: data,
                 formName: formName,
             })
@@ -105,10 +91,12 @@ export function DetailsDrawer({
         reset(data)
     }
 
+    const sections: Section[] = formFields?.sections || []
     // Get default active tab (first section)
-    const defaultTab = sections.length > 0 ? sections[0].id : ''
-    const contentRef = useContext(ContentRefContext)
-
+    const defaultTab = sections[0]?.id
+    if (formFieldsLoading) {
+        return null
+    }
     return (
         <DrawerRoot size="lg" open={isOpen} onOpenChange={onClose}>
             <DrawerContent>
@@ -133,9 +121,6 @@ export function DetailsDrawer({
                                     <Tabs.Content
                                         key={section.id}
                                         value={section.id}
-                                        ref={
-                                            contentRef as RefObject<HTMLDivElement>
-                                        }
                                     >
                                         <VStack gap={4} align="stretch" mt={4}>
                                             <SimpleGrid
