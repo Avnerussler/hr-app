@@ -18,8 +18,10 @@ const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:3000']
 
 app.use(
     cors({
-        origin: '*',
-        credentials: true, // Allow cookies and authentication headers
+        origin: (origin, callback) => {
+            callback(null, origin || '*')
+        },
+        credentials: true,
     })
 )
 
