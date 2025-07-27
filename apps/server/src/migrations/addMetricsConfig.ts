@@ -163,7 +163,7 @@ export const addMetricsToPersonnelForm = async () => {
         console.log('Adding metrics configuration to Personnel form...')
 
         const result = await FormFields.updateOne(
-            { formName: 'Personnel' }, // Hebrew name for Personnel
+            { formName: 'Recruitment Form' }, // Hebrew name for Personnel
             {
                 $set: {
                     metrics: personnelMetricsConfig,

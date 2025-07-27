@@ -3,7 +3,7 @@ import { checkIfFormExist } from './utils'
 
 export const createRecruitForm = async () => {
     try {
-        const formName = 'כוח אדם'
+        const formName = 'Recruitment Form'
         const isFormExist = await checkIfFormExist(formName)
         if (isFormExist) {
             console.log(`${formName} exist! passing on migration`)
