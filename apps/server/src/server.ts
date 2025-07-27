@@ -29,12 +29,14 @@ app.use(
 connectDB()
 const runMigrations = process.env.RUN_MIGRATIONS
 
-if (runMigrations === 'true') {
-    console.log('Running migrations')
-    createRecruitForm()
-    createStudioForm()
-    addMetricsToAllForms()
-}
+;(async () => {
+    if (runMigrations === 'true') {
+        await createRecruitForm()
+        await createStudioForm()
+        await addMetricsToAllForms()
+        console.log('Running migrations')
+    }
+})()
 
 app.use(express.json()) // Middleware to parse JSON requests
 
