@@ -14,6 +14,7 @@ export const createRecruitForm = async () => {
         const formDocument = new FormFields({
             formName,
             description: 'Employee Management',
+            icon: 'FiUsers',
             sections: [
                 {
                     id: 'personalInformation',

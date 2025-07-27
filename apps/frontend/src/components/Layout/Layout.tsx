@@ -6,7 +6,6 @@ import {
     Text,
     Button,
     IconButton,
-    Icon,
 } from '@chakra-ui/react'
 import { Link as RouterLink, useLocation, Outlet } from 'react-router-dom'
 import { generateFormPath } from '@/types/routeTypes'
@@ -14,9 +13,10 @@ import {
     FiActivity,
     FiBarChart2,
     FiCalendar,
+    FiFolder,
     FiLogOut,
-    FiSettings,
     FiUser,
+    FiUsers,
 } from 'react-icons/fi'
 import { TopBar } from './TopBar'
 import { Avatar } from '../ui/avatar'
@@ -40,6 +40,11 @@ export function Layout() {
             description: 'Analytics & Insights',
         },
     ]
+
+    const iconMap: Record<string, any> = {
+        FiUsers: FiUsers,
+        FiFolder: FiFolder,
+    }
     return (
         <Flex h="100vh" w="full">
             {/* Sidebar */}
@@ -174,7 +179,7 @@ export function Layout() {
 
                         {isSuccess &&
                             data.forms.map((item) => {
-                                // const Icon = item.icon
+                                const Icon = iconMap[item.icon || 'FiFolder']
                                 const isActive = pathname.includes(item._id)
 
                                 return (
@@ -226,7 +231,7 @@ export function Layout() {
                                                 }}
                                                 transition="colors 0.2s"
                                             >
-                                                {/* <Icon size="16px" /> */}
+                                                <Icon size="16px" />
                                             </Box>
                                             <Box flex="1" textAlign="left">
                                                 <Text

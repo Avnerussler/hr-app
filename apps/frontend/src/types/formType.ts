@@ -5,6 +5,7 @@ export type AllFormSubmission = {
     forms: {
         _id: string
         description: string
+        icon: string
         formName: string
         formData: FormFields[]
     }[]

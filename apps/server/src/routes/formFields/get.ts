@@ -9,6 +9,7 @@ router.get('/partialData', async (req: Request, res: Response) => {
             'formName',
             '_id',
             'description',
+            'icon',
         ])
         console.log('Got partialData of forms')
         res.status(200).json({ forms })

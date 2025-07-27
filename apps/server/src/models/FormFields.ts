@@ -110,6 +110,7 @@ const FormSchema: Schema = new Schema<TFormFields>(
     {
         formName: { type: String, required: true, unique: true },
         description: { type: String, default: '' },
+        icon: { type: String, default: '' },
         sections: [SectionSchema],
         metrics: [MetricConfigSchema],
     },
