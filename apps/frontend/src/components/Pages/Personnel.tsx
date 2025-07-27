@@ -11,7 +11,6 @@ import { DetailsDrawer } from '../common/DetailsDrawer'
 import { AllFormSubmission, Filter, FilterOption } from '@/types/formType'
 import { SearchAndFilters } from '../common/SearchAndFilters'
 import { GenericTable } from '../GenericTable'
-import { IForm } from '@/types/fieldsType'
 
 // Employee form configuration
 const EMPLOYEE_FORM_ID = '685ec2b38ee85d51bd55233b'
@@ -33,19 +32,13 @@ const employeeStatusOptions = createListCollection({
 
 export default function PersonnelPage() {
     const [searchTerm, setSearchTerm] = useState('')
-    const [statusFilter, setStatusFilter] = useState('all')
-    const [typeFilter, setTypeFilter] = useState('all')
+    const [, setStatusFilter] = useState('all')
+    const [, setTypeFilter] = useState('all')
 
     const navigate = useNavigate()
     const { employeeId } = useParams<{ employeeId?: string }>()
 
     const { open, onOpen, onClose } = useDisclosure()
-
-    // Query for form fields (table columns)
-    const { data: formFields } = useQuery<IForm>({
-        queryKey: ['formFields/get', EMPLOYEE_FORM_ID],
-        staleTime: 1000 * 60 * 5,
-    })
 
     // Query for submitted data (table rows)
     const { data: submittedData } = useQuery<AllFormSubmission>({
@@ -176,8 +169,6 @@ export default function PersonnelPage() {
                         ? 'Employee Details'
                         : 'Add New Employee'
                 }
-                sections={formFields?.sections || []}
-                initialData={submittedData}
             />
         </Box>
     )

@@ -1,4 +1,4 @@
-import { FC, RefObject, useContext } from 'react'
+import { FC, RefObject } from 'react'
 import { createListCollection, Field } from '@chakra-ui/react'
 import {
     SelectContent,
@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/select'
 
 import { Control, Controller, FieldValues } from 'react-hook-form'
-import ContentRefContext from '@/providers/ContentRefContext'
+// import ContentRefContext from '@/providers/ContentRefContext'
 
 interface ControlledMultipleSelectFieldProps extends FieldValues {
     control: Control

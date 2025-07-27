@@ -9,6 +9,9 @@ services:
         #     MONGO_INITDB_ROOT_PASSWORD: password
         ports:
             - 27017:27017
+        networks:
+            - app-network
+
     minio:
         image: minio/minio
         container_name: minio
@@ -21,6 +24,42 @@ services:
         volumes:
             - minio_data:/data
         command: ['server', '/data', '--console-address', ':9001']
+        networks:
+            - app-network
+
+    app:
+        build: ..
+        container_name: hr-server-app
+        ports:
+            - '3001:3001'
+        environment:
+            - PORT=3001
+            - MONGO_URI=mongodb://mongo:27017/mydatabase
+            - MINIO_ENDPOINT=minio
+            - MINIO_PORT=9000
+            - MINIO_ACCESS_KEY=admin
+            - MINIO_SECRET_KEY=password123
+            - FRONTEND_URL=http://localhost:3000
+            - RUN_MIGRATIONS=true
+        depends_on:
+            - mongo
+            - minio
+        networks:
+            - app-network
+
+    frontend:
+        build: ../../frontend
+        container_name: hr-frontend-app
+        ports:
+            - '3000:80'
+        depends_on:
+            - app
+        networks:
+            - app-network
 
 volumes:
     minio_data:
+
+networks:
+    app-network:
+        driver: bridge

@@ -21,7 +21,7 @@ import { SearchAndFilters } from '../common/SearchAndFilters'
 import { GenericTable } from '../GenericTable'
 import { useRouteContext, useDrawerState } from '@/hooks/useRouteContext'
 import { generateEditPath, generateNewPath } from '@/types/routeTypes'
-import { useMetrics, getDefaultMetrics } from '@/hooks/useMetrics'
+import { useMetrics } from '@/hooks/useMetrics'
 import { IForm } from '@/types/fieldsType'
 
 interface DynamicFormPageProps {

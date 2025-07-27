@@ -132,8 +132,6 @@ const compareValues = (
  * Get default metrics configuration if none provided
  */
 export const getDefaultMetrics = (formName: string): MetricConfig[] => {
-    const baseName = formName.toLowerCase()
-
     return [
         {
             id: 'total',

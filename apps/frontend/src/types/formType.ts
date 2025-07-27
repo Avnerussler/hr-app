@@ -1,4 +1,5 @@
 import { FormFields } from './fieldsType'
+import { ListCollection } from '@chakra-ui/react'
 
 export type AllFormSubmission = {
     forms: {
@@ -22,12 +23,9 @@ export interface FilterOption {
     label: string
 }
 
-interface FilterCollection {
-    items: FilterOption[]
-}
 export interface Filter {
     label: string
-    collection: FilterCollection
+    collection: ListCollection<FilterOption>
     onValueChange: (value: FilterOption[] | { value: string[] }) => void
     placeholder: string
 }

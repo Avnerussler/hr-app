@@ -1,18 +1,8 @@
-# Step 1: Build the app
-FROM node:18 AS builder
-
-WORKDIR /app
-
-COPY package.json package-lock.json* ./
-RUN npm install
-
-COPY . .
-RUN npm run build
-
-# Step 2: Serve the app with a lightweight web server
+# Serve the pre-built app with nginx
 FROM nginx:stable-alpine
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy the pre-built dist directory (make sure to run 'npm run build' before docker build)
+COPY ./dist /usr/share/nginx/html
 
 # Remove default nginx configuration and replace with a custom one (optional)
 COPY nginx.conf /etc/nginx/conf.d/default.conf

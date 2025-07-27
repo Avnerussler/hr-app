@@ -6,7 +6,6 @@ import {
     SelectContent,
     SelectItem,
 } from '../ui/select'
-import { ListCollection } from '@chakra-ui/react'
 import { Filter } from '@/types/formType'
 
 interface SearchAndFiltersProps {
