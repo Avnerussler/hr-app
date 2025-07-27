@@ -3,7 +3,11 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import router from './routes'
 import connectDB from './config/db'
-import { createRecruitForm, createStudioForm, addMetricsToAllForms } from './migrations'
+import {
+    createRecruitForm,
+    createStudioForm,
+    addMetricsToAllForms,
+} from './migrations'
 dotenv.config()
 
 const app = express()
@@ -14,7 +18,7 @@ const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:3000']
 
 app.use(
     cors({
-        origin: allowedOrigins,
+        origin: '*',
         credentials: true, // Allow cookies and authentication headers
     })
 )
