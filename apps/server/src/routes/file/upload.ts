@@ -1,5 +1,6 @@
 import { Request, Response, Router } from 'express'
 import { uploadFileToMinio } from '../../utils'
+import { isMinioAvailable } from '../../config/minio'
 
 const router = Router()
 router.get('/generate-presigned-url', async (req: Request, res: Response) => {
@@ -10,6 +11,15 @@ router.get('/generate-presigned-url', async (req: Request, res: Response) => {
             console.error(`FileName:${filename}. FileType:${filetype}.`)
             throw Error('filename or filetype not exist')
         }
+
+        if (!isMinioAvailable) {
+            res.status(503).json({ 
+                message: 'File upload service is not available. MinIO is not configured or running.',
+                error: 'MinIO unavailable' 
+            })
+            return
+        }
+
         const presignedUrl = await uploadFileToMinio(
             filename as string,
             filetype as string
