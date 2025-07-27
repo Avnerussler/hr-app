@@ -12,6 +12,7 @@ export const createStudioForm = async () => {
 
         const formDocument = new FormFields({
             formName,
+            description: 'Project Tracking',
             sections: [
                 {
                     id: 'projectManagement',

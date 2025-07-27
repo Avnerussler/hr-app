@@ -13,6 +13,7 @@ export const createRecruitForm = async () => {
 
         const formDocument = new FormFields({
             formName,
+            description: 'Employee Management',
             sections: [
                 {
                     id: 'personalInformation',

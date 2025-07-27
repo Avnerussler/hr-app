@@ -5,6 +5,8 @@ import DialogRefProvider from './providers/DialogRefProvider'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { useFormsQuery } from './hooks/queries/useFormQueries'
 import { Box, Spinner, Center } from '@chakra-ui/react'
+import { TodaysOverview } from './components/Pages/TodaysOverview'
+import { Dashboard } from './components/Pages/Dashboard'
 
 const LoadingSpinner = () => (
     <Center h="100vh">
@@ -15,6 +17,11 @@ const LoadingSpinner = () => (
     </Center>
 )
 
+// Static routes
+const staticRoutes = [
+    { path: 'overview', element: <TodaysOverview /> },
+    { path: 'dashboard', element: <Dashboard /> },
+]
 const createDynamicRouter = (formsData: any) => {
     const dynamicRoutes = formsData?.forms
         ? formsData.forms.flatMap((form: any) => [
@@ -52,7 +59,7 @@ const createDynamicRouter = (formsData: any) => {
         {
             path: '/',
             element: <Layout />,
-            children: [...dynamicRoutes],
+            children: [...staticRoutes, ...dynamicRoutes],
         },
     ])
 }

@@ -67,6 +67,7 @@ export interface MetricConfig {
 
 export interface IForm {
     formName: string
+    description?: string
     sections: FormSection[]
     metrics?: MetricConfig[]
 }
