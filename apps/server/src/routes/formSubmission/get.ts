@@ -3,6 +3,7 @@ import { Request, Response, Router } from 'express'
 
 const router = Router()
 router.get('/select', async (req: Request, res: Response) => {
+    console.log('GET /formSubmission/select - Request received')
     try {
         const { fieldName, formId } = req.body
         const result = await FormSubmissions.aggregate([
@@ -33,6 +34,7 @@ router.get('/select', async (req: Request, res: Response) => {
 })
 
 router.get('/', async (req: Request, res: Response) => {
+    console.log('GET /formSubmission - Request received')
     try {
         const forms = await FormSubmissions.find()
         res.status(200).json({ forms })
@@ -43,6 +45,7 @@ router.get('/', async (req: Request, res: Response) => {
 })
 
 router.get('/:id', async (req: Request, res: Response) => {
+    console.log(`GET /formSubmission/${req.params.id} - Request received`)
     try {
         const id = req.params.id
 

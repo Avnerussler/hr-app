@@ -4,8 +4,8 @@ import mongoose from 'mongoose'
 
 const router = Router()
 router.post('/', async (req: Request, res: Response) => {
+    console.log('POST /formSubmission/update - Request received')
     try {
-        console.log('Start updating form')
         const { id, formData } = req.body
         const updatedForm = await FormSubmissions.findByIdAndUpdate(
             mongoose.Types.ObjectId.createFromHexString(id),

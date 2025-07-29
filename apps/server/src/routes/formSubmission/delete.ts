@@ -4,6 +4,7 @@ import { Request, Response, Router } from 'express'
 const router = Router()
 
 router.delete('/:id', async (req: Request, res: Response) => {
+    console.log(`DELETE /formSubmission/${req.params.id} - Request received`)
     try {
         const id = req.params.id
         const forms = await FormSubmissions.findOneAndDelete({ _id: id })

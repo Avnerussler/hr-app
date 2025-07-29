@@ -4,6 +4,7 @@ import { isMinioAvailable } from '../../config/minio'
 
 const router = Router()
 router.get('/generate-presigned-url', async (req: Request, res: Response) => {
+    console.log('GET /file/generate-presigned-url - Request received')
     try {
         const { filename, filetype } = req.query
 

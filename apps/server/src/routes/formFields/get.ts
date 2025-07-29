@@ -5,6 +5,7 @@ const router = express.Router()
 
 router.get('/partialData', async (req: Request, res: Response) => {
     try {
+        console.log('Getting partialData of forms')
         const forms = await FormFields.find().select([
             'formName',
             '_id',
@@ -22,8 +23,7 @@ router.get('/partialData', async (req: Request, res: Response) => {
 router.get('/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params
-        console.log('id:', id)
-
+        console.log(`Getting form with ID: ${id}`)
         const pipeline = [
             { $match: { _id: new mongoose.Types.ObjectId(id) } },
 

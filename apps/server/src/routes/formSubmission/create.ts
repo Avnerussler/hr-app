@@ -3,6 +3,7 @@ import { FormSubmissions } from '../../models'
 
 const router = Router()
 router.post('/', async (req: Request, res: Response) => {
+    console.log('POST /formSubmission - Request received')
     try {
         const { formData, formId, formName } = req.body
 
