@@ -41,8 +41,13 @@ const runMigrations = process.env.RUN_MIGRATIONS
 app.use(express.json()) // Middleware to parse JSON requests
 
 // Basic route
-app.get('/', (req: Request, res: Response) => {
-    res.send('Hello, TypeScript with Express!')
+app.get('/health', (req: Request, res: Response) => {
+    console.log('GET /health - Request received')
+    res.status(200).json({
+        status: 'OK',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+    })
 })
 app.use('/api', router)
 // Start the server
