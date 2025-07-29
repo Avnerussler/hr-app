@@ -19,7 +19,7 @@ docker_build(
     'hr-app-frontend',
     context='./apps/frontend',
     dockerfile='./apps/frontend/Dockerfile',
-    build_args={'VITE_BASE_URL': 'http://localhost:8080'},
+    build_args={},
     live_update=[
         sync('./apps/frontend/src/', '/app/src/'),
         sync('./apps/frontend/package.json', '/app/package.json'),
@@ -76,7 +76,6 @@ k8s_yaml(helm(
     set=[
         'frontend.image.repository=hr-app-frontend',
         'frontend.image.tag=latest',
-        'frontend.env.VITE_BASE_URL=http://localhost:8080',
         'backend.image.repository=hr-app-backend',
         'backend.image.tag=latest',
         'backend.env.MONGO_URI=mongodb://admin:password@mongodb:27017/mydatabase?authSource=admin',
@@ -87,7 +86,6 @@ k8s_yaml(helm(
 # Configure resources with port forwarding
 k8s_resource(
     'chart-hr-app-backend',
-    port_forwards='8080:3001',
     labels=['backend']
 )
 
@@ -108,7 +106,6 @@ if config.tilt_subcommand == 'up':
     \033[32mHR App running with Tilt!\033[0m
     
     Frontend: http://localhost:3000
-    Backend: http://localhost:8080
     
     Changes to source files will automatically trigger rebuilds and redeployments.
     """)

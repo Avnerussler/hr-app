@@ -23,7 +23,7 @@ spec:
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.backend.service.port }}
+              containerPort: {{ .Values.backend.service.targetPort | default 3001 }}
               protocol: TCP
           {{- if .Values.backend.env }}
           env:

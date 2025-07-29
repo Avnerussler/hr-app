@@ -25,6 +25,13 @@ spec:
             - name: http
               containerPort: {{ .Values.frontend.service.port }}
               protocol: TCP
+          {{- if .Values.frontend.env }}
+          env:
+            {{- range $key, $value := .Values.frontend.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          {{- end }}
           {{- with .Values.frontend.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
