@@ -1,12 +1,13 @@
 import { FormFields } from '../models'
 import { checkIfFormExist } from './utils'
+import logger from '../config/logger'
 
 export const createStudioForm = async () => {
     try {
         const formName = 'Project Management'
         const isFormExist = await checkIfFormExist(formName)
         if (isFormExist) {
-            console.log(`${formName} exist! passing on migration`)
+            logger.info(`${formName} exist! passing on migration`)
             return
         }
 
@@ -141,6 +142,6 @@ export const createStudioForm = async () => {
 
         await formDocument.save()
     } catch (error) {
-        console.log(' error:', error)
+        logger.error(' error:', error)
     }
 }

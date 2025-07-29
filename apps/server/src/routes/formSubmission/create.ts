@@ -1,9 +1,10 @@
 import { Request, Response, Router } from 'express'
 import { FormSubmissions } from '../../models'
+import logger from '../../config/logger'
 
 const router = Router()
 router.post('/', async (req: Request, res: Response) => {
-    console.log('POST /formSubmission - Request received')
+    logger.info('POST /formSubmission - Request received')
     try {
         const { formData, formId, formName } = req.body
 
@@ -16,7 +17,7 @@ router.post('/', async (req: Request, res: Response) => {
         await form.save()
         res.status(201).json({ form })
     } catch (error) {
-        console.error('Error submitting form:', error)
+        logger.error('Error submitting form:', error)
         res.status(500).json({ message: 'Error submitting form', error })
     }
 })

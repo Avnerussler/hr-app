@@ -1,5 +1,6 @@
 import { FormFields } from '../models'
 import { MetricConfig } from '../types'
+import logger from '../config/logger'
 
 const projectMetricsConfig: MetricConfig[] = [
     {
@@ -134,7 +135,7 @@ const personnelMetricsConfig: MetricConfig[] = [
 
 export const addMetricsToProjectForm = async () => {
     try {
-        console.log(
+        logger.info(
             'Adding metrics configuration to Project Management form...'
         )
 
@@ -149,13 +150,13 @@ export const addMetricsToProjectForm = async () => {
         )
 
         if (result.matchedCount === 0) {
-            console.log('Project Management form not found')
+            logger.info('Project Management form not found')
             return
         }
 
-        console.log('✅ Successfully added metrics to Project Management form')
+        logger.info('✅ Successfully added metrics to Project Management form')
     } catch (error) {
-        console.error(
+        logger.error(
             '❌ Error adding metrics to Project Management form:',
             error
         )
@@ -164,7 +165,7 @@ export const addMetricsToProjectForm = async () => {
 
 export const addMetricsToPersonnelForm = async () => {
     try {
-        console.log('Adding metrics configuration to Personnel form...')
+        logger.info('Adding metrics configuration to Personnel form...')
 
         const result = await FormFields.updateOne(
             { formName: 'Recruitment Form' }, // Hebrew name for Personnel
@@ -177,27 +178,27 @@ export const addMetricsToPersonnelForm = async () => {
         )
 
         if (result.matchedCount === 0) {
-            console.log('Personnel form not found')
+            logger.info('Personnel form not found')
             return
         }
 
-        console.log('✅ Successfully added metrics to Personnel form')
+        logger.info('✅ Successfully added metrics to Personnel form')
     } catch (error) {
-        console.error('❌ Error adding metrics to Personnel form:', error)
+        logger.error('❌ Error adding metrics to Personnel form:', error)
     }
 }
 
 export const addMetricsToAllForms = async () => {
     try {
-        console.log('🚀 Starting metrics configuration migration...')
+        logger.info('🚀 Starting metrics configuration migration...')
 
         await addMetricsToProjectForm()
         await addMetricsToPersonnelForm()
 
-        console.log(
+        logger.info(
             '✅ Metrics configuration migration completed successfully!'
         )
     } catch (error) {
-        console.error('❌ Migration failed:', error)
+        logger.error('❌ Migration failed:', error)
     }
 }

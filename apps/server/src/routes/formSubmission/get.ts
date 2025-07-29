@@ -1,9 +1,10 @@
 import { FormSubmissions } from '../../models'
 import { Request, Response, Router } from 'express'
+import logger from '../../config/logger'
 
 const router = Router()
 router.get('/select', async (req: Request, res: Response) => {
-    console.log('GET /formSubmission/select - Request received')
+    logger.info('GET /formSubmission/select - Request received')
     try {
         const { fieldName, formId } = req.body
         const result = await FormSubmissions.aggregate([
@@ -28,31 +29,31 @@ router.get('/select', async (req: Request, res: Response) => {
 
         res.status(200).json(result)
     } catch (error) {
-        console.error('Error getting data:', error)
+        logger.error('Error getting data:', error)
         res.status(500).json({ message: 'Error getting data', error })
     }
 })
 
 router.get('/', async (req: Request, res: Response) => {
-    console.log('GET /formSubmission - Request received')
+    logger.info('GET /formSubmission - Request received')
     try {
         const forms = await FormSubmissions.find()
         res.status(200).json({ forms })
     } catch (error) {
-        console.error('Error getting forms:', error)
+        logger.error('Error getting forms:', error)
         res.status(500).json({ message: 'Error getting forms', error })
     }
 })
 
 router.get('/:id', async (req: Request, res: Response) => {
-    console.log(`GET /formSubmission/${req.params.id} - Request received`)
+    logger.info(`GET /formSubmission/${req.params.id} - Request received`)
     try {
         const id = req.params.id
 
         const forms = await FormSubmissions.find({ formId: id })
         res.status(200).json({ forms })
     } catch (error) {
-        console.error('Error getting forms:', error)
+        logger.error('Error getting forms:', error)
         res.status(500).json({ message: 'Error getting forms', error })
     }
 })

@@ -1,21 +1,22 @@
 import express, { Request, Response } from 'express'
 import { FormFields } from '../../models'
 import mongoose from 'mongoose'
+import logger from '../../config/logger'
 const router = express.Router()
 
 router.get('/partialData', async (req: Request, res: Response) => {
     try {
-        console.log('Getting partialData of forms')
+        logger.info('Getting partialData of forms')
         const forms = await FormFields.find().select([
             'formName',
             '_id',
             'description',
             'icon',
         ])
-        console.log('Got partialData of forms')
+        logger.info('Got partialData of forms')
         res.status(200).json({ forms })
     } catch (error) {
-        console.error('Error getting forms:', error)
+        logger.error('Error getting forms:', error)
         res.status(500).json({ message: 'Error getting forms', error })
     }
 })
@@ -23,7 +24,7 @@ router.get('/partialData', async (req: Request, res: Response) => {
 router.get('/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params
-        console.log(`Getting form with ID: ${id}`)
+        logger.info(`Getting form with ID: ${id}`)
         const pipeline = [
             { $match: { _id: new mongoose.Types.ObjectId(id) } },
 
@@ -189,7 +190,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 
         res.status(200).send(form[0])
     } catch (error) {
-        console.error('Error getting form:', error)
+        logger.error('Error getting form:', error)
         res.status(500).json({ message: 'Error getting form', error })
     }
 })

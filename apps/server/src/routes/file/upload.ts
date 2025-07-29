@@ -1,15 +1,16 @@
 import { Request, Response, Router } from 'express'
 import { uploadFileToMinio } from '../../utils'
 import { isMinioAvailable } from '../../config/minio'
+import logger from '../../config/logger'
 
 const router = Router()
 router.get('/generate-presigned-url', async (req: Request, res: Response) => {
-    console.log('GET /file/generate-presigned-url - Request received')
+    logger.info('GET /file/generate-presigned-url - Request received')
     try {
         const { filename, filetype } = req.query
 
         if (!filename || !filetype) {
-            console.error(`FileName:${filename}. FileType:${filetype}.`)
+            logger.error(`FileName:${filename}. FileType:${filetype}.`)
             throw Error('filename or filetype not exist')
         }
 
@@ -30,13 +31,13 @@ router.get('/generate-presigned-url', async (req: Request, res: Response) => {
         const bucketName = process.env.MINIO_BUCKET
 
         if (!bucketUrl || !bucketName) {
-            console.error(`bucketUrl:${bucketUrl}. bucketName:${bucketName}.`)
+            logger.error(`bucketUrl:${bucketUrl}. bucketName:${bucketName}.`)
             throw Error('bucketUrl or bucketName not exist')
         }
 
         res.status(201).send({ presignedUrl, bucketUrl, bucketName })
     } catch (error) {
-        console.error('Error submitting form:', error)
+        logger.error('Error submitting form:', error)
         res.status(500).json({ message: 'Error submitting form', error })
     }
 })

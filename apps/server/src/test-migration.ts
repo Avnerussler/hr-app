@@ -1,18 +1,19 @@
 import connectDB from './config/db'
 import { addMetricsToAllForms } from './migrations/addMetricsConfig'
+import logger from './config/logger'
 
 const runMigration = async () => {
     try {
-        console.log('Connecting to database...')
+        logger.info('Connecting to database...')
         await connectDB()
         
-        console.log('Running metrics migration...')
+        logger.info('Running metrics migration...')
         await addMetricsToAllForms()
         
-        console.log('Migration completed successfully!')
+        logger.info('Migration completed successfully!')
         process.exit(0)
     } catch (error) {
-        console.error('Migration failed:', error)
+        logger.error('Migration failed:', error)
         process.exit(1)
     }
 }

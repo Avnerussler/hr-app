@@ -1,15 +1,16 @@
 import { FormFields } from '../models'
 import { checkIfFormExist } from './utils'
+import logger from '../config/logger'
 
 export const createRecruitForm = async () => {
     try {
         const formName = 'Recruitment Form'
         const isFormExist = await checkIfFormExist(formName)
         if (isFormExist) {
-            console.log(`${formName} exist! passing on migration`)
+            logger.info(`${formName} exist! passing on migration`)
             return
         }
-        console.log('Running on create form migration')
+        logger.info('Running on create form migration')
 
         const formDocument = new FormFields({
             formName,
@@ -368,6 +369,6 @@ export const createRecruitForm = async () => {
 
         await formDocument.save()
     } catch (error) {
-        console.log(' error:', error)
+        logger.error(' error:', error)
     }
 }

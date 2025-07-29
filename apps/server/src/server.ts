@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import router from './routes'
 import connectDB from './config/db'
+import logger from './config/logger'
 import {
     createRecruitForm,
     createStudioForm,
@@ -34,7 +35,7 @@ const runMigrations = process.env.RUN_MIGRATIONS
         await createRecruitForm()
         await createStudioForm()
         await addMetricsToAllForms()
-        console.log('Running migrations')
+        logger.info('Running migrations')
     }
 })()
 
@@ -42,7 +43,7 @@ app.use(express.json()) // Middleware to parse JSON requests
 
 // Basic route
 app.get('/health', (req: Request, res: Response) => {
-    console.log('GET /health - Request received')
+    logger.info('GET /health - Request received')
     res.status(200).json({
         status: 'OK',
         timestamp: new Date().toISOString(),
@@ -52,5 +53,5 @@ app.get('/health', (req: Request, res: Response) => {
 app.use('/api', router)
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`)
+    logger.info(`Server is running on http://localhost:${PORT}`)
 })

@@ -1,5 +1,6 @@
 import { Client } from 'minio'
 import dotenv from 'dotenv'
+import logger from './logger'
 
 dotenv.config()
 
@@ -11,7 +12,7 @@ let isMinioAvailable = false
 // Initialize MinIO client only if enabled
 const initializeMinIO = async () => {
     if (process.env.MINIO_ENABLED === 'false') {
-        console.info('MinIO is disabled')
+        logger.info('MinIO is disabled')
         return
     }
 
@@ -28,9 +29,9 @@ const initializeMinIO = async () => {
         const bucketExists = await minioClient.bucketExists(BUCKET_NAME)
         if (!bucketExists) {
             await minioClient.makeBucket(BUCKET_NAME, 'us-east-1')
-            console.info(`✅ Bucket '${BUCKET_NAME}' created`)
+            logger.info(`✅ Bucket '${BUCKET_NAME}' created`)
         } else {
-            console.info(
+            logger.info(
                 `✅ Bucket '${BUCKET_NAME}' already exists, running on http://localhost:${
                     process.env.MINIO_PORT || '9000'
                 }`
@@ -38,7 +39,7 @@ const initializeMinIO = async () => {
         }
         isMinioAvailable = true
     } catch (error) {
-        console.warn('⚠️ MinIO not available:', error)
+        logger.warn('⚠️ MinIO not available:', error)
         minioClient = null
         isMinioAvailable = false
     }
