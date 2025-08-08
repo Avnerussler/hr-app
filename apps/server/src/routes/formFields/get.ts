@@ -12,6 +12,7 @@ router.get('/partialData', async (req: Request, res: Response) => {
             '_id',
             'description',
             'icon',
+            'overviewFields',
         ])
         logger.info('Got partialData of forms')
         res.status(200).json({ forms })
@@ -38,11 +39,15 @@ router.get('/:id', async (req: Request, res: Response) => {
             {
                 $lookup: {
                     from: 'form_submissions',
-                    let: { foreignFormId: '$sections.fields.foreignFormId' },
+                    let: {
+                        foreignFormName: '$sections.fields.foreignFormName',
+                    },
                     pipeline: [
                         {
                             $match: {
-                                $expr: { $eq: ['$formId', '$$foreignFormId'] },
+                                $expr: {
+                                    $eq: ['$formName', '$$foreignFormName'],
+                                },
                             },
                         },
                     ],
@@ -58,14 +63,24 @@ router.get('/:id', async (req: Request, res: Response) => {
                             if: {
                                 $and: [
                                     {
-                                        $eq: [
-                                            '$sections.fields.type',
-                                            'select',
+                                        $or: [
+                                            {
+                                                $eq: [
+                                                    '$sections.fields.type',
+                                                    'select',
+                                                ],
+                                            },
+                                            {
+                                                $eq: [
+                                                    '$sections.fields.type',
+                                                    'multipleSelect',
+                                                ],
+                                            },
                                         ],
                                     },
                                     {
                                         $ne: [
-                                            '$sections.fields.foreignFormId',
+                                            '$sections.fields.foreignFormName',
                                             null,
                                         ],
                                     },
@@ -143,12 +158,13 @@ router.get('/:id', async (req: Request, res: Response) => {
                             errorMessages: {
                                 $ifNull: ['$sections.fields.errorMessages', ''],
                             },
-                            foreignFormId: '$sections.fields.foreignFormId',
+                            foreignFormName: '$sections.fields.foreignFormName',
                             foreignField: '$sections.fields.foreignField',
                         },
                     },
                     formName: { $first: '$formName' },
                     metrics: { $first: '$metrics' },
+                    overviewFields: { $first: '$overviewFields' },
                     createdAt: { $first: '$createdAt' },
                     updatedAt: { $first: '$updatedAt' },
                 },
@@ -160,6 +176,7 @@ router.get('/:id', async (req: Request, res: Response) => {
                     _id: null,
                     formName: { $first: '$formName' },
                     metrics: { $first: '$metrics' },
+                    overviewFields: { $first: '$overviewFields' },
                     sections: {
                         $push: {
                             id: '$_id.sectionId',
@@ -177,6 +194,7 @@ router.get('/:id', async (req: Request, res: Response) => {
                     formName: 1,
                     sections: 1,
                     metrics: 1,
+                    overviewFields: 1,
                 },
             },
         ]

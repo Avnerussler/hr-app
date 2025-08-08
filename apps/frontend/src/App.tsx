@@ -2,7 +2,7 @@ import './App.css'
 import { Layout } from './components/Layout'
 import { DynamicFormPage } from './components/Pages/DynamicFormPage'
 import DialogRefProvider from './providers/DialogRefProvider'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { useFormsQuery } from './hooks/queries/useFormQueries'
 import { Box, Spinner, Center } from '@chakra-ui/react'
 import { TodaysOverview } from './components/Pages/TodaysOverview'
@@ -59,7 +59,18 @@ const createDynamicRouter = (formsData: any) => {
         {
             path: '/',
             element: <Layout />,
-            children: [...staticRoutes, ...dynamicRoutes],
+            children: [
+                {
+                    index: true,
+                    element: <Navigate to="/overview" replace />,
+                },
+                ...staticRoutes,
+                ...dynamicRoutes,
+                {
+                    path: '*',
+                    element: <Navigate to="/overview" replace />,
+                },
+            ],
         },
     ])
 }

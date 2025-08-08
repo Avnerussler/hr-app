@@ -38,7 +38,7 @@ export interface FormFields {
     options?: Option[]
     items?: Item[]
     errorMessages?: string
-    foreignFormId?: string
+    foreignFormName?: string
     foreignField?: string
 }
 
@@ -71,4 +71,5 @@ export interface IForm {
     icon?: string
     sections: FormSection[]
     metrics?: MetricConfig[]
+    overviewFields?: string[]
 }

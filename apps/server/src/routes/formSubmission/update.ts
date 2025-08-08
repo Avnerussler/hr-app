@@ -15,6 +15,7 @@ router.post('/', async (req: Request, res: Response) => {
         )
 
         if (!updatedForm) {
+            logger.warn(`Form with ID ${id} not found for update`)
             res.status(404).json({ message: 'Form not found' })
         }
         res.status(200).json({ form: updatedForm })

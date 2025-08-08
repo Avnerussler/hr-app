@@ -1,7 +1,9 @@
 import { FC } from 'react'
 import { CellContext } from '@tanstack/react-table'
-import { Link, Tag, HStack, Text } from '@chakra-ui/react'
+import { Link, Tag, HStack, Text, Button } from '@chakra-ui/react'
 import { FormFields } from '@/types/fieldsType'
+import { useNavigate } from 'react-router-dom'
+import { useFormsQuery } from '@/hooks/queries/useFormQueries'
 
 interface TableCellProps {
     info: CellContext<FormFields, unknown>
@@ -10,6 +12,17 @@ interface TableCellProps {
 
 export const TableCell: FC<TableCellProps> = ({ info, field }) => {
     const value = info.getValue()
+    const navigate = useNavigate()
+    const { data: formsData } = useFormsQuery()
+
+    const handleForeignTableClick = (e: React.MouseEvent, foreignFormName: string, recordId: string) => {
+        e.preventDefault()
+        e.stopPropagation()
+        const targetForm = formsData?.forms?.find(form => form.formName === foreignFormName)
+        if (targetForm) {
+            navigate(`/${targetForm.formName}/${targetForm._id}?selectedRecord=${recordId}`)
+        }
+    }
 
     if (field.type === 'file' && value) {
         return (
@@ -28,13 +41,36 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
     }
 
     if (field.type === 'select') {
+        const selectedOption = field.options?.find(
+            (option) => option.value === value
+        )
+        
+        // Check if this is a foreign table field
+        if (field.foreignFormName && selectedOption) {
+            return (
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    color="primary"
+                    p={0}
+                    h="auto"
+                    minH="auto"
+                    fontWeight="normal"
+                    textDecoration="underline"
+                    _hover={{
+                        color: 'primary',
+                        opacity: 0.8,
+                    }}
+                    onClick={(e) => handleForeignTableClick(e, field.foreignFormName!, selectedOption.value)}
+                >
+                    {selectedOption.label}
+                </Button>
+            )
+        }
+        
         return (
             <Text>
-                {
-                    field.options?.find(
-                        (option) => option.value === value
-                    )?.label
-                }
+                {selectedOption?.label}
             </Text>
         )
     }
@@ -55,6 +91,11 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
                         bg="secondary"
                         color="secondary.foreground"
                         borderRadius="md"
+                        cursor={field.foreignFormName ? "pointer" : "default"}
+                        onClick={field.foreignFormName ? (e) => handleForeignTableClick(e, field.foreignFormName!, item.value) : undefined}
+                        _hover={field.foreignFormName ? {
+                            opacity: 0.8,
+                        } : undefined}
                     >
                         <Tag.Label fontSize="xs">
                             {item.label}

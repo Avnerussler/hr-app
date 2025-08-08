@@ -11,8 +11,8 @@ import {
     FaCalendar,
     FaProjectDiagram,
 } from 'react-icons/fa'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { PageHeader } from '../common/PageHeader'
 import { MetricCard } from '../common/MetricCard'
 import { DetailsDrawer } from '../common/DetailsDrawer'
@@ -31,7 +31,7 @@ interface DynamicFormPageProps {
 
 export function DynamicFormPage({ formId, formName }: DynamicFormPageProps) {
     const [searchTerm, setSearchTerm] = useState('')
-
+    const [searchParams] = useSearchParams()
     const navigate = useNavigate()
 
     // Query for form fields (including metrics config)
@@ -71,6 +71,17 @@ export function DynamicFormPage({ formId, formName }: DynamicFormPageProps) {
 
     const { formState, itemId } = useRouteContext()
     const IS_DRAWER_OPEN = useDrawerState()
+
+    // Handle selectedRecord query parameter for foreign table navigation
+    useEffect(() => {
+        const selectedRecord = searchParams.get('selectedRecord')
+        if (selectedRecord) {
+            // Navigate to edit route for the selected record
+            navigate(generateEditPath(formName, formId, selectedRecord), {
+                replace: true,
+            })
+        }
+    }, [searchParams, formName, formId, navigate])
 
     const handleRowAction = (
         action: string,

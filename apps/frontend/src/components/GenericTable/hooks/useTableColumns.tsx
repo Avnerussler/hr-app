@@ -17,15 +17,18 @@ export const useTableColumns = ({
     isSuccess,
 }: UseTableColumnsProps) => {
     const columns = useMemo(() => {
-        if (!formFields?.sections?.length) return []
+        if (!formFields?.sections?.length || !formFields?.overviewFields?.length) return []
 
-        // TODO: Make it more dynamic to handle different sections
-        // const sectionToRender = formFields?.sections?.find(
-        //     (section) => section.id === 'personalInformation'
-        // )
+        // Get all fields from all sections
+        const allFields = formFields.sections.flatMap(section => section.fields)
+        
+        // Filter fields to only include those in overviewFields array
+        const overviewFieldsToShow = formFields.overviewFields
+            .map(fieldName => allFields.find(field => field.name === fieldName))
+            .filter(field => field !== undefined)
 
-        return isSuccess && formFields?.sections?.length
-            ? formFields?.sections[0]!.fields.map((field) =>
+        return isSuccess && overviewFieldsToShow.length
+            ? overviewFieldsToShow.map((field) =>
                   columnHelper.accessor(
                       (row) => row[field.name as keyof typeof row],
                       {

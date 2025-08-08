@@ -2,15 +2,15 @@ import { FormFields } from '../models'
 import { checkIfFormExist } from './utils'
 import logger from '../config/logger'
 
-export const createRecruitForm = async () => {
+export const createPersonalForm = async () => {
     try {
-        const formName = 'Recruitment Form'
+        const formName = 'Personal'
         const isFormExist = await checkIfFormExist(formName)
         if (isFormExist) {
             logger.info(`${formName} exist! passing on migration`)
             return
         }
-        logger.info('Running on create form migration')
+        logger.info('Running Personal form migration')
 
         const formDocument = new FormFields({
             formName,
@@ -22,16 +22,22 @@ export const createRecruitForm = async () => {
                     name: 'מידע אישי',
                     fields: [
                         {
-                            _id: 'fullName',
-                            name: 'fullName',
+                            name: 'firstName',
                             type: 'text',
-                            label: 'שם מלא',
-                            placeholder: 'הזן שם מלא',
-                            required: false,
+                            label: 'שם פרטי',
+                            placeholder: 'הזן שם פרטי',
+                            required: true,
                             defaultValue: '',
                         },
                         {
-                            _id: 'userId',
+                            name: 'lastName',
+                            type: 'text',
+                            label: 'שם משפחה',
+                            placeholder: 'הזן שם משפחה',
+                            required: true,
+                            defaultValue: '',
+                        },
+                        {
                             name: 'userId',
                             type: 'number',
                             label: 'תעודת זהות',
@@ -40,60 +46,43 @@ export const createRecruitForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'maritalStatus',
-                            name: 'maritalStatus',
-                            type: 'select',
-                            label: 'מצב משפחתי',
-                            placeholder: 'בחר מצב משפחתי',
-                            required: false,
-                            defaultValue: '',
-                            options: [
-                                {
-                                    value: 'married',
-                                    label: 'נשוי.ה',
-                                    name: 'married',
-                                },
-                                {
-                                    value: 'single',
-                                    label: 'רווק.ה',
-                                    name: 'single',
-                                },
-                                { value: 'other', label: 'אחר', name: 'other' },
-                            ],
-                        },
-                        {
-                            _id: 'City',
-                            name: 'City',
-                            type: 'text',
-                            label: 'עיר',
-                            placeholder: 'הזן את שם העיר שלך',
+                            name: 'userId',
+                            type: 'number',
+                            label: 'מספר אישי',
+                            placeholder: 'הזן מספר אישי',
                             required: false,
                             defaultValue: '',
                         },
                         {
-                            _id: 'Phone',
-                            name: 'Phone',
+                            name: 'phone',
                             type: 'tel',
                             label: 'טלפון',
-                            placeholder: 'Enter your phone number',
+                            placeholder: 'הזן מספר טלפון',
                             required: false,
                             defaultValue: '',
                         },
                         {
-                            _id: 'Email',
-                            name: 'Email',
+                            name: 'email',
                             type: 'email',
                             label: 'אימייל',
-                            placeholder: 'Enter your email',
+                            placeholder: 'הזן אימייל',
                             required: false,
                             defaultValue: '',
                         },
                         {
-                            _id: 'Linkedin',
-                            name: 'Linkedin',
+                            name: 'city',
+                            type: 'text',
+                            label: 'עיר',
+                            placeholder: 'הזן את שם עיר המגורים',
+                            required: false,
+                            defaultValue: '',
+                        },
+
+                        {
+                            name: 'linkedin',
                             type: 'text',
                             label: 'לינקדאין',
-                            placeholder: 'הזן את שם המשתמש בלינקדאין',
+                            placeholder: 'הזן את שם המשתמש לינקדאין',
                             required: false,
                             defaultValue: '',
                         },
@@ -104,7 +93,6 @@ export const createRecruitForm = async () => {
                     name: 'פרטים מקצועיים',
                     fields: [
                         {
-                            _id: 'Category',
                             name: 'Category',
                             type: 'multipleSelect',
                             label: 'קטגוריה',
@@ -131,7 +119,6 @@ export const createRecruitForm = async () => {
                             ],
                         },
                         {
-                            _id: 'FieldOfExpertise',
                             name: 'FieldOfExpertise',
                             type: 'select',
                             label: 'תחום מקצועי',
@@ -159,7 +146,6 @@ export const createRecruitForm = async () => {
                             ],
                         },
                         {
-                            _id: 'Experience',
                             name: 'Experience',
                             type: 'select',
                             label: 'שנות ניסיון',
@@ -190,7 +176,6 @@ export const createRecruitForm = async () => {
                             ],
                         },
                         {
-                            _id: 'workPlace',
                             name: 'workPlace',
                             type: 'text',
                             label: 'מקום עבודה',
@@ -199,7 +184,6 @@ export const createRecruitForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'currentPosition',
                             name: 'currentPosition',
                             type: 'text',
                             label: 'תפקיד נוכחי',
@@ -208,7 +192,6 @@ export const createRecruitForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'Resume',
                             name: 'Resume',
                             type: 'file',
                             label: 'רזומה',
@@ -223,7 +206,6 @@ export const createRecruitForm = async () => {
                     name: 'מידע צבאי',
                     fields: [
                         {
-                            _id: 'RecruitmentYear',
                             name: 'RecruitmentYear',
                             type: 'date',
                             label: 'שנת גיוס',
@@ -232,7 +214,6 @@ export const createRecruitForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'DismissYear',
                             name: 'DismissYear',
                             type: 'date',
                             label: 'שנת שחרור',
@@ -241,7 +222,6 @@ export const createRecruitForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'reserveUnit',
                             name: 'reserveUnit',
                             type: 'text',
                             label: 'שיוך יחידה במילואים',
@@ -250,29 +230,36 @@ export const createRecruitForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'hasClassification',
-                            name: 'hasClassification',
-                            type: 'radio',
-                            label: 'האם מסווג',
-                            placeholder: 'האם מסווג',
-                            required: false,
-                            defaultValue: '',
-                            items: [
-                                { value: 'yes', label: 'כן' },
-                                { value: 'no', label: 'לא' },
-                            ],
-                        },
-                        {
-                            _id: 'classificationClass',
                             name: 'classificationClass',
                             type: 'text',
                             label: 'רמת סיווג',
                             placeholder: 'רמת סיווג',
                             required: false,
                             defaultValue: '',
+                            options: [
+                                {
+                                    value: '1',
+                                    label: '1',
+                                    name: '1',
+                                },
+                                {
+                                    value: '2',
+                                    label: '2',
+                                    name: '2',
+                                },
+                                {
+                                    value: '3',
+                                    label: '3',
+                                    name: '3',
+                                },
+                                {
+                                    value: 'no',
+                                    label: 'לא מסווג',
+                                    name: 'no',
+                                },
+                            ],
                         },
                         {
-                            _id: 'canBeRecited',
                             name: 'canBeRecited',
                             type: 'radio',
                             label: 'האם ניתן לזמן למילואים',
@@ -280,8 +267,8 @@ export const createRecruitForm = async () => {
                             required: false,
                             defaultValue: '',
                             items: [
-                                { value: 'yes', label: 'כן' },
-                                { value: 'no', label: 'לא' },
+                                { value: true, label: 'כן' },
+                                { value: false, label: 'לא' },
                             ],
                         },
                     ],
@@ -291,7 +278,6 @@ export const createRecruitForm = async () => {
                     name: 'השכלה וכישורים',
                     fields: [
                         {
-                            _id: 'degree',
                             name: 'degree',
                             type: 'text',
                             label: 'תואר אקדמי',
@@ -300,7 +286,6 @@ export const createRecruitForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'University',
                             name: 'University',
                             type: 'text',
                             label: 'מוסד לימודים',
@@ -309,7 +294,6 @@ export const createRecruitForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'studyArea',
                             name: 'studyArea',
                             type: 'text',
                             label: 'תחום לימודים',
@@ -318,7 +302,6 @@ export const createRecruitForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'yearOfGradation',
                             name: 'yearOfGradation',
                             type: 'date',
                             label: 'תאריך סיום לימודים',
@@ -327,7 +310,6 @@ export const createRecruitForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'extraCourses',
                             name: 'extraCourses',
                             type: 'textarea',
                             label: 'קורסים והסמכות נוספות',
@@ -336,7 +318,6 @@ export const createRecruitForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'workExperience',
                             name: 'workExperience',
                             type: 'textarea',
                             label: 'ניסיון תעסוקתי',
@@ -345,7 +326,6 @@ export const createRecruitForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'talentAndSkills',
                             name: 'talentAndSkills',
                             type: 'textarea',
                             label: 'כישרון ומיומניות',
@@ -354,7 +334,6 @@ export const createRecruitForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'referralSource',
                             name: 'referralSource',
                             type: 'text',
                             label: 'מקור הפניה',
@@ -365,10 +344,20 @@ export const createRecruitForm = async () => {
                     ],
                 },
             ],
+            overviewFields: [
+                'firstName',
+                'lastName',
+                'Email',
+                'Phone',
+                'Category',
+                'FieldOfExpertise',
+                'Experience',
+                'currentPosition',
+            ],
         })
 
         await formDocument.save()
     } catch (error) {
-        logger.error(' error:', error)
+        logger.error('Personal form migration error:', error)
     }
 }

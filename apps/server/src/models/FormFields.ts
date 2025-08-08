@@ -40,7 +40,7 @@ const FieldSchema = new Schema(
         placeholder: { type: String },
         required: { type: Boolean },
         defaultValue: { type: String },
-        foreignFormId: { type: mongoose.Types.ObjectId },
+        foreignFormName: { type: String },
         foreignField: { type: String },
         options: [OptionSchema],
         items: {
@@ -113,6 +113,7 @@ const FormSchema: Schema = new Schema<TFormFields>(
         icon: { type: String, default: '' },
         sections: [SectionSchema],
         metrics: [MetricConfigSchema],
+        overviewFields: { type: [String], default: [] },
     },
     { timestamps: true }
 )

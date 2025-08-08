@@ -21,25 +21,35 @@ export const createStudioForm = async () => {
                     name: 'Project Management',
                     fields: [
                         {
-                            _id: 'name',
-                            name: 'name',
+                            name: 'project name',
                             type: 'text',
-                            label: 'Name',
-                            placeholder: 'Enter first name',
-                            required: false,
+                            label: 'שם הפרויקט',
+                            placeholder: 'שם הפרויקט',
+                            required: true,
                             defaultValue: '',
                         },
                         {
-                            _id: 'lastName',
-                            name: 'lastName',
-                            type: 'text',
-                            label: 'Last Name',
-                            placeholder: 'Enter last name',
+                            name: 'project manager',
+                            type: 'select',
+                            label: 'מנהל פרויקט',
+                            placeholder: 'הזן את שם מנהל הפרויקט',
                             required: false,
                             defaultValue: '',
+                            foreignFormName: 'Personal',
+                            foreignField: 'firstName',
                         },
                         {
-                            _id: 'role',
+                            name: 'project personal',
+                            type: 'multipleSelect',
+                            label: 'אנשי צוות בפרויקט',
+                            placeholder: 'הזן את אנשי הצוות',
+                            required: false,
+                            defaultValue: '',
+                            foreignFormName: 'Personal',
+                            foreignField: 'firstName',
+                        },
+
+                        {
                             name: 'role',
                             type: 'text',
                             label: 'Role',
@@ -48,7 +58,6 @@ export const createStudioForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'project',
                             name: 'project',
                             type: 'text',
                             label: 'Project',
@@ -57,7 +66,6 @@ export const createStudioForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'manager',
                             name: 'manager',
                             type: 'text',
                             label: 'Manager',
@@ -66,7 +74,6 @@ export const createStudioForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'type',
                             name: 'type',
                             type: 'select',
                             label: 'Type',
@@ -92,7 +99,6 @@ export const createStudioForm = async () => {
                             ],
                         },
                         {
-                            _id: 'status',
                             name: 'status',
                             type: 'select',
                             label: 'Status',
@@ -118,7 +124,6 @@ export const createStudioForm = async () => {
                             ],
                         },
                         {
-                            _id: 'lastActive',
                             name: 'lastActive',
                             type: 'date',
                             label: 'Last Active',
@@ -127,7 +132,6 @@ export const createStudioForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            _id: 'nextActive',
                             name: 'nextActive',
                             type: 'date',
                             label: 'Next Active',
@@ -137,6 +141,11 @@ export const createStudioForm = async () => {
                         },
                     ],
                 },
+            ],
+            overviewFields: [
+                'project name',
+                'project manager',
+                'project personal',
             ],
         })
 

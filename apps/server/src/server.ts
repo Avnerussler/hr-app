@@ -5,7 +5,7 @@ import router from './routes'
 import connectDB from './config/db'
 import logger from './config/logger'
 import {
-    createRecruitForm,
+    createPersonalForm,
     createStudioForm,
     addMetricsToAllForms,
 } from './migrations'
@@ -32,7 +32,7 @@ const runMigrations = process.env.RUN_MIGRATIONS
 
 ;(async () => {
     if (runMigrations === 'true') {
-        await createRecruitForm()
+        await createPersonalForm()
         await createStudioForm()
         await addMetricsToAllForms()
         logger.info('Running migrations')
