@@ -11,10 +11,10 @@ interface TableContainerProps {
     onRowClick?: (rowId: string) => void
 }
 
-export const TableContainer: FC<TableContainerProps> = ({ 
-    table, 
-    submittedData, 
-    onRowClick 
+export const TableContainer: FC<TableContainerProps> = ({
+    table,
+    submittedData,
+    onRowClick,
 }) => {
     return (
         <Box
@@ -48,7 +48,6 @@ export const TableContainer: FC<TableContainerProps> = ({
                                     verticalAlign="middle"
                                     fontWeight="medium"
                                     whiteSpace="nowrap"
-                                    bg="muted/50"
                                 >
                                     {header.isPlaceholder
                                         ? null
@@ -63,7 +62,7 @@ export const TableContainer: FC<TableContainerProps> = ({
                 </Box>
 
                 {/* Table Body */}
-                <TableBody 
+                <TableBody
                     table={table}
                     submittedData={submittedData}
                     onRowClick={onRowClick}

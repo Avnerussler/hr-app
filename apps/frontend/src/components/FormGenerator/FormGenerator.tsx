@@ -7,6 +7,7 @@ import {
     ControlledInputField,
     ControlledMultipleSelectField,
     ControlledSelectField,
+    ControlledAttendanceField,
 } from '../ControlledFields'
 import { Control, FieldValues } from 'react-hook-form'
 import { RefObject } from 'react'
@@ -100,6 +101,15 @@ export const FormGenerator = ({
                         control={control}
                         key={id}
                         items={items}
+                        id={id}
+                    />
+                )
+            case 'attendance':
+                return (
+                    <ControlledAttendanceField
+                        {...props}
+                        control={control}
+                        key={id}
                         id={id}
                     />
                 )

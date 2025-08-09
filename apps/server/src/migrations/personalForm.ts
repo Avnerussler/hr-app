@@ -343,6 +343,20 @@ export const createPersonalForm = async () => {
                         },
                     ],
                 },
+                {
+                    id: 'attendance',
+                    name: 'נוכחות',
+                    fields: [
+                        {
+                            name: 'attendanceHistory',
+                            type: 'attendance',
+                            label: 'היסטוריית נוכחות',
+                            placeholder: 'הזן את פרטי הנוכחות',
+                            required: false,
+                            defaultValue: '',
+                        },
+                    ],
+                },
             ],
             overviewFields: [
                 'firstName',

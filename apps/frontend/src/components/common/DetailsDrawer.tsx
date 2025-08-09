@@ -1,4 +1,4 @@
-import { VStack, Tabs, Button, Flex, SimpleGrid } from '@chakra-ui/react'
+import { VStack, Tabs, Button, Flex, Box } from '@chakra-ui/react'
 import {
     DrawerRoot,
     DrawerContent,
@@ -99,13 +99,13 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
     }
     return (
         <DrawerRoot size="lg" open={isOpen} onOpenChange={onClose}>
-            <DrawerContent>
-                <DrawerHeader borderBottomWidth="1px">{title}</DrawerHeader>
+            <DrawerContent display="flex" flexDirection="column" h="100%">
+                <DrawerHeader borderBottomWidth="1px" flexShrink={0}>{title}</DrawerHeader>
                 <FormProvider {...methods}>
-                    <form onSubmit={handleSubmit(handleFormSubmit)}>
-                        <DrawerBody>
-                            <Tabs.Root defaultValue={defaultTab}>
-                                <Tabs.List>
+                    <Box as="form" onSubmit={handleSubmit(handleFormSubmit)} display="flex" flexDirection="column" flex="1">
+                        <DrawerBody flex="1" minH={0} display="flex" flexDirection="column">
+                            <Tabs.Root defaultValue={defaultTab} h="full" display="flex" flexDirection="column">
+                                <Tabs.List flexShrink={0} position="sticky" top={0} bg="bg" zIndex={1} borderBottomWidth="1px">
                                     {sections.map((section) => (
                                         <Tabs.Trigger
                                             key={section.id}
@@ -121,31 +121,27 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                                     <Tabs.Content
                                         key={section.id}
                                         value={section.id}
+                                        flex="1"
+                                        overflowY="auto"
+                                        minH={0}
                                     >
-                                        <VStack gap={4} align="stretch" mt={4}>
-                                            <SimpleGrid
-                                                columns={{ base: 1, md: 2 }}
-                                                gap={4}
-                                            >
-                                                {section.fields.map((field) => (
-                                                    <FormGenerator
-                                                        {...field}
-                                                        key={field._id}
-                                                        control={
-                                                            methods.control
-                                                        }
-                                                        id={field._id}
-                                                        name={field.name}
-                                                        type={field.type}
-                                                        label={field.label}
-                                                        placeholder={
-                                                            field.placeholder
-                                                        }
-                                                        options={field.options}
-                                                        items={field.items}
-                                                    />
-                                                ))}
-                                            </SimpleGrid>
+                                        <VStack gap={4} align="stretch" mt={4} pb={4}>
+                                            {section.fields.map((field) => (
+                                                <FormGenerator
+                                                    {...field}
+                                                    key={field._id}
+                                                    control={methods.control}
+                                                    id={field._id}
+                                                    name={field.name}
+                                                    type={field.type}
+                                                    label={field.label}
+                                                    placeholder={
+                                                        field.placeholder
+                                                    }
+                                                    options={field.options}
+                                                    items={field.items}
+                                                />
+                                            ))}
                                         </VStack>
                                     </Tabs.Content>
                                 ))}
@@ -153,7 +149,7 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                         </DrawerBody>
 
                         {/* {hasChanges && ( */}
-                        <DrawerFooter borderTopWidth="1px">
+                        <DrawerFooter borderTopWidth="1px" flexShrink={0}>
                             <Flex justify="space-between" width="100%">
                                 <Button variant="outline" onClick={onClose}>
                                     Cancel
@@ -164,7 +160,7 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                             </Flex>
                         </DrawerFooter>
                         {/* )} */}
-                    </form>
+                    </Box>
                 </FormProvider>
             </DrawerContent>
         </DrawerRoot>

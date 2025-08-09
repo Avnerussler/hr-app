@@ -173,12 +173,12 @@ export function DynamicFormPage({ formId, formName }: DynamicFormPageProps) {
                     />
                 ))}
             </Grid>
-
+            {/* 
             <SearchAndFilters
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
                 filters={filters}
-            />
+            /> */}
 
             <GenericTable
                 id={formId}
