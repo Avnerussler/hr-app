@@ -1,19 +1,15 @@
 import { FormFields } from '../models'
-import { checkIfFormExist } from './utils'
 import logger from '../config/logger'
+
+const CURRENT_VERSION = '1.1.4'
 
 export const createPersonalForm = async () => {
     try {
-        const formName = 'Personal'
-        const isFormExist = await checkIfFormExist(formName)
-        if (isFormExist) {
-            logger.info(`${formName} exist! passing on migration`)
-            return
-        }
-        logger.info('Running Personal form migration')
+        const formName = 'Personnel'
+        const existingForm = await FormFields.findOne({ formName })
 
-        const formDocument = new FormFields({
-            formName,
+        const formData = {
+            version: CURRENT_VERSION,
             description: 'Employee Management',
             icon: 'FiUsers',
             sections: [
@@ -45,14 +41,7 @@ export const createPersonalForm = async () => {
                             required: false,
                             defaultValue: '',
                         },
-                        {
-                            name: 'personalNumber',
-                            type: 'number',
-                            label: 'מספר אישי',
-                            placeholder: 'הזן מספר אישי',
-                            required: false,
-                            defaultValue: '',
-                        },
+
                         {
                             name: 'phone',
                             type: 'tel',
@@ -86,38 +75,24 @@ export const createPersonalForm = async () => {
                             required: false,
                             defaultValue: '',
                         },
+                        {
+                            name: 'isActive',
+                            type: 'radio',
+                            label: 'סטטוס',
+                            placeholder: 'סטטוס',
+                            required: false,
+                            defaultValue: true,
+                            items: [
+                                { value: true, label: 'פעיל' },
+                                { value: false, label: 'לא פעיל' },
+                            ],
+                        },
                     ],
                 },
                 {
                     id: 'professionalDetails',
                     name: 'פרטים מקצועיים',
                     fields: [
-                        {
-                            name: 'Category',
-                            type: 'multipleSelect',
-                            label: 'קטגוריה',
-                            placeholder: 'בחר קטגוריה',
-                            required: false,
-                            defaultValue: '',
-                            options: [
-                                {
-                                    value: 'Content Specialist',
-                                    label: 'מומחה תוכן',
-                                    name: 'Content Specialist',
-                                },
-                                {
-                                    value: 'Consultant',
-                                    label: 'יועץ',
-                                    name: 'Consultant',
-                                },
-                                {
-                                    value: 'Team Leader',
-                                    label: 'ראש צוות',
-                                    name: 'Team Leader',
-                                },
-                                { value: 'Other', label: 'אחר', name: 'Other' },
-                            ],
-                        },
                         {
                             name: 'FieldOfExpertise',
                             type: 'select',
@@ -206,6 +181,14 @@ export const createPersonalForm = async () => {
                     name: 'מידע צבאי',
                     fields: [
                         {
+                            name: 'personalNumber',
+                            type: 'number',
+                            label: 'מספר אישי',
+                            placeholder: 'הזן מספר אישי',
+                            required: false,
+                            defaultValue: '',
+                        },
+                        {
                             name: 'RecruitmentYear',
                             type: 'date',
                             label: 'שנת גיוס',
@@ -269,6 +252,32 @@ export const createPersonalForm = async () => {
                             items: [
                                 { value: true, label: 'כן' },
                                 { value: false, label: 'לא' },
+                            ],
+                        },
+                        {
+                            name: 'reserveCategory',
+                            type: 'select',
+                            label: 'אפיון',
+                            placeholder: 'בחר אפיון',
+                            required: false,
+                            defaultValue: '',
+                            options: [
+                                {
+                                    value: 'Content Specialist',
+                                    label: 'מומחה תוכן',
+                                    name: 'Content Specialist',
+                                },
+                                {
+                                    value: 'Consultant',
+                                    label: 'יועץ',
+                                    name: 'Consultant',
+                                },
+                                {
+                                    value: 'Team Leader',
+                                    label: 'ראש צוות',
+                                    name: 'Team Leader',
+                                },
+                                { value: 'Other', label: 'אחר', name: 'Other' },
                             ],
                         },
                     ],
@@ -361,17 +370,35 @@ export const createPersonalForm = async () => {
             overviewFields: [
                 'firstName',
                 'lastName',
-                'Email',
-                'Phone',
-                'Category',
-                'FieldOfExpertise',
-                'Experience',
-                'currentPosition',
+                'personalNumber',
+                'currentProject',
+                'reserveCategory',
+                'directBoss',
+                'isActive',
             ],
-        })
+        }
 
-        await formDocument.save()
+        if (existingForm) {
+            const existingVersion = existingForm.version || '1.0.0'
+            if (existingVersion === CURRENT_VERSION) {
+                logger.info(
+                    `${formName} form is up to date (v${CURRENT_VERSION})`
+                )
+                return
+            }
+            logger.info(
+                `Updating ${formName} form from v${existingVersion} to v${CURRENT_VERSION}`
+            )
+            await FormFields.updateOne({ formName }, formData)
+        } else {
+            logger.info(`Creating new ${formName} form (v${CURRENT_VERSION})`)
+            const formDocument = new FormFields({
+                formName,
+                ...formData,
+            })
+            await formDocument.save()
+        }
     } catch (error) {
-        logger.error('Personal form migration error:', error)
+        logger.error('Personnel form migration error:', error)
     }
 }

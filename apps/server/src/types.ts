@@ -51,7 +51,7 @@ export interface FormSection {
 export interface MetricCalculation {
     type: 'total' | 'filtered' | 'aggregated'
     field?: string
-    value?: string | number
+    value?: string | number | boolean
     aggregateField?: string
     operator?: '=' | '!=' | '>' | '<' | '>=' | '<=' | 'includes' | 'excludes'
 }
@@ -67,6 +67,7 @@ export interface MetricConfig {
 
 export interface IForm {
     formName: string
+    version?: string
     description?: string
     icon?: string
     sections: FormSection[]

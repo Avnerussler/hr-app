@@ -102,8 +102,8 @@ const personnelMetricsConfig: MetricConfig[] = [
         type: 'count',
         calculation: {
             type: 'filtered',
-            field: 'personnelStatus',
-            value: 'active',
+            field: 'isActive',
+            value: 'true',
             operator: '=',
         },
     },
@@ -115,8 +115,8 @@ const personnelMetricsConfig: MetricConfig[] = [
         type: 'count',
         calculation: {
             type: 'filtered',
-            field: 'personnelStatus',
-            value: 'notActive',
+            field: 'isActive',
+            value: 'false',
             operator: '=',
         },
     },
@@ -128,7 +128,7 @@ const personnelMetricsConfig: MetricConfig[] = [
         type: 'sum',
         calculation: {
             type: 'total',
-            aggregateField: 'personnelStatus',
+            aggregateField: 'isActive',
         },
     },
 ]
@@ -168,7 +168,7 @@ export const addMetricsToPersonnelForm = async () => {
         logger.info('Adding metrics configuration to Personnel form...')
 
         const result = await FormFields.updateOne(
-            { formName: 'Recruitment Form' }, // Hebrew name for Personnel
+            { formName: 'Personnel' }, // Hebrew name for Personnel
             {
                 $set: {
                     metrics: personnelMetricsConfig,

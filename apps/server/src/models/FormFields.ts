@@ -109,6 +109,7 @@ const SectionSchema = new Schema(
 const FormSchema: Schema = new Schema<TFormFields>(
     {
         formName: { type: String, required: true, unique: true },
+        version: { type: String, default: '1.0.0' },
         description: { type: String, default: '' },
         icon: { type: String, default: '' },
         sections: [SectionSchema],

@@ -1,18 +1,15 @@
 import { FormFields } from '../models'
-import { checkIfFormExist } from './utils'
 import logger from '../config/logger'
+
+const CURRENT_VERSION = '1.1.0'
 
 export const createStudioForm = async () => {
     try {
         const formName = 'Project Management'
-        const isFormExist = await checkIfFormExist(formName)
-        if (isFormExist) {
-            logger.info(`${formName} exist! passing on migration`)
-            return
-        }
-
-        const formDocument = new FormFields({
-            formName,
+        const existingForm = await FormFields.findOne({ formName })
+        
+        const formData = {
+            version: CURRENT_VERSION,
             description: 'Project Tracking',
             icon: 'FiFolder',
             sections: [
@@ -147,10 +144,25 @@ export const createStudioForm = async () => {
                 'project manager',
                 'project personal',
             ],
-        })
+        }
 
-        await formDocument.save()
+        if (existingForm) {
+            const existingVersion = existingForm.version || '1.0.0'
+            if (existingVersion === CURRENT_VERSION) {
+                logger.info(`${formName} form is up to date (v${CURRENT_VERSION})`)
+                return
+            }
+            logger.info(`Updating ${formName} form from v${existingVersion} to v${CURRENT_VERSION}`)
+            await FormFields.updateOne({ formName }, formData)
+        } else {
+            logger.info(`Creating new ${formName} form (v${CURRENT_VERSION})`)
+            const formDocument = new FormFields({
+                formName,
+                ...formData
+            })
+            await formDocument.save()
+        }
     } catch (error) {
-        logger.error(' error:', error)
+        logger.error('Project Management form migration error:', error)
     }
 }
