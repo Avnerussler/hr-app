@@ -1,5 +1,4 @@
 import { Field } from '@chakra-ui/react'
-
 import { Switch } from '../ui/switch'
 import { FieldType } from '@/types/fieldsType'
 import {
@@ -106,16 +105,17 @@ export const FormGenerator = ({
                 )
             case 'attendance':
                 return (
-                    <ControlledAttendanceField
-                        {...props}
-                        control={control}
-                        key={id}
-                        id={id}
-                    />
+                    <Field.Root key={id} flex="1" minH={0} display="flex" flexDirection="column">
+                        <ControlledAttendanceField
+                            {...props}
+                            control={control}
+                            id={id}
+                        />
+                    </Field.Root>
                 )
             default:
                 return null
         }
     }
-    return <div>{renderField(type)}</div>
+    return <>{renderField(type)}</>
 }

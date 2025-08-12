@@ -1470,3 +1470,290 @@
 {"level":"info","message":"GET /formSubmission/689619f91e8706676dbec34a - Request received","timestamp":"2025-08-09T21:27:11.976Z"}
 {"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-09T21:27:17.250Z"}
 {"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-09T21:27:17.336Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-09T21:27:55.635Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-09T21:27:55.638Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-09T21:27:55.708Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-09T21:27:55.709Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-09T22:00:04.995Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-09T22:00:04.996Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-09T22:00:04.997Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-09T22:00:05.003Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-09T23:53:42.598Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-09T23:53:42.600Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-09T23:53:42.600Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-09T23:53:43.116Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-09T23:58:49.790Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-09T23:58:49.791Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-09T23:58:49.791Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-09T23:58:49.815Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-10T00:05:50.060Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-10T00:05:50.061Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T00:05:50.061Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-10T00:05:50.069Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-10T00:28:57.078Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-10T00:28:57.079Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T00:28:57.079Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-10T00:28:57.598Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-10T01:56:48.079Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-10T01:56:48.081Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T01:56:48.081Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-10T01:56:48.122Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-10T03:31:59.717Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-10T03:31:59.718Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T03:31:59.719Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-10T03:31:59.739Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-10T03:44:51.985Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-10T03:44:51.988Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T03:44:51.988Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-10T03:44:52.503Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-10T05:42:18.253Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-10T05:42:18.254Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T05:42:18.254Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-10T05:42:18.285Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-10T05:43:38.002Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-10T05:43:38.005Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-10T05:43:38.068Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T05:43:38.069Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-10T06:50:27.825Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-10T06:50:27.826Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:50:27.826Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-10T06:50:27.831Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-10T06:50:30.025Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-10T06:50:30.028Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-10T06:50:30.066Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:50:30.067Z"}
+{"level":"info","message":"Getting form with ID: 689619f91e8706676dbec34a","timestamp":"2025-08-10T06:50:32.098Z"}
+{"level":"info","message":"GET /formSubmission/689619f91e8706676dbec34a - Request received","timestamp":"2025-08-10T06:50:32.099Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:50:34.414Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:50:35.850Z"}
+{"level":"info","message":"POST /formSubmission - Request received","timestamp":"2025-08-10T06:50:51.742Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-10T06:50:54.096Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-10T06:50:54.099Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-10T06:50:54.148Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:50:54.150Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-10T06:50:58.476Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-10T06:50:58.480Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-10T06:50:58.534Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:50:58.535Z"}
+{"level":"info","message":"POST /formSubmission - Request received","timestamp":"2025-08-10T06:51:10.176Z"}
+{"level":"info","message":"POST /formSubmission - Request received","timestamp":"2025-08-10T06:51:21.684Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:51:24.312Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:51:25.423Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:51:31.555Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:51:32.319Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:51:35.098Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:51:35.740Z"}
+{"level":"info","message":"POST /formSubmission/update - Request received","timestamp":"2025-08-10T06:51:47.704Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:51:47.776Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-10T06:51:49.548Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-10T06:51:49.551Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-10T06:51:49.627Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:51:49.628Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:51:50.409Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-10T06:51:54.372Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-10T06:51:54.375Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-10T06:51:54.452Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:51:54.454Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:51:57.543Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:52:00.667Z"}
+{"level":"info","message":"POST /formSubmission/update - Request received","timestamp":"2025-08-10T06:52:05.468Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:52:05.544Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:52:07.470Z"}
+{"level":"info","message":"POST /formSubmission/update - Request received","timestamp":"2025-08-10T06:52:12.773Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:52:12.841Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:52:13.989Z"}
+{"level":"info","message":"POST /formSubmission/update - Request received","timestamp":"2025-08-10T06:52:19.083Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:52:19.149Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:52:21.312Z"}
+{"level":"info","message":"POST /formSubmission/update - Request received","timestamp":"2025-08-10T06:52:30.062Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:52:30.139Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-10T06:52:31.481Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-11T16:13:54.340Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-11T16:13:54.351Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-11T16:14:28.758Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-11T16:14:28.770Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-11T16:14:28.774Z"}
+{"level":"info","message":"Personal exist! passing on migration","timestamp":"2025-08-11T16:14:28.784Z"}
+{"level":"info","message":"Project Management exist! passing on migration","timestamp":"2025-08-11T16:14:28.787Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-11T16:14:28.787Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-11T16:14:28.787Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-11T16:14:28.794Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-11T16:14:28.794Z"}
+{"level":"info","message":"Personnel form not found","timestamp":"2025-08-11T16:14:28.796Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-11T16:14:28.796Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-11T16:14:28.796Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-11T16:14:50.888Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:14:50.891Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:14:52.817Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-11T16:14:52.819Z"}
+{"level":"info","message":"GET /formSubmission/689619f91e8706676dbec34a - Request received","timestamp":"2025-08-11T16:14:56.277Z"}
+{"level":"info","message":"Getting form with ID: 689619f91e8706676dbec34a","timestamp":"2025-08-11T16:14:56.280Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:14:59.268Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:14:59.379Z"}
+{"level":"info","message":"GET /formSubmission/689619f91e8706676dbec34a - Request received","timestamp":"2025-08-11T16:15:07.013Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:15:08.087Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:15:09.049Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:16:03.806Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-11T16:16:06.733Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-11T16:16:06.738Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-11T16:16:06.814Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:16:06.816Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:17:08.213Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:18:06.984Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:19:07.394Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:19:30.792Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:19:47.140Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-11T16:20:59.824Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-11T16:20:59.828Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-11T16:20:59.881Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:20:59.882Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:21:39.438Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:22:02.575Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:22:55.822Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:25:21.445Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-11T16:25:27.557Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-11T16:25:27.561Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-11T16:25:27.613Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:25:27.616Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:26:16.170Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:26:36.926Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:26:50.989Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:28:13.612Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:28:14.975Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:28:27.661Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:30:13.601Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:30:13.673Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-11T16:30:16.250Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-11T16:30:16.253Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-11T16:30:16.308Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:30:16.310Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-11T16:30:37.099Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-11T16:30:37.104Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-11T16:30:37.179Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:30:37.181Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:31:11.596Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:31:11.691Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-11T16:31:13.779Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-11T16:31:13.782Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-11T16:31:13.839Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:31:13.841Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:32:06.613Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:32:07.211Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:32:19.619Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:32:21.070Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:32:35.982Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:35:08.601Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:35:57.966Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:36:03.649Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-11T16:36:05.330Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-11T16:36:05.334Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-11T16:36:05.389Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:36:05.391Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:36:31.501Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:37:49.507Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-11T16:37:52.291Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-11T16:37:52.294Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-11T16:37:52.349Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:37:52.351Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:38:05.653Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:38:34.514Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:38:37.220Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:40:04.611Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:40:12.664Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:40:49.085Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:40:51.320Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:40:52.812Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:41:04.969Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:41:12.316Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-11T16:41:17.707Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-11T16:41:17.710Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-11T16:41:17.766Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:41:17.769Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:42:00.599Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:42:15.032Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-11T16:42:18.748Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-11T16:42:18.752Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-11T16:42:18.841Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:42:18.843Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:42:26.141Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:44:09.630Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:44:09.977Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-11T16:44:14.762Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-12T16:58:18.219Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-12T16:58:18.230Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-12T16:59:28.938Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-12T16:59:28.946Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-12T16:59:28.949Z"}
+{"level":"info","message":"Personal exist! passing on migration","timestamp":"2025-08-12T16:59:28.962Z"}
+{"level":"info","message":"Project Management exist! passing on migration","timestamp":"2025-08-12T16:59:28.963Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-12T16:59:28.963Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-12T16:59:28.964Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-12T16:59:28.970Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-12T16:59:28.970Z"}
+{"level":"info","message":"Personnel form not found","timestamp":"2025-08-12T16:59:28.973Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-12T16:59:28.973Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-12T16:59:28.973Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-12T16:59:29.563Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-12T16:59:29.568Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-12T16:59:31.113Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T16:59:31.117Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T16:59:32.455Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-12T17:00:49.523Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-12T17:00:49.528Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-12T17:00:49.581Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:00:49.586Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-12T17:01:08.626Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-12T17:01:08.636Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-12T17:01:08.639Z"}
+{"level":"info","message":"Personal exist! passing on migration","timestamp":"2025-08-12T17:01:08.646Z"}
+{"level":"info","message":"Project Management exist! passing on migration","timestamp":"2025-08-12T17:01:08.647Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-12T17:01:08.647Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-12T17:01:08.648Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-12T17:01:08.655Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-12T17:01:08.655Z"}
+{"level":"info","message":"Personnel form not found","timestamp":"2025-08-12T17:01:08.657Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-12T17:01:08.657Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-12T17:01:08.657Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-12T17:01:09.356Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-12T17:01:09.363Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-12T17:01:09.436Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:01:09.441Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:12:20.901Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-12T17:12:20.902Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-12T17:12:23.118Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:12:23.120Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-12T17:12:23.122Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-12T17:12:25.315Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-12T17:12:25.319Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-12T17:12:25.376Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:12:25.379Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:12:53.837Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:13:22.893Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:13:29.889Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:13:30.141Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:13:40.880Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:13:41.859Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:13:49.601Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:13:56.901Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:13:58.687Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:14:09.884Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:14:10.003Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:14:21.921Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:14:22.878Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:14:25.914Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:14:26.715Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:14:43.211Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:14:47.881Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:14:48.664Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:15:01.868Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:15:06.865Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:15:11.323Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-12T17:20:23.622Z"}
+{"level":"info","message":"Getting form with ID: 6897b38542c49cff9405a9bc","timestamp":"2025-08-12T17:20:23.623Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:20:23.624Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-12T17:20:23.625Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:21:46.479Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:22:22.381Z"}
+{"level":"info","message":"POST /formSubmission/update - Request received","timestamp":"2025-08-12T17:22:47.395Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:22:47.484Z"}
+{"level":"info","message":"GET /formSubmission/6897b38542c49cff9405a9bc - Request received","timestamp":"2025-08-12T17:22:49.204Z"}

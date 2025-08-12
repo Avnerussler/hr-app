@@ -46,7 +46,7 @@ export const createPersonalForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            name: 'userId',
+                            name: 'personalNumber',
                             type: 'number',
                             label: 'מספר אישי',
                             placeholder: 'הזן מספר אישי',

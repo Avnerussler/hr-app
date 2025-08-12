@@ -100,12 +100,14 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
     return (
         <DrawerRoot size="lg" open={isOpen} onOpenChange={onClose}>
             <DrawerContent display="flex" flexDirection="column" h="100%">
-                <DrawerHeader borderBottomWidth="1px" flexShrink={0}>{title}</DrawerHeader>
+                <DrawerHeader borderBottomWidth="1px" flexShrink={0}>
+                    {title}
+                </DrawerHeader>
                 <FormProvider {...methods}>
-                    <Box as="form" onSubmit={handleSubmit(handleFormSubmit)} display="flex" flexDirection="column" flex="1">
-                        <DrawerBody flex="1" minH={0} display="flex" flexDirection="column">
-                            <Tabs.Root defaultValue={defaultTab} h="full" display="flex" flexDirection="column">
-                                <Tabs.List flexShrink={0} position="sticky" top={0} bg="bg" zIndex={1} borderBottomWidth="1px">
+                    <Box as="form" onSubmit={handleSubmit(handleFormSubmit)}>
+                        <DrawerBody>
+                            <Tabs.Root defaultValue={defaultTab}>
+                                <Tabs.List position="sticky">
                                     {sections.map((section) => (
                                         <Tabs.Trigger
                                             key={section.id}
@@ -123,9 +125,9 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                                         value={section.id}
                                         flex="1"
                                         overflowY="auto"
-                                        minH={0}
+                                        maxH={'calc(100vh - 155px)'}
                                     >
-                                        <VStack gap={4} align="stretch" mt={4} pb={4}>
+                                        <VStack gap={4} align="stretch" pb={4}>
                                             {section.fields.map((field) => (
                                                 <FormGenerator
                                                     {...field}

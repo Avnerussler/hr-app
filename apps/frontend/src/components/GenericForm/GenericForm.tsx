@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Button, Stack } from '@chakra-ui/react'
+import { Button } from '@chakra-ui/react'
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import { FormGenerator } from '../FormGenerator'
 import { useQuery } from '@tanstack/react-query'
@@ -67,7 +67,7 @@ export const GenericForm: FC<GenericFormProps> = ({
 
         if (isSuccess && formFields.sections.length > 0) {
             return (
-                <Stack>
+                <>
                     {formFields.sections[0].fields.map((field) => {
                         return (
                             <FormGenerator
@@ -88,7 +88,7 @@ export const GenericForm: FC<GenericFormProps> = ({
                     <Button type="submit">
                         {formMode === 'create' ? 'Create' : 'Update'}
                     </Button>
-                </Stack>
+                </>
             )
         }
     }

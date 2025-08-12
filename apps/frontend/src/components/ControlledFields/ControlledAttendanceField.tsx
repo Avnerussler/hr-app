@@ -24,7 +24,6 @@ interface ControlledAttendanceFieldProps extends FieldValues {
 export const ControlledAttendanceField = ({
     control,
     name,
-    label,
     id,
 }: ControlledAttendanceFieldProps) => {
     const { fields, append, remove } = useFieldArray({
@@ -66,9 +65,14 @@ export const ControlledAttendanceField = ({
     }
 
     return (
-        <Field.Root key={id} orientation="vertical">
-            <Field.Label>{label}</Field.Label>
-
+        <Field.Root
+            key={id}
+            orientation="vertical"
+            flex="1"
+            minH={0}
+            display="flex"
+            flexDirection="column"
+        >
             {fields.length === 0 && (
                 <Text color="fg.muted" fontSize="sm" mb={3}>
                     No attendance entries. Click "Add Day" to get started.
@@ -107,14 +111,16 @@ export const ControlledAttendanceField = ({
                                             </Field.Root>
                                         )}
                                     />
-                                    
+
                                     <Flex gap={3} align="end">
                                         <Box flex="1">
                                             <Controller
                                                 name={`${name}.${index}.timeStart`}
                                                 control={control}
                                                 defaultValue=""
-                                                render={({ field: startField }) => (
+                                                render={({
+                                                    field: startField,
+                                                }) => (
                                                     <Field.Root>
                                                         <Field.Label fontSize="sm">
                                                             Start Time
@@ -134,7 +140,9 @@ export const ControlledAttendanceField = ({
                                                 name={`${name}.${index}.timeEnd`}
                                                 control={control}
                                                 defaultValue=""
-                                                render={({ field: endField }) => (
+                                                render={({
+                                                    field: endField,
+                                                }) => (
                                                     <Field.Root>
                                                         <Field.Label fontSize="sm">
                                                             End Time
@@ -162,7 +170,7 @@ export const ControlledAttendanceField = ({
                                     >
                                         <FiTrash2 />
                                     </IconButton>
-                                    
+
                                     <Flex
                                         align="center"
                                         gap={2}
