@@ -18,15 +18,19 @@ export const ControlledTextareaField: FC<ControlledTextareaFieldProps> = ({
             name={name}
             control={control}
             defaultValue={props.defaultValue}
+            rules={{
+                required: props.required ? `${label} הוא שדה חובה` : false,
+                validate: (value) => {
+                    if (props.required && !value) {
+                        return `${label} הוא שדה חובה`
+                    }
+                    return true
+                },
+            }}
             render={({ field }) => (
                 <Field.Root key={id} orientation="vertical">
                     <Field.Label>{label}</Field.Label>
-                    <Textarea
-                        {...field}
-                        // {...props}
-                        autoresize
-                        id={id.toString()}
-                    />
+                    <Textarea {...field} autoresize id={id.toString()} />
                 </Field.Root>
             )}
         />

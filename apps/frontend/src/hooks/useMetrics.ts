@@ -14,13 +14,11 @@ export const useMetrics = (
 ): CalculatedMetric[] => {
     return useMemo(() => {
         if (!metricsConfig || metricsConfig.length === 0) {
-            console.log('No metrics config provided')
             return []
         }
 
         // If no data, return metrics with 0 values
         if (!data || data.length === 0) {
-            console.log('No data provided, returning metrics with 0 values')
             return metricsConfig.map((metric) => ({
                 id: metric.id,
                 title: metric.title,
@@ -32,7 +30,6 @@ export const useMetrics = (
 
         return metricsConfig.map((metric) => {
             const value = calculateMetric(data, metric.calculation)
-            console.log(`Calculated metric "${metric.title}": ${value}`)
             return {
                 id: metric.id,
                 title: metric.title,

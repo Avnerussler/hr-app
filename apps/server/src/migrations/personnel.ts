@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.1.4'
+const CURRENT_VERSION = '1.1.8'
 
 export const createPersonalForm = async () => {
     try {
@@ -24,6 +24,7 @@ export const createPersonalForm = async () => {
                             placeholder: 'הזן שם פרטי',
                             required: true,
                             defaultValue: '',
+                            errorMessage: 'שם פרטי הוא שדה חובה',
                         },
                         {
                             name: 'lastName',
@@ -32,6 +33,7 @@ export const createPersonalForm = async () => {
                             placeholder: 'הזן שם משפחה',
                             required: true,
                             defaultValue: '',
+                            errorMessage: 'שם משפחה הוא שדה חובה',
                         },
                         {
                             name: 'userId',
@@ -213,6 +215,42 @@ export const createPersonalForm = async () => {
                             defaultValue: '',
                         },
                         {
+                            name: 'projectAssign',
+                            type: 'text',
+                            label: 'שיוך לפרויקט',
+                            placeholder: 'שיוך לפרויקט',
+                            required: false,
+                            defaultValue: '',
+                        },
+                        {
+                            name: 'rule',
+                            type: 'text',
+                            label: 'תפקיד',
+                            placeholder: 'תפקיד',
+                            required: false,
+                            defaultValue: '',
+                        },
+                        {
+                            name: 'directBoss',
+                            type: 'text',
+                            label: 'מנהל ישיר',
+                            placeholder: 'מנהל ישיר',
+                            required: false,
+                            defaultValue: '',
+                        },
+                        {
+                            name: 'isOfficer',
+                            type: 'radio',
+                            label: 'מעמד קצונה',
+                            placeholder: 'מעמד קצונה',
+                            required: false,
+                            defaultValue: '',
+                            items: [
+                                { value: true, label: 'קצין' },
+                                { value: false, label: 'לא קצין' },
+                            ],
+                        },
+                        {
                             name: 'classificationClass',
                             type: 'text',
                             label: 'רמת סיווג',
@@ -247,6 +285,18 @@ export const createPersonalForm = async () => {
                             type: 'radio',
                             label: 'האם ניתן לזמן למילואים',
                             placeholder: 'האם ניתן לזמן למילואים',
+                            required: false,
+                            defaultValue: '',
+                            items: [
+                                { value: true, label: 'כן' },
+                                { value: false, label: 'לא' },
+                            ],
+                        },
+                        {
+                            name: 'activeOrderToday',
+                            type: 'radio',
+                            label: 'צו פעיל היום',
+                            placeholder: 'צו פעיל היום',
                             required: false,
                             defaultValue: '',
                             items: [
@@ -371,9 +421,11 @@ export const createPersonalForm = async () => {
                 'firstName',
                 'lastName',
                 'personalNumber',
-                'currentProject',
+                'projectAssign',
                 'reserveCategory',
+                'rule',
                 'directBoss',
+                'activeOrderToday',
                 'isActive',
             ],
         }

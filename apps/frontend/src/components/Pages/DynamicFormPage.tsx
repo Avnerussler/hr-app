@@ -39,7 +39,6 @@ export function DynamicFormPage({ formId, formName }: DynamicFormPageProps) {
         queryKey: ['formFields/get', formId],
         staleTime: 1000 * 60 * 5,
     })
-    console.log(' formFields:', formFields)
 
     // Query for submitted data (table rows)
     const { data: submittedData } = useQuery<AllFormSubmission>({
@@ -105,7 +104,6 @@ export function DynamicFormPage({ formId, formName }: DynamicFormPageProps) {
             collection: statusOptions,
             onValueChange: (value: FilterOption[] | { value: string[] }) => {
                 // Filter logic handled by GenericTable
-                console.log('Status filter changed:', value)
             },
             placeholder: 'Select status',
         },
@@ -114,7 +112,6 @@ export function DynamicFormPage({ formId, formName }: DynamicFormPageProps) {
             collection: typeOptions,
             onValueChange: (value: FilterOption[] | { value: string[] }) => {
                 // Filter logic handled by GenericTable
-                console.log('Type filter changed:', value)
             },
             placeholder: 'Select type',
         },

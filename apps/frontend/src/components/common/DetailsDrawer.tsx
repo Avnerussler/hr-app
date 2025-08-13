@@ -12,7 +12,7 @@ import {
     FieldValues,
     SubmitHandler,
 } from 'react-hook-form'
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { FormGenerator } from '../FormGenerator/FormGenerator'
 import { FormFields, IForm } from '@/types/fieldsType'
 import { AllFormSubmission } from '@/types/formType'
@@ -38,6 +38,7 @@ interface DetailsDrawerProps {
 export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
     const methods = useForm()
     const { reset, handleSubmit } = methods
+    const [activeTab, setActiveTab] = useState<string | undefined>(undefined)
 
     const { formName, formId, formState, itemId } = useRouteContext()
     // Initialize mutation hooks
@@ -65,6 +66,21 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
         }
     }, [formState, reset, itemId, submittedData?.forms])
 
+    // Function to find the first tab containing validation errors
+    const findTabWithErrors = (
+        errors: any,
+        sections: Section[]
+    ): string | null => {
+        for (const section of sections) {
+            for (const field of section.fields) {
+                if (errors[field.name]) {
+                    return section.id
+                }
+            }
+        }
+        return null
+    }
+
     const handleFormSubmit: SubmitHandler<FieldValues> = (data) => {
         if (itemId) {
             // Update existing employee
@@ -91,9 +107,18 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
         reset(data)
     }
 
-    const sections: Section[] = formFields?.sections || []
-    // Get default active tab (first section)
-    const defaultTab = sections[0]?.id
+    const handleFormError = (errors: any) => {
+        const errorTab = findTabWithErrors(errors, sections)
+        if (errorTab) {
+            setActiveTab(errorTab)
+        }
+    }
+
+    const sections: Section[] = useMemo(
+        () => formFields?.sections || [],
+        [formFields]
+    )
+
     if (formFieldsLoading) {
         return null
     }
@@ -104,14 +129,26 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                     {title}
                 </DrawerHeader>
                 <FormProvider {...methods}>
-                    <Box as="form" onSubmit={handleSubmit(handleFormSubmit)}>
+                    <Box
+                        as="form"
+                        onSubmit={handleSubmit(
+                            handleFormSubmit,
+                            handleFormError
+                        )}
+                    >
                         <DrawerBody>
-                            <Tabs.Root defaultValue={defaultTab}>
+                            <Tabs.Root
+                                defaultValue={sections[0]?.id}
+                                value={activeTab}
+                            >
                                 <Tabs.List position="sticky">
                                     {sections.map((section) => (
                                         <Tabs.Trigger
                                             key={section.id}
                                             value={section.id}
+                                            onClick={() =>
+                                                setActiveTab(section.id)
+                                            }
                                         >
                                             {section.name}
                                         </Tabs.Trigger>

@@ -42,9 +42,7 @@ export const queryClient = new QueryClient({
             onError: (error) => {
                 console.error('Mutation Error:', error)
             },
-            onSuccess: () => {
-                console.log('Mutation Success')
-            },
+            onSuccess: () => {},
             throwOnError: true,
             mutationFn: defaultMutationFn as MutationFunction<unknown, unknown>,
         },

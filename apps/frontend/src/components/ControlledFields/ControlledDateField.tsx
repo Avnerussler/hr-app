@@ -17,6 +17,7 @@ export const ControlledDateField = ({
             name={name}
             control={control}
             defaultValue={props.defaultValue}
+            rules={{ required: props.required }}
             render={({ field }) => (
                 <Field.Root key={id} orientation="vertical">
                     <Field.Label>{label}</Field.Label>

@@ -17,15 +17,27 @@ export const ControlledInputField = ({
             name={name}
             control={control}
             defaultValue={props.defaultValue}
-            render={({ field }) => (
-                <Field.Root key={id} orientation="vertical">
+            rules={{
+                required: props.required ? `${label} הוא שדה חובה` : false,
+                validate: (value) => {
+                    if (props.required && !value) {
+                        return `${label}הוא שדה חובה`
+                    }
+                    return true
+                },
+            }}
+            render={({ field, fieldState: { error } }) => (
+                <Field.Root key={id} orientation="vertical" invalid={!!error}>
                     <Field.Label>{label}</Field.Label>
                     <Input
                         {...field}
-                        // {...props}
                         type={type}
                         id={id.toString()}
+                        borderColor={error ? 'red.500' : undefined}
                     />
+                    {error && (
+                        <Field.ErrorText>{error.message}</Field.ErrorText>
+                    )}
                 </Field.Root>
             )}
         />

@@ -39,7 +39,6 @@ export const GenericForm: FC<GenericFormProps> = ({
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
         try {
             if (formMode === 'update' && defaultValues?._id) {
-                console.log(' data:', data)
                 updateMutation.mutate({
                     formData: data,
                     id: defaultValues._id,
