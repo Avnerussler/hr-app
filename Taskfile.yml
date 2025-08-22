@@ -1,0 +1,85 @@
+version: '3'
+
+tasks:
+  frontend:
+    desc: Run the frontend development server
+    dir: apps/frontend
+    cmd: npm run dev
+
+  server:
+    desc: Run the server development server
+    dir: apps/server
+    cmd: npm run dev
+
+  docker:
+    desc: Run the complete application with Docker Compose
+    dir: apps/server
+    cmd: npm run docker:compose
+
+  docker:build:
+    desc: Build Docker images for frontend and backend
+    cmds:
+      - task: docker:build:frontend
+      - task: docker:build:server
+
+  docker:build:frontend:
+    desc: Build frontend Docker image
+    dir: apps/frontend
+    cmd: npm run docker:build
+
+  docker:build:server:
+    desc: Build server Docker image
+    dir: apps/server
+    cmd: npm run docker:build
+
+  install:
+    desc: Install dependencies for both frontend and server
+    cmds:
+      - task: install:frontend
+      - task: install:server
+
+  install:frontend:
+    desc: Install frontend dependencies
+    dir: apps/frontend
+    cmd: npm install
+
+  install:server:
+    desc: Install server dependencies
+    dir: apps/server
+    cmd: npm install
+
+  build:
+    desc: Build both frontend and server
+    cmds:
+      - task: build:frontend
+      - task: build:server
+
+  build:frontend:
+    desc: Build frontend
+    dir: apps/frontend
+    cmd: npm run build
+
+  build:server:
+    desc: Build server
+    dir: apps/server
+    cmd: npm run build
+
+  lint:
+    desc: Run linting for frontend
+    dir: apps/frontend
+    cmd: npm run lint
+
+  dev:
+    desc: Run both frontend and server in development mode
+    deps: [frontend, server]
+
+  clean:
+    desc: Clean build artifacts and node_modules
+    cmds:
+      - rm -rf apps/frontend/dist apps/frontend/node_modules
+      - rm -rf apps/server/dist apps/server/node_modules
+
+  docker:down:
+    desc: Stop and remove Docker containers
+    dir: apps/server
+    cmd: docker compose -f 'docker/compose.yml' down

@@ -1,13 +1,13 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.1.0'
+const CURRENT_VERSION = '1.1.6'
 
 export const createStudioForm = async () => {
     try {
         const formName = 'Project Management'
         const existingForm = await FormFields.findOne({ formName })
-        
+
         const formData = {
             version: CURRENT_VERSION,
             description: 'Project Tracking',
@@ -18,7 +18,7 @@ export const createStudioForm = async () => {
                     name: 'Project Management',
                     fields: [
                         {
-                            name: 'project name',
+                            name: 'projectName',
                             type: 'text',
                             label: 'שם הפרויקט',
                             placeholder: 'שם הפרויקט',
@@ -26,23 +26,23 @@ export const createStudioForm = async () => {
                             defaultValue: '',
                         },
                         {
-                            name: 'project manager',
+                            name: 'projectManager',
                             type: 'select',
                             label: 'מנהל פרויקט',
                             placeholder: 'הזן את שם מנהל הפרויקט',
                             required: false,
                             defaultValue: '',
-                            foreignFormName: 'Personal',
+                            foreignFormName: 'Personnel',
                             foreignField: 'firstName',
                         },
                         {
-                            name: 'project personal',
+                            name: 'projectPersonnel',
                             type: 'multipleSelect',
                             label: 'אנשי צוות בפרויקט',
                             placeholder: 'הזן את אנשי הצוות',
                             required: false,
                             defaultValue: '',
-                            foreignFormName: 'Personal',
+                            foreignFormName: 'Personnel',
                             foreignField: 'firstName',
                         },
 
@@ -96,26 +96,26 @@ export const createStudioForm = async () => {
                             ],
                         },
                         {
-                            name: 'status',
+                            name: 'projectStatus',
                             type: 'select',
-                            label: 'Status',
-                            placeholder: 'Select status',
+                            label: 'סטטוס הפרוייקט',
+                            placeholder: 'בחר סטטוס',
                             required: false,
-                            defaultValue: '',
+                            defaultValue: 'active',
                             options: [
                                 {
                                     value: 'active',
-                                    label: 'Active',
+                                    label: 'פעיל',
                                     name: 'active',
                                 },
                                 {
                                     value: 'inactive',
-                                    label: 'Inactive',
+                                    label: 'לא פעיל',
                                     name: 'inactive',
                                 },
                                 {
                                     value: 'pending',
-                                    label: 'Pending',
+                                    label: 'מושהה',
                                     name: 'pending',
                                 },
                             ],
@@ -140,25 +140,30 @@ export const createStudioForm = async () => {
                 },
             ],
             overviewFields: [
-                'project name',
-                'project manager',
-                'project personal',
+                'projectName',
+                'projectManager',
+                'projectPersonnel',
+                'projectStatus',
             ],
         }
 
         if (existingForm) {
             const existingVersion = existingForm.version || '1.0.0'
             if (existingVersion === CURRENT_VERSION) {
-                logger.info(`${formName} form is up to date (v${CURRENT_VERSION})`)
+                logger.info(
+                    `${formName} form is up to date (v${CURRENT_VERSION})`
+                )
                 return
             }
-            logger.info(`Updating ${formName} form from v${existingVersion} to v${CURRENT_VERSION}`)
+            logger.info(
+                `Updating ${formName} form from v${existingVersion} to v${CURRENT_VERSION}`
+            )
             await FormFields.updateOne({ formName }, formData)
         } else {
             logger.info(`Creating new ${formName} form (v${CURRENT_VERSION})`)
             const formDocument = new FormFields({
                 formName,
-                ...formData
+                ...formData,
             })
             await formDocument.save()
         }

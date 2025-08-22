@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { Flex, Box, Button } from '@chakra-ui/react'
-import { FiX } from 'react-icons/fi'
+import { FiX, FiDownload } from 'react-icons/fi'
 import { DebouncedInput } from '../../DebounceInput'
 
 interface TableControlsProps {
@@ -9,6 +9,7 @@ interface TableControlsProps {
     handleClearFilters: () => void
     sorting: any[]
     columnFilters: any[]
+    onExportToExcel?: () => void
 }
 
 export const TableControls: FC<TableControlsProps> = ({
@@ -17,6 +18,7 @@ export const TableControls: FC<TableControlsProps> = ({
     handleClearFilters,
     sorting,
     columnFilters,
+    onExportToExcel,
 }) => {
     return (
         <Flex gap={2} align="center">
@@ -27,6 +29,22 @@ export const TableControls: FC<TableControlsProps> = ({
                     placeholder="חפש בכל העמודות..."
                 />
             </Box>
+            {onExportToExcel && (
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onExportToExcel}
+                    bg="card"
+                    borderColor="border"
+                    color="foreground"
+                    _hover={{
+                        bg: 'muted',
+                    }}
+                >
+                    <FiDownload />
+                    Export Excel
+                </Button>
+            )}
             <Button
                 variant="outline"
                 size="sm"
