@@ -3158,3 +3158,49 @@
 {"level":"info","message":"Got partialData of forms","timestamp":"2025-08-22T15:30:46.748Z"}
 {"level":"info","message":"Getting form with ID: 689b91c64a64e6b6b341f91c","timestamp":"2025-08-22T15:30:46.836Z"}
 {"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-22T15:30:46.838Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-22T15:40:32.062Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-22T15:40:32.063Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-22T15:40:32.124Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-22T15:40:32.128Z"}
+{"level":"info","message":"Getting form with ID: 689b91c64a64e6b6b341f91c","timestamp":"2025-08-22T15:40:32.683Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-22T15:40:32.685Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-22T15:41:18.942Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-22T15:41:18.955Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-22T15:41:18.958Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.8)","timestamp":"2025-08-22T15:41:18.977Z"}
+{"level":"info","message":"Project Management form is up to date (v1.1.6)","timestamp":"2025-08-22T15:41:18.981Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-22T15:41:18.981Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-22T15:41:18.981Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-22T15:41:18.993Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-22T15:41:18.993Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-08-22T15:41:18.997Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-22T15:41:18.997Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-22T15:41:18.997Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-22T15:41:43.348Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-22T15:41:43.363Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-22T15:41:43.366Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.8)","timestamp":"2025-08-22T15:41:43.382Z"}
+{"level":"info","message":"Project Management form is up to date (v1.1.6)","timestamp":"2025-08-22T15:41:43.387Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-22T15:41:43.388Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-22T15:41:43.388Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-22T15:41:43.394Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-22T15:41:43.394Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-08-22T15:41:43.397Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-22T15:41:43.397Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-22T15:41:43.397Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-22T15:41:48.743Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-22T15:41:48.750Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-22T15:41:48.830Z"}
+{"level":"info","message":"Getting form with ID: 689b91c64a64e6b6b341f91c","timestamp":"2025-08-22T15:41:48.836Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-22T15:41:51.985Z"}
+{"level":"info","message":"POST /formSubmission/update - Request received","timestamp":"2025-08-22T15:41:58.428Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-22T15:41:58.518Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-22T15:42:02.864Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-22T15:42:02.871Z"}
+{"level":"info","message":"Getting form with ID: 689b91c64a64e6b6b341f91c","timestamp":"2025-08-22T15:42:02.923Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-22T15:42:02.928Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-22T15:42:05.000Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-22T15:42:05.002Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-22T15:42:06.208Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-22T15:42:54.867Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-22T15:42:57.173Z"}
