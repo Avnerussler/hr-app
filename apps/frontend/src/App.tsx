@@ -7,6 +7,7 @@ import { useFormsQuery } from './hooks/queries/useFormQueries'
 import { Box, Spinner, Center } from '@chakra-ui/react'
 import { TodaysOverview } from './components/Pages/TodaysOverview'
 import { Dashboard } from './components/Pages/Dashboard'
+import WorkHours from './components/Pages/WorkHours'
 
 const LoadingSpinner = () => (
     <Center h="100vh">
@@ -21,6 +22,7 @@ const LoadingSpinner = () => (
 const staticRoutes = [
     { path: 'overview', element: <TodaysOverview /> },
     { path: 'dashboard', element: <Dashboard /> },
+    { path: 'work-hours', element: <WorkHours /> },
 ]
 const createDynamicRouter = (formsData: any) => {
     const dynamicRoutes = formsData?.forms

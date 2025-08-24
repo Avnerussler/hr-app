@@ -52,7 +52,7 @@ export function Projects() {
                 description="Track and manage all your team projects."
                 action={{
                     label: 'New Project',
-                    icon: <Plus />,
+                    icon: Plus,
                     onClick: () => {},
                 }}
             />

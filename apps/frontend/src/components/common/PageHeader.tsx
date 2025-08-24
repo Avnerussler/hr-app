@@ -1,30 +1,77 @@
-import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react'
-import { ReactNode } from 'react'
+import { Box, Button, Flex, Heading, Text, HStack } from '@chakra-ui/react'
+import { IconType } from 'react-icons'
+
+interface PageHeaderAction {
+    label: string
+    icon?: IconType
+    variant?: 'solid' | 'outline' | 'ghost'
+    onClick: () => void
+    disabled?: boolean
+}
 
 interface PageHeaderProps {
     title: string
     description?: string
-    action?: {
-        label: string
-        icon?: ReactNode
-        onClick: () => void
-    }
+    icon?: IconType
+    action?: PageHeaderAction
+    actions?: PageHeaderAction[]
 }
 
-export function PageHeader({ title, description, action }: PageHeaderProps) {
+export function PageHeader({
+    title,
+    description,
+    icon: Icon,
+    action,
+    actions,
+}: PageHeaderProps) {
+    const allActions = actions || (action ? [action] : [])
+
     return (
         <Flex justify="space-between" align="center" mb={6}>
             <Box>
-                <Heading size="lg">{title}</Heading>
-                {description && (
-                    <Text color="gray.500">{description}</Text>
-                )}
+                <HStack gap={3} align="center">
+                    {Icon && (
+                        <Box
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            w="48px"
+                            h="48px"
+                            bg="primary"
+                            borderRadius="lg"
+                            shadow="sm"
+                        >
+                            <Icon
+                                size="24px"
+                                color="var(--primary-foreground)"
+                            />
+                        </Box>
+                    )}
+                    <Box>
+                        <Heading size="lg">{title}</Heading>
+                        {description && (
+                            <Text color="gray.500">{description}</Text>
+                        )}
+                    </Box>
+                </HStack>
             </Box>
-            {action && (
-                <Button onClick={action.onClick}>
-                    {action.icon}
-                    {action.label}
-                </Button>
+            {allActions.length > 0 && (
+                <HStack gap={2}>
+                    {allActions.map((actionItem, index) => {
+                        const ActionIcon = actionItem.icon
+                        return (
+                            <Button
+                                key={index}
+                                onClick={actionItem.onClick}
+                                variant={actionItem.variant || 'solid'}
+                                disabled={actionItem.disabled}
+                            >
+                                {ActionIcon && <ActionIcon />}
+                                {actionItem.label}
+                            </Button>
+                        )
+                    })}
+                </HStack>
             )}
         </Flex>
     )

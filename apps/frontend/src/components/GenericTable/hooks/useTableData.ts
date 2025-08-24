@@ -14,7 +14,7 @@ export const useTableData = ({ id }: UseTableDataProps) => {
     })
 
     const { data: submittedData } = useQuery<AllFormSubmission>({
-        queryKey: ['formSubmission/get', id],
+        queryKey: ['formSubmission', id],
     })
 
     const data = useMemo(

@@ -13,6 +13,7 @@ import {
     FiActivity,
     FiBarChart2,
     FiCalendar,
+    FiClock,
     FiFolder,
     FiLogOut,
     FiUser,
@@ -38,6 +39,12 @@ export function Layout() {
             label: 'Dashboard',
             icon: FiBarChart2,
             description: 'Analytics & Insights',
+        },
+        {
+            id: 'work-hours',
+            label: 'Work Hours',
+            icon: FiClock,
+            description: 'Time Management',
         },
     ]
 

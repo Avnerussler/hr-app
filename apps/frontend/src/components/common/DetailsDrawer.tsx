@@ -45,7 +45,7 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
     const createEmployeeMutation = useCreateFormSubmission()
     const updateEmployeeMutation = useUpdateFormSubmission()
     const { data: submittedData } = useQuery<AllFormSubmission>({
-        queryKey: ['formSubmission/get', formId],
+        queryKey: ['formSubmission', formId],
     })
 
     const { data: formFields, isLoading: formFieldsLoading } = useQuery<IForm>({

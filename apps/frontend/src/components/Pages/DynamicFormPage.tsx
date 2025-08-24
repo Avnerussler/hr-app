@@ -42,7 +42,7 @@ export function DynamicFormPage({ formId, formName }: DynamicFormPageProps) {
 
     // Query for submitted data (table rows)
     const { data: submittedData } = useQuery<AllFormSubmission>({
-        queryKey: ['formSubmission/get', formId],
+        queryKey: ['formSubmission', formId],
     })
 
     // Calculate metrics using the generic hook
@@ -146,7 +146,7 @@ export function DynamicFormPage({ formId, formName }: DynamicFormPageProps) {
                 action={{
                     label: `Add ${formName}`,
                     onClick: handleAddNew,
-                    icon: <FaPlus />,
+                    icon: FaPlus,
                 }}
             />
 

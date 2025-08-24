@@ -50,7 +50,7 @@ export const useCreateFormSubmission = () => {
         },
         onSuccess(data, { formId }) {
             queryClient.setQueryData(
-                ['formSubmission/get', formId],
+                ['formSubmission', formId],
                 (oldData: AllFormSubmission | undefined) => {
                     return oldData
                         ? { forms: [...oldData.forms, data.form] }
@@ -94,7 +94,7 @@ export const useUpdateFormSubmission = () => {
         onSuccess(data, { formId, id }) {
             // Update the cache with the updated form submission
             queryClient.setQueryData(
-                ['formSubmission/get', formId],
+                ['formSubmission', formId],
                 (oldData: AllFormSubmission | undefined) => {
                     if (!oldData) return { forms: [data.form] }
 
@@ -149,7 +149,7 @@ export const useDeleteFormSubmission = () => {
         onSuccess(_, { formId, id }) {
             // Update the cache by removing the deleted form submission
             queryClient.setQueryData(
-                ['formSubmission/get', formId],
+                ['formSubmission', formId],
                 (oldData: AllFormSubmission | undefined) => {
                     if (!oldData) return { forms: [] }
 

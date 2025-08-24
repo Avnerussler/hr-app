@@ -42,7 +42,7 @@ export default function PersonnelPage() {
 
     // Query for submitted data (table rows)
     const { data: submittedData } = useQuery<AllFormSubmission>({
-        queryKey: ['formSubmission/get', EMPLOYEE_FORM_ID],
+        queryKey: ['formSubmission', EMPLOYEE_FORM_ID],
     })
 
     // Initialize form sections based on Employee interface
@@ -123,7 +123,7 @@ export default function PersonnelPage() {
                 description="Manage your team members and their information."
                 action={{
                     label: 'Add Employee',
-                    icon: <FaPlus />,
+                    icon: FaPlus,
                     onClick: handleAddNewEmployee,
                 }}
             />

@@ -3204,3 +3204,1138 @@
 {"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-22T15:42:06.208Z"}
 {"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-22T15:42:54.867Z"}
 {"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-22T15:42:57.173Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-22T15:47:40.436Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-22T15:47:40.446Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-22T16:03:22.221Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-22T16:03:22.229Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-22T16:03:22.230Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-22T16:03:22.744Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-22T20:38:37.838Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-22T20:38:37.838Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-22T20:38:37.839Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-22T20:38:37.858Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T01:23:28.659Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-23T01:23:28.661Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-23T01:23:28.661Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T01:23:29.174Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-23T16:57:26.972Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-23T16:57:26.976Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T16:57:26.976Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T16:57:27.489Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T18:44:54.956Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T18:44:54.961Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-23T18:44:55.127Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-23T18:44:55.129Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T19:58:17.239Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T19:58:17.440Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-23T19:58:18.123Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-23T19:58:18.123Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-23T19:58:47.414Z"}
+{"level":"info","message":"Getting form with ID: 689b91c64a64e6b6b341f91c","timestamp":"2025-08-23T19:58:48.820Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-23T19:58:48.822Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-23T19:58:49.411Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-23T19:58:57.716Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-23T19:58:59.443Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-23T20:02:06.648Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-23T20:02:48.635Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T20:03:29.647Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-23T20:03:29.649Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T20:03:29.650Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-23T20:04:45.128Z"}
+{"level":"info","message":"Getting form with ID: 689b91c64a64e6b6b341f91c","timestamp":"2025-08-23T20:04:45.129Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-23T20:04:55.497Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-23T20:06:10.911Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T20:11:57.405Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T20:11:57.408Z"}
+{"level":"info","message":"Getting form with ID: 689b91c64a64e6b6b341f91c","timestamp":"2025-08-23T20:11:57.498Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-23T20:11:57.500Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:11:59.439Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:11:59.444Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:11:59.445Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:16:13.418Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:16:13.419Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:16:13.420Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:16:45.067Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:16:45.069Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:16:45.070Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-23T20:16:53.420Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:16:56.196Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:16:56.196Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:16:56.199Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T20:16:58.317Z"}
+{"level":"info","message":"Getting form with ID: 689b91c64a64e6b6b341f91c","timestamp":"2025-08-23T20:16:58.319Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T20:16:58.321Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-23T20:16:58.322Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:17:03.679Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:17:03.681Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:17:03.682Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:17:55.423Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:17:55.424Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:17:55.425Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:18:11.765Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:18:11.766Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:18:11.768Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:18:45.240Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:18:45.241Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:18:45.242Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:19:17.744Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:19:17.745Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:19:17.746Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:19:24.750Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:19:24.752Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:19:24.753Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:19:34.208Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:19:34.209Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:19:34.210Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:19:54.664Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:19:54.664Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:19:54.667Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-23T20:22:25.989Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-23T20:22:26.010Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-23T20:22:26.013Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.8)","timestamp":"2025-08-23T20:22:26.033Z"}
+{"level":"info","message":"Project Management form is up to date (v1.1.6)","timestamp":"2025-08-23T20:22:26.037Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-23T20:22:26.037Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-23T20:22:26.037Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-23T20:22:26.043Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-23T20:22:26.044Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-08-23T20:22:26.050Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-23T20:22:26.050Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-23T20:22:26.050Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-23T20:44:48.882Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-23T20:44:48.893Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-23T20:44:48.897Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.8)","timestamp":"2025-08-23T20:44:48.944Z"}
+{"level":"info","message":"Project Management form is up to date (v1.1.6)","timestamp":"2025-08-23T20:44:48.950Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-23T20:44:48.951Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-23T20:44:48.951Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-23T20:44:48.960Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-23T20:44:48.961Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-08-23T20:44:48.968Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-23T20:44:48.968Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-23T20:44:48.968Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T20:45:01.390Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T20:45:01.397Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:45:01.473Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:45:01.478Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:45:01.481Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:46:33.817Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:46:33.818Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:46:33.818Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:48:01.182Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:48:01.183Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:48:01.184Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:48:32.665Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:48:32.668Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:48:32.670Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T20:48:35.247Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T20:48:35.252Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:48:35.320Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:48:35.324Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:48:35.328Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:50:00.888Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:50:00.889Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:50:00.891Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:53:19.249Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:53:19.250Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:53:19.251Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T20:57:15.634Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T20:57:15.639Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T20:57:15.683Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T20:57:15.686Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:57:15.689Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:57:15.690Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:57:15.691Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-25/2025-08-31 - Request received","timestamp":"2025-08-23T20:57:21.227Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-25/2025-08-31 - Request received","timestamp":"2025-08-23T20:57:21.229Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:57:30.171Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:57:30.177Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:57:30.180Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:57:40.537Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:57:40.539Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:57:40.541Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T20:57:44.731Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T20:57:44.735Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:57:44.793Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:57:44.794Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T20:57:44.795Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:57:44.799Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T20:57:44.800Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:57:56.277Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:57:56.278Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:57:56.279Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:58:12.318Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:58:12.319Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:58:12.319Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:58:12.348Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:58:12.349Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:58:12.350Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-25/2025-08-31 - Request received","timestamp":"2025-08-23T20:58:14.373Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-25/2025-08-31 - Request received","timestamp":"2025-08-23T20:58:14.375Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-11/2025-08-17 - Request received","timestamp":"2025-08-23T20:58:15.417Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-11/2025-08-17 - Request received","timestamp":"2025-08-23T20:58:15.419Z"}
+{"level":"info","message":"GET /workHours/range/2025-09-01/2025-09-07 - Request received","timestamp":"2025-08-23T20:58:17.326Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-09-01/2025-09-07 - Request received","timestamp":"2025-08-23T20:58:17.328Z"}
+{"level":"info","message":"GET /workHours/range/2025-09-08/2025-09-14 - Request received","timestamp":"2025-08-23T20:58:18.002Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-09-08/2025-09-14 - Request received","timestamp":"2025-08-23T20:58:18.004Z"}
+{"level":"info","message":"GET /workHours/range/2025-09-15/2025-09-21 - Request received","timestamp":"2025-08-23T20:58:19.261Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-09-15/2025-09-21 - Request received","timestamp":"2025-08-23T20:58:19.262Z"}
+{"level":"info","message":"GET /workHours/range/2025-09-22/2025-09-28 - Request received","timestamp":"2025-08-23T20:58:19.710Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-09-22/2025-09-28 - Request received","timestamp":"2025-08-23T20:58:19.711Z"}
+{"level":"info","message":"GET /workHours/range/2025-09-29/2025-10-05 - Request received","timestamp":"2025-08-23T20:58:20.237Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-09-29/2025-10-05 - Request received","timestamp":"2025-08-23T20:58:20.238Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:58:25.840Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:58:25.841Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:58:25.842Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:58:26.766Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:58:26.767Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:58:26.767Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:58:51.726Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:58:51.727Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:58:51.730Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:59:01.806Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:59:01.808Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:59:01.809Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:59:32.468Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:59:32.469Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:59:32.471Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T20:59:39.823Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T20:59:39.827Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:59:43.566Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:59:43.567Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:59:43.568Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T20:59:43.569Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T20:59:43.569Z"}
+{"level":"info","message":"GET /formSubmission/your-project-form-id - Request received","timestamp":"2025-08-23T20:59:45.916Z"}
+{"message":"Error getting forms:","stack":"CastError: Cast to ObjectId failed for value \"your-project-form-id\" (type string) at path \"formId\" for model \"form_submissions\"\n    at SchemaObjectId.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schema/objectId.js:251:11)\n    at SchemaObjectId.SchemaType.applySetters (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1255:12)\n    at SchemaObjectId.SchemaType.castForQuery (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/schemaType.js:1673:17)\n    at cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/cast.js:390:32)\n    at model.Query.Query.cast (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4907:12)\n    at model.Query.Query._castConditions (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2325:10)\n    at model.Query._find (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:2352:8)\n    at model.Query.exec (/Users/avner-private/Documents/hr-app/apps/server/node_modules/mongoose/lib/query.js:4456:80)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","stringValue":"\"your-project-form-id\"","kind":"ObjectId","value":"your-project-form-id","path":"formId","reason":{},"valueType":"string","level":"error","timestamp":"2025-08-23T20:59:45.918Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:59:45.919Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T20:59:53.161Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T21:00:01.031Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T21:00:01.084Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T21:00:11.840Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T21:00:14.110Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:00:19.866Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:00:19.869Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:00:19.938Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:00:19.940Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T21:00:19.943Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T21:00:29.697Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T21:00:29.720Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:00:35.101Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:00:35.105Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:00:35.166Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:00:35.168Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T21:00:35.169Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T21:00:41.012Z"}
+{"level":"info","message":"GET /formSubmission/685ec2b38ee85d51bd55233b - Request received","timestamp":"2025-08-23T21:01:37.509Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:01:37.514Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:01:39.518Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:01:39.521Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:01:39.584Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:01:39.587Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:01:39.588Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:01:49.501Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:01:49.505Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:01:49.563Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:01:49.565Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:01:49.566Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:02:02.743Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:02:02.746Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:02:02.804Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:02:02.807Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:02:02.810Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:02:16.160Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:02:16.163Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:02:16.223Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:02:16.225Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:02:16.226Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9445b460f55175c6e63c/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:02:32.348Z"}
+{"message":"Error updating work hour entry by employee and date:","stack":"Error: Cannot set headers after they are sent to the client\n    at ServerResponse.setHeader (node:_http_outgoing:699:11)\n    at ServerResponse.header (/Users/avner-private/Documents/hr-app/apps/server/node_modules/express/lib/response.js:794:10)\n    at ServerResponse.send (/Users/avner-private/Documents/hr-app/apps/server/node_modules/express/lib/response.js:174:12)\n    at ServerResponse.json (/Users/avner-private/Documents/hr-app/apps/server/node_modules/express/lib/response.js:278:15)\n    at /Users/avner-private/Documents/hr-app/apps/server/src/routes/workHours/update.ts:188:25\n    at Generator.next (<anonymous>)\n    at fulfilled (/Users/avner-private/Documents/hr-app/apps/server/src/routes/workHours/update.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","code":"ERR_HTTP_HEADERS_SENT","level":"error","timestamp":"2025-08-23T21:02:32.359Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-23T21:03:21.215Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-23T21:03:21.233Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-23T21:03:21.237Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.8)","timestamp":"2025-08-23T21:03:21.253Z"}
+{"level":"info","message":"Project Management form is up to date (v1.1.6)","timestamp":"2025-08-23T21:03:21.259Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-23T21:03:21.260Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-23T21:03:21.260Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-23T21:03:21.271Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-23T21:03:21.271Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-08-23T21:03:21.278Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-23T21:03:21.278Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-23T21:03:21.279Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:03:25.502Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:03:25.509Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:03:25.563Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:03:25.568Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:03:25.572Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9445b460f55175c6e63c/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:03:51.253Z"}
+{"message":"Error updating work hour entry by employee and date:","stack":"Error: Cannot set headers after they are sent to the client\n    at ServerResponse.setHeader (node:_http_outgoing:699:11)\n    at ServerResponse.header (/Users/avner-private/Documents/hr-app/apps/server/node_modules/express/lib/response.js:794:10)\n    at ServerResponse.send (/Users/avner-private/Documents/hr-app/apps/server/node_modules/express/lib/response.js:174:12)\n    at ServerResponse.json (/Users/avner-private/Documents/hr-app/apps/server/node_modules/express/lib/response.js:278:15)\n    at /Users/avner-private/Documents/hr-app/apps/server/src/routes/workHours/update.ts:188:25\n    at Generator.next (<anonymous>)\n    at fulfilled (/Users/avner-private/Documents/hr-app/apps/server/src/routes/workHours/update.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","code":"ERR_HTTP_HEADERS_SENT","level":"error","timestamp":"2025-08-23T21:03:51.264Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-23T21:04:41.722Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-23T21:04:41.742Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-23T21:04:41.759Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.8)","timestamp":"2025-08-23T21:04:41.782Z"}
+{"level":"info","message":"Project Management form is up to date (v1.1.6)","timestamp":"2025-08-23T21:04:41.789Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-23T21:04:41.790Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-23T21:04:41.790Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-23T21:04:41.798Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-23T21:04:41.799Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-08-23T21:04:41.807Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-23T21:04:41.807Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-23T21:04:41.807Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:04:52.068Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:04:52.076Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:04:52.129Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:04:52.134Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:04:52.139Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-25/2025-08-31 - Request received","timestamp":"2025-08-23T21:06:01.122Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-25/2025-08-31 - Request received","timestamp":"2025-08-23T21:06:01.127Z"}
+{"level":"info","message":"GET /workHours/range/2025-09-01/2025-09-07 - Request received","timestamp":"2025-08-23T21:06:04.432Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-09-01/2025-09-07 - Request received","timestamp":"2025-08-23T21:06:04.435Z"}
+{"level":"info","message":"GET /workHours/range/2025-09-08/2025-09-14 - Request received","timestamp":"2025-08-23T21:06:05.211Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-09-08/2025-09-14 - Request received","timestamp":"2025-08-23T21:06:05.214Z"}
+{"level":"info","message":"GET /workHours/range/2025-09-15/2025-09-21 - Request received","timestamp":"2025-08-23T21:06:05.838Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-09-15/2025-09-21 - Request received","timestamp":"2025-08-23T21:06:05.840Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-09-22/2025-09-28 - Request received","timestamp":"2025-08-23T21:06:06.453Z"}
+{"level":"info","message":"GET /workHours/range/2025-09-22/2025-09-28 - Request received","timestamp":"2025-08-23T21:06:06.454Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:07:42.457Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:07:53.707Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:07:53.708Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-23T21:10:03.190Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-23T21:10:03.208Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-23T21:10:03.211Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.8)","timestamp":"2025-08-23T21:10:03.234Z"}
+{"level":"info","message":"Project Management form is up to date (v1.1.6)","timestamp":"2025-08-23T21:10:03.238Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-23T21:10:03.238Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-23T21:10:03.238Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-23T21:10:03.247Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-23T21:10:03.247Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-08-23T21:10:03.260Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-23T21:10:03.260Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-23T21:10:03.260Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:12:22.206Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:12:22.209Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:12:22.211Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:12:22.214Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:12:22.218Z"}
+{"query":{},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:12:22.218Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:12:24.324Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:12:24.329Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:12:24.360Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:12:24.364Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:12:25.237Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:12:25.240Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:12:25.279Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:12:25.282Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:12:50.217Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:12:50.221Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:12:50.257Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:12:50.262Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:12:51.546Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:12:51.550Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:12:51.589Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:12:51.591Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:13:30.689Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:13:30.692Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:13:30.756Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:13:30.757Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-23T21:15:34.942Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-23T21:15:34.974Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-23T21:15:34.978Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.8)","timestamp":"2025-08-23T21:15:35.008Z"}
+{"level":"info","message":"Project Management form is up to date (v1.1.6)","timestamp":"2025-08-23T21:15:35.019Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-23T21:15:35.020Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-23T21:15:35.020Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-23T21:15:35.037Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-23T21:15:35.037Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-08-23T21:15:35.044Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-23T21:15:35.044Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-23T21:15:35.045Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:16:03.258Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:16:03.258Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:16:03.266Z"}
+{"formName":"Project Management","query":{"formName":"Project Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:16:03.266Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:16:41.763Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:16:41.772Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:16:41.808Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:16:41.813Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:16:41.817Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:16:41.817Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:16:41.819Z"}
+{"formName":"Project Management","query":{"formName":"Project Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:16:41.819Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:18:00.824Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:18:00.824Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:18:08.183Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:18:08.189Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:18:08.224Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:18:08.227Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:18:08.230Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:18:08.230Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:18:08.233Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:18:08.233Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:21:57.439Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:21:57.441Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:21:57.441Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:21:57.444Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:21:57.444Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:22:46.835Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:22:46.843Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:22:46.876Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:22:46.879Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:22:46.884Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:22:46.885Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:22:46.887Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:22:46.887Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:22:47.927Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:22:47.929Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:22:47.991Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:22:47.993Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:22:47.993Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:22:47.993Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:22:47.994Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:22:47.994Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:24:30.770Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:24:30.773Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:24:30.837Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:24:30.839Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:24:30.840Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:24:30.841Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:24:30.848Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:24:30.848Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:26:01.897Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:26:01.901Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:26:01.935Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:26:01.936Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:26:01.937Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:26:01.937Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:26:01.938Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:26:01.938Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:26:17.657Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:26:17.662Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:26:17.720Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:26:17.722Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:26:17.723Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:26:17.724Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:26:17.726Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:26:17.726Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:27:14.805Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:27:14.809Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:27:14.875Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:27:14.878Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:27:14.885Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:27:14.886Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:27:14.889Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:27:14.889Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:28:06.767Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:28:06.771Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:28:06.831Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:28:06.834Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:28:06.836Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:28:06.837Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:28:06.839Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:28:06.839Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:29:32.527Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:29:32.531Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:29:32.565Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:29:32.569Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:29:32.570Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:29:32.570Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:29:32.572Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:29:32.572Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:29:39.919Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:29:39.923Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:29:39.983Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:29:39.985Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:29:39.986Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:29:39.986Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:29:39.989Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:29:39.989Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:31:12.426Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:31:12.432Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:31:12.466Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:31:12.468Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:31:12.469Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:31:12.469Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:31:12.471Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:31:12.471Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:31:16.174Z"}
+{"message":"Error updating work hour entry by employee and date:","stack":"Error: Cannot set headers after they are sent to the client\n    at ServerResponse.setHeader (node:_http_outgoing:699:11)\n    at ServerResponse.header (/Users/avner-private/Documents/hr-app/apps/server/node_modules/express/lib/response.js:794:10)\n    at ServerResponse.send (/Users/avner-private/Documents/hr-app/apps/server/node_modules/express/lib/response.js:174:12)\n    at ServerResponse.json (/Users/avner-private/Documents/hr-app/apps/server/node_modules/express/lib/response.js:278:15)\n    at /Users/avner-private/Documents/hr-app/apps/server/src/routes/workHours/update.ts:188:25\n    at Generator.next (<anonymous>)\n    at fulfilled (/Users/avner-private/Documents/hr-app/apps/server/src/routes/workHours/update.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","code":"ERR_HTTP_HEADERS_SENT","level":"error","timestamp":"2025-08-23T21:31:16.184Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-23T21:31:34.344Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-23T21:31:34.370Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-23T21:31:34.376Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.8)","timestamp":"2025-08-23T21:31:34.413Z"}
+{"level":"info","message":"Project Management form is up to date (v1.1.6)","timestamp":"2025-08-23T21:31:34.416Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-23T21:31:34.416Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-23T21:31:34.416Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-23T21:31:34.433Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-23T21:31:34.433Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-08-23T21:31:34.436Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-23T21:31:34.436Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-23T21:31:34.436Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:31:35.451Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:31:35.456Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:31:40.667Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:31:40.672Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:31:49.950Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:31:49.955Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:31:49.960Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:31:49.960Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:31:49.962Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:31:49.962Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:32:03.319Z"}
+{"message":"Error updating work hour entry by employee and date:","stack":"Error: Cannot set headers after they are sent to the client\n    at ServerResponse.setHeader (node:_http_outgoing:699:11)\n    at ServerResponse.header (/Users/avner-private/Documents/hr-app/apps/server/node_modules/express/lib/response.js:794:10)\n    at ServerResponse.send (/Users/avner-private/Documents/hr-app/apps/server/node_modules/express/lib/response.js:174:12)\n    at ServerResponse.json (/Users/avner-private/Documents/hr-app/apps/server/node_modules/express/lib/response.js:278:15)\n    at /Users/avner-private/Documents/hr-app/apps/server/src/routes/workHours/update.ts:188:25\n    at Generator.next (<anonymous>)\n    at fulfilled (/Users/avner-private/Documents/hr-app/apps/server/src/routes/workHours/update.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","code":"ERR_HTTP_HEADERS_SENT","level":"error","timestamp":"2025-08-23T21:32:03.331Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-23T21:33:20.770Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-23T21:33:20.790Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-23T21:33:20.793Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.8)","timestamp":"2025-08-23T21:33:20.806Z"}
+{"level":"info","message":"Project Management form is up to date (v1.1.6)","timestamp":"2025-08-23T21:33:20.810Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-23T21:33:20.811Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-23T21:33:20.811Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-23T21:33:20.817Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-23T21:33:20.817Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-08-23T21:33:20.819Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-23T21:33:20.819Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-23T21:33:20.819Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:33:22.807Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:33:22.811Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:33:22.848Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:33:22.852Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:33:22.855Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:33:22.856Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:33:22.859Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:33:22.859Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:33:24.804Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-23T21:33:35.042Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-23T21:33:35.058Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-23T21:33:35.061Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.8)","timestamp":"2025-08-23T21:33:35.080Z"}
+{"level":"info","message":"Project Management form is up to date (v1.1.6)","timestamp":"2025-08-23T21:33:35.084Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-23T21:33:35.084Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-23T21:33:35.084Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-23T21:33:35.095Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-23T21:33:35.095Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-08-23T21:33:35.098Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-23T21:33:35.098Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-23T21:33:35.099Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:33:36.887Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:33:36.892Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:33:36.919Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:33:36.921Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:33:36.921Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:33:36.923Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:33:36.923Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:33:36.928Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:33:38.466Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:33:46.521Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:33:46.527Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:33:46.564Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:33:46.567Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:33:46.571Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:33:46.571Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:33:46.574Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:33:46.574Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:33:50.309Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9445b460f55175c6e63c/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:34:26.802Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-23T21:35:28.356Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-23T21:35:28.370Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-23T21:35:28.375Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.8)","timestamp":"2025-08-23T21:35:28.425Z"}
+{"level":"info","message":"Project Management form is up to date (v1.1.6)","timestamp":"2025-08-23T21:35:28.431Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-23T21:35:28.431Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-23T21:35:28.431Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-23T21:35:28.439Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-23T21:35:28.439Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-08-23T21:35:28.445Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-23T21:35:28.445Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-23T21:35:28.445Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-23T21:35:35.689Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-23T21:35:35.706Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-23T21:35:35.708Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.8)","timestamp":"2025-08-23T21:35:35.727Z"}
+{"level":"info","message":"Project Management form is up to date (v1.1.6)","timestamp":"2025-08-23T21:35:35.731Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-23T21:35:35.731Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-23T21:35:35.731Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-23T21:35:35.743Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-23T21:35:35.743Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-08-23T21:35:35.746Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-23T21:35:35.746Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-23T21:35:35.746Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:35:39.967Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:35:39.973Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:40.011Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:40.015Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:35:40.021Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:35:40.021Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:35:40.024Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:35:40.024Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:35:41.784Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:41.849Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:41.851Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:35:42.975Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:43.042Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:43.044Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:35:43.830Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:43.897Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:43.899Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:35:54.811Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:54.876Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:54.880Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:35:55.379Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:55.446Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:55.448Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:35:55.797Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:55.865Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:55.866Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:35:57.809Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:57.875Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:57.877Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:35:58.275Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:58.339Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:35:58.341Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:36:09.375Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:09.442Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:09.445Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:36:10.315Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:10.383Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:10.385Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:36:10.784Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:10.849Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:10.850Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:36:11.384Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:11.448Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:11.449Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:36:13.245Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:13.309Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:13.311Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:36:13.722Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:13.786Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:13.788Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:36:13.959Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:14.024Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:14.026Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:36:19.504Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:19.568Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:19.570Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:36:20.621Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:20.686Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:20.687Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-23 - Request received","timestamp":"2025-08-23T21:36:28.097Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:28.167Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:28.169Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-23 - Request received","timestamp":"2025-08-23T21:36:28.547Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:28.612Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:28.614Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-23 - Request received","timestamp":"2025-08-23T21:36:30.554Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:30.619Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:30.620Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:36:34.918Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:34.983Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:34.984Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:36:36.691Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:36.754Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:36.755Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:36:38.684Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:38.747Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:38.749Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:36:44.038Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:44.103Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:44.105Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:36:44.334Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:44.400Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:44.402Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9445b460f55175c6e63c/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:36:45.825Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:45.889Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:45.890Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9445b460f55175c6e63c/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:36:46.351Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:46.415Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:46.416Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9445b460f55175c6e63c/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:36:48.124Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:48.187Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:48.189Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9445b460f55175c6e63c/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:36:48.795Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:48.860Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:48.861Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-19 - Request received","timestamp":"2025-08-23T21:36:57.723Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:57.793Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:36:57.795Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:37:03.827Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:03.894Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:03.895Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-19 - Request received","timestamp":"2025-08-23T21:37:06.706Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:06.769Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:06.771Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-23T21:37:17.492Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-23T21:37:17.519Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-23T21:37:17.522Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.8)","timestamp":"2025-08-23T21:37:17.546Z"}
+{"level":"info","message":"Project Management form is up to date (v1.1.6)","timestamp":"2025-08-23T21:37:17.552Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-23T21:37:17.553Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-23T21:37:17.553Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-23T21:37:17.565Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-23T21:37:17.566Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-08-23T21:37:17.569Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-23T21:37:17.569Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-23T21:37:17.569Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:37:18.140Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:37:18.145Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:18.183Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:18.186Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:37:18.187Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:37:18.187Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:37:18.189Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:37:18.189Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:37:26.667Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:37:26.673Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:26.711Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:37:26.716Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:37:26.717Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:26.722Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:37:26.724Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:37:26.724Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:37:30.043Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:30.105Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:30.107Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:37:30.466Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:30.535Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:30.537Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:37:34.321Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:34.386Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:34.389Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:37:34.741Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:34.808Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:34.810Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:37:35.372Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:35.436Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:35.438Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:37:41.149Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:41.218Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:37:41.220Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-25/2025-08-31 - Request received","timestamp":"2025-08-23T21:38:27.007Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-25/2025-08-31 - Request received","timestamp":"2025-08-23T21:38:27.009Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-19 - Request received","timestamp":"2025-08-23T21:39:06.065Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:39:06.149Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:39:06.150Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-19 - Request received","timestamp":"2025-08-23T21:39:12.021Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:39:12.091Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:39:12.092Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9445b460f55175c6e63c/date/2025-08-19 - Request received","timestamp":"2025-08-23T21:39:20.452Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:39:20.519Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:39:20.521Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-19 - Request received","timestamp":"2025-08-23T21:40:00.219Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:00.293Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:00.296Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-20 - Request received","timestamp":"2025-08-23T21:40:47.061Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:47.135Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:47.137Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-20 - Request received","timestamp":"2025-08-23T21:40:47.312Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:47.380Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:47.382Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-20 - Request received","timestamp":"2025-08-23T21:40:47.973Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:48.042Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:48.044Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-20 - Request received","timestamp":"2025-08-23T21:40:48.741Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:48.808Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:48.809Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-20 - Request received","timestamp":"2025-08-23T21:40:49.506Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:49.571Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:49.573Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-20 - Request received","timestamp":"2025-08-23T21:40:50.009Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:50.073Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:50.075Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-20 - Request received","timestamp":"2025-08-23T21:40:50.078Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:50.143Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:50.145Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-20 - Request received","timestamp":"2025-08-23T21:40:50.721Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:50.788Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:50.790Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-20 - Request received","timestamp":"2025-08-23T21:40:51.261Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:51.326Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:51.327Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:40:53.228Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:53.307Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:53.309Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:40:54.365Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:54.430Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:54.432Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:40:56.978Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:57.046Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:57.048Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:40:57.801Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:57.867Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:57.868Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:40:58.716Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:58.780Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:58.781Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:40:59.542Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:59.605Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:40:59.606Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:41:00.096Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:00.160Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:00.161Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:41:00.636Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:00.701Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:00.702Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:41:01.206Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:01.271Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:01.272Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:41:03.156Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:03.237Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:03.239Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:41:04.101Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:04.170Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:04.171Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:41:05.408Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:05.473Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:05.475Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:41:05.917Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:05.980Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:05.982Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:41:07.732Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:07.796Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:07.797Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:41:08.225Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:08.291Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:41:08.292Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:41:52.784Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:41:52.784Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:41:52.787Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:41:52.787Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:42:16.241Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:42:16.315Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:42:16.317Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:42:17.184Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:42:17.252Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:42:17.253Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:42:17.949Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:42:18.016Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:42:18.017Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:42:18.698Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:42:18.763Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:42:18.764Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:42:21.850Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:42:21.916Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:42:21.917Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:42:22.705Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:42:22.771Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:42:22.772Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:42:25.134Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:42:25.201Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:42:25.202Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:43:30.968Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:43:30.972Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:43:32.801Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:32.871Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:32.872Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:43:35.982Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:43:35.985Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:36.021Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:36.023Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:43:36.026Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:43:36.026Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:43:36.029Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:43:36.029Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:43:37.393Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:37.464Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:37.465Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:43:40.558Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:40.624Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:40.625Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:43:48.404Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:48.472Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:48.475Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:43:49.105Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:49.172Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:49.173Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:43:50.983Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:51.049Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:51.050Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-17 - Request received","timestamp":"2025-08-23T21:43:51.218Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:51.283Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:51.284Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:43:53.495Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:43:53.500Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:53.538Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:43:53.540Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:43:53.542Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:43:53.542Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:43:53.546Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:43:53.546Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:44:02.723Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:44:02.727Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:02.764Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:02.767Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:44:02.768Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:44:02.768Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:44:02.775Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:44:02.775Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:28.457Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:28.532Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:28.534Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:29.623Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:29.695Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:29.695Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:30.539Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:30.604Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:30.606Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:32.159Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:32.223Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:32.225Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:32.803Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:32.871Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:32.872Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:33.387Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:33.454Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:33.455Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:34.030Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:34.098Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:34.099Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:35.458Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:35.543Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:35.544Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:36.086Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:36.151Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:36.153Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9727958f340c22e75b70/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:36.820Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:36.884Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:36.885Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9445b460f55175c6e63c/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:38.204Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:38.271Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:38.272Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9445b460f55175c6e63c/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:40.081Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:40.145Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:40.146Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9445b460f55175c6e63c/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:40.328Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:40.394Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:40.395Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9445b460f55175c6e63c/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:41.215Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:41.280Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:41.283Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9445b460f55175c6e63c/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:43.003Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:43.069Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:43.071Z"}
+{"level":"info","message":"PUT /workHours/employee/689b9445b460f55175c6e63c/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:44:44.729Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:44.794Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:44:44.795Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-22 - Request received","timestamp":"2025-08-23T21:45:06.064Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:45:06.133Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:45:06.134Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-22 - Request received","timestamp":"2025-08-23T21:45:07.067Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:45:07.131Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:45:07.132Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-23 - Request received","timestamp":"2025-08-23T21:45:09.106Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:45:09.169Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:45:09.171Z"}
+{"level":"info","message":"PUT /workHours/employee/689cd9ae92e9624be049438f/date/2025-08-24 - Request received","timestamp":"2025-08-23T21:45:10.424Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:45:10.490Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:45:10.492Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:46:36.426Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:46:36.431Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:46:36.460Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:46:36.462Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:46:36.463Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:46:36.463Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:46:36.465Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:46:36.465Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:46:45.807Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:46:45.813Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:46:45.850Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:46:45.851Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:46:45.852Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:46:45.852Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:46:45.857Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:46:45.857Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:47:18.395Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:47:18.399Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:47:18.438Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:47:18.440Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:47:18.441Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:47:18.442Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:47:18.443Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:47:18.443Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:48:30.306Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:48:30.312Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:48:30.337Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:48:30.338Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:48:30.340Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:48:30.340Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:48:30.342Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:48:30.342Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:49:55.952Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:49:55.956Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:49:56.005Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:49:56.007Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:49:56.008Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:49:56.009Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:49:56.013Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:49:56.013Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:50:07.091Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:50:07.095Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:50:07.122Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:50:07.124Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:50:07.124Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:50:07.127Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:50:07.127Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:50:07.129Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:50:07.976Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:50:07.981Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:50:08.017Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:50:08.018Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:50:08.019Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:50:08.019Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:50:08.021Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:50:08.021Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:50:52.677Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:50:52.681Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:51:23.050Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:51:23.060Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:51:23.061Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:51:23.061Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:51:23.063Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:51:23.063Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-25/2025-08-31 - Request received","timestamp":"2025-08-23T21:51:28.050Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-25/2025-08-31 - Request received","timestamp":"2025-08-23T21:51:28.052Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-11/2025-08-17 - Request received","timestamp":"2025-08-23T21:51:36.598Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-11/2025-08-17 - Request received","timestamp":"2025-08-23T21:51:36.600Z"}
+{"level":"info","message":"Getting form with ID: 689b91c64a64e6b6b341f91c","timestamp":"2025-08-23T21:51:46.799Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-23T21:51:57.188Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:52:22.958Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:52:22.965Z"}
+{"level":"info","message":"Getting form with ID: 689b91c64a64e6b6b341f91c","timestamp":"2025-08-23T21:52:23.028Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-23T21:52:24.368Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:52:26.611Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:52:26.615Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-23T21:52:26.664Z"}
+{"level":"info","message":"POST /formSubmission - Request received","timestamp":"2025-08-23T21:52:45.149Z"}
+{"level":"info","message":"POST /formSubmission/update - Request received","timestamp":"2025-08-23T21:52:52.512Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:52:54.365Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:52:54.369Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-23T21:52:54.424Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:52:55.300Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:52:55.304Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-23T21:52:55.354Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:52:56.710Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:52:56.711Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:52:56.713Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:52:56.713Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:52:56.717Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:52:56.718Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:52:59.741Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:52:59.744Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:52:59.783Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:52:59.786Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:52:59.787Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:52:59.787Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:52:59.787Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:52:59.787Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-23T21:53:08.223Z"}
+{"level":"info","message":"Getting form with ID: 689b91c64a64e6b6b341f91c","timestamp":"2025-08-23T21:53:09.848Z"}
+{"level":"info","message":"POST /formSubmission - Request received","timestamp":"2025-08-23T21:54:19.878Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:54:24.036Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:54:24.042Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:54:24.081Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:54:24.083Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:54:24.085Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:54:24.085Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:54:24.089Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:54:24.089Z"}
+{"level":"info","message":"PUT /workHours/employee/68aa388bc8016d5d5887c6fc/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:54:31.340Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:54:31.461Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:54:31.463Z"}
+{"level":"info","message":"PUT /workHours/employee/68aa388bc8016d5d5887c6fc/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:54:32.509Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:54:32.619Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:54:32.621Z"}
+{"level":"info","message":"Getting form with ID: 689b91c64a64e6b6b341f91c","timestamp":"2025-08-23T21:55:54.298Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-23T21:55:58.271Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:56:06.930Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:56:06.933Z"}
+{"level":"info","message":"Getting form with ID: 689b91c64a64e6b6b341f91c","timestamp":"2025-08-23T21:56:06.991Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-08-23T21:57:09.302Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-08-23T21:57:09.318Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-08-23T21:57:09.321Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.8)","timestamp":"2025-08-23T21:57:09.351Z"}
+{"level":"info","message":"Project Management form is up to date (v1.1.6)","timestamp":"2025-08-23T21:57:09.357Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-08-23T21:57:09.358Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-08-23T21:57:09.359Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-08-23T21:57:09.370Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-08-23T21:57:09.370Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-08-23T21:57:09.374Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-08-23T21:57:09.374Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-08-23T21:57:09.374Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-23T21:57:45.345Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-23T21:57:48.169Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-23T21:57:48.171Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:57:51.154Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:57:51.160Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-23T21:57:51.215Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-23T21:57:51.217Z"}
+{"level":"info","message":"Getting form with ID: 689b91c64a64e6b6b341f91c","timestamp":"2025-08-23T21:57:57.753Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-23T21:57:57.755Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:57:58.680Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:57:58.684Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:57:58.688Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:57:58.689Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:57:58.692Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:57:58.692Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-23T21:58:00.930Z"}
+{"level":"info","message":"PUT /workHours/employee/68aa388bc8016d5d5887c6fc/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:58:11.509Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:58:11.610Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:58:11.612Z"}
+{"level":"info","message":"PUT /workHours/employee/68aa388bc8016d5d5887c6fc/date/2025-08-18 - Request received","timestamp":"2025-08-23T21:58:13.538Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:58:13.645Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:58:13.647Z"}
+{"level":"info","message":"PUT /workHours/employee/68aa388bc8016d5d5887c6fc/date/2025-08-19 - Request received","timestamp":"2025-08-23T21:58:15.970Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:58:16.075Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:58:16.077Z"}
+{"level":"info","message":"PUT /workHours/employee/68aa388bc8016d5d5887c6fc/date/2025-08-20 - Request received","timestamp":"2025-08-23T21:58:18.445Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:58:18.549Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:58:18.551Z"}
+{"level":"info","message":"PUT /workHours/employee/68aa388bc8016d5d5887c6fc/date/2025-08-20 - Request received","timestamp":"2025-08-23T21:58:19.416Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:58:19.521Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:58:19.523Z"}
+{"level":"info","message":"PUT /workHours/employee/68aa388bc8016d5d5887c6fc/date/2025-08-20 - Request received","timestamp":"2025-08-23T21:58:20.359Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:58:20.463Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:58:20.465Z"}
+{"level":"info","message":"PUT /workHours/employee/68aa388bc8016d5d5887c6fc/date/2025-08-21 - Request received","timestamp":"2025-08-23T21:58:25.195Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:58:25.325Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:58:25.326Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-23T21:58:58.627Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-23T21:59:00.434Z"}
+{"level":"info","message":"POST /formSubmission - Request received","timestamp":"2025-08-23T21:59:08.814Z"}
+{"level":"info","message":"POST /formSubmission - Request received","timestamp":"2025-08-23T21:59:09.983Z"}
+{"level":"info","message":"POST /formSubmission - Request received","timestamp":"2025-08-23T21:59:15.035Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-23T21:59:16.509Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T21:59:20.699Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T21:59:20.703Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:59:20.748Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T21:59:20.751Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:59:20.752Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:59:20.752Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T21:59:20.756Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T21:59:20.756Z"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631","timestamp":"2025-08-23T22:00:00.626Z"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-08-23T22:00:00.629Z"}
+{"level":"info","message":"Getting form with ID: 689b91c64a64e6b6b341f91c","timestamp":"2025-08-23T22:00:04.472Z"}
+{"level":"info","message":"GET /formSubmission/689b91c64a64e6b6b341f91c - Request received","timestamp":"2025-08-23T22:00:04.474Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-23T22:02:40.489Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-23T22:02:40.493Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T22:02:40.560Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-23T22:02:40.562Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T22:02:40.564Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T22:02:40.564Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-23T22:02:40.567Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-23T22:02:40.567Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-24T05:41:58.155Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-24T05:41:58.162Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-24T05:41:58.223Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-24T05:41:58.225Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-24T05:41:58.225Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-24T05:41:58.228Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-24T05:41:58.229Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-24T05:41:58.229Z"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-08-24T08:05:30.360Z"}
+{"level":"info","message":"GET /workHours/metrics/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-24T08:05:30.361Z"}
+{"level":"info","message":"GET /workHours/range/2025-08-18/2025-08-24 - Request received","timestamp":"2025-08-24T08:05:30.362Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-24T08:05:30.362Z"}
+{"formName":"Personnel","query":{"formName":"Personnel"},"level":"info","message":"Query filters:","timestamp":"2025-08-24T08:05:30.362Z"}
+{"level":"info","message":"GET /formSubmission - Request received","timestamp":"2025-08-24T08:05:30.364Z"}
+{"formName":"Project%20Management","query":{"formName":"Project%20Management"},"level":"info","message":"Query filters:","timestamp":"2025-08-24T08:05:30.364Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-08-24T08:05:30.387Z"}

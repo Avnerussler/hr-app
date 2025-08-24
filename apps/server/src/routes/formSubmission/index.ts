@@ -7,7 +7,7 @@ import { UpdateFormSubmissionsRouter } from './update'
 const router = Router()
 
 router.use('/delete', DeleteFormSubmissionsRouter)
-router.use('/get', GetFormSubmissionsRouter)
 router.use('/create', CreateFormSubmissionRouter)
 router.use('/update', UpdateFormSubmissionsRouter)
+router.use('/', GetFormSubmissionsRouter)
 export { router as formSubmissionRouter }

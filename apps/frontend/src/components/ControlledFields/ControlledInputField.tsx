@@ -1,23 +1,30 @@
 import { Field, Input } from '@chakra-ui/react'
-import { Control, Controller, FieldValues } from 'react-hook-form'
+import { Control, Controller, FieldValues, Path } from 'react-hook-form'
 
-interface ControlledInputFieldProps extends FieldValues {
-    control: Control
+interface ControlledInputFieldProps<T extends FieldValues = FieldValues> {
+    control: Control<T>
+    name: Path<T>
+    label?: string
+    id?: string | number
+    type?: string
+    rules?: any
+    [key: string]: any
 }
-export const ControlledInputField = ({
+export const ControlledInputField = <T extends FieldValues = FieldValues>({
     control,
     name,
     label,
     id,
     type,
+    rules,
     ...props
-}: ControlledInputFieldProps) => {
+}: ControlledInputFieldProps<T>) => {
     return (
         <Controller
             name={name}
             control={control}
             defaultValue={props.defaultValue}
-            rules={{
+            rules={rules || {
                 required: props.required ? `${label} הוא שדה חובה` : false,
                 validate: (value) => {
                     if (props.required && !value) {
@@ -28,11 +35,12 @@ export const ControlledInputField = ({
             }}
             render={({ field, fieldState: { error } }) => (
                 <Field.Root key={id} orientation="vertical" invalid={!!error}>
-                    <Field.Label>{label}</Field.Label>
+                    {label && <Field.Label>{label}</Field.Label>}
                     <Input
                         {...field}
+                        {...props}
                         type={type}
-                        id={id.toString()}
+                        id={id?.toString()}
                         borderColor={error ? 'red.500' : undefined}
                     />
                     {error && (

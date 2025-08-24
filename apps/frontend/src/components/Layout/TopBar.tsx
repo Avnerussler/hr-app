@@ -22,6 +22,8 @@ function getModuleDisplayName(pathname: string): string {
             return 'Personnel'
         case 'projects':
             return 'Projects'
+        case 'work-hours':
+            return 'Work Hours'
         case 'settings':
             return 'Settings'
         default:
