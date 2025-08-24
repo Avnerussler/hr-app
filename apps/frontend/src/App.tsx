@@ -8,6 +8,7 @@ import { Box, Spinner, Center } from '@chakra-ui/react'
 import { TodaysOverview } from './components/Pages/TodaysOverview'
 import { Dashboard } from './components/Pages/Dashboard'
 import WorkHours from './components/Pages/WorkHours'
+import ErrorElement from './components/common/ErrorElement'
 
 const LoadingSpinner = () => (
     <Center h="100vh">
@@ -20,9 +21,9 @@ const LoadingSpinner = () => (
 
 // Static routes
 const staticRoutes = [
-    { path: 'overview', element: <TodaysOverview /> },
-    { path: 'dashboard', element: <Dashboard /> },
-    { path: 'work-hours', element: <WorkHours /> },
+    { path: 'overview', element: <TodaysOverview />, errorElement: <ErrorElement /> },
+    { path: 'dashboard', element: <Dashboard />, errorElement: <ErrorElement /> },
+    { path: 'work-hours', element: <WorkHours />, errorElement: <ErrorElement /> },
 ]
 const createDynamicRouter = (formsData: any) => {
     const dynamicRoutes = formsData?.forms
@@ -35,6 +36,7 @@ const createDynamicRouter = (formsData: any) => {
                           formName={form.formName}
                       />
                   ),
+                  errorElement: <ErrorElement />,
               },
               {
                   path: `${form.formName}/${form._id}/edit/:itemId`,
@@ -44,6 +46,7 @@ const createDynamicRouter = (formsData: any) => {
                           formName={form.formName}
                       />
                   ),
+                  errorElement: <ErrorElement />,
               },
               {
                   path: `${form.formName}/${form._id}/new`,
@@ -53,6 +56,7 @@ const createDynamicRouter = (formsData: any) => {
                           formName={form.formName}
                       />
                   ),
+                  errorElement: <ErrorElement />,
               },
           ])
         : []
@@ -61,6 +65,7 @@ const createDynamicRouter = (formsData: any) => {
         {
             path: '/',
             element: <Layout />,
+            errorElement: <ErrorElement />,
             children: [
                 {
                     index: true,

@@ -242,12 +242,31 @@ export const useUpdateWorkHourByEmployeeDate = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['workHours'] })
         },
-        onError: (error) => {
+        onError: (error: any) => {
             console.error('Error updating work hour by employee date:', error)
+            
+            // Extract specific error message from backend
+            let errorMessage = 'Failed to update work hour. Please try again.'
+            
+            try {
+                if (error?.response?.data?.message) {
+                    errorMessage = error.response.data.message
+                } else if (error?.message) {
+                    errorMessage = error.message
+                }
+                
+                // Handle validation errors specifically
+                if (error?.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+                    errorMessage = error.response.data.errors.join(', ')
+                }
+            } catch (parseError) {
+                console.error('Error parsing error message:', parseError)
+            }
+            
             toaster.error({
                 title: 'Error',
-                description: 'Failed to update work hour. Please try again.',
-                duration: 3000,
+                description: errorMessage,
+                duration: 5000,
             })
         },
     })

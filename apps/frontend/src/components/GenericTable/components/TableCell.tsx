@@ -40,12 +40,36 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
         )
     }
 
-    if (field.type === 'select') {
+    if (field.type === 'select' || field.type === 'selectAutocomplete') {
+        // Handle new format where foreign fields store {_id, display}
+        if (field.foreignFormName && typeof value === 'object' && value && '_id' in value && 'display' in value) {
+            return (
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    color="primary"
+                    p={0}
+                    h="auto"
+                    minH="auto"
+                    fontWeight="normal"
+                    textDecoration="underline"
+                    _hover={{
+                        color: 'primary',
+                        opacity: 0.8,
+                    }}
+                    onClick={(e) => handleForeignTableClick(e, field.foreignFormName!, value._id)}
+                >
+                    {value.display}
+                </Button>
+            )
+        }
+
+        // Fallback to old format for backward compatibility
         const selectedOption = field.options?.find(
             (option) => option.value === value
         )
         
-        // Check if this is a foreign table field
+        // Check if this is a foreign table field (old format)
         if (field.foreignFormName && selectedOption) {
             return (
                 <Button
@@ -70,13 +94,41 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
         
         return (
             <Text>
-                {selectedOption?.label}
+                {selectedOption?.label || (typeof value === 'object' && value && 'display' in value ? value.display : String(value))}
             </Text>
         )
     }
 
     if (field.type === 'multipleSelect') {
         if (!Array.isArray(value)) return null
+        
+        // Handle new format where foreign fields store [{_id, display}, ...]
+        if (field.foreignFormName && value.length > 0 && typeof value[0] === 'object' && '_id' in value[0] && 'display' in value[0]) {
+            return (
+                <HStack gap={1} flexWrap="wrap">
+                    {value.map((item: any) => (
+                        <Tag.Root
+                            key={item._id}
+                            size="sm"
+                            bg="secondary"
+                            color="secondary.foreground"
+                            borderRadius="md"
+                            cursor="pointer"
+                            onClick={(e) => handleForeignTableClick(e, field.foreignFormName!, item._id)}
+                            _hover={{
+                                opacity: 0.8,
+                            }}
+                        >
+                            <Tag.Label fontSize="xs">
+                                {item.display}
+                            </Tag.Label>
+                        </Tag.Root>
+                    ))}
+                </HStack>
+            )
+        }
+
+        // Fallback to old format for backward compatibility
         const commonItems = field.options?.filter(
             (item) =>
                 (value as unknown as string[])?.includes(item.value)
@@ -107,12 +159,36 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
     }
 
     if (field.type === 'radio') {
+        // Handle new format where foreign fields store {_id, display}
+        if (field.foreignFormName && typeof value === 'object' && value && '_id' in value && 'display' in value) {
+            return (
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    color="primary"
+                    p={0}
+                    h="auto"
+                    minH="auto"
+                    fontWeight="normal"
+                    textDecoration="underline"
+                    _hover={{
+                        color: 'primary',
+                        opacity: 0.8,
+                    }}
+                    onClick={(e) => handleForeignTableClick(e, field.foreignFormName!, value._id)}
+                >
+                    {value.display}
+                </Button>
+            )
+        }
+
+        // Fallback to old format
         return (
             <Text color="foreground">
                 {
                     field.items?.find(
                         (item) => item.value === value
-                    )?.label
+                    )?.label || (typeof value === 'object' && value && 'display' in value ? value.display : String(value))
                 }
             </Text>
         )

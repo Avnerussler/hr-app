@@ -3,13 +3,27 @@ import { Request, Response, Router } from 'express'
 import logger from '../../config/logger'
 import mongoose from 'mongoose'
 import { parseISO, isValid, startOfDay } from 'date-fns'
+import { validate, commonSchemas, asyncHandler, schemas } from '../../middleware'
+import Joi from 'joi'
 
 const router = Router()
 
+// Create update schema
+const updateWorkHourSchema = {
+    params: schemas.objectIdParam.params,
+    body: Joi.object({
+        projectId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).optional().allow(null),
+        projectName: Joi.string().max(100).optional().allow(null),
+        hours: Joi.number().min(0).max(24).precision(2).optional(),
+        notes: Joi.string().max(1000).optional().allow(null),
+        status: Joi.string().valid('draft', 'approved', 'rejected').optional()
+    })
+}
+
 // Update single work hour entry
-router.put('/:id', async (req: Request, res: Response) => {
-    logger.info(`PUT /workHours/${req.params.id} - Request received`)
-    try {
+router.put('/:id',
+    validate(updateWorkHourSchema),
+    asyncHandler(async (req: Request, res: Response) => {
         const {
             projectId,
             projectName,
@@ -21,16 +35,11 @@ router.put('/:id', async (req: Request, res: Response) => {
         const workHour = await WorkHours.findById(req.params.id)
         
         if (!workHour) {
-            res.status(404).json({ message: 'Work hour entry not found' })
-            return
-        }
-
-        // Validation for hours if provided
-        if (hours !== undefined && (hours < 0 || hours > 24)) {
-            res.status(400).json({ 
-                message: 'Hours must be between 0 and 24' 
+            return res.status(404).json({ 
+                status: 'error',
+                message: 'Work hour entry not found',
+                code: 'NOT_FOUND'
             })
-            return
         }
 
         // Update fields
@@ -53,14 +62,12 @@ router.put('/:id', async (req: Request, res: Response) => {
         await workHour.save()
 
         res.status(200).json({ 
+            status: 'success',
             message: 'Work hour entry updated successfully', 
             workHour 
         })
-    } catch (error) {
-        logger.error('Error updating work hour entry:', error)
-        res.status(500).json({ message: 'Error updating work hour entry', error })
-    }
-})
+    })
+)
 
 // Bulk update work hour entries
 router.put('/bulk', async (req: Request, res: Response) => {

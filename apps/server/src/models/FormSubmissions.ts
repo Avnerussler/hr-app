@@ -2,8 +2,9 @@ import mongoose, { Schema, Document } from 'mongoose'
 
 // Define the forms schema
 export interface IFormSubmissions extends Document {
+    formId: mongoose.Types.ObjectId
     formName: string
-    formFields: object
+    formData: { [key: string]: any }
 }
 
 const FormSubmissionsSchema: Schema = new Schema(

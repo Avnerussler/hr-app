@@ -46,21 +46,21 @@ export const HoursInputCell: React.FC<HoursInputCellProps> = ({
     onChange,
 }) => {
     const { open, onOpen, onClose } = useDisclosure()
-    
+
     const { control, watch, reset, handleSubmit } = useForm<HoursFormData>({
         defaultValues: {
             hours: initialHours,
             projectId: initialProjectId || '',
-            notes: initialNotes || ''
-        }
+            notes: initialNotes || '',
+        },
     })
-    
+
     const watchedValues = watch()
-    
+
     // Convert projects to options format for ControlledSelectField
-    const projectOptions = projects.map(project => ({
+    const projectOptions = projects.map((project) => ({
         label: project.name,
-        value: project.id
+        value: project.id,
     }))
 
     // Update form values when props change
@@ -68,36 +68,57 @@ export const HoursInputCell: React.FC<HoursInputCellProps> = ({
         reset({
             hours: initialHours,
             projectId: initialProjectId || '',
-            notes: initialNotes || ''
+            notes: initialNotes || '',
         })
     }, [initialHours, initialProjectId, initialNotes, reset])
 
     // Trigger onChange when hours change (immediate for hours input)
     useEffect(() => {
-        if (watchedValues.hours !== initialHours) {
-            onChange(
-                watchedValues.hours,
-                watchedValues.projectId || undefined,
-                watchedValues.notes || undefined
-            )
+        try {
+            if (watchedValues.hours !== initialHours) {
+                // Validate hours before sending
+                const hours = parseFloat(watchedValues.hours)
+                if (!isNaN(hours) && hours >= 0 && hours <= 24) {
+                    onChange(
+                        hours,
+                        watchedValues.projectId || undefined,
+                        watchedValues.notes || undefined
+                    )
+                }
+            }
+        } catch (error) {
+            console.error('Error updating hours:', error)
         }
     }, [watchedValues.hours])
 
     // Handle save for popover changes (project and notes)
     const onSubmit = (data: HoursFormData) => {
-        onChange(
-            data.hours,
-            data.projectId || undefined,
-            data.notes || undefined
-        )
-        onClose()
+        try {
+            // Validate hours before saving
+            const hours = parseFloat(data.hours.toString())
+            if (isNaN(hours) || hours < 0 || hours > 24) {
+                console.error('Invalid hours value:', data.hours)
+                return
+            }
+
+            onChange(
+                hours,
+                data.projectId || undefined,
+                data.notes || undefined
+            )
+            onClose()
+        } catch (error) {
+            console.error('Error submitting hours data:', error)
+        }
     }
 
     // Get selected project name for display
-    const selectedProject = projects.find(p => p.id === watchedValues.projectId)
-    
+    const selectedProject = projects.find(
+        (p) => p.id === watchedValues.projectId
+    )
+
     // Check if there are changes
-    const hasChanges = 
+    const hasChanges =
         watchedValues.hours !== initialHours ||
         watchedValues.projectId !== (initialProjectId || '') ||
         watchedValues.notes !== (initialNotes || '')
@@ -106,7 +127,7 @@ export const HoursInputCell: React.FC<HoursInputCellProps> = ({
     const formatDate = (date: Date) => {
         return date.toLocaleDateString('he-IL', {
             day: 'numeric',
-            month: 'short'
+            month: 'short',
         })
     }
 
@@ -118,14 +139,16 @@ export const HoursInputCell: React.FC<HoursInputCellProps> = ({
                     control={control}
                     name="hours"
                     type="number"
-                    min="0"
-                    max="24"
+                    min={0}
+                    max={24}
                     step="0.5"
                     size="sm"
                     textAlign="center"
                     fontWeight={watchedValues.hours > 0 ? 'bold' : 'normal'}
                     bg={watchedValues.hours > 0 ? 'green.50' : 'gray.50'}
-                    borderColor={watchedValues.hours > 0 ? 'green.300' : 'gray.300'}
+                    borderColor={
+                        watchedValues.hours > 0 ? 'green.300' : 'gray.300'
+                    }
                     w="60px"
                     placeholder="0"
                     rules={{
@@ -136,7 +159,7 @@ export const HoursInputCell: React.FC<HoursInputCellProps> = ({
                                 return 'שעות חייבות להיות בין 0 ל-24'
                             }
                             return true
-                        }
+                        },
                     }}
                 />
             </Box>
@@ -160,7 +183,9 @@ export const HoursInputCell: React.FC<HoursInputCellProps> = ({
             {/* Popover for Project and Notes */}
             <PopoverRoot
                 open={open}
-                onOpenChange={({ open: isOpen }) => isOpen ? onOpen() : onClose()}
+                onOpenChange={({ open: isOpen }) =>
+                    isOpen ? onOpen() : onClose()
+                }
                 positioning={{ placement: 'bottom' }}
             >
                 <PopoverTrigger asChild>
@@ -212,11 +237,7 @@ export const HoursInputCell: React.FC<HoursInputCellProps> = ({
 
                         {/* Action Buttons */}
                         <HStack justify="end" gap={2}>
-                            <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={onClose}
-                            >
+                            <Button size="sm" variant="ghost" onClick={onClose}>
                                 ביטול
                             </Button>
                             <Button

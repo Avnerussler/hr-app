@@ -3,6 +3,7 @@ import {
     ControlledInputField,
     ControlledTextareaField,
     ControlledSelectField,
+    ControlledSelectAutocompleteField,
     ControlledMultipleSelectField,
     ControlledRadioField,
     ControlledDateField,
@@ -35,13 +36,32 @@ export function DynamicFormRenderer({
     employeeData,
 }: DynamicFormRendererProps) {
     const renderField = (field: FormField) => {
+        // Handle foreign field default values - extract ID from stored object format
+        const getDefaultValue = () => {
+            const storedValue = employeeData?.[field.name]
+            if (!storedValue) return field.defaultValue
+
+            // If it's a foreign field with stored object format {_id, display}
+            if (field.foreignFormId && typeof storedValue === 'object') {
+                if (field.type === 'multipleSelect') {
+                    // For multiple select, extract array of IDs
+                    return Array.isArray(storedValue) ? storedValue.map(item => item._id || item) : []
+                } else {
+                    // For single select, extract single ID
+                    return storedValue._id || storedValue
+                }
+            }
+            
+            return storedValue || field.defaultValue
+        }
+
         const commonProps = {
             control,
             name: field.name,
             label: field.label,
             id: field._id.$oid,
             placeholder: field.placeholder,
-            defaultValue: employeeData?.[field.name] || field.defaultValue,
+            defaultValue: getDefaultValue(),
         }
 
         switch (field.type) {
@@ -68,6 +88,20 @@ export function DynamicFormRenderer({
             case 'select':
                 return (
                     <ControlledSelectField
+                        key={field._id.$oid}
+                        {...commonProps}
+                        options={
+                            field.options?.map((opt) => ({
+                                label: opt.label,
+                                value: opt.value,
+                            })) || []
+                        }
+                    />
+                )
+
+            case 'selectAutocomplete':
+                return (
+                    <ControlledSelectAutocompleteField
                         key={field._id.$oid}
                         {...commonProps}
                         options={

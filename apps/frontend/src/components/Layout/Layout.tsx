@@ -51,6 +51,7 @@ export function Layout() {
     const iconMap: Record<string, any> = {
         FiUsers: FiUsers,
         FiFolder: FiFolder,
+        FiCalendar: FiCalendar,
     }
     return (
         <Flex h="100vh" w="full">
@@ -186,7 +187,7 @@ export function Layout() {
 
                         {isSuccess &&
                             data.forms.map((item) => {
-                                const Icon = iconMap[item.icon || 'FiFolder']
+                                const Icon = iconMap[item.icon] || iconMap['FiFolder']
                                 const isActive = pathname.includes(item._id)
 
                                 return (

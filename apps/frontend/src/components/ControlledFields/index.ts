@@ -1,6 +1,7 @@
 export * from './ControlledFileField'
 export * from './ControlledInputField'
 export * from './ControlledSelectField'
+export * from './ControlledSelectAutocompleteField'
 export * from './ControlledMultipleSelectField'
 export * from './ControlledTextareaField'
 export * from './ControlledRadioField'

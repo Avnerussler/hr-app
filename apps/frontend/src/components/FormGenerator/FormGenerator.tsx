@@ -6,6 +6,7 @@ import {
     ControlledInputField,
     ControlledMultipleSelectField,
     ControlledSelectField,
+    ControlledSelectAutocompleteField,
     ControlledAttendanceField,
 } from '../ControlledFields'
 import { Control, FieldValues } from 'react-hook-form'
@@ -64,6 +65,16 @@ export const FormGenerator = ({
             case 'select':
                 return (
                     <ControlledSelectField
+                        {...props}
+                        control={control}
+                        key={id}
+                        options={options}
+                        id={id}
+                    />
+                )
+            case 'selectAutocomplete':
+                return (
+                    <ControlledSelectAutocompleteField
                         {...props}
                         control={control}
                         key={id}

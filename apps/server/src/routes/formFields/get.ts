@@ -73,6 +73,12 @@ router.get('/:id', async (req: Request, res: Response) => {
                                             {
                                                 $eq: [
                                                     '$sections.fields.type',
+                                                    'selectAutocomplete',
+                                                ],
+                                            },
+                                            {
+                                                $eq: [
+                                                    '$sections.fields.type',
                                                     'multipleSelect',
                                                 ],
                                             },

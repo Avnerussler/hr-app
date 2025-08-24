@@ -9,55 +9,53 @@ import {
     SelectValueText,
 } from '@/components/ui/select'
 
-import { Control, Controller, FieldValues, Path } from 'react-hook-form'
-// import ContentRefContext from '@/providers/ContentRefContext'
+import { Control, Controller, FieldValues } from 'react-hook-form'
 
-interface ControlledSelectFieldProps<T extends FieldValues = FieldValues> {
-    control: Control<T>
-    name: Path<T>
-    options: { label: string; value: string }[]
-    label?: string
-    placeholder?: string
-    size?: 'xs' | 'sm' | 'md' | 'lg'
-    rules?: any
+interface ControlledSelectFieldProps extends FieldValues {
+    control: Control
     contentRef?: RefObject<HTMLElement>
-    [key: string]: any
 }
-export const ControlledSelectField = <T extends FieldValues = FieldValues>({
+export const ControlledSelectField = ({
     control,
     name,
     options,
-    rules,
     ...props
-}: ControlledSelectFieldProps<T>) => {
+}: ControlledSelectFieldProps) => {
     const frameworks = (options: { label: string; value: string }[]) =>
         createListCollection({
             items: options,
         })
-    // const contentRef = useContext(ContentRefContext)
 
     return (
         <Controller
             name={name}
             control={control}
             defaultValue={props.defaultValue}
-            rules={rules}
-            render={({ field, fieldState: { error } }) => {
+            render={({ field }) => {
                 return (
-                    <Field.Root orientation="vertical" invalid={!!error}>
+                    <Field.Root orientation="vertical">
                         <SelectRoot
                             collection={frameworks(options)}
-                            size={props.size || "sm"}
+                            size="sm"
+                            {...props}
                             value={field.value ? [field.value] : []}
                             onValueChange={({ items }) =>
                                 field.onChange(items[0]?.value || '')
                             }
                             onInteractOutside={() => field.onBlur()}
                         >
-                            {props.label && <SelectLabel>{props.label}</SelectLabel>}
+                            <SelectLabel>{props.label}</SelectLabel>
                             <SelectTrigger>
                                 <SelectValueText
-                                    placeholder={props.placeholder}
+                                    placeholder={
+                                        field.value
+                                            ? frameworks(options).items.filter(
+                                                  (option) =>
+                                                      option.value ===
+                                                      field.value
+                                              )[0]?.label
+                                            : props.placeholder
+                                    }
                                 />
                             </SelectTrigger>
                             <SelectContent portalled={false}>
@@ -71,9 +69,6 @@ export const ControlledSelectField = <T extends FieldValues = FieldValues>({
                                 ))}
                             </SelectContent>
                         </SelectRoot>
-                        {error && (
-                            <Field.ErrorText>{error.message}</Field.ErrorText>
-                        )}
                     </Field.Root>
                 )
             }}

@@ -1,29 +1,24 @@
 import { Textarea } from '@chakra-ui/react'
-import { Control, Controller, FieldValues, Path } from 'react-hook-form'
+import { Control, Controller, FieldValues } from 'react-hook-form'
 import { Field } from '@chakra-ui/react'
+import { FC } from 'react'
 
-interface ControlledTextareaFieldProps<T extends FieldValues = FieldValues> {
-    control: Control<T>
-    name: Path<T>
-    label?: string
-    id?: string | number
-    rules?: any
-    [key: string]: any
+interface ControlledTextareaFieldProps extends FieldValues {
+    control: Control
 }
-export const ControlledTextareaField = <T extends FieldValues = FieldValues>({
+export const ControlledTextareaField: FC<ControlledTextareaFieldProps> = ({
     name,
     control,
     label,
     id,
-    rules,
     ...props
-}: ControlledTextareaFieldProps<T>) => {
+}) => {
     return (
         <Controller
             name={name}
             control={control}
             defaultValue={props.defaultValue}
-            rules={rules || {
+            rules={{
                 required: props.required ? `${label} הוא שדה חובה` : false,
                 validate: (value) => {
                     if (props.required && !value) {
@@ -32,19 +27,10 @@ export const ControlledTextareaField = <T extends FieldValues = FieldValues>({
                     return true
                 },
             }}
-            render={({ field, fieldState: { error } }) => (
-                <Field.Root key={id} orientation="vertical" invalid={!!error}>
-                    {label && <Field.Label>{label}</Field.Label>}
-                    <Textarea 
-                        {...field} 
-                        {...props}
-                        autoresize 
-                        id={id?.toString()} 
-                        borderColor={error ? 'red.500' : undefined}
-                    />
-                    {error && (
-                        <Field.ErrorText>{error.message}</Field.ErrorText>
-                    )}
+            render={({ field }) => (
+                <Field.Root key={id} orientation="vertical">
+                    <Field.Label>{label}</Field.Label>
+                    <Textarea {...field} autoresize id={id} />
                 </Field.Root>
             )}
         />

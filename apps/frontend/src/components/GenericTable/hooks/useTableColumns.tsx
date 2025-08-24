@@ -17,15 +17,23 @@ export const useTableColumns = ({
     isSuccess,
 }: UseTableColumnsProps) => {
     const columns = useMemo(() => {
-        if (!formFields?.sections?.length || !formFields?.overviewFields?.length) return []
+        if (
+            !formFields?.sections?.length ||
+            !formFields?.overviewFields?.length
+        )
+            return []
 
         // Get all fields from all sections
-        const allFields = formFields.sections.flatMap(section => section.fields)
-        
+        const allFields = formFields.sections.flatMap(
+            (section) => section.fields
+        )
+
         // Filter fields to only include those in overviewFields array
         const overviewFieldsToShow = formFields.overviewFields
-            .map(fieldName => allFields.find(field => field.name === fieldName))
-            .filter(field => field !== undefined)
+            .map((fieldName) =>
+                allFields.find((field) => field.name === fieldName)
+            )
+            .filter((field) => field !== undefined)
 
         return isSuccess && overviewFieldsToShow.length
             ? overviewFieldsToShow.map((field) =>
@@ -44,12 +52,14 @@ export const useTableColumns = ({
                                       ? 'range'
                                       : field.type === 'select' ||
                                           field.type === 'multipleSelect' ||
+                                          field.type === 'selectAutocomplete' ||
                                           field.type === 'radio'
                                         ? 'select'
                                         : 'text',
                               options:
                                   field.type === 'select' ||
-                                  field.type === 'multipleSelect'
+                                  field.type === 'multipleSelect' ||
+                                  field.type === 'selectAutocomplete'
                                       ? field.options
                                       : undefined,
                               items:

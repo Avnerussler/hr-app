@@ -6,6 +6,7 @@ export type FieldType =
     | 'password'
     | 'switch'
     | 'select'
+    | 'selectAutocomplete'
     | 'radio'
     | 'checkbox'
     | 'textarea'

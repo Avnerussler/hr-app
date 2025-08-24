@@ -1,46 +1,70 @@
 import { Field, Input } from '@chakra-ui/react'
-import { Control, Controller, FieldValues, Path } from 'react-hook-form'
+import { Control, Controller, FieldValues } from 'react-hook-form'
 
-interface ControlledInputFieldProps<T extends FieldValues = FieldValues> {
-    control: Control<T>
-    name: Path<T>
-    label?: string
-    id?: string | number
-    type?: string
-    rules?: any
-    [key: string]: any
+interface ControlledInputFieldProps extends FieldValues {
+    control: Control
 }
-export const ControlledInputField = <T extends FieldValues = FieldValues>({
+export const ControlledInputField = ({
     control,
     name,
     label,
     id,
     type,
-    rules,
     ...props
-}: ControlledInputFieldProps<T>) => {
+}: ControlledInputFieldProps) => {
     return (
         <Controller
             name={name}
             control={control}
             defaultValue={props.defaultValue}
-            rules={rules || {
+            rules={{
                 required: props.required ? `${label} הוא שדה חובה` : false,
                 validate: (value) => {
                     if (props.required && !value) {
-                        return `${label}הוא שדה חובה`
+                        return `${label} הוא שדה חובה`
                     }
+
+                    // Special validation for number type (hours)
+                    if (
+                        type === 'number' &&
+                        value !== '' &&
+                        value !== undefined
+                    ) {
+                        const numValue = parseFloat(value)
+
+                        if (isNaN(numValue)) {
+                            return 'יש להזין מספר תקין'
+                        }
+
+                        // Check for negative numbers
+                        if (numValue < 0) {
+                            return 'המספר חייב להיות חיובי'
+                        }
+
+                        // Check for hours specifically (if max is 24)
+                        if (props.max === 24 && numValue > 24) {
+                            return 'מקסימום 24 שעות'
+                        }
+
+                        // Check for reasonable decimal places
+                        if (numValue % 0.01 !== 0) {
+                            return 'מקסימום 2 מקומות עשרוניים'
+                        }
+                    }
+
                     return true
                 },
+                ...props.rules,
             }}
             render={({ field, fieldState: { error } }) => (
                 <Field.Root key={id} orientation="vertical" invalid={!!error}>
-                    {label && <Field.Label>{label}</Field.Label>}
+                    <Field.Label>{label}</Field.Label>
                     <Input
                         {...field}
-                        {...props}
                         type={type}
-                        id={id?.toString()}
+                        id={id}
+                        min={props.min}
+                        max={props.max}
                         borderColor={error ? 'red.500' : undefined}
                     />
                     {error && (
