@@ -22,7 +22,7 @@ function getModuleDisplayName(pathname: string): string {
             return 'Personnel'
         case 'projects':
             return 'Projects'
-        case 'work-hours':
+        case 'quota-management':
             return 'Work Hours'
         case 'settings':
             return 'Settings'

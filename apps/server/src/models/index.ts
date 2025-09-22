@@ -1,3 +1,3 @@
 export * from './FormSubmissions'
 export * from './FormFields'
-export * from './WorkHours'
+export { default as Quota } from './Quota'

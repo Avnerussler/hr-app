@@ -45,11 +45,6 @@ export const ControlledInputField = ({
                         if (props.max === 24 && numValue > 24) {
                             return 'מקסימום 24 שעות'
                         }
-
-                        // Check for reasonable decimal places
-                        if (numValue % 0.01 !== 0) {
-                            return 'מקסימום 2 מקומות עשרוניים'
-                        }
                     }
 
                     return true

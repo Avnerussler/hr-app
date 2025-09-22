@@ -41,7 +41,7 @@ export function Layout() {
             description: 'Analytics & Insights',
         },
         {
-            id: 'work-hours',
+            id: 'quota-management',
             label: 'Work Hours',
             icon: FiClock,
             description: 'Time Management',
@@ -187,7 +187,8 @@ export function Layout() {
 
                         {isSuccess &&
                             data.forms.map((item) => {
-                                const Icon = iconMap[item.icon] || iconMap['FiFolder']
+                                const Icon =
+                                    iconMap[item.icon] || iconMap['FiFolder']
                                 const isActive = pathname.includes(item._id)
 
                                 return (

@@ -11,7 +11,7 @@ export const ControlledSelectAutocompleteField = ({
     control,
     name,
     options,
-    rules,
+
     ...props
 }: ControlledSelectAutocompleteFieldProps) => {
     const [searchTerm, setSearchTerm] = useState('')
@@ -29,7 +29,7 @@ export const ControlledSelectAutocompleteField = ({
             name={name}
             control={control}
             defaultValue={props.defaultValue}
-            rules={rules}
+            rules={{ required: props.required }}
             render={({ field, fieldState: { error } }) => {
                 const selectedOption = options.find(
                     (opt) => opt.value === field.value

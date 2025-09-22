@@ -39,6 +39,7 @@ const FieldSchema = new Schema(
         label: { type: String },
         placeholder: { type: String },
         required: { type: Boolean },
+        errorMessage: { type: String, default: '' },
         defaultValue: { type: String },
         foreignFormName: { type: String },
         foreignField: { type: String },

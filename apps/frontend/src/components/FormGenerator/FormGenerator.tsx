@@ -116,7 +116,13 @@ export const FormGenerator = ({
                 )
             case 'attendance':
                 return (
-                    <Field.Root key={id} flex="1" minH={0} display="flex" flexDirection="column">
+                    <Field.Root
+                        key={id}
+                        flex="1"
+                        minH={0}
+                        display="flex"
+                        flexDirection="column"
+                    >
                         <ControlledAttendanceField
                             {...props}
                             control={control}

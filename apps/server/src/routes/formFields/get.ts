@@ -161,8 +161,8 @@ router.get('/:id', async (req: Request, res: Response) => {
                                 $ifNull: ['$sections.fields.options', []],
                             },
                             items: { $ifNull: ['$sections.fields.items', []] },
-                            errorMessages: {
-                                $ifNull: ['$sections.fields.errorMessages', ''],
+                            errorMessage: {
+                                $ifNull: ['$sections.fields.errorMessage', ''],
                             },
                             foreignFormName: '$sections.fields.foreignFormName',
                             foreignField: '$sections.fields.foreignField',

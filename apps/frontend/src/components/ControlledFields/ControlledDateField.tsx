@@ -24,7 +24,7 @@ export const ControlledDateField = ({
                     <Input
                         {...field}
                         type="date"
-                        id={id.toString()}
+                        id={id}
                         placeholder={props.placeholder}
                     />
                 </Field.Root>
