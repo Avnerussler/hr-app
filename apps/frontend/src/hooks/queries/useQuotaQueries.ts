@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import { 
-    DailyQuota, 
-    QuotaResponse, 
-    QuotaQueryParams
+import {
+    DailyQuota,
+    QuotaResponse,
+    QuotaQueryParams,
 } from '@/types/workHoursType'
-
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+import { BASE_URL } from '@/config'
 
 const API_ENDPOINTS = {
     GET_QUOTAS: 'quotas',
@@ -117,7 +116,10 @@ export const useQuotasRangeQuery = (startDate: string, endDate: string) => {
  * Hook to fetch quotas with occupancy data for a date range (for calendar view)
  * This is the main hook for the calendar component
  */
-export const useQuotasWithOccupancyRangeQuery = (startDate: string, endDate: string) => {
+export const useQuotasWithOccupancyRangeQuery = (
+    startDate: string,
+    endDate: string
+) => {
     return useQuery<QuotasWithOccupancyResponse>({
         queryKey: ['quotasWithOccupancyRange', startDate, endDate],
         queryFn: async () => {

@@ -19,8 +19,11 @@ router.put(
                     .json({ message: 'Invalid attendance data' })
             }
 
-            // Find the reservation record for this employee
-            const reservation = await FormSubmissions.findById(employeeId)
+            // Find any form submission where this employee has attendance data
+            const reservation = await FormSubmissions.findOne({
+                'formData.employeeName._id': employeeId,
+                'formData.attendance': { $exists: true }
+            })
 
             if (!reservation) {
                 return res
@@ -170,10 +173,11 @@ router.post(
                 attendanceChanges
             )) {
                 try {
-                    // Find the reservation record for this employee
-                    const reservation = await FormSubmissions.findById(
-                        employeeId
-                    )
+                    // Find any form submission where this employee has attendance data
+                    const reservation = await FormSubmissions.findOne({
+                        'formData.employeeName._id': employeeId,
+                        'formData.attendance': { $exists: true }
+                    })
 
                     if (!reservation) {
                         logger.warn(
@@ -378,27 +382,42 @@ router.get(
             const { employeeId } = req.params
             const limit = parseInt(req.query.limit as string) || 30
 
-            // Find the employee's reservation record
-            const employee = await FormSubmissions.findById(employeeId)
+            // Find all reservation records for this employee by matching employeeName._id
+            // (regardless of form name - more flexible)
+            const employeeReservations = await FormSubmissions.find({
+                'formData.employeeName._id': employeeId,
+                'formData.attendance': { $exists: true }
+            }).lean()
 
-            if (!employee) {
-                return res.status(404).json({ message: 'Employee not found' })
+            if (!employeeReservations || employeeReservations.length === 0) {
+                return res.status(200).json({
+                    employeeId,
+                    employeeName: 'לא ידוע',
+                    totalDays: 0,
+                    attendedDays: 0,
+                    attendanceRate: 0,
+                    records: [],
+                    totalReservations: 0,
+                    message: 'No attendance data found for this employee'
+                })
             }
 
-            // Get employee basic info
-            const employeeName =
-                employee.formData.employeeName ||
-                employee.formData.name ||
-                `${employee.formData.firstName || ''} ${
-                    employee.formData.lastName || ''
-                }`.trim() ||
-                'לא ידוע'
+            // Get employee basic info from the first reservation
+            const firstReservation = employeeReservations[0]
+            const employeeName = firstReservation.formData.employeeName?.display || 'לא ידוע'
 
-            // Get attendance data from the employee's formData
-            const attendanceData = employee.formData.attendance || {}
+            // Collect all attendance data from all reservations
+            const allAttendanceData: Record<string, boolean> = {}
+            
+            employeeReservations.forEach((reservation: any) => {
+                const attendanceData = reservation.formData.attendance || {}
+                Object.entries(attendanceData).forEach(([date, hasAttended]) => {
+                    allAttendanceData[date] = Boolean(hasAttended)
+                })
+            })
 
             // Convert attendance data to records and sort by date (newest first)
-            const attendanceRecords = Object.entries(attendanceData)
+            const attendanceRecords = Object.entries(allAttendanceData)
                 .map(([date, hasAttended]) => ({
                     date,
                     hasAttended: Boolean(hasAttended),
@@ -425,6 +444,7 @@ router.get(
                 attendedDays,
                 attendanceRate,
                 records: attendanceRecords,
+                totalReservations: employeeReservations.length
             })
         } catch (error) {
             logger.error('Error fetching employee attendance history:', error)
