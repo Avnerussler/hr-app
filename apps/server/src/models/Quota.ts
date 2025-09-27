@@ -7,6 +7,9 @@ export interface IQuota extends Document {
     quota: number
     notes?: string
     createdBy: string
+    managerReported?: boolean
+    managerReportedAt?: Date
+    managerReportedBy?: string
     createdAt: Date
     updatedAt: Date
 
@@ -69,6 +72,17 @@ const quotaSchema = new Schema<IQuota>(
             type: String,
             required: true,
             maxlength: [100, 'Created by field cannot exceed 100 characters'],
+        },
+        managerReported: {
+            type: Boolean,
+            default: false,
+        },
+        managerReportedAt: {
+            type: Date,
+        },
+        managerReportedBy: {
+            type: String,
+            maxlength: [100, 'Manager reported by field cannot exceed 100 characters'],
         },
     },
     {

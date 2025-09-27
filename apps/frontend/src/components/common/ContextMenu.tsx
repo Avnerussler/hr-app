@@ -1,6 +1,5 @@
 import { Box, VStack, Text } from '@chakra-ui/react'
-import { FaCog, FaPlus } from 'react-icons/fa'
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 interface ContextMenuItem {
     label: string
@@ -16,12 +15,21 @@ interface ContextMenuProps {
     isOpen: boolean
 }
 
-export function ContextMenu({ x, y, items, onClose, isOpen }: ContextMenuProps) {
+export function ContextMenu({
+    x,
+    y,
+    items,
+    onClose,
+    isOpen,
+}: ContextMenuProps) {
     const menuRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            if (
+                menuRef.current &&
+                !menuRef.current.contains(event.target as Node)
+            ) {
                 onClose()
             }
         }

@@ -40,6 +40,14 @@ const FieldSchema = new Schema(
         placeholder: { type: String },
         required: { type: Boolean },
         errorMessage: { type: String, default: '' },
+        validation: {
+            min: { type: Number },
+            max: { type: Number },
+            minLength: { type: Number },
+            maxLength: { type: Number },
+            pattern: { type: String },
+            customValidation: { type: String }
+        },
         defaultValue: { type: String },
         foreignFormName: { type: String },
         foreignField: { type: String },
@@ -96,6 +104,24 @@ const MetricConfigSchema = new Schema(
     { _id: false }
 )
 
+// Subschema for business rule validations
+const BusinessRuleSchema = new Schema(
+    {
+        id: { type: String, required: true },
+        name: { type: String, required: true },
+        description: { type: String },
+        ruleType: { 
+            type: String, 
+            required: true,
+            enum: ['uniqueConstraint', 'dateRange', 'conditional', 'custom']
+        },
+        config: { type: Schema.Types.Mixed, required: true },
+        errorMessage: { type: String, required: true },
+        enabled: { type: Boolean, default: true }
+    },
+    { _id: false }
+)
+
 // Subschema for sections
 const SectionSchema = new Schema(
     {
@@ -116,6 +142,7 @@ const FormSchema: Schema = new Schema<TFormFields>(
         sections: [SectionSchema],
         metrics: [MetricConfigSchema],
         overviewFields: { type: [String], default: [] },
+        businessRules: [BusinessRuleSchema],
     },
     { timestamps: true }
 )

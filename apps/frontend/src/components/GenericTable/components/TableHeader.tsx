@@ -6,7 +6,7 @@ import { FormFields } from '@/types/fieldsType'
 import { Filter } from '../Filter'
 
 interface TableHeaderProps {
-    column: Column<FormFields, unknown>
+    column: Column<Record<string, unknown>, unknown>
     field: FormFields
 }
 
@@ -14,11 +14,7 @@ export const TableHeader: FC<TableHeaderProps> = ({ column, field }) => {
     return (
         <VStack align="start" gap={2} w="full">
             <HStack justify="space-between" w="full">
-                <Text
-                    fontWeight="medium"
-                    color="foreground"
-                    fontSize="sm"
-                >
+                <Text fontWeight="medium" color="foreground" fontSize="sm">
                     {field.label}
                 </Text>
                 <IconButton

@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.1.8'
+const CURRENT_VERSION = '1.1.9'
 
 export const createPersonalForm = async () => {
     try {
@@ -332,6 +332,22 @@ export const createPersonalForm = async () => {
                         },
                     ],
                 },
+
+                {
+                    id: 'attendanceHistory',
+                    name: 'היסטוריית נוכחות',
+                    fields: [
+                        {
+                            name: 'attendanceHistory',
+                            type: 'attendanceHistory',
+                            label: 'היסטוריית נוכחות',
+                            placeholder: '',
+                            required: false,
+                            defaultValue: '',
+                            employeeIdField: '_id', // Field that contains the employee ID
+                        },
+                    ],
+                },
                 {
                     id: 'educationAndSkills',
                     name: 'השכלה וכישורים',
@@ -397,20 +413,6 @@ export const createPersonalForm = async () => {
                             type: 'text',
                             label: 'מקור הפניה',
                             placeholder: 'מקור הפניה',
-                            required: false,
-                            defaultValue: '',
-                        },
-                    ],
-                },
-                {
-                    id: 'attendance',
-                    name: 'נוכחות',
-                    fields: [
-                        {
-                            name: 'attendanceHistory',
-                            type: 'attendance',
-                            label: 'היסטוריית נוכחות',
-                            placeholder: 'הזן את פרטי הנוכחות',
                             required: false,
                             defaultValue: '',
                         },

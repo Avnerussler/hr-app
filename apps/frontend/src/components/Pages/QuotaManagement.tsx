@@ -1,4 +1,13 @@
-import { Box, VStack, HStack, Button, Text, Flex, Grid, useDisclosure } from '@chakra-ui/react'
+import {
+    Box,
+    VStack,
+    HStack,
+    Button,
+    Text,
+    Flex,
+    Grid,
+    useDisclosure,
+} from '@chakra-ui/react'
 import { ProgressRoot, ProgressBar } from '../ui/progress'
 import {
     FaCalendarAlt,
@@ -69,10 +78,10 @@ export default function QuotaManagement() {
         isOpen: boolean
         x: number
         y: number
-        date: string
-    }>({ isOpen: false, x: 0, y: 0, date: '' })
+    }>({ isOpen: false, x: 0, y: 0 })
     const [clickedDate, setClickedDate] = useState<string>('')
-    const [shouldOpenModalAfterLoad, setShouldOpenModalAfterLoad] = useState(false)
+    const [shouldOpenModalAfterLoad, setShouldOpenModalAfterLoad] =
+        useState(false)
     const [selectedRange, setSelectedRange] = useState<{
         start: string | null
         end: string | null
@@ -84,8 +93,8 @@ export default function QuotaManagement() {
         if (calendarView === 'monthly') {
             const monthStart = startOfMonth(currentDate)
             const monthEnd = endOfMonth(currentDate)
-            const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 })
-            const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 })
+            const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 })
+            const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 })
             return {
                 dateRange: {
                     start: format(calendarStart, 'yyyy-MM-dd'),
@@ -93,8 +102,8 @@ export default function QuotaManagement() {
                 },
             }
         } else {
-            const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 })
-            const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 })
+            const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 })
+            const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 })
             return {
                 dateRange: {
                     start: format(weekStart, 'yyyy-MM-dd'),
@@ -161,8 +170,8 @@ export default function QuotaManagement() {
         if (calendarView === 'monthly') {
             const monthStart = startOfMonth(currentDate)
             const monthEnd = endOfMonth(currentDate)
-            const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 })
-            const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 })
+            const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 })
+            const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 })
 
             const allDays = eachDayOfInterval({
                 start: calendarStart,
@@ -173,6 +182,7 @@ export default function QuotaManagement() {
             for (let i = 0; i < allDays.length; i += 7) {
                 const weekDays = allDays
                     .slice(i, i + 7)
+                    .reverse() // Reverse to match RTL layout ['ז׳', 'ו׳', 'ה׳', 'ד׳', 'ג׳', 'ב׳', 'א׳']
                     .map((date): CalendarDay => {
                         const dateStr = format(date, 'yyyy-MM-dd')
                         return {
@@ -192,30 +202,32 @@ export default function QuotaManagement() {
             }
 
             return {
-                weeks,
+                weeks: weeks,
                 monthName: format(currentDate, 'MMMM', { locale: he }),
                 year: currentDate.getFullYear(),
                 month: currentDate.getMonth(),
             }
         } else {
             // Weekly view
-            const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 })
-            const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 })
+            const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 })
+            const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 })
 
             const days = eachDayOfInterval({
                 start: weekStart,
                 end: weekEnd,
-            }).map((date): CalendarDay => {
-                const dateStr = format(date, 'yyyy-MM-dd')
-                return {
-                    date: dateStr,
-                    isToday: isToday(date),
-                    isCurrentMonth: true,
-                    quota: quotas[dateStr],
-                    currentOccupancy: currentOccupancy[dateStr] || 0,
-                    isWeekend: isWeekend(date),
-                }
             })
+                .reverse() // Reverse to match RTL layout ['ז׳', 'ו׳', 'ה׳', 'ד׳', 'ג׳', 'ב׳', 'א׳']
+                .map((date): CalendarDay => {
+                    const dateStr = format(date, 'yyyy-MM-dd')
+                    return {
+                        date: dateStr,
+                        isToday: isToday(date),
+                        isCurrentMonth: true,
+                        quota: quotas[dateStr],
+                        currentOccupancy: currentOccupancy[dateStr] || 0,
+                        isWeekend: isWeekend(date),
+                    }
+                })
 
             return [
                 {
@@ -249,13 +261,6 @@ export default function QuotaManagement() {
     }
 
     const handleDayClick = (date: string, event?: React.MouseEvent) => {
-        console.log('Day clicked:', date, {
-            shiftKey: event?.shiftKey,
-            ctrlKey: event?.ctrlKey,
-            metaKey: event?.metaKey,
-            currentRange: selectedRange,
-        })
-
         if (event?.shiftKey && selectedRange.start) {
             // Complete range selection
             const startDate = selectedRange.start
@@ -265,22 +270,18 @@ export default function QuotaManagement() {
                 end: startDate < endDate ? endDate : startDate,
                 isSelecting: false,
             }
-            console.log('Setting range:', newRange)
             setSelectedRange(newRange)
         } else if (event?.ctrlKey || event?.metaKey) {
             // Start or modify range selection
             const newRange = { start: date, end: null, isSelecting: true }
-            console.log('Starting range:', newRange)
             setSelectedRange(newRange)
         } else if (selectedRange.start || selectedRange.end) {
             // Clear selection and open attendance drawer
-            console.log('Clearing selection')
             setSelectedRange({ start: null, end: null, isSelecting: false })
             setSelectedDate(date)
             setIsAttendanceDrawerOpen(true)
         } else {
             // Normal click - open attendance drawer
-            console.log('Normal click - opening drawer')
             setSelectedDate(date)
             setIsAttendanceDrawerOpen(true)
         }
@@ -289,59 +290,57 @@ export default function QuotaManagement() {
     const handleRightClick = (event: React.MouseEvent, date: string) => {
         event.preventDefault()
 
-        // Set clicked date to trigger the quota query
+        // Set the selected date and clicked date to trigger the quota query
+        setSelectedDate(date)
         setClickedDate(date)
 
         setContextMenu({
             isOpen: true,
             x: event.clientX,
             y: event.clientY,
-            date,
         })
     }
 
     // Update selected quota when clicked quota data is available
     useEffect(() => {
         if (clickedDate && !isLoadingClickedQuota) {
-            
             if (
-                clickedQuotaData?.quotas &&
-                clickedQuotaData.quotas.length > 0
-            ) {
-                setSelectedQuota(clickedQuotaData.quotas[0])
-            } else if (
-                clickedQuotaData?.data?.quotas &&
+                clickedQuotaData?.data.quotas &&
                 Array.isArray(clickedQuotaData.data.quotas) &&
                 clickedQuotaData.data.quotas.length > 0
             ) {
-                console.log('✅ Found existing quota:', clickedQuotaData.data.quotas[0])
                 setSelectedQuota(clickedQuotaData.data.quotas[0])
             } else {
-                // Create default quota for new entries
-                const defaultQuota: DailyQuota = {
-                    _id: '',
+                // No quota exists for this date, create empty structure but preserve existing quota value from calendar
+                const existingQuotaValue = quotas[clickedDate] || 0
+                setSelectedQuota({
+                    _id: '', // Empty means it's a new quota
                     date: clickedDate,
-                    quota: 0,
+                    quota: existingQuotaValue,
                     notes: '',
                     createdBy: '',
                     createdAt: '',
                     updatedAt: '',
-                }
-                setSelectedQuota(defaultQuota)
+                })
             }
         }
-    }, [clickedDate, isLoadingClickedQuota, clickedQuotaData])
-    
+    }, [clickedDate, isLoadingClickedQuota, clickedQuotaData, quotas])
+
     // Separate effect to handle modal opening after data loads
     useEffect(() => {
-        if (shouldOpenModalAfterLoad && !isLoadingClickedQuota && selectedQuota) {
+        if (shouldOpenModalAfterLoad && !isLoadingClickedQuota && clickedDate) {
             quotaModal.onOpen()
             setShouldOpenModalAfterLoad(false)
         }
-    }, [shouldOpenModalAfterLoad, isLoadingClickedQuota, selectedQuota])
+    }, [
+        shouldOpenModalAfterLoad,
+        isLoadingClickedQuota,
+        clickedDate,
+        quotaModal,
+    ])
 
     const handleContextMenuClose = () => {
-        setContextMenu({ isOpen: false, x: 0, y: 0, date: '' })
+        setContextMenu({ isOpen: false, x: 0, y: 0 })
     }
 
     const handleClearSelection = () => {
@@ -391,13 +390,13 @@ export default function QuotaManagement() {
             setSelectedDate(`${selectedRange.start}:${selectedRange.end}`)
             quotaModal.onOpen() // Range doesn't need to wait for quota loading
         } else {
-            setSelectedDate(contextMenu.date)
-            // Check if we already have quota data for this date or if we need to wait
-            if (clickedDate === contextMenu.date && !isLoadingClickedQuota && selectedQuota) {
-                // Data is already loaded for this date
+            // selectedDate is already set by handleRightClick, no need to set it again
+
+            // The selectedQuota will be set by the useEffect that watches clickedDate
+            // Just wait for the effect to complete and then open modal
+            if (selectedDate === clickedDate && !isLoadingClickedQuota) {
                 quotaModal.onOpen()
             } else {
-                // Need to wait for loading to complete
                 setShouldOpenModalAfterLoad(true)
             }
         }
@@ -408,9 +407,8 @@ export default function QuotaManagement() {
         if (selectedRange.start && selectedRange.end) {
             // Handle range holiday adding
             setSelectedDate(`${selectedRange.start}:${selectedRange.end}`)
-        } else {
-            setSelectedDate(contextMenu.date)
         }
+        // selectedDate is already set by handleRightClick for single date
         setIsHolidayModalOpen(true)
         handleContextMenuClose()
     }
@@ -447,8 +445,8 @@ export default function QuotaManagement() {
         if (calendarView === 'monthly') {
             return format(currentDate, 'MMMM yyyy', { locale: he })
         } else {
-            const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 })
-            const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 })
+            const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 })
+            const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 })
             return `${format(weekStart, 'd MMM', { locale: he })} - ${format(weekEnd, 'd MMM yyyy', { locale: he })}`
         }
     }
@@ -649,9 +647,9 @@ export default function QuotaManagement() {
             >
                 {/* Day Headers */}
                 <Grid templateColumns="repeat(7, 1fr)" gap={1} mb={2}>
-                    {['ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳', 'א׳'].map((day) => (
+                    {['ז׳', 'ו׳', 'ה׳', 'ד׳', 'ג׳', 'ב׳', 'א׳'].map((day) => (
                         <Box key={day} textAlign="center" py={2}>
-                            <Text fontSize="sm" fontWeight="bold" color="muted">
+                            <Text fontSize="sm" fontWeight="bold">
                                 {day}
                             </Text>
                         </Box>
@@ -730,7 +728,8 @@ export default function QuotaManagement() {
                                         </HStack>
                                     </HStack>
 
-                                    {day.quota && (
+                                    {(day.quota ||
+                                        day.currentOccupancy > 0) && (
                                         <VStack align="start" gap={2} w="full">
                                             {/* Top: (assigned)/(capacity) (percent) */}
                                             <Text
@@ -741,36 +740,47 @@ export default function QuotaManagement() {
                                             >
                                                 {formatQuotaDisplay(
                                                     day.currentOccupancy,
-                                                    day.quota,
-                                                    capacityData[day.date]
-                                                        ?.occupancyRate || 0
+                                                    day.quota || 0,
+                                                    day.quota
+                                                        ? capacityData[day.date]
+                                                              ?.occupancyRate ||
+                                                              0
+                                                        : day.currentOccupancy >
+                                                            0
+                                                          ? 100
+                                                          : 0
                                                 )}
                                             </Text>
 
                                             {/* Bottom: Progress bar */}
                                             <ProgressRoot
                                                 value={Math.min(
-                                                    capacityData[day.date]
-                                                        ?.occupancyRate || 0,
+                                                    day.quota
+                                                        ? capacityData[day.date]
+                                                              ?.occupancyRate ||
+                                                              0
+                                                        : day.currentOccupancy >
+                                                            0
+                                                          ? 100
+                                                          : 0,
                                                     100
                                                 )}
                                                 size="sm"
                                                 w="full"
                                                 colorPalette={getOccupancyColorPalette(
-                                                    capacityData[day.date]
-                                                        ?.occupancyRate || 0
+                                                    day.quota
+                                                        ? capacityData[day.date]
+                                                              ?.occupancyRate ||
+                                                              0
+                                                        : day.currentOccupancy >
+                                                            0
+                                                          ? 100
+                                                          : 0
                                                 )}
                                             >
                                                 <ProgressBar />
                                             </ProgressRoot>
                                         </VStack>
-                                    )}
-
-                                    {!day.quota && day.currentOccupancy > 0 && (
-                                        <Text fontSize="xs" color="gray.600">
-                                            תפוס: {day.currentOccupancy} (אין
-                                            מגבלה)
-                                        </Text>
                                     )}
                                 </VStack>
                             </Box>
@@ -869,7 +879,8 @@ export default function QuotaManagement() {
                                                 </HStack>
                                             </HStack>
 
-                                            {day.quota && (
+                                            {(day.quota ||
+                                                day.currentOccupancy > 0) && (
                                                 <VStack
                                                     align="start"
                                                     gap={1}
@@ -884,47 +895,54 @@ export default function QuotaManagement() {
                                                     >
                                                         {formatQuotaDisplay(
                                                             day.currentOccupancy,
-                                                            day.quota,
-                                                            capacityData[
-                                                                day.date
-                                                            ]?.occupancyRate ||
-                                                                0
+                                                            day.quota || 0,
+                                                            day.quota
+                                                                ? capacityData[
+                                                                      day.date
+                                                                  ]
+                                                                      ?.occupancyRate ||
+                                                                      0
+                                                                : day.currentOccupancy >
+                                                                    0
+                                                                  ? 100
+                                                                  : 0
                                                         )}
                                                     </Text>
 
                                                     {/* Bottom: Progress bar */}
                                                     <ProgressRoot
                                                         value={Math.min(
-                                                            capacityData[
-                                                                day.date
-                                                            ]?.occupancyRate ||
-                                                            0,
+                                                            day.quota
+                                                                ? capacityData[
+                                                                      day.date
+                                                                  ]
+                                                                      ?.occupancyRate ||
+                                                                      0
+                                                                : day.currentOccupancy >
+                                                                    0
+                                                                  ? 100
+                                                                  : 0,
                                                             100
                                                         )}
                                                         size="xs"
                                                         w="full"
                                                         colorPalette={getOccupancyColorPalette(
-                                                            capacityData[
-                                                                day.date
-                                                            ]?.occupancyRate ||
-                                                                0
+                                                            day.quota
+                                                                ? capacityData[
+                                                                      day.date
+                                                                  ]
+                                                                      ?.occupancyRate ||
+                                                                      0
+                                                                : day.currentOccupancy >
+                                                                    0
+                                                                  ? 100
+                                                                  : 0
                                                         )}
                                                     >
                                                         <ProgressBar />
                                                     </ProgressRoot>
                                                 </VStack>
                                             )}
-
-                                            {!day.quota &&
-                                                day.currentOccupancy > 0 && (
-                                                    <Text
-                                                        fontSize="2xs"
-                                                        color="gray.500"
-                                                    >
-                                                        תפוס:{' '}
-                                                        {day.currentOccupancy}
-                                                    </Text>
-                                                )}
                                         </VStack>
                                     </Box>
                                 ))}

@@ -152,7 +152,7 @@ export interface QuotaQueryParams {
 }
 
 export interface QuotaResponse {
-    quotas: DailyQuota[]
+    data: { quotas: DailyQuota[] }
     pagination?: {
         page: number
         limit: number

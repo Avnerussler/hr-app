@@ -1,4 +1,13 @@
-import { VStack, HStack, Button, Text, Box, Badge, Flex, IconButton } from '@chakra-ui/react'
+import {
+    VStack,
+    HStack,
+    Button,
+    Text,
+    Box,
+    Badge,
+    Flex,
+    IconButton,
+} from '@chakra-ui/react'
 import {
     DialogRoot,
     DialogContent,
@@ -13,14 +22,13 @@ import { Switch } from '../ui/switch'
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { format, eachDayOfInterval } from 'date-fns'
-import { FaEdit, FaTrash, FaPlus, FaSave, FaTimes } from 'react-icons/fa'
-import { 
-    getHolidaysByDate, 
-    getAllHolidays, 
-    addCustomHoliday, 
-    removeCustomHoliday, 
+import { FaEdit, FaTrash, FaPlus, FaSave } from 'react-icons/fa'
+import {
+    getHolidaysByDate,
+    addCustomHoliday,
+    removeCustomHoliday,
     updateCustomHoliday,
-    Holiday 
+    Holiday,
 } from '@/utils/israelHolidays'
 
 interface HolidayFormData {
@@ -37,11 +45,11 @@ interface HolidayManagementModalProps {
     dateRange?: { start: string; end: string }
 }
 
-export function HolidayManagementModal({ 
-    isOpen, 
-    onClose, 
-    selectedDate, 
-    dateRange 
+export function HolidayManagementModal({
+    isOpen,
+    onClose,
+    selectedDate,
+    dateRange,
 }: HolidayManagementModalProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [hasEndDate, setHasEndDate] = useState(false)
@@ -54,7 +62,7 @@ export function HolidayManagementModal({
         reset,
         watch,
         setValue,
-        formState: { errors, isValid }
+        formState: { errors, isValid },
     } = useForm<HolidayFormData>()
 
     // Get holidays for the selected date(s)
@@ -62,16 +70,18 @@ export function HolidayManagementModal({
         if (dateRange) {
             const dates = eachDayOfInterval({
                 start: new Date(dateRange.start),
-                end: new Date(dateRange.end)
+                end: new Date(dateRange.end),
             })
             const holidayMap = new Map<string, Holiday>()
-            dates.forEach(date => {
+            dates.forEach((date) => {
                 const dateStr = format(date, 'yyyy-MM-dd')
-                getHolidaysByDate(dateStr).forEach(holiday => {
+                getHolidaysByDate(dateStr).forEach((holiday) => {
                     holidayMap.set(holiday.id, holiday)
                 })
             })
-            return Array.from(holidayMap.values()).sort((a, b) => a.date.localeCompare(b.date))
+            return Array.from(holidayMap.values()).sort((a, b) =>
+                a.date.localeCompare(b.date)
+            )
         } else if (selectedDate) {
             return getHolidaysByDate(selectedDate)
         }
@@ -94,10 +104,13 @@ export function HolidayManagementModal({
         setEditingHoliday(null)
         setShowAddForm(false)
         reset({
-            date: dateRange?.start || selectedDate || format(new Date(), 'yyyy-MM-dd'),
+            date:
+                dateRange?.start ||
+                selectedDate ||
+                format(new Date(), 'yyyy-MM-dd'),
             endDate: dateRange?.end || '',
             name: '',
-            description: ''
+            description: '',
         })
     }
 
@@ -108,15 +121,15 @@ export function HolidayManagementModal({
                 // Create holiday for each day in range
                 const dates = eachDayOfInterval({
                     start: new Date(data.date),
-                    end: new Date(data.endDate)
+                    end: new Date(data.endDate),
                 })
-                dates.forEach(date => {
+                dates.forEach((date) => {
                     addCustomHoliday({
                         date: format(date, 'yyyy-MM-dd'),
                         name: data.name,
                         nameHebrew: data.name,
                         isWorkingDay: false,
-                        description: data.description
+                        description: data.description,
                     })
                 })
             } else {
@@ -126,10 +139,10 @@ export function HolidayManagementModal({
                     name: data.name,
                     nameHebrew: data.name,
                     isWorkingDay: false,
-                    description: data.description
+                    description: data.description,
                 })
             }
-            
+
             // Refresh holidays list
             setTimeout(() => setRelevantHolidays(getRelevantHolidays()), 100)
             setShowAddForm(false)
@@ -143,15 +156,15 @@ export function HolidayManagementModal({
 
     const handleUpdateHoliday = async (data: HolidayFormData) => {
         if (!editingHoliday) return
-        
+
         setIsLoading(true)
         try {
             updateCustomHoliday(editingHoliday.id, {
                 name: data.name,
                 nameHebrew: data.name,
-                description: data.description
+                description: data.description,
             })
-            
+
             // Refresh holidays list
             setTimeout(() => setRelevantHolidays(getRelevantHolidays()), 100)
             setEditingHoliday(null)
@@ -168,8 +181,12 @@ export function HolidayManagementModal({
             alert('לא ניתן למחוק חגים מובנים')
             return
         }
-        
-        if (!confirm(`האם אתה בטוח שברצונך למחוק את החג "${holiday.nameHebrew}"?`)) {
+
+        if (
+            !confirm(
+                `האם אתה בטוח שברצונך למחוק את החג "${holiday.nameHebrew}"?`
+            )
+        ) {
             return
         }
 
@@ -186,7 +203,7 @@ export function HolidayManagementModal({
             alert('ניתן לערוך רק חגים מותאמים אישית')
             return
         }
-        
+
         setEditingHoliday(holiday)
         setShowAddForm(true)
         setValue('name', holiday.name)
@@ -206,26 +223,34 @@ export function HolidayManagementModal({
 
     const getHolidayTypeColor = (type: Holiday['type']) => {
         switch (type) {
-            case 'jewish': return 'blue'
-            case 'civil': return 'green'
-            case 'custom': return 'purple'
-            default: return 'gray'
+            case 'jewish':
+                return 'blue'
+            case 'civil':
+                return 'green'
+            case 'custom':
+                return 'purple'
+            default:
+                return 'gray'
         }
     }
 
     const getHolidayTypeName = (type: Holiday['type']) => {
         switch (type) {
-            case 'jewish': return 'יהודי'
-            case 'civil': return 'אזרחי'
-            case 'custom': return 'מותאם'
-            default: return 'אחר'
+            case 'jewish':
+                return 'יהודי'
+            case 'civil':
+                return 'אזרחי'
+            case 'custom':
+                return 'מותאם'
+            default:
+                return 'אחר'
         }
     }
 
     return (
-        <DialogRoot 
-            size="lg" 
-            open={isOpen} 
+        <DialogRoot
+            size="lg"
+            open={isOpen}
             onOpenChange={(details) => !details.open && onClose()}
         >
             <DialogContent maxH="80vh" overflow="auto">
@@ -237,14 +262,23 @@ export function HolidayManagementModal({
                 <DialogBody>
                     <VStack gap={4} align="stretch">
                         {/* Date Range Info */}
-                        <Box p={3} bg="blue.50" borderRadius="md" borderWidth="1px" borderColor="blue.200">
-                            <Text fontSize="sm" color="blue.800" fontWeight="medium">
-                                {dateRange 
+                        <Box
+                            p={3}
+                            bg="blue.50"
+                            borderRadius="md"
+                            borderWidth="1px"
+                            borderColor="blue.200"
+                        >
+                            <Text
+                                fontSize="sm"
+                                color="blue.800"
+                                fontWeight="medium"
+                            >
+                                {dateRange
                                     ? `ניהול חגים לטווח: ${dateRange.start} עד ${dateRange.end}`
-                                    : selectedDate 
-                                    ? `ניהול חגים לתאריך: ${selectedDate}`
-                                    : 'ניהול חגים'
-                                }
+                                    : selectedDate
+                                      ? `ניהול חגים לתאריך: ${selectedDate}`
+                                      : 'ניהול חגים'}
                             </Text>
                         </Box>
 
@@ -254,23 +288,29 @@ export function HolidayManagementModal({
                                 <Text fontSize="md" fontWeight="semibold">
                                     חגים קיימים ({relevantHolidays.length})
                                 </Text>
-                                <Button 
-                                    size="sm" 
-                                    leftIcon={<FaPlus />}
+                                <Button
+                                    size="sm"
                                     onClick={() => setShowAddForm(!showAddForm)}
                                     variant={showAddForm ? 'outline' : 'solid'}
                                 >
+                                    <FaPlus />
                                     {showAddForm ? 'ביטול' : 'הוסף חג חדש'}
                                 </Button>
                             </Flex>
 
                             {relevantHolidays.length === 0 ? (
-                                <Box p={4} textAlign="center" color="gray.500" bg="gray.50" borderRadius="md">
+                                <Box
+                                    p={4}
+                                    textAlign="center"
+                                    color="gray.500"
+                                    bg="gray.50"
+                                    borderRadius="md"
+                                >
                                     אין חגים מוגדרים לתאריכים שנבחרו
                                 </Box>
                             ) : (
                                 <VStack gap={2} align="stretch">
-                                    {relevantHolidays.map(holiday => (
+                                    {relevantHolidays.map((holiday) => (
                                         <Box
                                             key={holiday.id}
                                             p={3}
@@ -279,34 +319,68 @@ export function HolidayManagementModal({
                                             borderWidth="1px"
                                             borderColor="gray.200"
                                         >
-                                            <Flex justify="space-between" align="start">
+                                            <Flex
+                                                justify="space-between"
+                                                align="start"
+                                            >
                                                 <Box flex={1}>
-                                                    <Flex align="center" gap={2} mb={1}>
-                                                        <Text fontWeight="semibold">{holiday.nameHebrew}</Text>
-                                                        <Badge colorScheme={getHolidayTypeColor(holiday.type)} size="sm">
-                                                            {getHolidayTypeName(holiday.type)}
+                                                    <Flex
+                                                        align="center"
+                                                        gap={2}
+                                                        mb={1}
+                                                    >
+                                                        <Text fontWeight="semibold">
+                                                            {holiday.nameHebrew}
+                                                        </Text>
+                                                        <Badge
+                                                            colorScheme={getHolidayTypeColor(
+                                                                holiday.type
+                                                            )}
+                                                            size="sm"
+                                                        >
+                                                            {getHolidayTypeName(
+                                                                holiday.type
+                                                            )}
                                                         </Badge>
                                                         {!holiday.isWorkingDay && (
-                                                            <Badge colorScheme="red" size="sm">יום לא עבודה</Badge>
+                                                            <Badge
+                                                                colorScheme="red"
+                                                                size="sm"
+                                                            >
+                                                                יום לא עבודה
+                                                            </Badge>
                                                         )}
                                                     </Flex>
-                                                    <Text fontSize="sm" color="gray.600" mb={1}>
+                                                    <Text
+                                                        fontSize="sm"
+                                                        color="gray.600"
+                                                        mb={1}
+                                                    >
                                                         {holiday.date}
                                                     </Text>
                                                     {holiday.description && (
-                                                        <Text fontSize="sm" color="gray.500">
-                                                            {holiday.description}
+                                                        <Text
+                                                            fontSize="sm"
+                                                            color="gray.500"
+                                                        >
+                                                            {
+                                                                holiday.description
+                                                            }
                                                         </Text>
                                                     )}
                                                 </Box>
-                                                
+
                                                 {holiday.type === 'custom' && (
                                                     <HStack gap={1}>
                                                         <IconButton
                                                             size="sm"
                                                             variant="ghost"
                                                             colorScheme="blue"
-                                                            onClick={() => handleEditHoliday(holiday)}
+                                                            onClick={() =>
+                                                                handleEditHoliday(
+                                                                    holiday
+                                                                )
+                                                            }
                                                         >
                                                             <FaEdit />
                                                         </IconButton>
@@ -314,7 +388,11 @@ export function HolidayManagementModal({
                                                             size="sm"
                                                             variant="ghost"
                                                             colorScheme="red"
-                                                            onClick={() => handleDeleteHoliday(holiday)}
+                                                            onClick={() =>
+                                                                handleDeleteHoliday(
+                                                                    holiday
+                                                                )
+                                                            }
                                                         >
                                                             <FaTrash />
                                                         </IconButton>
@@ -329,11 +407,22 @@ export function HolidayManagementModal({
 
                         {/* Add/Edit Holiday Form */}
                         {showAddForm && (
-                            <Box p={4} bg="gray.50" borderRadius="md" borderWidth="1px" borderColor="gray.200">
+                            <Box
+                                p={4}
+                                bg="gray.50"
+                                borderRadius="md"
+                                borderWidth="1px"
+                                borderColor="gray.200"
+                            >
                                 <form onSubmit={handleSubmit(onSubmit)}>
                                     <VStack gap={4} align="stretch">
-                                        <Text fontSize="md" fontWeight="semibold">
-                                            {editingHoliday ? 'ערוך חג' : 'הוסף חג חדש'}
+                                        <Text
+                                            fontSize="md"
+                                            fontWeight="semibold"
+                                        >
+                                            {editingHoliday
+                                                ? 'ערוך חג'
+                                                : 'הוסף חג חדש'}
                                         </Text>
 
                                         {/* Date Field */}
@@ -346,7 +435,7 @@ export function HolidayManagementModal({
                                             <input
                                                 type="date"
                                                 {...register('date', {
-                                                    required: 'תאריך החג נדרש'
+                                                    required: 'תאריך החג נדרש',
                                                 })}
                                                 disabled={!!editingHoliday}
                                                 style={{
@@ -355,7 +444,9 @@ export function HolidayManagementModal({
                                                     border: '1px solid #E2E8F0',
                                                     borderRadius: '6px',
                                                     fontSize: '14px',
-                                                    opacity: editingHoliday ? 0.6 : 1
+                                                    opacity: editingHoliday
+                                                        ? 0.6
+                                                        : 1,
                                                 }}
                                             />
                                         </Field>
@@ -363,16 +454,29 @@ export function HolidayManagementModal({
                                         {/* End Date Toggle */}
                                         {!dateRange && !editingHoliday && (
                                             <Box>
-                                                <HStack justify="space-between" mb={2}>
+                                                <HStack
+                                                    justify="space-between"
+                                                    mb={2}
+                                                >
                                                     <Text fontWeight="medium">
-                                                        הגדר תאריך סיום (טווח ימי חג)
+                                                        הגדר תאריך סיום (טווח
+                                                        ימי חג)
                                                     </Text>
                                                     <Switch
                                                         checked={hasEndDate}
-                                                        onCheckedChange={(details) => {
-                                                            setHasEndDate(details.checked)
-                                                            if (!details.checked) {
-                                                                setValue('endDate', '')
+                                                        onCheckedChange={(
+                                                            details
+                                                        ) => {
+                                                            setHasEndDate(
+                                                                details.checked
+                                                            )
+                                                            if (
+                                                                !details.checked
+                                                            ) {
+                                                                setValue(
+                                                                    'endDate',
+                                                                    ''
+                                                                )
                                                             }
                                                         }}
                                                     />
@@ -385,27 +489,42 @@ export function HolidayManagementModal({
                                             <Field
                                                 label="תאריך סיום החג"
                                                 invalid={!!errors.endDate}
-                                                errorText={errors.endDate?.message}
+                                                errorText={
+                                                    errors.endDate?.message
+                                                }
                                                 required={hasEndDate}
                                             >
                                                 <input
                                                     type="date"
                                                     {...register('endDate', {
-                                                        required: hasEndDate ? 'תאריך סיום נדרש' : false,
+                                                        required: hasEndDate
+                                                            ? 'תאריך סיום נדרש'
+                                                            : false,
                                                         validate: (value) => {
-                                                            const startDate = watch('date')
-                                                            if (hasEndDate && value && startDate && new Date(value) < new Date(startDate)) {
+                                                            const startDate =
+                                                                watch('date')
+                                                            if (
+                                                                hasEndDate &&
+                                                                value &&
+                                                                startDate &&
+                                                                new Date(
+                                                                    value
+                                                                ) <
+                                                                    new Date(
+                                                                        startDate
+                                                                    )
+                                                            ) {
                                                                 return 'תאריך סיום חייב להיות אחרי תאריך ההתחלה'
                                                             }
                                                             return true
-                                                        }
+                                                        },
                                                     })}
                                                     style={{
                                                         width: '100%',
                                                         padding: '8px 12px',
                                                         border: '1px solid #E2E8F0',
                                                         borderRadius: '6px',
-                                                        fontSize: '14px'
+                                                        fontSize: '14px',
                                                     }}
                                                 />
                                             </Field>
@@ -425,15 +544,16 @@ export function HolidayManagementModal({
                                                     required: 'שם החג נדרש',
                                                     minLength: {
                                                         value: 2,
-                                                        message: 'שם החג חייב להכיל לפחות 2 תווים'
-                                                    }
+                                                        message:
+                                                            'שם החג חייב להכיל לפחות 2 תווים',
+                                                    },
                                                 })}
                                                 style={{
                                                     width: '100%',
                                                     padding: '8px 12px',
                                                     border: '1px solid #E2E8F0',
                                                     borderRadius: '6px',
-                                                    fontSize: '14px'
+                                                    fontSize: '14px',
                                                 }}
                                             />
                                         </Field>
@@ -453,15 +573,15 @@ export function HolidayManagementModal({
                                                     border: '1px solid #E2E8F0',
                                                     borderRadius: '6px',
                                                     fontSize: '14px',
-                                                    resize: 'vertical'
+                                                    resize: 'vertical',
                                                 }}
                                             />
                                         </Field>
 
                                         {/* Form Buttons */}
                                         <HStack gap={3}>
-                                            <Button 
-                                                variant="ghost" 
+                                            <Button
+                                                variant="ghost"
                                                 onClick={() => {
                                                     setShowAddForm(false)
                                                     resetForm()
@@ -470,14 +590,18 @@ export function HolidayManagementModal({
                                             >
                                                 ביטול
                                             </Button>
-                                            <Button 
+                                            <Button
                                                 type="submit"
                                                 colorScheme="blue"
                                                 loading={isLoading}
                                                 disabled={!isValid || isLoading}
-                                                leftIcon={<FaSave />}
                                             >
-                                                {isLoading ? 'שומר...' : editingHoliday ? 'עדכן חג' : 'שמור חג'}
+                                                <FaSave />
+                                                {isLoading
+                                                    ? 'שומר...'
+                                                    : editingHoliday
+                                                      ? 'עדכן חג'
+                                                      : 'שמור חג'}
                                             </Button>
                                         </HStack>
                                     </VStack>
@@ -488,10 +612,7 @@ export function HolidayManagementModal({
                 </DialogBody>
 
                 <DialogFooter>
-                    <Button 
-                        variant="ghost" 
-                        onClick={onClose}
-                    >
+                    <Button variant="ghost" onClick={onClose}>
                         סגור
                     </Button>
                 </DialogFooter>

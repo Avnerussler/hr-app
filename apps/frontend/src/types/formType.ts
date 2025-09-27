@@ -7,7 +7,7 @@ export type AllFormSubmission = {
         description: string
         icon: string
         formName: string
-        formData: FormFields[]
+        formData: Record<string, unknown>[]
     }[]
 }
 

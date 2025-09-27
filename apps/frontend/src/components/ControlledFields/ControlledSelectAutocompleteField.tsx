@@ -3,8 +3,14 @@ import { Field, Input, Box } from '@chakra-ui/react'
 
 import { Control, Controller, FieldValues } from 'react-hook-form'
 
+interface SelectOption {
+    value: string
+    label: string
+}
+
 interface ControlledSelectAutocompleteFieldProps extends FieldValues {
     control: Control
+    options: SelectOption[]
 }
 
 export const ControlledSelectAutocompleteField = ({
@@ -19,7 +25,7 @@ export const ControlledSelectAutocompleteField = ({
 
     const filteredOptions = useMemo(() => {
         if (!searchTerm) return options
-        return options.filter((option: any) =>
+        return options.filter((option: SelectOption) =>
             option.label.toLowerCase().includes(searchTerm.toLowerCase())
         )
     }, [options, searchTerm])
@@ -32,7 +38,7 @@ export const ControlledSelectAutocompleteField = ({
             rules={{ required: props.required }}
             render={({ field, fieldState: { error } }) => {
                 const selectedOption = options.find(
-                    (opt) => opt.value === field.value
+                    (opt: SelectOption) => opt.value === field.value
                 )
 
                 return (
@@ -81,7 +87,7 @@ export const ControlledSelectAutocompleteField = ({
                                     maxHeight="200px"
                                     overflowY="auto"
                                 >
-                                    {filteredOptions.map((option: any) => (
+                                    {filteredOptions.map((option: SelectOption) => (
                                         <Box
                                             key={option.value}
                                             px={3}

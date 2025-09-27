@@ -90,6 +90,77 @@ export const useAttendanceSummaryQuery = (startDate: string, endDate: string) =>
 }
 
 /**
+ * Hook to check if manager has reported for a specific date
+ */
+export const useManagerReportStatusQuery = (selectedDate: string) => {
+    return useQuery<{
+        hasReported: boolean
+        reportData?: {
+            reportedAt: string
+            reportedBy: string
+            quotaId: string
+        }
+    }>({
+        queryKey: ['managerReportStatus', selectedDate],
+        queryFn: async () => {
+            if (!selectedDate) {
+                return { hasReported: false }
+            }
+
+            const response = await axios({
+                method: 'GET',
+                baseURL: BASE_URL,
+                url: `quotas/attendance/manager-report/status/${selectedDate}`,
+            })
+
+            return response.data
+        },
+        enabled: !!selectedDate,
+        staleTime: 1000 * 60 * 5, // 5 minutes
+    })
+}
+
+export interface AttendanceRecord {
+    date: string
+    hasAttended: boolean
+    isReported: boolean
+}
+
+export interface AttendanceHistoryData {
+    employeeId: string
+    employeeName: string
+    totalDays: number
+    attendedDays: number
+    attendanceRate: number
+    records: AttendanceRecord[]
+}
+
+/**
+ * Hook to get employee attendance history
+ */
+export const useEmployeeAttendanceHistoryQuery = (employeeId: string, maxRecords: number = 20) => {
+    return useQuery<AttendanceHistoryData>({
+        queryKey: ['attendanceHistory', employeeId, maxRecords],
+        queryFn: async () => {
+            if (!employeeId) {
+                throw new Error('Employee ID is required')
+            }
+
+            const response = await axios({
+                method: 'GET',
+                baseURL: BASE_URL,
+                url: `quotas/employees/${employeeId}/attendance-history`,
+                params: { limit: maxRecords }
+            })
+
+            return response.data
+        },
+        enabled: !!employeeId,
+        staleTime: 1000 * 60 * 5, // 5 minutes
+    })
+}
+
+/**
  * Hook to get employee work schedule/date ranges
  */
 export const useEmployeeWorkRangeQuery = (employeeId: string) => {

@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
-import { FormFields, IForm } from '@/types/fieldsType'
+import { IForm } from '@/types/fieldsType'
 import { fuzzyFilter } from '../utils/fuzzyFilter'
 import { TableHeader } from '../components/TableHeader'
 import { TableCell } from '../components/TableCell'
 
-const columnHelper = createColumnHelper<FormFields>()
+const columnHelper = createColumnHelper<Record<string, unknown>>()
 
 interface UseTableColumnsProps {
     formFields: IForm | undefined
@@ -70,7 +70,7 @@ export const useTableColumns = ({
                           cell: (info) => (
                               <TableCell info={info} field={field} />
                           ),
-                          filterFn: fuzzyFilter,
+                          filterFn: fuzzyFilter as any,
                       }
                   )
               )

@@ -50,9 +50,7 @@ export const TableControls: FC<TableControlsProps> = ({
                 size="sm"
                 onClick={handleClearFilters}
                 disabled={
-                    !sorting.length &&
-                    !columnFilters.length &&
-                    !globalFilter
+                    !sorting.length && !columnFilters.length && !globalFilter
                 }
                 bg="card"
                 borderColor="border"

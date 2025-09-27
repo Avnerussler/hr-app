@@ -32,7 +32,7 @@ export const useCreateQuota = () => {
             })
             return response.data
         },
-        onSuccess: (data) => {
+        onSuccess: () => {
             // Invalidate all quota-related queries
             queryClient.invalidateQueries({ queryKey: ['quotas'] })
             queryClient.invalidateQueries({ queryKey: ['quotaWithOccupancy'] })
@@ -78,7 +78,7 @@ export const useCreateQuotaRange = () => {
             })
             return response.data
         },
-        onSuccess: (data, variables) => {
+        onSuccess: (_, variables) => {
             // Invalidate all quota-related queries
             queryClient.invalidateQueries({ queryKey: ['quotas'] })
             queryClient.invalidateQueries({ queryKey: ['quotaWithOccupancy'] })

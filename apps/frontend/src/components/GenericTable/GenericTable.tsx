@@ -10,8 +10,8 @@ import {
 } from '@tanstack/react-table'
 import { FC, useEffect, useCallback } from 'react'
 import { VStack } from '@chakra-ui/react'
+import { FilterFn } from '@tanstack/react-table'
 
-import { FormFields } from '@/types/fieldsType'
 import { useTableState } from './hooks/useTableState'
 import { useTableData } from './hooks/useTableData'
 import { useTableColumns } from './hooks/useTableColumns'
@@ -26,8 +26,8 @@ import { TablePagination } from './components/TablePagination'
 declare module '@tanstack/react-table' {
     //add fuzzy filter to the filterFns
     interface FilterFns {
-        fuzzy: any
-        global: any
+        fuzzy: FilterFn<any>
+        global: FilterFn<any>
     }
 }
 
@@ -55,7 +55,7 @@ export const GenericTable: FC<GenericTableProps> = ({ id, onRowClick }) => {
     const { columns } = useTableColumns({ formFields, isSuccess })
     const { data: formsData } = useFormsQuery()
 
-    const table = useReactTable<FormFields>({
+    const table = useReactTable<Record<string, unknown>>({
         defaultColumn: {
             size: 100,
             minSize: 50,
@@ -106,7 +106,7 @@ export const GenericTable: FC<GenericTableProps> = ({ id, onRowClick }) => {
 
         try {
             await exportToExcel({
-                data: data as Record<string, unknown>[],
+                data: data,
                 formFields,
                 formsData,
                 filename: formFields.formName

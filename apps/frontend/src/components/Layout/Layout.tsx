@@ -29,22 +29,22 @@ export function Layout() {
 
     const menuItems = [
         {
-            id: 'overview',
-            label: "Today's Overview",
-            icon: FiCalendar,
-            description: 'Daily Operations',
+            id: 'quota-management',
+            label: 'Work Hours',
+            icon: FiClock,
+            description: 'Time Management',
         },
+        // {
+        //     id: 'overview',
+        //     label: "Today's Overview",
+        //     icon: FiCalendar,
+        //     description: 'Daily Operations',
+        // },
         {
             id: 'dashboard',
             label: 'Dashboard',
             icon: FiBarChart2,
             description: 'Analytics & Insights',
-        },
-        {
-            id: 'quota-management',
-            label: 'Work Hours',
-            icon: FiClock,
-            description: 'Time Management',
         },
     ]
 

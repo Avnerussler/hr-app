@@ -28,6 +28,15 @@ export interface Item {
     label: string
 }
 
+export interface FieldValidation {
+    min?: number
+    max?: number
+    minLength?: number
+    maxLength?: number
+    pattern?: string
+    customValidation?: string
+}
+
 export interface FormFields {
     _id: string
     name: string
@@ -41,6 +50,7 @@ export interface FormFields {
     errorMessages?: string
     foreignFormName?: string
     foreignField?: string
+    validation?: FieldValidation
 }
 
 export interface FormSection {
@@ -66,6 +76,16 @@ export interface MetricConfig {
     calculation: MetricCalculation
 }
 
+export interface BusinessRule {
+    id: string
+    name: string
+    description?: string
+    ruleType: 'uniqueConstraint' | 'dateRange' | 'conditional' | 'custom'
+    config: any
+    errorMessage: string
+    enabled?: boolean
+}
+
 export interface IForm {
     formName: string
     version?: string
@@ -74,4 +94,5 @@ export interface IForm {
     sections: FormSection[]
     metrics?: MetricConfig[]
     overviewFields?: string[]
+    businessRules?: BusinessRule[]
 }
