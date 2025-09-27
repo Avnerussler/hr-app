@@ -5,8 +5,13 @@ import { FormFields } from '@/types/fieldsType'
 import { useNavigate } from 'react-router-dom'
 import { useFormsQuery } from '@/hooks/queries/useFormQueries'
 
+interface ForeignFieldValue {
+    _id: string
+    display: string
+}
+
 interface TableCellProps {
-    info: CellContext<FormFields, unknown>
+    info: CellContext<Record<string, unknown>, unknown>
     field: FormFields
 }
 
@@ -43,6 +48,7 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
     if (field.type === 'select' || field.type === 'selectAutocomplete') {
         // Handle new format where foreign fields store {_id, display}
         if (field.foreignFormName && typeof value === 'object' && value && '_id' in value && 'display' in value) {
+            const foreignValue = value as ForeignFieldValue
             return (
                 <Button
                     variant="ghost"
@@ -57,9 +63,9 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
                         color: 'primary',
                         opacity: 0.8,
                     }}
-                    onClick={(e) => handleForeignTableClick(e, field.foreignFormName!, value._id)}
+                    onClick={(e) => handleForeignTableClick(e, field.foreignFormName!, foreignValue._id)}
                 >
-                    {value.display}
+                    {foreignValue.display}
                 </Button>
             )
         }
@@ -94,7 +100,7 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
         
         return (
             <Text>
-                {selectedOption?.label || (typeof value === 'object' && value && 'display' in value ? value.display : String(value))}
+                {selectedOption?.label || (typeof value === 'object' && value && 'display' in value ? (value as ForeignFieldValue).display : String(value))}
             </Text>
         )
     }
@@ -104,9 +110,10 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
         
         // Handle new format where foreign fields store [{_id, display}, ...]
         if (field.foreignFormName && value.length > 0 && typeof value[0] === 'object' && '_id' in value[0] && 'display' in value[0]) {
+            const foreignValues = value as ForeignFieldValue[]
             return (
                 <HStack gap={1} flexWrap="wrap">
-                    {value.map((item: any) => (
+                    {foreignValues.map((item) => (
                         <Tag.Root
                             key={item._id}
                             size="sm"
@@ -161,6 +168,7 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
     if (field.type === 'radio') {
         // Handle new format where foreign fields store {_id, display}
         if (field.foreignFormName && typeof value === 'object' && value && '_id' in value && 'display' in value) {
+            const foreignValue = value as ForeignFieldValue
             return (
                 <Button
                     variant="ghost"
@@ -175,9 +183,9 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
                         color: 'primary',
                         opacity: 0.8,
                     }}
-                    onClick={(e) => handleForeignTableClick(e, field.foreignFormName!, value._id)}
+                    onClick={(e) => handleForeignTableClick(e, field.foreignFormName!, foreignValue._id)}
                 >
-                    {value.display}
+                    {foreignValue.display}
                 </Button>
             )
         }
@@ -188,7 +196,7 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
                 {
                     field.items?.find(
                         (item) => item.value === value
-                    )?.label || (typeof value === 'object' && value && 'display' in value ? value.display : String(value))
+                    )?.label || (typeof value === 'object' && value && 'display' in value ? (value as ForeignFieldValue).display : String(value))
                 }
             </Text>
         )

@@ -1,11 +1,10 @@
 import { memo, useMemo } from 'react'
 import { Column } from '@tanstack/react-table'
 import { DebouncedInput } from '@/components/DebounceInput'
-import { FormFields } from '@/types/fieldsType'
 import { Box } from '@chakra-ui/react'
 
 interface FilterProps {
-    column: Column<FormFields, unknown>
+    column: Column<Record<string, unknown>, unknown>
 }
 
 export const Filter = memo(({ column }: FilterProps) => {

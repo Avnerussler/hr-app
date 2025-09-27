@@ -2,6 +2,7 @@ import { Request, Response, Router } from 'express'
 import { FormSubmissions, FormFields } from '../../models'
 import logger from '../../config/logger'
 import mongoose from 'mongoose'
+import { formValidationService } from '../../services/formValidation'
 
 const router = Router()
 
@@ -195,12 +196,28 @@ const transformFormData = async (formData: any, formId: string) => {
     }
 }
 
-router.post('/', 
+router.post(
+    '/',
     validate(commonSchemas.formSubmission),
     asyncHandler(async (req: Request, res: Response) => {
         const { formData, formId, formName } = req.body
 
         logger.info(`Received form data:`, { formData, formId, formName })
+
+        // Validate form data using the generic validation service
+        // const validationResult = await formValidationService.validateFormSubmission(
+        //     formData,
+        //     formId,
+        //     formName
+        // )
+
+        // if (!validationResult.isValid) {
+        //     logger.warn('Form validation failed:', validationResult.errors)
+        //     return res.status(400).json({
+        //         error: 'Validation failed',
+        //         errors: validationResult.errors
+        //     })
+        // }
 
         // Transform the form data to include both reference and display values
         let transformedFormData = formData

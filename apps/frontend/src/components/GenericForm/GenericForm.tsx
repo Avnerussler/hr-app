@@ -20,9 +20,10 @@ export const GenericForm: FC<GenericFormProps> = ({
     defaultValues,
     formMode,
 }) => {
-    const { control, handleSubmit } = useForm<FieldValues>({
-        defaultValues: defaultValues ? defaultValues.formData : {},
-    })
+    const { control, handleSubmit, setError, clearErrors } =
+        useForm<FieldValues>({
+            defaultValues: defaultValues ? defaultValues.formData : {},
+        })
     const {
         data: formFields,
         isSuccess,
@@ -33,11 +34,22 @@ export const GenericForm: FC<GenericFormProps> = ({
         staleTime: 1000 * 60 * 5,
     })
 
-    const createMutation = useCreateFormSubmission()
-    const updateMutation = useUpdateFormSubmission()
+    // Handle field validation errors from server
+    const handleFieldError = (fieldName: string, message: string) => {
+        setError(fieldName, {
+            type: 'server',
+            message: message,
+        })
+    }
+
+    const createMutation = useCreateFormSubmission(handleFieldError)
+    const updateMutation = useUpdateFormSubmission(handleFieldError)
 
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
         try {
+            // Clear any previous server errors before submitting
+            clearErrors()
+
             if (formMode === 'update' && defaultValues?._id) {
                 updateMutation.mutate({
                     formData: data,
@@ -48,7 +60,7 @@ export const GenericForm: FC<GenericFormProps> = ({
                 createMutation.mutate({
                     formData: data,
                     formId,
-                    formName: 'formFields?.form.formName',
+                    formName: formFields?.formName || '',
                 })
             }
         } catch (error) {

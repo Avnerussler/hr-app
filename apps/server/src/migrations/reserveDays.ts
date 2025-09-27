@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.0.3'
+const CURRENT_VERSION = '1.0.0'
 
 export const createReserveDaysForm = async () => {
     try {
@@ -29,22 +29,50 @@ export const createReserveDaysForm = async () => {
                             foreignField: 'firstName',
                         },
                         {
-                            name: 'reserveDays',
-                            type: 'calendar',
-                            label: 'ימי מילואים',
-                            placeholder: 'פתיחה בלוח שנה - סימון ימים רלוונטים',
+                            name: 'startDate',
+                            type: 'date',
+                            label: 'תאריך התחלה',
+                            placeholder: 'בחר תאריך התחלה',
                             required: true,
                             defaultValue: '',
-                            errorMessage: 'ימי מילואים הם שדה חובה',
+                            errorMessage: 'תאריך התחלה הוא שדה חובה',
                         },
                         {
-                            name: 'requestDate',
+                            name: 'endDate',
                             type: 'date',
-                            label: 'תאריך הבקשה',
-                            placeholder: 'בחר תאריך הבקשה',
+                            label: 'תאריך סיום',
+                            placeholder: 'בחר תאריך סיום',
                             required: true,
                             defaultValue: '',
-                            errorMessage: 'תאריך הבקשה הוא שדה חובה',
+                            errorMessage: 'תאריך סיום הוא שדה חובה',
+                        },
+                        {
+                            name: 'fundingSource',
+                            type: 'select',
+                            label: 'מקור מימון',
+                            placeholder: 'בחר מקור מימון',
+                            required: false,
+                            defaultValue: 'internal',
+                            options: [
+                                {
+                                    value: 'internal',
+                                    label: 'פנימי',
+                                    name: 'internal',
+                                },
+                                {
+                                    value: 'external',
+                                    label: 'חיצוני',
+                                    name: 'external',
+                                },
+                            ],
+                        },
+                        {
+                            name: 'sponsorName',
+                            type: 'text',
+                            label: 'שם גורם ממן',
+                            placeholder: 'הזן שם גורם ממן',
+                            required: false,
+                            defaultValue: '',
                         },
                         {
                             name: 'orderType',
@@ -75,6 +103,7 @@ export const createReserveDaysForm = async () => {
                             required: false,
                             defaultValue: '',
                         },
+
                         {
                             name: 'baseAccessApproval',
                             type: 'select',
@@ -83,11 +112,6 @@ export const createReserveDaysForm = async () => {
                             required: false,
                             defaultValue: 'pending',
                             options: [
-                                {
-                                    value: 'has_tag',
-                                    label: 'יש תג',
-                                    name: 'has_tag',
-                                },
                                 {
                                     value: 'pending',
                                     label: 'מחכה לאישור',
@@ -126,6 +150,32 @@ export const createReserveDaysForm = async () => {
                             defaultValue: '',
                         },
                         {
+                            name: 'requestStatus',
+                            type: 'select',
+                            label: 'סטטוס בקשה',
+                            placeholder: 'בחר סטטוס בקשה',
+                            required: true,
+                            defaultValue: 'pending',
+                            errorMessage: 'סטטוס בקשה הוא שדה חובה',
+                            options: [
+                                {
+                                    value: 'pending',
+                                    label: 'ממתין לטיפול',
+                                    name: 'pending',
+                                },
+                                {
+                                    value: 'approved',
+                                    label: 'אושר',
+                                    name: 'approved',
+                                },
+                                {
+                                    value: 'denied',
+                                    label: 'נדחה',
+                                    name: 'denied',
+                                },
+                            ],
+                        },
+                        {
                             name: 'notes',
                             type: 'textarea',
                             label: 'הערות',
@@ -142,9 +192,8 @@ export const createReserveDaysForm = async () => {
                 'orderType',
                 'orderNumber',
                 'reserveUnit',
-                'baseAccessApproval',
-                'vehicleEntry',
-                'vehicleNumber',
+                'fundingSource',
+                'requestStatus',
             ],
         }
 

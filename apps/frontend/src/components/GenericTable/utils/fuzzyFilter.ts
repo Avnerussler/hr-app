@@ -1,8 +1,7 @@
 import { FilterFn } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
-import { FormFields } from '@/types/fieldsType'
 
-export const fuzzyFilter: FilterFn<FormFields> = (
+export const fuzzyFilter: FilterFn<Record<string, unknown>> = (
     row,
     columnId,
     value,

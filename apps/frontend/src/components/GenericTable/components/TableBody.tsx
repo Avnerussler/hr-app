@@ -1,11 +1,10 @@
 import { FC } from 'react'
 import { Table, flexRender } from '@tanstack/react-table'
 import { Box } from '@chakra-ui/react'
-import { FormFields } from '@/types/fieldsType'
 import { AllFormSubmission } from '@/types/formType'
 
 interface TableBodyProps {
-    table: Table<FormFields>
+    table: Table<Record<string, unknown>>
     submittedData: AllFormSubmission | undefined
     onRowClick?: (rowId: string) => void
 }

@@ -1,4 +1,4 @@
-import { Box, Grid, createListCollection } from '@chakra-ui/react'
+import { Box, Grid } from '@chakra-ui/react'
 import { useQuery } from '@tanstack/react-query'
 import {
     FaUsers,
@@ -11,13 +11,13 @@ import {
     FaCalendar,
     FaProjectDiagram,
 } from 'react-icons/fa'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { PageHeader } from '../common/PageHeader'
 import { MetricCard } from '../common/MetricCard'
 import { DetailsDrawer } from '../common/DetailsDrawer'
-import { AllFormSubmission, Filter, FilterOption } from '@/types/formType'
-import { SearchAndFilters } from '../common/SearchAndFilters'
+import { AllFormSubmission } from '@/types/formType'
+// import { SearchAndFilters } from '../common/SearchAndFilters'
 import { GenericTable } from '../GenericTable'
 import { useRouteContext, useDrawerState } from '@/hooks/useRouteContext'
 import { generateEditPath, generateNewPath } from '@/types/routeTypes'
@@ -30,7 +30,7 @@ interface DynamicFormPageProps {
 }
 
 export function DynamicFormPage({ formId, formName }: DynamicFormPageProps) {
-    const [searchTerm, setSearchTerm] = useState('')
+    // const [searchTerm, setSearchTerm] = useState('')
     const [searchParams] = useSearchParams()
     const navigate = useNavigate()
 
@@ -52,21 +52,21 @@ export function DynamicFormPage({ formId, formName }: DynamicFormPageProps) {
         metricsConfig
     )
 
-    const statusOptions = createListCollection({
-        items: [
-            { value: 'all', label: 'All Status' },
-            { value: 'active', label: 'Active' },
-            { value: 'inactive', label: 'Inactive' },
-        ],
-    })
+    // const statusOptions = createListCollection({
+    //     items: [
+    //         { value: 'all', label: 'All Status' },
+    //         { value: 'active', label: 'Active' },
+    //         { value: 'inactive', label: 'Inactive' },
+    //     ],
+    // })
 
-    const typeOptions = createListCollection({
-        items: [
-            { value: 'all', label: 'All Types' },
-            { value: 'consultant', label: 'Consultant' },
-            { value: 'reserve', label: 'Reserve' },
-        ],
-    })
+    // const typeOptions = createListCollection({
+    //     items: [
+    //         { value: 'all', label: 'All Types' },
+    //         { value: 'consultant', label: 'Consultant' },
+    //         { value: 'reserve', label: 'Reserve' },
+    //     ],
+    // })
 
     const { formState, itemId } = useRouteContext()
     const IS_DRAWER_OPEN = useDrawerState()
@@ -98,24 +98,24 @@ export function DynamicFormPage({ formId, formName }: DynamicFormPageProps) {
     const onClose = () => {
         navigate(-1)
     }
-    const filters: Filter[] = [
-        {
-            label: 'Status',
-            collection: statusOptions,
-            onValueChange: (value: FilterOption[] | { value: string[] }) => {
-                // Filter logic handled by GenericTable
-            },
-            placeholder: 'Select status',
-        },
-        {
-            label: 'Type',
-            collection: typeOptions,
-            onValueChange: (value: FilterOption[] | { value: string[] }) => {
-                // Filter logic handled by GenericTable
-            },
-            placeholder: 'Select type',
-        },
-    ]
+    // const filters: Filter[] = [
+    //     {
+    //         label: 'Status',
+    //         collection: statusOptions,
+    //         onValueChange: (value: FilterOption[] | { value: string[] }) => {
+    //             // Filter logic handled by GenericTable
+    //         },
+    //         placeholder: 'Select status',
+    //     },
+    //     {
+    //         label: 'Type',
+    //         collection: typeOptions,
+    //         onValueChange: (value: FilterOption[] | { value: string[] }) => {
+    //             // Filter logic handled by GenericTable
+    //         },
+    //         placeholder: 'Select type',
+    //     },
+    // ]
 
     // Icon mapping for metrics
     const iconMap: Record<string, any> = {

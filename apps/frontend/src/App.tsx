@@ -5,9 +5,8 @@ import DialogRefProvider from './providers/DialogRefProvider'
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { useFormsQuery } from './hooks/queries/useFormQueries'
 import { Box, Spinner, Center } from '@chakra-ui/react'
-import { TodaysOverview } from './components/Pages/TodaysOverview'
 import { Dashboard } from './components/Pages/Dashboard'
-import WorkHours from './components/Pages/WorkHours'
+import QuotaManagement from './components/Pages/QuotaManagement'
 import ErrorElement from './components/common/ErrorElement'
 
 const LoadingSpinner = () => (
@@ -21,9 +20,21 @@ const LoadingSpinner = () => (
 
 // Static routes
 const staticRoutes = [
-    { path: 'overview', element: <TodaysOverview />, errorElement: <ErrorElement /> },
-    { path: 'dashboard', element: <Dashboard />, errorElement: <ErrorElement /> },
-    { path: 'work-hours', element: <WorkHours />, errorElement: <ErrorElement /> },
+    {
+        path: 'quota-management',
+        element: <QuotaManagement />,
+        errorElement: <ErrorElement />,
+    },
+    // {
+    //     path: 'overview',
+    //     element: <TodaysOverview />,
+    //     errorElement: <ErrorElement />,
+    // },
+    {
+        path: 'dashboard',
+        element: <Dashboard />,
+        errorElement: <ErrorElement />,
+    },
 ]
 const createDynamicRouter = (formsData: any) => {
     const dynamicRoutes = formsData?.forms
@@ -69,13 +80,13 @@ const createDynamicRouter = (formsData: any) => {
             children: [
                 {
                     index: true,
-                    element: <Navigate to="/overview" replace />,
+                    element: <Navigate to="/quota-management" replace />,
                 },
                 ...staticRoutes,
                 ...dynamicRoutes,
                 {
                     path: '*',
-                    element: <Navigate to="/overview" replace />,
+                    element: <Navigate to="/quota-management" replace />,
                 },
             ],
         },

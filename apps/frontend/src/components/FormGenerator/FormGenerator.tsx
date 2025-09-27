@@ -8,6 +8,7 @@ import {
     ControlledSelectField,
     ControlledSelectAutocompleteField,
     ControlledAttendanceField,
+    ControlledAttendanceHistoryField,
 } from '../ControlledFields'
 import { Control, FieldValues } from 'react-hook-form'
 import { RefObject } from 'react'
@@ -116,11 +117,34 @@ export const FormGenerator = ({
                 )
             case 'attendance':
                 return (
-                    <Field.Root key={id} flex="1" minH={0} display="flex" flexDirection="column">
+                    <Field.Root
+                        key={id}
+                        flex="1"
+                        minH={0}
+                        display="flex"
+                        flexDirection="column"
+                    >
                         <ControlledAttendanceField
                             {...props}
                             control={control}
                             id={id}
+                        />
+                    </Field.Root>
+                )
+            case 'attendanceHistory':
+                return (
+                    <Field.Root
+                        key={id}
+                        flex="1"
+                        minH={0}
+                        display="flex"
+                        flexDirection="column"
+                    >
+                        <ControlledAttendanceHistoryField
+                            {...props}
+                            control={control}
+                            id={id}
+                            name={props.name}
                         />
                     </Field.Root>
                 )

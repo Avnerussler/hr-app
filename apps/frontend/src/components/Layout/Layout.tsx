@@ -29,22 +29,22 @@ export function Layout() {
 
     const menuItems = [
         {
-            id: 'overview',
-            label: "Today's Overview",
-            icon: FiCalendar,
-            description: 'Daily Operations',
+            id: 'quota-management',
+            label: 'Work Hours',
+            icon: FiClock,
+            description: 'Time Management',
         },
+        // {
+        //     id: 'overview',
+        //     label: "Today's Overview",
+        //     icon: FiCalendar,
+        //     description: 'Daily Operations',
+        // },
         {
             id: 'dashboard',
             label: 'Dashboard',
             icon: FiBarChart2,
             description: 'Analytics & Insights',
-        },
-        {
-            id: 'work-hours',
-            label: 'Work Hours',
-            icon: FiClock,
-            description: 'Time Management',
         },
     ]
 
@@ -187,7 +187,8 @@ export function Layout() {
 
                         {isSuccess &&
                             data.forms.map((item) => {
-                                const Icon = iconMap[item.icon] || iconMap['FiFolder']
+                                const Icon =
+                                    iconMap[item.icon] || iconMap['FiFolder']
                                 const isActive = pathname.includes(item._id)
 
                                 return (

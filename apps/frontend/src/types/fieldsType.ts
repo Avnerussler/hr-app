@@ -19,6 +19,7 @@ export type FieldType =
     | 'url'
     | 'multipleSelect'
     | 'attendance'
+    | 'attendanceHistory'
 
 export interface Option {
     value: string

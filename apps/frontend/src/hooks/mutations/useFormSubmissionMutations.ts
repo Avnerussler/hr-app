@@ -31,7 +31,9 @@ const API_ENDPOINTS = {
 /**
  * Hook for creating new form submissions
  */
-export const useCreateFormSubmission = () => {
+export const useCreateFormSubmission = (
+    onFieldError?: (fieldName: string, message: string) => void
+) => {
     const queryClient = useQueryClient()
 
     return useMutation({
@@ -64,13 +66,37 @@ export const useCreateFormSubmission = () => {
                 duration: 5000,
             })
         },
-        onError(error) {
+        onError(error: any) {
             console.error('Error creating form submission:', error)
 
-            toaster.error({
-                title: 'Error',
-                description: 'Failed to submit form. Please try again.',
-            })
+            // Handle validation errors specifically
+            if (error.response?.status === 400 && error.response?.data?.errors) {
+                const validationErrors = error.response.data.errors
+                
+                // Handle field-specific errors if callback provided
+                if (onFieldError) {
+                    validationErrors.forEach((validationError: any) => {
+                        if (validationError.field) {
+                            onFieldError(validationError.field, validationError.message)
+                        }
+                    })
+                }
+                
+                // Show toast notifications for all errors
+                validationErrors.forEach((validationError: any) => {
+                    toaster.error({
+                        title: 'שגיאת ולידציה',
+                        description: validationError.message,
+                        duration: 8000,
+                    })
+                })
+            } else {
+                // Generic error handling
+                toaster.error({
+                    title: 'שגיאה',
+                    description: 'שליחת הטופס נכשלה. אנא נסה שוב.',
+                })
+            }
         },
     })
 }
@@ -78,7 +104,9 @@ export const useCreateFormSubmission = () => {
 /**
  * Hook for updating existing form submissions
  */
-export const useUpdateFormSubmission = () => {
+export const useUpdateFormSubmission = (
+    onFieldError?: (fieldName: string, message: string) => void
+) => {
     const queryClient = useQueryClient()
 
     return useMutation({
@@ -119,14 +147,38 @@ export const useUpdateFormSubmission = () => {
                 duration: 5000,
             })
         },
-        onError(error) {
+        onError(error: any) {
             console.error('Error updating form submission:', error)
 
-            toaster.error({
-                title: 'Error',
-                description: 'Failed to update form. Please try again.',
-                duration: 5000,
-            })
+            // Handle validation errors specifically
+            if (error.response?.status === 400 && error.response?.data?.errors) {
+                const validationErrors = error.response.data.errors
+                
+                // Handle field-specific errors if callback provided
+                if (onFieldError) {
+                    validationErrors.forEach((validationError: any) => {
+                        if (validationError.field) {
+                            onFieldError(validationError.field, validationError.message)
+                        }
+                    })
+                }
+                
+                // Show toast notifications for all errors
+                validationErrors.forEach((validationError: any) => {
+                    toaster.error({
+                        title: 'שגיאת ולידציה',
+                        description: validationError.message,
+                        duration: 8000,
+                    })
+                })
+            } else {
+                // Generic error handling
+                toaster.error({
+                    title: 'שגיאה',
+                    description: 'עדכון הטופס נכשל. אנא נסה שוב.',
+                    duration: 5000,
+                })
+            }
         },
     })
 }
