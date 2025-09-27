@@ -6,8 +6,7 @@ import {
     UpdateQuotaParams,
     DailyQuota,
 } from '@/types/workHoursType'
-
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+import { BASE_URL } from '@/config'
 
 const API_ENDPOINTS = {
     CREATE: 'quotas',

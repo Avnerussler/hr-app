@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.0.0'
+const CURRENT_VERSION = '1.0.1'
 
 export const createReserveDaysForm = async () => {
     try {
@@ -67,7 +67,7 @@ export const createReserveDaysForm = async () => {
                             ],
                         },
                         {
-                            name: 'sponsorName',
+                            name: 'fundingName',
                             type: 'text',
                             label: 'שם גורם ממן',
                             placeholder: 'הזן שם גורם ממן',
