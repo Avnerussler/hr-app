@@ -11,24 +11,24 @@ import { format } from 'date-fns'
 import { he } from 'date-fns/locale'
 import { FaCheckCircle, FaTimesCircle, FaCalendarAlt } from 'react-icons/fa'
 import { useEmployeeAttendanceHistoryQuery } from '@/hooks/queries'
-import { useParams } from 'react-router-dom'
 
 interface AttendanceHistoryFieldProps {
+    employeeId?: string
     label?: string
     maxRecords?: number
 }
 
 export function AttendanceHistoryField({
+    employeeId,
     label = 'היסטוריית נוכחות',
     maxRecords = 20,
 }: AttendanceHistoryFieldProps) {
     // Use the attendance history query hook
-    const { itemId } = useParams()
     const {
         data: attendanceHistory,
         isLoading,
         error,
-    } = useEmployeeAttendanceHistoryQuery(itemId || '', maxRecords)
+    } = useEmployeeAttendanceHistoryQuery(employeeId || '', maxRecords)
 
     const formatDateDisplay = (dateStr: string) => {
         try {
