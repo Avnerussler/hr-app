@@ -40,7 +40,15 @@ export const useEmployeeAttendanceQuery = (selectedDate: string) => {
         queryKey: ['employeeAttendance', selectedDate],
         queryFn: async () => {
             if (!selectedDate) {
-                return { employees: [], statistics: { startingToday: 0, endingToday: 0, totalRequired: 0, totalAttended: 0 } }
+                return {
+                    employees: [],
+                    statistics: {
+                        startingToday: 0,
+                        endingToday: 0,
+                        totalRequired: 0,
+                        totalAttended: 0,
+                    },
+                }
             }
 
             const response = await axios({
@@ -52,7 +60,12 @@ export const useEmployeeAttendanceQuery = (selectedDate: string) => {
             const apiData = response.data.data
             return {
                 employees: apiData.employees || [],
-                statistics: apiData.statistics || { startingToday: 0, endingToday: 0, totalRequired: 0, totalAttended: 0 }
+                statistics: apiData.statistics || {
+                    startingToday: 0,
+                    endingToday: 0,
+                    totalRequired: 0,
+                    totalAttended: 0,
+                },
             } as DailyAttendanceData
         },
         enabled: !!selectedDate,
@@ -63,13 +76,21 @@ export const useEmployeeAttendanceQuery = (selectedDate: string) => {
 /**
  * Hook to get attendance summary for date range (for calendar indicators)
  */
-export const useAttendanceSummaryQuery = (startDate: string, endDate: string) => {
-    return useQuery<Record<string, {
-        totalRequired: number
-        totalAttended: number
-        attendanceRate: number
-        hasData: boolean
-    }>>({
+export const useAttendanceSummaryQuery = (
+    startDate: string,
+    endDate: string
+) => {
+    return useQuery<
+        Record<
+            string,
+            {
+                totalRequired: number
+                totalAttended: number
+                attendanceRate: number
+                managerReported: boolean
+            }
+        >
+    >({
         queryKey: ['attendanceSummary', startDate, endDate],
         queryFn: async () => {
             if (!startDate || !endDate) {
@@ -138,7 +159,10 @@ export interface AttendanceHistoryData {
 /**
  * Hook to get employee attendance history
  */
-export const useEmployeeAttendanceHistoryQuery = (employeeId: string, maxRecords: number = 20) => {
+export const useEmployeeAttendanceHistoryQuery = (
+    employeeId: string,
+    maxRecords: number = 20
+) => {
     return useQuery<AttendanceHistoryData>({
         queryKey: ['attendanceHistory', employeeId, maxRecords],
         queryFn: async () => {
@@ -150,7 +174,7 @@ export const useEmployeeAttendanceHistoryQuery = (employeeId: string, maxRecords
                 method: 'GET',
                 baseURL: BASE_URL,
                 url: `quotas/employees/${employeeId}/attendance-history`,
-                params: { limit: maxRecords }
+                params: { limit: maxRecords },
             })
 
             return response.data
@@ -178,7 +202,7 @@ export const useEmployeeWorkRangeQuery = (employeeId: string) => {
                 startDate: '2024-01-15',
                 endDate: '2024-01-28',
                 workDays: ['2024-01-15', '2024-01-16', '2024-01-17'],
-                reserveDays: ['2024-01-20', '2024-01-21', '2024-01-22']
+                reserveDays: ['2024-01-20', '2024-01-21', '2024-01-22'],
             }
         },
         enabled: !!employeeId,

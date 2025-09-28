@@ -3,6 +3,16 @@
  */
 
 /**
+ * Check if a date falls on Israeli weekend (Friday or Saturday)
+ * @param date - Date to check
+ * @returns true if the date is Friday (5) or Saturday (6)
+ */
+export const isIsraeliWeekend = (date: Date): boolean => {
+    const dayOfWeek = date.getDay()
+    return dayOfWeek === 5 || dayOfWeek === 6 // Friday or Saturday
+}
+
+/**
  * Get color palette based on occupancy rate
  * @param occupancyRate - The occupancy rate percentage (0-100)
  * @returns Color palette name for the progress bar
