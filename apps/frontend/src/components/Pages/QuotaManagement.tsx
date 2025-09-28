@@ -35,7 +35,6 @@ import {
     eachDayOfInterval,
     isSameMonth,
     isToday,
-    isWeekend,
 } from 'date-fns'
 import { he } from 'date-fns/locale'
 import { PageHeader } from '../common/PageHeader'
