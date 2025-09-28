@@ -23,6 +23,7 @@ export const ControlledDateField = ({
                     <Field.Label>{label}</Field.Label>
                     <Input
                         {...field}
+                        datatype="DDMMYYYY"
                         type="date"
                         id={id}
                         placeholder={props.placeholder}

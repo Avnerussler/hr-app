@@ -35,7 +35,6 @@ import {
     eachDayOfInterval,
     isSameMonth,
     isToday,
-    isWeekend,
 } from 'date-fns'
 import { he } from 'date-fns/locale'
 import { PageHeader } from '../common/PageHeader'
@@ -61,6 +60,7 @@ import {
 import {
     getOccupancyColorPalette,
     formatQuotaDisplay,
+    isIsraeliWeekend,
 } from '@/utils/quotaUtils'
 import { getHolidaysByDate } from '@/utils/israelHolidays'
 
@@ -191,7 +191,7 @@ export default function QuotaManagement() {
                             isCurrentMonth: isSameMonth(date, currentDate),
                             quota: quotas[dateStr],
                             currentOccupancy: currentOccupancy[dateStr] || 0,
-                            isWeekend: isWeekend(date),
+                            isWeekend: isIsraeliWeekend(date),
                         }
                     })
 
@@ -225,7 +225,7 @@ export default function QuotaManagement() {
                         isCurrentMonth: true,
                         quota: quotas[dateStr],
                         currentOccupancy: currentOccupancy[dateStr] || 0,
-                        isWeekend: isWeekend(date),
+                        isWeekend: isIsraeliWeekend(date),
                     }
                 })
 
@@ -674,9 +674,7 @@ export default function QuotaManagement() {
                                         ? 'blue.500'
                                         : day.isToday
                                           ? 'blue.500'
-                                          : day.quota
-                                            ? 'green.300'
-                                            : 'border'
+                                          : 'border'
                                 }
                                 bg={getDateBackgroundColor(day)}
                                 cursor="pointer"
@@ -718,7 +716,7 @@ export default function QuotaManagement() {
                                             )}
                                             {/* Attendance Status Indicator - Only show if attendance was reported */}
                                             {attendanceSummary?.[day.date]
-                                                ?.hasData && (
+                                                ?.managerReported && (
                                                 <FaCheckCircle
                                                     size={10}
                                                     color="green"
@@ -812,9 +810,7 @@ export default function QuotaManagement() {
                                                 ? 'blue.500'
                                                 : day.isToday
                                                   ? 'blue.500'
-                                                  : day.quota
-                                                    ? 'green.300'
-                                                    : 'border'
+                                                  : 'border'
                                         }
                                         bg={getDateBackgroundColor(day)}
                                         opacity={day.isCurrentMonth ? 1 : 0.5}
@@ -869,7 +865,7 @@ export default function QuotaManagement() {
                                                     {/* Attendance Status Indicator - Only show if attendance was reported */}
                                                     {attendanceSummary?.[
                                                         day.date
-                                                    ]?.hasData && (
+                                                    ]?.managerReported && (
                                                         <FaCheckCircle
                                                             size={8}
                                                             color="green"

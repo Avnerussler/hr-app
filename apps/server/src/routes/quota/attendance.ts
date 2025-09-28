@@ -19,10 +19,23 @@ router.put(
                     .json({ message: 'Invalid attendance data' })
             }
 
-            // Find any form submission where this employee has attendance data
+            // Find any form submission where this employee has attendance data within date range
             const reservation = await FormSubmissions.findOne({
                 'formData.employeeName._id': employeeId,
-                'formData.attendance': { $exists: true }
+                $or: [
+                    {
+                        'formData.startDate': { $lte: date },
+                        'formData.endDate': { $gte: date },
+                    },
+                    {
+                        'formData.startDate': date,
+                        'formData.endDate': { $exists: false },
+                    },
+                    {
+                        'formData.startDate': date,
+                        'formData.endDate': '',
+                    },
+                ],
             })
 
             if (!reservation) {
@@ -176,7 +189,7 @@ router.post(
                     // Find any form submission where this employee has attendance data
                     const reservation = await FormSubmissions.findOne({
                         'formData.employeeName._id': employeeId,
-                        'formData.attendance': { $exists: true }
+                        'formData.attendance': { $exists: true },
                     })
 
                     if (!reservation) {
@@ -250,10 +263,12 @@ router.get(
             const reservations = await FormSubmissions.find({
                 formName: 'Reserve%20Days%20Management',
                 $or: [
+                    // Case 1: Reservation spans across the requested range
                     {
                         'formData.startDate': { $lte: endDate },
                         'formData.endDate': { $gte: startDate },
                     },
+                    // Case 2: Reservation starts within the range (no end date)
                     {
                         'formData.startDate': {
                             $gte: startDate,
@@ -261,12 +276,13 @@ router.get(
                         },
                         'formData.endDate': { $exists: false },
                     },
+                    // Case 3: Single day reservation within range
                     {
                         'formData.startDate': {
                             $gte: startDate,
                             $lte: endDate,
                         },
-                        'formData.endDate': { $eq: '$formData.startDate' },
+                        'formData.endDate': '',
                     },
                 ],
             })
@@ -278,7 +294,7 @@ router.get(
                     totalRequired: number
                     totalAttended: number
                     attendanceRate: number
-                    hasData: boolean
+                    managerReported: boolean
                 }
             > = {}
 
@@ -296,7 +312,7 @@ router.get(
                     totalRequired: 0,
                     totalAttended: 0,
                     attendanceRate: 0,
-                    hasData: false,
+                    managerReported: false,
                 }
             }
 
@@ -321,15 +337,6 @@ router.get(
 
                     if (attendanceSummary[dateStr]) {
                         attendanceSummary[dateStr].totalRequired++
-
-                        // Check if attendance was recorded for this date
-                        if (
-                            formData.attendance &&
-                            formData.attendance[dateStr] === true
-                        ) {
-                            attendanceSummary[dateStr].totalAttended++
-                            attendanceSummary[dateStr].hasData = true
-                        }
                     }
                 }
             })
@@ -347,7 +354,7 @@ router.get(
             managerReports.forEach((quota) => {
                 const reportDate = quota.date
                 if (attendanceSummary[reportDate]) {
-                    attendanceSummary[reportDate].hasData = true
+                    attendanceSummary[reportDate].managerReported = true
                 }
             })
 
@@ -386,7 +393,7 @@ router.get(
             // (regardless of form name - more flexible)
             const employeeReservations = await FormSubmissions.find({
                 'formData.employeeName._id': employeeId,
-                'formData.attendance': { $exists: true }
+                'formData.attendance': { $exists: true },
             }).lean()
 
             if (!employeeReservations || employeeReservations.length === 0) {
@@ -398,22 +405,25 @@ router.get(
                     attendanceRate: 0,
                     records: [],
                     totalReservations: 0,
-                    message: 'No attendance data found for this employee'
+                    message: 'No attendance data found for this employee',
                 })
             }
 
             // Get employee basic info from the first reservation
             const firstReservation = employeeReservations[0]
-            const employeeName = firstReservation.formData.employeeName?.display || 'לא ידוע'
+            const employeeName =
+                firstReservation.formData.employeeName?.display || 'לא ידוע'
 
             // Collect all attendance data from all reservations
             const allAttendanceData: Record<string, boolean> = {}
-            
+
             employeeReservations.forEach((reservation: any) => {
                 const attendanceData = reservation.formData.attendance || {}
-                Object.entries(attendanceData).forEach(([date, hasAttended]) => {
-                    allAttendanceData[date] = Boolean(hasAttended)
-                })
+                Object.entries(attendanceData).forEach(
+                    ([date, hasAttended]) => {
+                        allAttendanceData[date] = Boolean(hasAttended)
+                    }
+                )
             })
 
             // Convert attendance data to records and sort by date (newest first)
@@ -444,7 +454,7 @@ router.get(
                 attendedDays,
                 attendanceRate,
                 records: attendanceRecords,
-                totalReservations: employeeReservations.length
+                totalReservations: employeeReservations.length,
             })
         } catch (error) {
             logger.error('Error fetching employee attendance history:', error)
