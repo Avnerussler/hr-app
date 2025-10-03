@@ -69,7 +69,6 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
             'display' in value
         ) {
             const foreignValue = value as ForeignFieldValue
-            console.log('🚀 ~ foreignValue:', foreignValue)
 
             // For enhancedSelect with metadata, use FormattedOption
             if (field.type === 'enhancedSelect' && foreignValue.metadata) {
