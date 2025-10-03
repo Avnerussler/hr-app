@@ -1,22 +1,16 @@
 import { FC } from 'react'
 import { Table, flexRender } from '@tanstack/react-table'
 import { Box } from '@chakra-ui/react'
-import { AllFormSubmission } from '@/types/formType'
 
 interface TableBodyProps {
     table: Table<Record<string, unknown>>
-    submittedData: AllFormSubmission | undefined
     onRowClick?: (rowId: string) => void
 }
 
-export const TableBody: FC<TableBodyProps> = ({
-    table,
-    submittedData,
-    onRowClick,
-}) => {
+export const TableBody: FC<TableBodyProps> = ({ table, onRowClick }) => {
     return (
         <Box as="tbody">
-            {table.getRowModel().rows.map((row, index) => (
+            {table.getRowModel().rows.map((row) => (
                 <Box
                     as="tr"
                     key={row.id}
@@ -31,8 +25,8 @@ export const TableBody: FC<TableBodyProps> = ({
                         borderBottom: 'none',
                     }}
                     onClick={() => {
-                        if (onRowClick && submittedData?.forms?.[index]?._id) {
-                            onRowClick(submittedData.forms[index]._id)
+                        if (onRowClick && row.original._id) {
+                            onRowClick(row.original._id as string)
                         }
                     }}
                 >

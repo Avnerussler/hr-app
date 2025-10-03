@@ -15,10 +15,9 @@ const transformFormData = async (formData: any, formId: string) => {
         const allFields = formDefinition.sections?.flatMap(section => section.fields) || []
         
         // Filter only fields with foreign relationships that have values
-        const foreignFields = allFields.filter(field => 
-            field.foreignFormName && 
-            field.foreignField && 
-            formData[field.name]
+        const foreignFields = allFields.filter(field =>
+            (field.foreignFormName && field.foreignField && formData[field.name]) ||
+            (field.foreignFormName && field.foreignFields && formData[field.name])
         )
 
         if (foreignFields.length === 0) return formData
@@ -72,13 +71,86 @@ const transformFormData = async (formData: any, formId: string) => {
                         _id: fieldValue,
                         formName: field.foreignFormName
                     }).lean()
-                    
+
                     const foreignField = field.foreignField
                     if (doc?.formData && foreignField && doc.formData[foreignField]) {
                         transformedData[field.name] = {
                             _id: fieldValue,
                             display: doc.formData[foreignField]
                         }
+                    }
+                }
+            } else if (field.type === 'enhancedSelect') {
+                // Enhanced single selection with multiple foreign fields
+                if (typeof fieldValue === 'string' && mongoose.Types.ObjectId.isValid(fieldValue)) {
+                    const doc = await FormSubmissions.findOne({
+                        _id: fieldValue,
+                        formName: field.foreignFormName
+                    }).lean()
+
+                    if (doc?.formData && field.foreignFields) {
+                        // Build metadata object
+                        const metadata: any = {}
+                        field.foreignFields.forEach((fieldName: string) => {
+                            metadata[fieldName] = doc.formData[fieldName]
+                        })
+
+                        // Build display string from all foreign fields, filtering out booleans and empty values
+                        const displayParts = field.foreignFields
+                            .map(fieldName => doc.formData[fieldName])
+                            .filter(value =>
+                                value !== null &&
+                                value !== undefined &&
+                                value !== '' &&
+                                typeof value !== 'boolean'
+                            )
+                            .map(value => String(value))
+
+                        if (displayParts.length > 0) {
+                            transformedData[field.name] = {
+                                _id: fieldValue,
+                                display: displayParts.join(' '),
+                                metadata
+                            }
+                        }
+                    }
+                }
+            } else if (field.type === 'enhancedMultipleSelect') {
+                // Enhanced multiple selection with multiple foreign fields
+                if (Array.isArray(fieldValue)) {
+                    const validIds = fieldValue.filter(id =>
+                        typeof id === 'string' && mongoose.Types.ObjectId.isValid(id)
+                    )
+
+                    if (validIds.length > 0) {
+                        const docs = await FormSubmissions.find({
+                            _id: { $in: validIds },
+                            formName: field.foreignFormName
+                        }).lean()
+
+                        transformedData[field.name] = validIds.map(id => {
+                            const doc = docs.find(d => d._id.toString() === id)
+                            if (doc?.formData && field.foreignFields) {
+                                const displayParts = field.foreignFields
+                                    .map(fieldName => doc.formData[fieldName])
+                                    .filter(value =>
+                                        value !== null &&
+                                        value !== undefined &&
+                                        value !== '' &&
+                                        typeof value !== 'boolean'
+                                    )
+                                    .map(value => String(value))
+
+                                return {
+                                    _id: id,
+                                    display: displayParts.length > 0 ? displayParts.join(' ') : id
+                                }
+                            }
+                            return {
+                                _id: id,
+                                display: id
+                            }
+                        })
                     }
                 }
             }

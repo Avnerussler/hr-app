@@ -49,7 +49,7 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
     })
 
     const { data: formFields, isLoading: formFieldsLoading } = useQuery<IForm>({
-        queryKey: ['formFields/get', formId],
+        queryKey: ['formFields/get', formId, { limit: 10 }],
         staleTime: 1000 * 60 * 5,
     })
 
@@ -162,6 +162,7 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                                         value={section.id}
                                         flex="1"
                                         overflowY="auto"
+                                        minH={'calc(100vh - 155px)'}
                                         maxH={'calc(100vh - 155px)'}
                                     >
                                         <VStack gap={4} align="stretch" pb={4}>

@@ -1,18 +1,15 @@
 import { FC } from 'react'
 import { Table, flexRender } from '@tanstack/react-table'
 import { Box } from '@chakra-ui/react'
-import { AllFormSubmission } from '@/types/formType'
 import { TableBody } from './TableBody'
 
 interface TableContainerProps {
     table: Table<Record<string, unknown>>
-    submittedData: AllFormSubmission | undefined
     onRowClick?: (rowId: string) => void
 }
 
 export const TableContainer: FC<TableContainerProps> = ({
     table,
-    submittedData,
     onRowClick,
 }) => {
     return (
@@ -61,11 +58,7 @@ export const TableContainer: FC<TableContainerProps> = ({
                 </Box>
 
                 {/* Table Body */}
-                <TableBody
-                    table={table}
-                    submittedData={submittedData}
-                    onRowClick={onRowClick}
-                />
+                <TableBody table={table} onRowClick={onRowClick} />
             </Box>
         </Box>
     )

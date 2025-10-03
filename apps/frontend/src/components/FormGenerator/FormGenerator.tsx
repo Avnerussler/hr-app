@@ -5,7 +5,9 @@ import {
     ControlledFileInput,
     ControlledInputField,
     ControlledMultipleSelectField,
+    ControlledEnhancedMultipleSelectField,
     ControlledSelectField,
+    ControlledEnhancedSelectField,
     ControlledSelectAutocompleteField,
     ControlledAttendanceField,
     ControlledAttendanceHistoryField,
@@ -73,6 +75,16 @@ export const FormGenerator = ({
                         id={id}
                     />
                 )
+            case 'enhancedSelect':
+                return (
+                    <ControlledEnhancedSelectField
+                        {...props}
+                        control={control}
+                        key={id}
+                        options={options}
+                        id={id}
+                    />
+                )
             case 'selectAutocomplete':
                 return (
                     <ControlledSelectAutocompleteField
@@ -87,6 +99,16 @@ export const FormGenerator = ({
             case 'multipleSelect':
                 return (
                     <ControlledMultipleSelectField
+                        {...props}
+                        control={control}
+                        key={id}
+                        options={options}
+                        id={id}
+                    />
+                )
+            case 'enhancedMultipleSelect':
+                return (
+                    <ControlledEnhancedMultipleSelectField
                         {...props}
                         control={control}
                         key={id}
