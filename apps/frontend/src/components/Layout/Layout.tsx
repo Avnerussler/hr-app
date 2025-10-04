@@ -11,7 +11,7 @@ import { Link as RouterLink, useLocation, Outlet } from 'react-router-dom'
 import { generateFormPath } from '@/types/routeTypes'
 import {
     FiActivity,
-    FiBarChart2,
+    // FiBarChart2,
     FiCalendar,
     FiClock,
     FiFolder,
@@ -30,9 +30,9 @@ export function Layout() {
     const menuItems = [
         {
             id: 'quota-management',
-            label: 'Work Hours',
+            label: 'נוכחות ומעקב יומי',
             icon: FiClock,
-            description: 'Time Management',
+            description: 'ניהול נוכחות',
         },
         // {
         //     id: 'overview',
@@ -40,12 +40,12 @@ export function Layout() {
         //     icon: FiCalendar,
         //     description: 'Daily Operations',
         // },
-        {
-            id: 'dashboard',
-            label: 'Dashboard',
-            icon: FiBarChart2,
-            description: 'Analytics & Insights',
-        },
+        // {
+        //     id: 'dashboard',
+        //     label: 'Dashboard',
+        //     icon: FiBarChart2,
+        //     description: 'Analytics & Insights',
+        // },
     ]
 
     const iconMap: Record<string, any> = {

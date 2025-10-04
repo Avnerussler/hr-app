@@ -3,6 +3,7 @@ import { FormSubmissions } from '../../models/FormSubmissions'
 import { Request, Response, Router } from 'express'
 import logger from '../../config/logger'
 import { asyncHandler } from '../../middleware'
+import { hasMoreThan2ConsecutiveDays } from '../../utils'
 
 const router = Router()
 
@@ -213,27 +214,74 @@ router.get(
                 ],
             })
 
+            // Get employee document IDs to fetch full employee data
+            const employeeDocIds = reservations
+                .map((r: any) => r.formData.employeeName?._id)
+                .filter((id: any) => id)
+
+            // Fetch full employee data from the Personnel form
+            const employeeRecords = await FormSubmissions.find({
+                _id: { $in: employeeDocIds },
+                formName: 'Personnel',
+            }).lean()
+
+            // Create a map of employee data by document ID
+            const employeeDataMap = new Map()
+            employeeRecords.forEach((record: any) => {
+                employeeDataMap.set(record._id.toString(), record.formData)
+            })
+
             // Map reservations to employee attendance data
             const employees = reservations.map((reservation: any) => {
                 const formData = reservation.formData
 
                 // Handle employee name - it might be an object with display property or a string
                 let employeeName = 'Unknown Employee'
+                let lastName = ''
+                let personalNumber = ''
+                let phone = ''
+
                 if (formData.employeeName) {
                     if (
                         typeof formData.employeeName === 'object' &&
-                        formData.employeeName.display
+                        formData.employeeName._id
                     ) {
-                        employeeName = formData.employeeName.display
+                        // Use display name if available
+                        employeeName =
+                            formData.employeeName.display || 'Unknown Employee'
+
+                        // Try to get full employee data using the document _id
+                        const fullEmployeeData = employeeDataMap.get(
+                            formData.employeeName._id
+                        )
+                        if (fullEmployeeData) {
+                            // Use firstName from full data if available
+                            if (fullEmployeeData.firstName) {
+                                employeeName = fullEmployeeData.firstName
+                            }
+                            lastName = fullEmployeeData.lastName || ''
+                            personalNumber =
+                                fullEmployeeData.personalNumber?.toString() ||
+                                fullEmployeeData.userId?.toString() ||
+                                ''
+                            phone = fullEmployeeData.phone || ''
+                        }
                     } else if (typeof formData.employeeName === 'string') {
                         employeeName = formData.employeeName
                     }
                 }
 
+                // Check if employee has more than 2 consecutive reserve days
+                const reserveDaysArray = formData.reserveDays || []
+                const hasConsecutiveDays =
+                    hasMoreThan2ConsecutiveDays(reserveDaysArray)
+
                 return {
                     _id: formData.employeeName?._id,
                     name: employeeName,
-                    personalNumber: formData.personalNumber || '',
+                    lastName: lastName,
+                    personalNumber: personalNumber,
+                    phone: phone,
                     reserveUnit: formData.reserveUnit || '',
                     workPlace: formData.workPlace || '',
                     orderNumber: formData.orderNumber || '',
@@ -242,13 +290,16 @@ router.get(
                     startDate: formData.startDate,
                     endDate: formData.endDate,
                     isStartingToday: formData.startDate === date,
-                    isEndingToday: formData.endDate === date,
+                    isEndingToday:
+                        formData.endDate === date && hasConsecutiveDays,
                     isAttendanceRequired: true,
                     hasAttended:
                         formData.attendance &&
                         formData.attendance[date] === true, // Check saved attendance data
                     workDays: [], // Could be calculated from the date range
                     reserveDays: formData.reserveDays || [],
+                    requestStatus: formData.requestStatus,
+                    fundingSource: formData.fundingSource || '',
                 }
             })
 

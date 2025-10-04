@@ -6,6 +6,7 @@ export type FieldType =
     | 'password'
     | 'switch'
     | 'select'
+    | 'enhancedSelect'
     | 'selectAutocomplete'
     | 'radio'
     | 'checkbox'
@@ -18,6 +19,7 @@ export type FieldType =
     | 'tel'
     | 'url'
     | 'multipleSelect'
+    | 'enhancedMultipleSelect'
     | 'attendance'
     | 'attendanceHistory'
 
@@ -25,6 +27,7 @@ export interface Option {
     value: string
     label: string
     name: string
+    metadata?: Record<string, any>
 }
 
 export interface Item {
@@ -45,6 +48,7 @@ export interface FormFields {
     errorMessages?: string
     foreignFormName?: string
     foreignField?: string
+    foreignFields?: string[]
 }
 
 export interface FormSection {

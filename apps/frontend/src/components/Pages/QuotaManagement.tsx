@@ -9,6 +9,7 @@ import {
     useDisclosure,
 } from '@chakra-ui/react'
 import { ProgressRoot, ProgressBar } from '../ui/progress'
+import { UnapprovedReserveDaysWarning } from '../common/UnapprovedReserveDaysWarning'
 import {
     FaCalendarAlt,
     FaChevronLeft,
@@ -138,33 +139,43 @@ export default function QuotaManagement() {
         )
 
     // Convert API data to maps for easy lookup
-    const { quotas, currentOccupancy, capacityData } = useMemo(() => {
-        const quotasMap: Record<string, number> = {}
-        const occupancyMap: Record<string, number> = {}
-        const capacityMap: Record<
-            string,
-            { left: number; leftPercent: number; occupancyRate: number }
-        > = {}
-
-        // Process real data from API
-        if (quotaData?.data) {
-            quotaData.data.forEach((item) => {
-                if (item.quota) quotasMap[item.date] = item.quota
-                occupancyMap[item.date] = item.currentOccupancy
-                capacityMap[item.date] = {
-                    left: item.capacityLeft,
-                    leftPercent: item.capacityLeftPercent,
-                    occupancyRate: item.occupancyRate || 0,
+    const { quotas, currentOccupancy, externalOccupancy, capacityData } =
+        useMemo(() => {
+            const quotasMap: Record<string, number> = {}
+            const occupancyMap: Record<string, number> = {}
+            const externalOccupancyMap: Record<string, number> = {}
+            const capacityMap: Record<
+                string,
+                {
+                    left: number
+                    leftPercent: number
+                    occupancyRate: number
+                    externalOccupancy: number
                 }
-            })
-        }
+            > = {}
 
-        return {
-            quotas: quotasMap,
-            currentOccupancy: occupancyMap,
-            capacityData: capacityMap,
-        }
-    }, [quotaData])
+            // Process real data from API
+            if (quotaData?.data) {
+                quotaData.data.forEach((item) => {
+                    if (item.quota) quotasMap[item.date] = item.quota
+                    occupancyMap[item.date] = item.currentOccupancy
+                    externalOccupancyMap[item.date] = item.externalOccupancy
+                    capacityMap[item.date] = {
+                        left: item.capacityLeft,
+                        leftPercent: item.capacityLeftPercent,
+                        occupancyRate: item.occupancyRate || 0,
+                        externalOccupancy: item.externalOccupancy,
+                    }
+                })
+            }
+
+            return {
+                quotas: quotasMap,
+                currentOccupancy: occupancyMap,
+                externalOccupancy: externalOccupancyMap,
+                capacityData: capacityMap,
+            }
+        }, [quotaData])
 
     const generateCalendarData = (): CalendarMonth | CalendarWeek[] => {
         if (calendarView === 'monthly') {
@@ -723,34 +734,71 @@ export default function QuotaManagement() {
                                                     title={`נוכחות: ${attendanceSummary[day.date].attendanceRate}%`}
                                                 />
                                             )}
+                                            {/* Unapproved Reserve Days Warning */}
+                                            {attendanceSummary?.[day.date]
+                                                ?.hasUnapprovedReserveDays && (
+                                                <UnapprovedReserveDaysWarning
+                                                    unapprovedEmployees={
+                                                        attendanceSummary[
+                                                            day.date
+                                                        ].unapprovedEmployees
+                                                    }
+                                                    iconSize={10}
+                                                />
+                                            )}
                                         </HStack>
                                     </HStack>
 
                                     {(day.quota ||
-                                        day.currentOccupancy > 0) && (
+                                        day.currentOccupancy > 0 ||
+                                        externalOccupancy[day.date] > 0) && (
                                         <VStack align="start" gap={2} w="full">
-                                            {/* Top: (assigned)/(capacity) (percent) */}
-                                            <Text
-                                                fontSize="xs"
-                                                fontWeight="semibold"
-                                                textAlign="center"
+                                            {/* Internal and External counts */}
+                                            <VStack
+                                                align="start"
+                                                gap={1}
                                                 w="full"
                                             >
-                                                {formatQuotaDisplay(
-                                                    day.currentOccupancy,
-                                                    day.quota || 0,
-                                                    day.quota
-                                                        ? capacityData[day.date]
-                                                              ?.occupancyRate ||
-                                                              0
-                                                        : day.currentOccupancy >
-                                                            0
-                                                          ? 100
-                                                          : 0
-                                                )}
-                                            </Text>
+                                                {/* Internal funding */}
+                                                <Text
+                                                    fontSize="xs"
+                                                    fontWeight="semibold"
+                                                    textAlign="center"
+                                                    w="full"
+                                                >
+                                                    פנימי:{' '}
+                                                    {formatQuotaDisplay(
+                                                        day.currentOccupancy,
+                                                        day.quota || 0,
+                                                        day.quota
+                                                            ? capacityData[
+                                                                  day.date
+                                                              ]
+                                                                  ?.occupancyRate ||
+                                                                  0
+                                                            : day.currentOccupancy >
+                                                                0
+                                                              ? 100
+                                                              : 0
+                                                    )}
+                                                </Text>
 
-                                            {/* Bottom: Progress bar */}
+                                                {/* External funding count */}
+                                                <Text
+                                                    fontSize="xs"
+                                                    fontWeight="semibold"
+                                                    color="blue.600"
+                                                    textAlign="center"
+                                                    w="full"
+                                                >
+                                                    חיצוני:{' '}
+                                                    {externalOccupancy[
+                                                        day.date
+                                                    ] || 0}
+                                                </Text>
+                                            </VStack>
+
+                                            {/* Progress bar - Internal funding */}
                                             <ProgressRoot
                                                 value={Math.min(
                                                     day.quota
@@ -872,17 +920,34 @@ export default function QuotaManagement() {
                                                             title={`נוכחות: ${attendanceSummary[day.date].attendanceRate}%`}
                                                         />
                                                     )}
+                                                    {/* Unapproved Reserve Days Warning */}
+                                                    {attendanceSummary?.[
+                                                        day.date
+                                                    ]
+                                                        ?.hasUnapprovedReserveDays && (
+                                                        <UnapprovedReserveDaysWarning
+                                                            unapprovedEmployees={
+                                                                attendanceSummary[
+                                                                    day.date
+                                                                ]
+                                                                    .unapprovedEmployees
+                                                            }
+                                                            iconSize={8}
+                                                        />
+                                                    )}
                                                 </HStack>
                                             </HStack>
 
                                             {(day.quota ||
-                                                day.currentOccupancy > 0) && (
+                                                day.currentOccupancy > 0 ||
+                                                externalOccupancy[day.date] >
+                                                    0) && (
                                                 <VStack
                                                     align="start"
                                                     gap={1}
                                                     w="full"
                                                 >
-                                                    {/* Top: (assigned)/(capacity) (percent) */}
+                                                    {/* Top: (assigned)/(capacity) (percent) - Internal funding */}
                                                     <Text
                                                         fontSize="2xs"
                                                         fontWeight="semibold"
@@ -905,7 +970,7 @@ export default function QuotaManagement() {
                                                         )}
                                                     </Text>
 
-                                                    {/* Bottom: Progress bar */}
+                                                    {/* Progress bar - Internal funding */}
                                                     <ProgressRoot
                                                         value={Math.min(
                                                             day.quota
@@ -937,6 +1002,42 @@ export default function QuotaManagement() {
                                                     >
                                                         <ProgressBar />
                                                     </ProgressRoot>
+
+                                                    {/* External funding count */}
+                                                    {externalOccupancy[
+                                                        day.date
+                                                    ] > 0 && (
+                                                        <Text
+                                                            fontSize="xs"
+                                                            textAlign="end"
+                                                            w="full"
+                                                        >
+                                                            מימון חיצוני:
+                                                            {
+                                                                externalOccupancy[
+                                                                    day.date
+                                                                ]
+                                                            }
+                                                        </Text>
+                                                    )}
+
+                                                    {externalOccupancy[
+                                                        day.date
+                                                    ] > 0 && (
+                                                        <Text
+                                                            fontSize="xs"
+                                                            textAlign="end"
+                                                            w="full"
+                                                        >
+                                                            סה״כ:
+                                                            {externalOccupancy[
+                                                                day.date
+                                                            ] +
+                                                                externalOccupancy[
+                                                                    day.date
+                                                                ]}
+                                                        </Text>
+                                                    )}
                                                 </VStack>
                                             )}
                                         </VStack>

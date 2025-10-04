@@ -1,13 +1,4 @@
-import {
-    VStack,
-    HStack,
-    Text,
-    Box,
-    Button,
-    Badge,
-    Flex,
-    Separator,
-} from '@chakra-ui/react'
+import { VStack, HStack, Text, Box, Button } from '@chakra-ui/react'
 import {
     DrawerRoot,
     DrawerContent,
@@ -17,21 +8,18 @@ import {
     DrawerTitle,
     DrawerCloseTrigger,
 } from '../ui/drawer'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { format } from 'date-fns'
 import { he } from 'date-fns/locale'
-import { Checkbox } from '../ui/checkbox'
 import {
     FaUsers,
     FaSignInAlt,
     FaSignOutAlt,
     FaCalendarCheck,
-    FaCalendarAlt,
-    FaIdBadge,
     FaBuilding,
-    FaFileAlt,
 } from 'react-icons/fa'
 import { MetricCard } from '../common/MetricCard'
+import { EmployeeAttendanceCard } from './EmployeeAttendanceCard'
 import {
     useEmployeeAttendanceQuery,
     useManagerReportStatusQuery,
@@ -49,11 +37,23 @@ interface DailyAttendanceDrawerProps {
     selectedDate: string
 }
 
+type FilterType =
+    | 'all'
+    | 'starting'
+    | 'ending'
+    | 'total'
+    | 'attended'
+    | 'internal'
+    | 'external'
+
 export function DailyAttendanceDrawer({
     isOpen,
     onClose,
     selectedDate,
 }: DailyAttendanceDrawerProps) {
+    // Filter state
+    const [activeFilter, setActiveFilter] = useState<FilterType>('all')
+
     // Initialize mutations
     const updateIndividualMutation = useUpdateIndividualAttendanceMutation()
     const managerReportMutation = useManagerReportMutation()
@@ -72,6 +72,19 @@ export function DailyAttendanceDrawer({
     const employees: EmployeeAttendance[] = attendanceData?.employees || []
     const apiStats = attendanceData?.statistics
 
+    // Calculate internal and external counts
+    const internalCount = useMemo(
+        () =>
+            employees.filter((emp) => emp.fundingSource === 'internal').length,
+        [employees]
+    )
+
+    const externalCount = useMemo(
+        () =>
+            employees.filter((emp) => emp.fundingSource === 'external').length,
+        [employees]
+    )
+
     // Use API stats directly since we save immediately
     const stats = useMemo(() => {
         if (!apiStats) {
@@ -85,6 +98,34 @@ export function DailyAttendanceDrawer({
 
         return apiStats
     }, [apiStats])
+
+    // Filter employees based on active filter
+    const filteredEmployees = useMemo(() => {
+        switch (activeFilter) {
+            case 'starting':
+                return employees.filter((emp) => emp.isStartingToday)
+            case 'ending':
+                return employees.filter((emp) => emp.isEndingToday)
+            case 'attended':
+                return employees.filter((emp) => emp.hasAttended)
+            case 'internal':
+                return employees.filter(
+                    (emp) => emp.fundingSource === 'internal'
+                )
+            case 'external':
+                return employees.filter(
+                    (emp) => emp.fundingSource === 'external'
+                )
+            case 'total':
+            case 'all':
+            default:
+                return employees
+        }
+    }, [employees, activeFilter])
+
+    const handleFilterClick = (filter: FilterType) => {
+        setActiveFilter(activeFilter === filter ? 'all' : filter)
+    }
 
     const handleAttendanceToggle = async (
         employeeId: string,
@@ -154,18 +195,26 @@ export function DailyAttendanceDrawer({
                                     value={stats.startingToday}
                                     icon={FaSignInAlt}
                                     color="green"
+                                    onClick={() =>
+                                        handleFilterClick('starting')
+                                    }
+                                    isActive={activeFilter === 'starting'}
                                 />
                                 <MetricCard
                                     label="מסיימים היום"
                                     value={stats.endingToday}
                                     icon={FaSignOutAlt}
                                     color="orange"
+                                    onClick={() => handleFilterClick('ending')}
+                                    isActive={activeFilter === 'ending'}
                                 />
                                 <MetricCard
                                     label="סה״כ נדרשים"
                                     value={stats.totalRequired}
                                     icon={FaUsers}
                                     color="blue"
+                                    onClick={() => handleFilterClick('total')}
+                                    isActive={activeFilter === 'total'}
                                 />
                                 <MetricCard
                                     label="הגיעו בפועל"
@@ -177,15 +226,50 @@ export function DailyAttendanceDrawer({
                                             ? 'green'
                                             : 'purple'
                                     }
+                                    onClick={() =>
+                                        handleFilterClick('attended')
+                                    }
+                                    isActive={activeFilter === 'attended'}
+                                />
+                                <MetricCard
+                                    label="מימון פנימי"
+                                    value={internalCount}
+                                    icon={FaBuilding}
+                                    color="teal"
+                                    onClick={() =>
+                                        handleFilterClick('internal')
+                                    }
+                                    isActive={activeFilter === 'internal'}
+                                />
+                                <MetricCard
+                                    label="מימון חיצוני"
+                                    value={externalCount}
+                                    icon={FaBuilding}
+                                    color="cyan"
+                                    onClick={() =>
+                                        handleFilterClick('external')
+                                    }
+                                    isActive={activeFilter === 'external'}
                                 />
                             </HStack>
                         </Box>
 
                         {/* Employee List */}
                         <Box>
-                            <Text fontSize="lg" fontWeight="bold" mb={4}>
-                                רשימת עובדים ({employees.length})
-                            </Text>
+                            <HStack justify="space-between" mb={4}>
+                                <Text fontSize="lg" fontWeight="bold">
+                                    רשימת עובדים ({filteredEmployees.length})
+                                </Text>
+                                {activeFilter !== 'all' && (
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => setActiveFilter('all')}
+                                    >
+                                        נקה סינון
+                                    </Button>
+                                )}
+                            </HStack>
 
                             {isLoading ? (
                                 <Box textAlign="center" p={8}>
@@ -197,368 +281,28 @@ export function DailyAttendanceDrawer({
                                         שגיאה בטעינת נתונים
                                     </Text>
                                 </Box>
-                            ) : employees.length === 0 ? (
+                            ) : filteredEmployees.length === 0 ? (
                                 <Box textAlign="center" p={8}>
                                     <Text color="gray.500">
-                                        אין עובדים שצריכים להגיע היום
+                                        {activeFilter === 'all'
+                                            ? 'אין עובדים שצריכים להגיע היום'
+                                            : 'אין עובדים בסינון זה'}
                                     </Text>
                                 </Box>
                             ) : (
                                 <VStack gap={3} align="stretch">
-                                    {employees.map((employee) => {
-                                        const currentAttendance =
-                                            employee.hasAttended
-
-                                        return (
-                                            <Box
-                                                key={employee._id}
-                                                p={4}
-                                                borderRadius="md"
-                                                borderWidth="1px"
-                                                borderColor="border"
-                                                bg={
-                                                    currentAttendance
-                                                        ? 'green.50'
-                                                        : 'gray.50'
-                                                }
-                                            >
-                                                <Flex
-                                                    justify="space-between"
-                                                    align="start"
-                                                >
-                                                    <HStack
-                                                        gap={3}
-                                                        align="start"
-                                                    >
-                                                        <Checkbox
-                                                            size="lg"
-                                                            checked={
-                                                                currentAttendance
-                                                            }
-                                                            onCheckedChange={(
-                                                                details
-                                                            ) =>
-                                                                handleAttendanceToggle(
-                                                                    employee._id,
-                                                                    Boolean(
-                                                                        details.checked
-                                                                    )
-                                                                )
-                                                            }
-                                                            mt={1}
-                                                        />
-                                                        <VStack
-                                                            align="start"
-                                                            gap={2}
-                                                            flex={1}
-                                                        >
-                                                            <Text
-                                                                fontWeight="medium"
-                                                                fontSize="md"
-                                                            >
-                                                                {employee.name}
-                                                            </Text>
-
-                                                            {/* Employee Details */}
-                                                            <VStack
-                                                                align="start"
-                                                                gap={1}
-                                                                w="full"
-                                                            >
-                                                                {employee.personalNumber && (
-                                                                    <HStack
-                                                                        gap={2}
-                                                                        fontSize="sm"
-                                                                        color="gray.600"
-                                                                    >
-                                                                        <FaIdBadge
-                                                                            size={
-                                                                                12
-                                                                            }
-                                                                        />
-                                                                        <Text>
-                                                                            מס׳
-                                                                            אישי:{' '}
-                                                                            {
-                                                                                employee.personalNumber
-                                                                            }
-                                                                        </Text>
-                                                                    </HStack>
-                                                                )}
-                                                                {employee.reserveUnit && (
-                                                                    <HStack
-                                                                        gap={2}
-                                                                        fontSize="sm"
-                                                                        color="gray.600"
-                                                                    >
-                                                                        <FaUsers
-                                                                            size={
-                                                                                12
-                                                                            }
-                                                                        />
-                                                                        <Text>
-                                                                            יחידת
-                                                                            מילואים:{' '}
-                                                                            {
-                                                                                employee.reserveUnit
-                                                                            }
-                                                                        </Text>
-                                                                    </HStack>
-                                                                )}
-                                                                {employee.workPlace && (
-                                                                    <HStack
-                                                                        gap={2}
-                                                                        fontSize="sm"
-                                                                        color="gray.600"
-                                                                    >
-                                                                        <FaBuilding
-                                                                            size={
-                                                                                12
-                                                                            }
-                                                                        />
-                                                                        <Text>
-                                                                            מקום
-                                                                            עבודה:{' '}
-                                                                            {
-                                                                                employee.workPlace
-                                                                            }
-                                                                        </Text>
-                                                                    </HStack>
-                                                                )}
-                                                                {employee.orderNumber && (
-                                                                    <HStack
-                                                                        gap={2}
-                                                                        fontSize="sm"
-                                                                        color="gray.600"
-                                                                    >
-                                                                        <FaFileAlt
-                                                                            size={
-                                                                                12
-                                                                            }
-                                                                        />
-                                                                        <Text>
-                                                                            מס'
-                                                                            פקודה:{' '}
-                                                                            {
-                                                                                employee.orderNumber
-                                                                            }
-                                                                        </Text>
-                                                                    </HStack>
-                                                                )}
-                                                                {employee.orderType && (
-                                                                    <HStack
-                                                                        gap={2}
-                                                                        fontSize="sm"
-                                                                        color="gray.600"
-                                                                    >
-                                                                        <FaFileAlt
-                                                                            size={
-                                                                                12
-                                                                            }
-                                                                        />
-                                                                        <Text>
-                                                                            סוג
-                                                                            פקודה:{' '}
-                                                                            {
-                                                                                employee.orderType
-                                                                            }
-                                                                        </Text>
-                                                                    </HStack>
-                                                                )}
-                                                            </VStack>
-
-                                                            {/* Date Range Information */}
-                                                            {(employee.workDays ||
-                                                                employee.reserveDays) && (
-                                                                <>
-                                                                    <Separator
-                                                                        my={1}
-                                                                    />
-                                                                    <VStack
-                                                                        align="start"
-                                                                        gap={1}
-                                                                        w="full"
-                                                                    >
-                                                                        <Text
-                                                                            fontSize="sm"
-                                                                            fontWeight="semibold"
-                                                                            color="gray.700"
-                                                                        >
-                                                                            תקופות
-                                                                            עבודה:
-                                                                        </Text>
-                                                                        {employee.workDays &&
-                                                                            employee
-                                                                                .workDays
-                                                                                .length >
-                                                                                0 && (
-                                                                                <HStack
-                                                                                    gap={
-                                                                                        2
-                                                                                    }
-                                                                                    fontSize="xs"
-                                                                                    color="blue.600"
-                                                                                >
-                                                                                    <FaCalendarAlt
-                                                                                        size={
-                                                                                            10
-                                                                                        }
-                                                                                    />
-                                                                                    <Text>
-                                                                                        עבודה
-                                                                                        רגילה:{' '}
-                                                                                        {employee.workDays
-                                                                                            .slice(
-                                                                                                0,
-                                                                                                3
-                                                                                            )
-                                                                                            .map(
-                                                                                                (
-                                                                                                    date
-                                                                                                ) =>
-                                                                                                    format(
-                                                                                                        new Date(
-                                                                                                            date
-                                                                                                        ),
-                                                                                                        'dd/MM'
-                                                                                                    )
-                                                                                            )
-                                                                                            .join(
-                                                                                                ', '
-                                                                                            )}
-                                                                                        {employee
-                                                                                            .workDays
-                                                                                            .length >
-                                                                                            3 &&
-                                                                                            ` +${employee.workDays.length - 3} עוד`}
-                                                                                    </Text>
-                                                                                </HStack>
-                                                                            )}
-                                                                        {employee.reserveDays &&
-                                                                            employee
-                                                                                .reserveDays
-                                                                                .length >
-                                                                                0 && (
-                                                                                <HStack
-                                                                                    gap={
-                                                                                        2
-                                                                                    }
-                                                                                    fontSize="xs"
-                                                                                    color="orange.600"
-                                                                                >
-                                                                                    <FaCalendarAlt
-                                                                                        size={
-                                                                                            10
-                                                                                        }
-                                                                                    />
-                                                                                    <Text>
-                                                                                        מילואים:{' '}
-                                                                                        {employee.reserveDays
-                                                                                            .slice(
-                                                                                                0,
-                                                                                                3
-                                                                                            )
-                                                                                            .map(
-                                                                                                (
-                                                                                                    date
-                                                                                                ) =>
-                                                                                                    format(
-                                                                                                        new Date(
-                                                                                                            date
-                                                                                                        ),
-                                                                                                        'dd/MM'
-                                                                                                    )
-                                                                                            )
-                                                                                            .join(
-                                                                                                ', '
-                                                                                            )}
-                                                                                        {employee
-                                                                                            .reserveDays
-                                                                                            .length >
-                                                                                            3 &&
-                                                                                            ` +${employee.reserveDays.length - 3} עוד`}
-                                                                                    </Text>
-                                                                                </HStack>
-                                                                            )}
-                                                                        {employee.startDate &&
-                                                                            employee.endDate && (
-                                                                                <HStack
-                                                                                    gap={
-                                                                                        2
-                                                                                    }
-                                                                                    fontSize="xs"
-                                                                                    color="purple.600"
-                                                                                >
-                                                                                    <FaCalendarCheck
-                                                                                        size={
-                                                                                            10
-                                                                                        }
-                                                                                    />
-                                                                                    <Text>
-                                                                                        תקופה:{' '}
-                                                                                        {format(
-                                                                                            new Date(
-                                                                                                employee.startDate
-                                                                                            ),
-                                                                                            'dd/MM'
-                                                                                        )}{' '}
-                                                                                        -{' '}
-                                                                                        {format(
-                                                                                            new Date(
-                                                                                                employee.endDate
-                                                                                            ),
-                                                                                            'dd/MM'
-                                                                                        )}
-                                                                                    </Text>
-                                                                                </HStack>
-                                                                            )}
-                                                                    </VStack>
-                                                                </>
-                                                            )}
-
-                                                            {/* Status Badges */}
-                                                            <HStack
-                                                                gap={2}
-                                                                flexWrap="wrap"
-                                                            >
-                                                                {employee.isStartingToday && (
-                                                                    <Badge
-                                                                        colorScheme="green"
-                                                                        size="sm"
-                                                                    >
-                                                                        מתחיל
-                                                                        היום
-                                                                    </Badge>
-                                                                )}
-                                                                {employee.isEndingToday && (
-                                                                    <Badge
-                                                                        colorScheme="orange"
-                                                                        size="sm"
-                                                                    >
-                                                                        מסיים
-                                                                        היום
-                                                                    </Badge>
-                                                                )}
-                                                            </HStack>
-                                                        </VStack>
-                                                    </HStack>
-
-                                                    <Badge
-                                                        colorScheme={
-                                                            currentAttendance
-                                                                ? 'green'
-                                                                : 'gray'
-                                                        }
-                                                        size="md"
-                                                    >
-                                                        {currentAttendance
-                                                            ? 'נוכח'
-                                                            : 'לא הגיע'}
-                                                    </Badge>
-                                                </Flex>
-                                            </Box>
-                                        )
-                                    })}
+                                    {filteredEmployees.map((employee) => (
+                                        <EmployeeAttendanceCard
+                                            key={employee._id}
+                                            employee={employee}
+                                            currentAttendance={
+                                                employee.hasAttended
+                                            }
+                                            onAttendanceToggle={
+                                                handleAttendanceToggle
+                                            }
+                                        />
+                                    ))}
                                 </VStack>
                             )}
                         </Box>
@@ -567,11 +311,6 @@ export function DailyAttendanceDrawer({
 
                 <DrawerFooter borderTopWidth="1px" flexShrink={0}>
                     <HStack gap={3} w="full" justify="space-between">
-                        <Text fontSize="sm" color="muted">
-                            {hasManagerReported
-                                ? 'דיווח נשלח למנהל'
-                                : 'לא דווח למנהל'}
-                        </Text>
                         <HStack gap={3}>
                             <Button variant="ghost" onClick={onClose}>
                                 ביטול
@@ -585,10 +324,10 @@ export function DailyAttendanceDrawer({
                                 loading={isManagerReporting}
                             >
                                 {isManagerReporting
-                                    ? 'מדווח למנהל...'
+                                    ? 'מדווח לקישור...'
                                     : hasManagerReported
-                                      ? 'דווח למנהל'
-                                      : 'דווח למנהל'}
+                                      ? 'דווח לקישור'
+                                      : 'דווח לקישור'}
                             </Button>
                         </HStack>
                     </HStack>

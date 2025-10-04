@@ -51,6 +51,7 @@ const FieldSchema = new Schema(
         defaultValue: { type: String },
         foreignFormName: { type: String },
         foreignField: { type: String },
+        foreignFields: { type: [String] },
         options: [OptionSchema],
         items: {
             type: [ItemSchema],

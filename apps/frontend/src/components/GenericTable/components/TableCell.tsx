@@ -4,10 +4,12 @@ import { Link, Tag, HStack, Text, Button } from '@chakra-ui/react'
 import { FormFields } from '@/types/fieldsType'
 import { useNavigate } from 'react-router-dom'
 import { useFormsQuery } from '@/hooks/queries/useFormQueries'
+import { FormattedOption } from '@/components/ControlledFields/ControlledEnhancedMultipleSelect/SelectedItemsDisplay'
 
 interface ForeignFieldValue {
     _id: string
     display: string
+    metadata?: Record<string, any>
 }
 
 interface TableCellProps {
@@ -20,12 +22,20 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
     const navigate = useNavigate()
     const { data: formsData } = useFormsQuery()
 
-    const handleForeignTableClick = (e: React.MouseEvent, foreignFormName: string, recordId: string) => {
+    const handleForeignTableClick = (
+        e: React.MouseEvent,
+        foreignFormName: string,
+        recordId: string
+    ) => {
         e.preventDefault()
         e.stopPropagation()
-        const targetForm = formsData?.forms?.find(form => form.formName === foreignFormName)
+        const targetForm = formsData?.forms?.find(
+            (form) => form.formName === foreignFormName
+        )
         if (targetForm) {
-            navigate(`/${targetForm.formName}/${targetForm._id}?selectedRecord=${recordId}`)
+            navigate(
+                `/${targetForm.formName}/${targetForm._id}?selectedRecord=${recordId}`
+            )
         }
     }
 
@@ -45,10 +55,56 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
         )
     }
 
-    if (field.type === 'select' || field.type === 'selectAutocomplete') {
+    if (
+        field.type === 'select' ||
+        field.type === 'selectAutocomplete' ||
+        field.type === 'enhancedSelect'
+    ) {
         // Handle new format where foreign fields store {_id, display}
-        if (field.foreignFormName && typeof value === 'object' && value && '_id' in value && 'display' in value) {
+        if (
+            field.foreignFormName &&
+            typeof value === 'object' &&
+            value &&
+            '_id' in value &&
+            'display' in value
+        ) {
             const foreignValue = value as ForeignFieldValue
+
+            // For enhancedSelect with metadata, use FormattedOption
+            if (field.type === 'enhancedSelect' && foreignValue.metadata) {
+                return (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        color="primary"
+                        p={0}
+                        h="auto"
+                        minH="auto"
+                        fontWeight="normal"
+                        textDecoration="underline"
+                        _hover={{
+                            color: 'primary',
+                            opacity: 0.8,
+                        }}
+                        onClick={(e) =>
+                            handleForeignTableClick(
+                                e,
+                                field.foreignFormName!,
+                                foreignValue._id
+                            )
+                        }
+                    >
+                        <FormattedOption
+                            option={{
+                                value: foreignValue._id,
+                                label: foreignValue.display,
+                                metadata: foreignValue.metadata,
+                            }}
+                        />
+                    </Button>
+                )
+            }
+
             return (
                 <Button
                     variant="ghost"
@@ -63,9 +119,21 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
                         color: 'primary',
                         opacity: 0.8,
                     }}
-                    onClick={(e) => handleForeignTableClick(e, field.foreignFormName!, foreignValue._id)}
+                    onClick={(e) =>
+                        handleForeignTableClick(
+                            e,
+                            field.foreignFormName!,
+                            foreignValue._id
+                        )
+                    }
                 >
-                    {foreignValue.display}
+                    <FormattedOption
+                        option={{
+                            value: foreignValue._id,
+                            label: foreignValue.display,
+                            metadata: foreignValue.metadata,
+                        }}
+                    />
                 </Button>
             )
         }
@@ -74,7 +142,7 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
         const selectedOption = field.options?.find(
             (option) => option.value === value
         )
-        
+
         // Check if this is a foreign table field (old format)
         if (field.foreignFormName && selectedOption) {
             return (
@@ -91,25 +159,40 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
                         color: 'primary',
                         opacity: 0.8,
                     }}
-                    onClick={(e) => handleForeignTableClick(e, field.foreignFormName!, selectedOption.value)}
+                    onClick={(e) =>
+                        handleForeignTableClick(
+                            e,
+                            field.foreignFormName!,
+                            selectedOption.value
+                        )
+                    }
                 >
                     {selectedOption.label}
                 </Button>
             )
         }
-        
+
         return (
             <Text>
-                {selectedOption?.label || (typeof value === 'object' && value && 'display' in value ? (value as ForeignFieldValue).display : String(value))}
+                {selectedOption?.label ||
+                    (typeof value === 'object' && value && 'display' in value
+                        ? (value as ForeignFieldValue).display
+                        : String(value))}
             </Text>
         )
     }
 
     if (field.type === 'multipleSelect') {
         if (!Array.isArray(value)) return null
-        
+
         // Handle new format where foreign fields store [{_id, display}, ...]
-        if (field.foreignFormName && value.length > 0 && typeof value[0] === 'object' && '_id' in value[0] && 'display' in value[0]) {
+        if (
+            field.foreignFormName &&
+            value.length > 0 &&
+            typeof value[0] === 'object' &&
+            '_id' in value[0] &&
+            'display' in value[0]
+        ) {
             const foreignValues = value as ForeignFieldValue[]
             return (
                 <HStack gap={1} flexWrap="wrap">
@@ -121,14 +204,18 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
                             color="secondary.foreground"
                             borderRadius="md"
                             cursor="pointer"
-                            onClick={(e) => handleForeignTableClick(e, field.foreignFormName!, item._id)}
+                            onClick={(e) =>
+                                handleForeignTableClick(
+                                    e,
+                                    field.foreignFormName!,
+                                    item._id
+                                )
+                            }
                             _hover={{
                                 opacity: 0.8,
                             }}
                         >
-                            <Tag.Label fontSize="xs">
-                                {item.display}
-                            </Tag.Label>
+                            <Tag.Label fontSize="xs">{item.display}</Tag.Label>
                         </Tag.Root>
                     ))}
                 </HStack>
@@ -136,9 +223,8 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
         }
 
         // Fallback to old format for backward compatibility
-        const commonItems = field.options?.filter(
-            (item) =>
-                (value as unknown as string[])?.includes(item.value)
+        const commonItems = field.options?.filter((item) =>
+            (value as unknown as string[])?.includes(item.value)
         )
 
         return (
@@ -150,24 +236,60 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
                         bg="secondary"
                         color="secondary.foreground"
                         borderRadius="md"
-                        cursor={field.foreignFormName ? "pointer" : "default"}
-                        onClick={field.foreignFormName ? (e) => handleForeignTableClick(e, field.foreignFormName!, item.value) : undefined}
-                        _hover={field.foreignFormName ? {
-                            opacity: 0.8,
-                        } : undefined}
+                        cursor={field.foreignFormName ? 'pointer' : 'default'}
+                        onClick={
+                            field.foreignFormName
+                                ? (e) =>
+                                      handleForeignTableClick(
+                                          e,
+                                          field.foreignFormName!,
+                                          item.value
+                                      )
+                                : undefined
+                        }
+                        _hover={
+                            field.foreignFormName
+                                ? {
+                                      opacity: 0.8,
+                                  }
+                                : undefined
+                        }
                     >
-                        <Tag.Label fontSize="xs">
-                            {item.label}
-                        </Tag.Label>
+                        <Tag.Label fontSize="xs">{item.label}</Tag.Label>
                     </Tag.Root>
                 ))}
             </HStack>
         )
     }
 
+    if (field.type === 'enhancedMultipleSelect') {
+        if (!Array.isArray(value)) return null
+
+        // For enhanced multiple select, show count instead of all items
+        const count = value.length
+
+        if (count === 0) {
+            return <Text color="gray.500">0 selected</Text>
+        }
+
+        return (
+            <Tag.Root size="md" bg="blue.500" color="white" borderRadius="full">
+                <Tag.Label fontSize="sm" fontWeight="medium">
+                    {count} selected
+                </Tag.Label>
+            </Tag.Root>
+        )
+    }
+
     if (field.type === 'radio') {
         // Handle new format where foreign fields store {_id, display}
-        if (field.foreignFormName && typeof value === 'object' && value && '_id' in value && 'display' in value) {
+        if (
+            field.foreignFormName &&
+            typeof value === 'object' &&
+            value &&
+            '_id' in value &&
+            'display' in value
+        ) {
             const foreignValue = value as ForeignFieldValue
             return (
                 <Button
@@ -183,7 +305,13 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
                         color: 'primary',
                         opacity: 0.8,
                     }}
-                    onClick={(e) => handleForeignTableClick(e, field.foreignFormName!, foreignValue._id)}
+                    onClick={(e) =>
+                        handleForeignTableClick(
+                            e,
+                            field.foreignFormName!,
+                            foreignValue._id
+                        )
+                    }
                 >
                     {foreignValue.display}
                 </Button>
@@ -193,11 +321,10 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
         // Fallback to old format
         return (
             <Text color="foreground">
-                {
-                    field.items?.find(
-                        (item) => item.value === value
-                    )?.label || (typeof value === 'object' && value && 'display' in value ? (value as ForeignFieldValue).display : String(value))
-                }
+                {field.items?.find((item) => item.value === value)?.label ||
+                    (typeof value === 'object' && value && 'display' in value
+                        ? (value as ForeignFieldValue).display
+                        : String(value))}
             </Text>
         )
     }
@@ -208,11 +335,7 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
         typeof value === 'number' ||
         typeof value === 'boolean'
     ) {
-        return (
-            <Text color="foreground">
-                {String(value)}
-            </Text>
-        )
+        return <Text color="foreground">{String(value)}</Text>
     }
 
     // Handle arrays (Option[] or Item[])

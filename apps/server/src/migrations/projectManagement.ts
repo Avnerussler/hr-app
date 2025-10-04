@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.1.6'
+const CURRENT_VERSION = '1.2.4'
 
 export const createStudioForm = async () => {
     try {
@@ -27,74 +27,35 @@ export const createStudioForm = async () => {
                         },
                         {
                             name: 'projectManager',
-                            type: 'select',
+                            type: 'enhancedSelect',
                             label: 'מנהל פרויקט',
                             placeholder: 'הזן את שם מנהל הפרויקט',
                             required: false,
                             defaultValue: '',
                             foreignFormName: 'Personnel',
-                            foreignField: 'firstName',
+                            foreignFields: [
+                                'firstName',
+                                'lastName',
+                                'personalNumber',
+                                'isActive',
+                            ],
                         },
                         {
                             name: 'projectPersonnel',
-                            type: 'multipleSelect',
+                            type: 'enhancedMultipleSelect',
                             label: 'אנשי צוות בפרויקט',
                             placeholder: 'הזן את אנשי הצוות',
                             required: false,
                             defaultValue: '',
                             foreignFormName: 'Personnel',
-                            foreignField: 'firstName',
-                        },
-
-                        {
-                            name: 'role',
-                            type: 'text',
-                            label: 'Role',
-                            placeholder: 'Enter role',
-                            required: false,
-                            defaultValue: '',
-                        },
-                        {
-                            name: 'project',
-                            type: 'text',
-                            label: 'Project',
-                            placeholder: 'Enter project',
-                            required: false,
-                            defaultValue: '',
-                        },
-                        {
-                            name: 'manager',
-                            type: 'text',
-                            label: 'Manager',
-                            placeholder: 'Enter manager name',
-                            required: false,
-                            defaultValue: '',
-                        },
-                        {
-                            name: 'type',
-                            type: 'select',
-                            label: 'Type',
-                            placeholder: 'Select type',
-                            required: false,
-                            defaultValue: '',
-                            options: [
-                                {
-                                    value: 'full',
-                                    label: 'Full-time',
-                                    name: 'full',
-                                },
-                                {
-                                    value: 'part',
-                                    label: 'Part-time',
-                                    name: 'part',
-                                },
-                                {
-                                    value: 'contract',
-                                    label: 'Contractor',
-                                    name: 'contract',
-                                },
+                            foreignFields: [
+                                'firstName',
+                                'lastName',
+                                'personalNumber',
+                                'isActive',
                             ],
                         },
+
                         {
                             name: 'projectStatus',
                             type: 'select',
@@ -119,22 +80,6 @@ export const createStudioForm = async () => {
                                     name: 'pending',
                                 },
                             ],
-                        },
-                        {
-                            name: 'lastActive',
-                            type: 'date',
-                            label: 'Last Active',
-                            placeholder: 'Select last active date',
-                            required: false,
-                            defaultValue: '',
-                        },
-                        {
-                            name: 'nextActive',
-                            type: 'date',
-                            label: 'Next Active',
-                            placeholder: 'Select next active date',
-                            required: false,
-                            defaultValue: '',
                         },
                     ],
                 },

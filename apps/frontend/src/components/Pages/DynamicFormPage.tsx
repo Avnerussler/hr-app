@@ -87,7 +87,11 @@ export function DynamicFormPage({ formId, formName }: DynamicFormPageProps) {
         rowData: Record<string, unknown>
     ) => {
         if (action === 'view') {
-            navigate(generateEditPath(formName, formId, rowData._id as string))
+            const editPath = generateEditPath(formName, formId, rowData._id as string)
+            // Preserve current search parameters (like page number)
+            const searchParamsString = searchParams.toString()
+            const fullPath = searchParamsString ? `${editPath}?${searchParamsString}` : editPath
+            navigate(fullPath)
         }
     }
 

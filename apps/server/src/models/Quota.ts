@@ -28,6 +28,7 @@ interface IQuotaModel extends Model<IQuota> {
         createdBy: string
     }): Promise<IQuota[]>
     getCurrentOccupancy(date: string): Promise<number>
+    getExternalOccupancyForDateRange(startDate: string, endDate: string): Promise<Record<string, number>>
     getQuotaWithOccupancy(date: string): Promise<{
         quota?: number
         currentOccupancy: number
@@ -38,6 +39,7 @@ interface IQuotaModel extends Model<IQuota> {
         date: string
         quota?: number
         currentOccupancy: number
+        externalOccupancy: number
         occupancyRate?: number
         capacityLeft: number
         capacityLeftPercent: number
@@ -178,10 +180,11 @@ quotaSchema.statics.getCurrentOccupancy = async function (
 ): Promise<number> {
     try {
         // Query Reserve Days Management to count employees assigned to this date
-        // Use imported FormSubmissions model
-        
+        // Only count internal funding
+
         const occupancy = await FormSubmissions.countDocuments({
             formName: 'Reserve%20Days%20Management',
+            'formData.fundingSource': 'internal',
             $or: [
                 // Case 1: Date falls within startDate and endDate range
                 {
@@ -200,7 +203,7 @@ quotaSchema.statics.getCurrentOccupancy = async function (
                 }
             ]
         })
-        
+
         return occupancy
     } catch (error) {
         console.error('Error calculating occupancy:', error)
@@ -237,10 +240,12 @@ quotaSchema.statics.getOccupancyForDateRange = async function (
 ): Promise<Record<string, number>> {
     try {
         // Use imported FormSubmissions model
-        
+
         // Get all reserve days submissions that overlap with the date range
+        // Only count internal funding
         const reservations = await FormSubmissions.find({
             formName: 'Reserve%20Days%20Management',
+            'formData.fundingSource': 'internal',
             $or: [
                 // Reservations that start before and end within or after the range
                 {
@@ -303,6 +308,78 @@ quotaSchema.statics.getOccupancyForDateRange = async function (
     }
 }
 
+// Static method to get external occupancy for a date range
+quotaSchema.statics.getExternalOccupancyForDateRange = async function (
+    startDate: string,
+    endDate: string
+): Promise<Record<string, number>> {
+    try {
+        // Get all reserve days submissions with external funding that overlap with the date range
+        const reservations = await FormSubmissions.find({
+            formName: 'Reserve%20Days%20Management',
+            'formData.fundingSource': 'external',
+            $or: [
+                // Reservations that start before and end within or after the range
+                {
+                    'formData.startDate': { $lte: endDate },
+                    'formData.endDate': { $gte: startDate }
+                },
+                // Single day reservations within the range
+                {
+                    'formData.startDate': { $gte: startDate, $lte: endDate },
+                    'formData.endDate': { $exists: false }
+                },
+                // Same day start and end within range
+                {
+                    'formData.startDate': { $gte: startDate, $lte: endDate },
+                    'formData.endDate': { $eq: '$formData.startDate' }
+                }
+            ]
+        }, {
+            'formData.startDate': 1,
+            'formData.endDate': 1,
+            'formData.employeeName': 1
+        })
+
+        // Count occupancy for each date
+        const occupancyMap: Record<string, number> = {}
+        const start = new Date(startDate)
+        const end = new Date(endDate)
+
+        // Initialize all dates in range with 0
+        for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
+            const dateStr = format(date, 'yyyy-MM-dd')
+            occupancyMap[dateStr] = 0
+        }
+
+        // Count employees for each date
+        reservations.forEach((reservation: any) => {
+            const resStartDate = new Date(reservation.formData.startDate)
+            const resEndDate = reservation.formData.endDate
+                ? new Date(reservation.formData.endDate)
+                : resStartDate // Single day if no end date
+
+            // Count this employee for each day they're reserved
+            const loopStart = Math.max(resStartDate.getTime(), start.getTime())
+            const loopEnd = Math.min(resEndDate.getTime(), end.getTime())
+
+            for (let date = new Date(loopStart);
+                 date.getTime() <= loopEnd;
+                 date.setDate(date.getDate() + 1)) {
+                const dateStr = format(date, 'yyyy-MM-dd')
+                if (occupancyMap[dateStr] !== undefined) {
+                    occupancyMap[dateStr]++
+                }
+            }
+        })
+
+        return occupancyMap
+    } catch (error) {
+        console.error('Error calculating external occupancy for date range:', error)
+        return {}
+    }
+}
+
 // Static method to get quotas with occupancy for a date range
 quotaSchema.statics.getQuotasWithOccupancyForRange = async function (
     startDate: string,
@@ -311,6 +388,7 @@ quotaSchema.statics.getQuotasWithOccupancyForRange = async function (
     date: string
     quota?: number
     currentOccupancy: number
+    externalOccupancy: number
     occupancyRate?: number
     capacityLeft: number
     capacityLeftPercent: number
@@ -319,44 +397,48 @@ quotaSchema.statics.getQuotasWithOccupancyForRange = async function (
         // Get quotas for the date range
         const quotas = await (this as any).findByDateRange(startDate, endDate)
         const quotaMap = new Map(quotas.map((q: IQuota) => [q.date, q.quota]))
-        
-        // Get occupancy for the entire range efficiently
+
+        // Get internal and external occupancy for the entire range efficiently
         const occupancyMap = await (this as any).getOccupancyForDateRange(startDate, endDate)
-        
+        const externalOccupancyMap = await (this as any).getExternalOccupancyForDateRange(startDate, endDate)
+
         // Generate result for each date in range
         const result: Array<{
             date: string
             quota?: number
             currentOccupancy: number
+            externalOccupancy: number
             occupancyRate?: number
             capacityLeft: number
             capacityLeftPercent: number
         }> = []
         const start = new Date(startDate)
         const end = new Date(endDate)
-        
+
         for (let date = new Date(start); date.getTime() <= end.getTime(); date.setDate(date.getDate() + 1)) {
             const dateStr = format(date, 'yyyy-MM-dd')
             const quota = quotaMap.get(dateStr)
             const currentOccupancy = occupancyMap[dateStr] || 0
+            const externalOccupancy = externalOccupancyMap[dateStr] || 0
             const capacityLeft = (quota && typeof quota === 'number') ? Math.max(0, quota - currentOccupancy) : 0
-            const occupancyRate = (quota && typeof quota === 'number' && quota > 0) 
-                ? Math.round((currentOccupancy / quota) * 100) 
+            const occupancyRate = (quota && typeof quota === 'number' && quota > 0)
+                ? Math.round((currentOccupancy / quota) * 100)
                 : undefined
-            const capacityLeftPercent = (quota && typeof quota === 'number' && quota > 0) 
-                ? Math.round((capacityLeft / quota) * 100) 
+            const capacityLeftPercent = (quota && typeof quota === 'number' && quota > 0)
+                ? Math.round((capacityLeft / quota) * 100)
                 : 0
-            
+
             result.push({
                 date: dateStr,
                 quota: quota as number | undefined,
                 currentOccupancy,
+                externalOccupancy,
                 occupancyRate,
                 capacityLeft,
                 capacityLeftPercent
             })
         }
-        
+
         return result
     } catch (error) {
         console.error('Error getting quotas with occupancy for range:', error)

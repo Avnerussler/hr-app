@@ -1,7 +1,7 @@
 import { FC } from 'react'
-import { HStack, Button, Text, IconButton, createListCollection } from '@chakra-ui/react'
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
+import { HStack, Text, createListCollection } from '@chakra-ui/react'
 import { Table } from '@tanstack/react-table'
+import { useSearchParams } from 'react-router-dom'
 import {
     SelectContent,
     SelectItem,
@@ -9,6 +9,12 @@ import {
     SelectTrigger,
     SelectValueText,
 } from '@/components/ui/select'
+import {
+    PaginationItems,
+    PaginationNextTrigger,
+    PaginationPrevTrigger,
+    PaginationRoot,
+} from '@/components/ui/pagination'
 
 interface TablePaginationProps {
     table: Table<any>
@@ -16,8 +22,19 @@ interface TablePaginationProps {
 
 export const TablePagination: FC<TablePaginationProps> = ({ table }) => {
     const pageIndex = table.getState().pagination.pageIndex
-    const pageCount = table.getPageCount()
     const pageSize = table.getState().pagination.pageSize
+    const [searchParams, setSearchParams] = useSearchParams()
+
+    const updateUrlPage = (newPageIndex: number) => {
+        const pageNumber = newPageIndex + 1 // Convert to 1-based for URL
+        const newParams = new URLSearchParams(searchParams)
+        if (pageNumber === 1) {
+            newParams.delete('page') // Remove page param for page 1
+        } else {
+            newParams.set('page', pageNumber.toString())
+        }
+        setSearchParams(newParams, { replace: true })
+    }
 
     const pageSizeOptions = createListCollection({
         items: [
@@ -27,6 +44,12 @@ export const TablePagination: FC<TablePaginationProps> = ({ table }) => {
             { label: '100', value: '100' },
         ],
     })
+
+    const handlePageChange = (details: { page: number }) => {
+        const newPageIndex = details.page - 1 // Convert from 1-based to 0-based
+        table.setPageIndex(newPageIndex)
+        updateUrlPage(newPageIndex)
+    }
 
     return (
         <HStack justify="space-between" align="center" w="full" p={4}>
@@ -41,39 +64,20 @@ export const TablePagination: FC<TablePaginationProps> = ({ table }) => {
                 </Text>
             </HStack>
 
-            <HStack gap={2}>
-                <IconButton
-                    aria-label="Previous page"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                    size="sm"
-                >
-                    <FiChevronLeft />
-                </IconButton>
-
-                <HStack gap={1}>
-                    {Array.from({ length: pageCount }, (_, i) => (
-                        <Button
-                            key={i}
-                            onClick={() => table.setPageIndex(i)}
-                            variant={i === pageIndex ? 'solid' : 'outline'}
-                            size="sm"
-                            minW="8"
-                        >
-                            {i + 1}
-                        </Button>
-                    ))}
+            <PaginationRoot
+                count={table.getFilteredRowModel().rows.length}
+                pageSize={pageSize}
+                page={pageIndex + 1} // Convert to 1-based for Chakra
+                onPageChange={handlePageChange}
+                variant="solid"
+                size="sm"
+            >
+                <HStack gap={2} flex="1" justify="center" maxW="container.lg">
+                    <PaginationPrevTrigger />
+                    <PaginationItems />
+                    <PaginationNextTrigger />
                 </HStack>
-
-                <IconButton
-                    aria-label="Next page"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                    size="sm"
-                >
-                    <FiChevronRight />
-                </IconButton>
-            </HStack>
+            </PaginationRoot>
 
             <HStack>
                 <Text fontSize="sm" color="gray.600">
@@ -83,7 +87,7 @@ export const TablePagination: FC<TablePaginationProps> = ({ table }) => {
                     collection={pageSizeOptions}
                     size="sm"
                     value={[pageSize.toString()]}
-                    onValueChange={({ items }) => 
+                    onValueChange={({ items }) =>
                         table.setPageSize(Number(items[0]?.value || '10'))
                     }
                 >

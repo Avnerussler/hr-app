@@ -9,6 +9,8 @@ import {
     createStudioForm,
     addMetricsToAllForms,
     createReserveDaysForm,
+    seedPersonnelData,
+    seedProjectManagement,
 } from './migrations'
 import {
     globalErrorHandler,
@@ -18,7 +20,7 @@ import {
     requestLogger,
     securityLogger,
     performanceLogger,
-    rateLimitLogger
+    rateLimitLogger,
 } from './middleware'
 
 dotenv.config()
@@ -68,6 +70,8 @@ const runMigrations = process.env.RUN_MIGRATIONS
         await createStudioForm()
         await createReserveDaysForm()
         await addMetricsToAllForms()
+        // await seedPersonnelData()
+        // await seedProjectManagement()
         logger.info('Running migrations')
     }
 })()
@@ -79,7 +83,7 @@ app.get('/health', (req: Request, res: Response) => {
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
         memoryUsage: process.memoryUsage(),
-        version: process.env.npm_package_version || '1.0.0'
+        version: process.env.npm_package_version || '1.0.0',
     })
 })
 
@@ -97,9 +101,9 @@ app.listen(PORT, () => {
     logger.info(`Server is running on http://localhost:${PORT}`)
     logger.info('Middleware loaded:', {
         security: '✅',
-        requestLogging: '✅', 
+        requestLogging: '✅',
         performanceMonitoring: '✅',
         rateLimiting: '✅',
-        errorHandling: '✅'
+        errorHandling: '✅',
     })
 })

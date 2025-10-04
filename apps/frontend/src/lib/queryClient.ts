@@ -21,9 +21,9 @@ const defaultMutationFn: MutationFunction<unknown, MutationVariables> = async (
 export const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            refetchOnWindowFocus: true,
+            refetchOnWindowFocus: false,
             retry: false,
-            queryFn: async ({ queryKey: [url, params] }) => {
+            queryFn: async ({ queryKey: [url, params, queryParams] }) => {
                 if (typeof url === 'string') {
                     const { data } = await axios({
                         method: 'get',
@@ -31,6 +31,7 @@ export const queryClient = new QueryClient({
                         url: params
                             ? `${url.toLowerCase()}/${params}`
                             : `${url.toLowerCase()}`,
+                        params: queryParams || {}, // Add support for query parameters
                     })
 
                     return data

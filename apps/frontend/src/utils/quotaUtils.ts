@@ -18,8 +18,9 @@ export const isIsraeliWeekend = (date: Date): boolean => {
  * @returns Color palette name for the progress bar
  */
 export const getOccupancyColorPalette = (occupancyRate: number): string => {
-    if (occupancyRate >= 100) return 'red'
-    if (occupancyRate >= 80) return 'orange' 
+    if (occupancyRate > 100) return 'red'
+    if (occupancyRate <= 100) return 'green'
+    if (occupancyRate >= 80) return 'orange'
     if (occupancyRate >= 60) return 'yellow'
     return 'green'
 }
@@ -55,11 +56,14 @@ export const formatQuotaDisplay = (
 /**
  * Get attendance status color based on attendance rate
  */
-export const getAttendanceStatusColor = (attendanceRate: number, hasData: boolean) => {
+export const getAttendanceStatusColor = (
+    attendanceRate: number,
+    hasData: boolean
+) => {
     if (!hasData) return 'gray.100' // No attendance data recorded
-    
+
     if (attendanceRate >= 90) return 'green.100' // Excellent attendance
-    if (attendanceRate >= 75) return 'yellow.100' // Good attendance  
+    if (attendanceRate >= 75) return 'yellow.100' // Good attendance
     if (attendanceRate >= 50) return 'orange.100' // Poor attendance
     return 'red.100' // Very poor attendance
 }
@@ -67,9 +71,12 @@ export const getAttendanceStatusColor = (attendanceRate: number, hasData: boolea
 /**
  * Get attendance status icon color
  */
-export const getAttendanceIconColor = (attendanceRate: number, hasData: boolean) => {
+export const getAttendanceIconColor = (
+    attendanceRate: number,
+    hasData: boolean
+) => {
     if (!hasData) return 'gray.500'
-    
+
     if (attendanceRate >= 90) return 'green.600'
     if (attendanceRate >= 75) return 'yellow.600'
     if (attendanceRate >= 50) return 'orange.600'

@@ -15,6 +15,8 @@ export type FieldType =
     | 'tel'
     | 'url'
     | 'multipleSelect'
+    | 'enhancedMultipleSelect'
+    | 'enhancedSelect'
     | 'selectAutocomplete'
 
 export interface Option {
@@ -50,6 +52,7 @@ export interface FormFields {
     errorMessages?: string
     foreignFormName?: string
     foreignField?: string
+    foreignFields?: string[]
     validation?: FieldValidation
 }
 

@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.0.1'
+const CURRENT_VERSION = '1.0.3'
 
 export const createReserveDaysForm = async () => {
     try {
@@ -19,14 +19,18 @@ export const createReserveDaysForm = async () => {
                     fields: [
                         {
                             name: 'employeeName',
-                            type: 'selectAutocomplete',
+                            type: 'enhancedSelect',
                             label: 'שם העובד',
                             placeholder: 'חפש ובחר עובד',
                             required: true,
                             defaultValue: '',
                             errorMessage: 'שם העובד הוא שדה חובה',
                             foreignFormName: 'Personnel',
-                            foreignField: 'firstName',
+                            foreignFields: [
+                                'firstName',
+                                'lastName',
+                                'personalNumber',
+                            ],
                         },
                         {
                             name: 'startDate',
@@ -86,22 +90,6 @@ export const createReserveDaysForm = async () => {
                                 { value: 'open', label: 'צו פתוח' },
                                 { value: 'daily', label: 'חד יומי' },
                             ],
-                        },
-                        {
-                            name: 'orderNumber',
-                            type: 'text',
-                            label: 'מספר צו',
-                            placeholder: 'הזן מספר צו',
-                            required: false,
-                            defaultValue: '',
-                        },
-                        {
-                            name: 'reserveUnit',
-                            type: 'text',
-                            label: 'יחידת מילואים',
-                            placeholder: 'הזן יחידת מילואים',
-                            required: false,
-                            defaultValue: '',
                         },
 
                         {
@@ -190,10 +178,10 @@ export const createReserveDaysForm = async () => {
                 'employeeName',
                 'requestDate',
                 'orderType',
-                'orderNumber',
-                'reserveUnit',
                 'fundingSource',
                 'requestStatus',
+                'startDate',
+                'endDate',
             ],
         }
 

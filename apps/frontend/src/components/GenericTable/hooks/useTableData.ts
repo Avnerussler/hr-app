@@ -20,7 +20,10 @@ export const useTableData = ({ id }: UseTableDataProps) => {
     const data = useMemo(
         () =>
             isSuccess && submittedData?.forms?.length
-                ? submittedData.forms.flatMap((form) => form.formData)
+                ? submittedData.forms.flatMap((form) => ({
+                    ...form.formData,
+                    _id: form._id
+                }))
                 : [],
         [isSuccess, submittedData]
     )

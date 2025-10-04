@@ -49,22 +49,45 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
     })
 
     const { data: formFields, isLoading: formFieldsLoading } = useQuery<IForm>({
-        queryKey: ['formFields/get', formId],
+        queryKey: ['formFields/get', formId, { limit: 10 }],
         staleTime: 1000 * 60 * 5,
     })
 
     useEffect(() => {
-        if (formState === 'edit' && itemId && submittedData?.forms) {
+        if (formState === 'edit' && itemId && submittedData?.forms && formFields) {
             const formData = submittedData.forms.find(
                 (form) => form._id === itemId
             )?.formData
             if (formData) {
-                reset(formData)
+                // Normalize formData to extract IDs from enhanced select fields
+                const normalizedData = { ...formData }
+
+                // Flatten all fields from all sections
+                const allFields = formFields.sections?.flatMap(section => section.fields) || []
+
+                // Process each field
+                allFields.forEach(field => {
+                    const value = normalizedData[field.name as keyof typeof normalizedData]
+
+                    // Handle enhancedSelect - extract _id from object
+                    if (field.type === 'enhancedSelect' && value && typeof value === 'object' && '_id' in value) {
+                        (normalizedData as any)[field.name] = (value as any)._id
+                    }
+
+                    // Handle enhancedMultipleSelect - extract _id from array of objects
+                    if (field.type === 'enhancedMultipleSelect' && Array.isArray(value)) {
+                        (normalizedData as any)[field.name] = value.map((item: any) =>
+                            typeof item === 'object' && '_id' in item ? item._id : item
+                        )
+                    }
+                })
+
+                reset(normalizedData)
             }
         } else if (formState === 'new') {
             reset({})
         }
-    }, [formState, reset, itemId, submittedData?.forms])
+    }, [formState, reset, itemId, submittedData?.forms, formFields])
 
     // Function to find the first tab containing validation errors
     const findTabWithErrors = (
@@ -162,6 +185,7 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                                         value={section.id}
                                         flex="1"
                                         overflowY="auto"
+                                        minH={'calc(100vh - 155px)'}
                                         maxH={'calc(100vh - 155px)'}
                                     >
                                         <VStack gap={4} align="stretch" pb={4}>
