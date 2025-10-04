@@ -60,6 +60,17 @@ export const useCreateFormSubmission = (
                 }
             )
 
+            // Invalidate quota and attendance queries
+            queryClient.invalidateQueries({
+                queryKey: ['quotasWithOccupancyRange'],
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['attendanceSummary'],
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['employeeAttendance'],
+            })
+
             toaster.success({
                 title: 'Success',
                 description: 'Form submitted successfully',
@@ -70,18 +81,24 @@ export const useCreateFormSubmission = (
             console.error('Error creating form submission:', error)
 
             // Handle validation errors specifically
-            if (error.response?.status === 400 && error.response?.data?.errors) {
+            if (
+                error.response?.status === 400 &&
+                error.response?.data?.errors
+            ) {
                 const validationErrors = error.response.data.errors
-                
+
                 // Handle field-specific errors if callback provided
                 if (onFieldError) {
                     validationErrors.forEach((validationError: any) => {
                         if (validationError.field) {
-                            onFieldError(validationError.field, validationError.message)
+                            onFieldError(
+                                validationError.field,
+                                validationError.message
+                            )
                         }
                     })
                 }
-                
+
                 // Show toast notifications for all errors
                 validationErrors.forEach((validationError: any) => {
                     toaster.error({
@@ -140,6 +157,18 @@ export const useUpdateFormSubmission = (
             // Also update the detailed view if it exists
             queryClient.setQueryData(['formSubmission/detail', id], data.form)
 
+            // Invalidate quota and attendance queries if this is a Reserve Days form
+            // Check if formName contains Reserve or מילואים
+            queryClient.invalidateQueries({
+                queryKey: ['quotasWithOccupancyRange'],
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['attendanceSummary'],
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['employeeAttendance'],
+            })
+
             // Show success notification
             toaster.success({
                 title: 'Success',
@@ -151,18 +180,24 @@ export const useUpdateFormSubmission = (
             console.error('Error updating form submission:', error)
 
             // Handle validation errors specifically
-            if (error.response?.status === 400 && error.response?.data?.errors) {
+            if (
+                error.response?.status === 400 &&
+                error.response?.data?.errors
+            ) {
                 const validationErrors = error.response.data.errors
-                
+
                 // Handle field-specific errors if callback provided
                 if (onFieldError) {
                     validationErrors.forEach((validationError: any) => {
                         if (validationError.field) {
-                            onFieldError(validationError.field, validationError.message)
+                            onFieldError(
+                                validationError.field,
+                                validationError.message
+                            )
                         }
                     })
                 }
-                
+
                 // Show toast notifications for all errors
                 validationErrors.forEach((validationError: any) => {
                     toaster.error({
@@ -219,6 +254,18 @@ export const useDeleteFormSubmission = () => {
 
             // Invalidate related queries
             queryClient.invalidateQueries({ queryKey: ['formSubmission/list'] })
+
+            // Invalidate quota and attendance queries if this was a Reserve Days form
+            // Check from the response data
+            queryClient.invalidateQueries({
+                queryKey: ['quotasWithOccupancyRange'],
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['attendanceSummary'],
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['employeeAttendance'],
+            })
 
             // Show success notification
             toaster.success({

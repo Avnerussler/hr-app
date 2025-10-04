@@ -9,6 +9,7 @@ import {
     useDisclosure,
 } from '@chakra-ui/react'
 import { ProgressRoot, ProgressBar } from '../ui/progress'
+import { UnapprovedReserveDaysWarning } from '../common/UnapprovedReserveDaysWarning'
 import {
     FaCalendarAlt,
     FaChevronLeft,
@@ -723,6 +724,18 @@ export default function QuotaManagement() {
                                                     title={`נוכחות: ${attendanceSummary[day.date].attendanceRate}%`}
                                                 />
                                             )}
+                                            {/* Unapproved Reserve Days Warning */}
+                                            {attendanceSummary?.[day.date]
+                                                ?.hasUnapprovedReserveDays && (
+                                                <UnapprovedReserveDaysWarning
+                                                    unapprovedEmployees={
+                                                        attendanceSummary[
+                                                            day.date
+                                                        ].unapprovedEmployees
+                                                    }
+                                                    iconSize={10}
+                                                />
+                                            )}
                                         </HStack>
                                     </HStack>
 
@@ -870,6 +883,20 @@ export default function QuotaManagement() {
                                                             size={8}
                                                             color="green"
                                                             title={`נוכחות: ${attendanceSummary[day.date].attendanceRate}%`}
+                                                        />
+                                                    )}
+                                                    {/* Unapproved Reserve Days Warning */}
+                                                    {attendanceSummary?.[
+                                                        day.date
+                                                    ]?.hasUnapprovedReserveDays && (
+                                                        <UnapprovedReserveDaysWarning
+                                                            unapprovedEmployees={
+                                                                attendanceSummary[
+                                                                    day.date
+                                                                ]
+                                                                    .unapprovedEmployees
+                                                            }
+                                                            iconSize={8}
                                                         />
                                                     )}
                                                 </HStack>

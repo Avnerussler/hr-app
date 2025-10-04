@@ -249,6 +249,7 @@ router.get(
                         formData.attendance[date] === true, // Check saved attendance data
                     workDays: [], // Could be calculated from the date range
                     reserveDays: formData.reserveDays || [],
+                    requestStatus: formData.requestStatus,
                 }
             })
 

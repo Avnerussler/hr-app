@@ -295,6 +295,11 @@ router.get(
                     totalAttended: number
                     attendanceRate: number
                     managerReported: boolean
+                    hasUnapprovedReserveDays: boolean
+                    unapprovedEmployees: Array<{
+                        name: string
+                        status: string
+                    }>
                 }
             > = {}
 
@@ -313,6 +318,8 @@ router.get(
                     totalAttended: 0,
                     attendanceRate: 0,
                     managerReported: false,
+                    hasUnapprovedReserveDays: false,
+                    unapprovedEmployees: [],
                 }
             }
 
@@ -323,6 +330,17 @@ router.get(
                 const resEndDate = formData.endDate
                     ? new Date(formData.endDate)
                     : resStartDate
+
+                // Get employee name for error messages
+                const employeeName =
+                    typeof formData.employeeName === 'object' &&
+                    formData.employeeName.display
+                        ? formData.employeeName.display
+                        : formData.employeeName || 'עובד לא ידוע'
+
+                // Check if request status is not approved
+                const requestStatus = formData.requestStatus || 'pending'
+                const isNotApproved = requestStatus !== 'approved'
 
                 // Check each date this employee should work
                 for (
@@ -337,6 +355,27 @@ router.get(
 
                     if (attendanceSummary[dateStr]) {
                         attendanceSummary[dateStr].totalRequired++
+
+                        // Track unapproved reserve days
+                        if (isNotApproved) {
+                            attendanceSummary[dateStr].hasUnapprovedReserveDays =
+                                true
+                            // Only add if not already in the list (same employee might appear multiple times)
+                            if (
+                                !attendanceSummary[
+                                    dateStr
+                                ].unapprovedEmployees.some(
+                                    (emp) => emp.name === employeeName
+                                )
+                            ) {
+                                attendanceSummary[
+                                    dateStr
+                                ].unapprovedEmployees.push({
+                                    name: employeeName,
+                                    status: requestStatus,
+                                })
+                            }
+                        }
                     }
                 }
             })

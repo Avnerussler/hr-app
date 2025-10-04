@@ -32,6 +32,7 @@ import {
     FaFileAlt,
 } from 'react-icons/fa'
 import { MetricCard } from '../common/MetricCard'
+import { UnapprovedReserveDaysWarning } from '../common/UnapprovedReserveDaysWarning'
 import {
     useEmployeeAttendanceQuery,
     useManagerReportStatusQuery,
@@ -252,12 +253,30 @@ export function DailyAttendanceDrawer({
                                                             gap={2}
                                                             flex={1}
                                                         >
-                                                            <Text
-                                                                fontWeight="medium"
-                                                                fontSize="md"
-                                                            >
-                                                                {employee.name}
-                                                            </Text>
+                                                            <HStack gap={2}>
+                                                                <Text
+                                                                    fontWeight="medium"
+                                                                    fontSize="md"
+                                                                >
+                                                                    {employee.name}
+                                                                </Text>
+                                                                {/* Unapproved Reserve Days Warning */}
+                                                                {employee.requestStatus &&
+                                                                    employee.requestStatus !==
+                                                                        'approved' && (
+                                                                        <UnapprovedReserveDaysWarning
+                                                                            employeeName={
+                                                                                employee.name
+                                                                            }
+                                                                            requestStatus={
+                                                                                employee.requestStatus
+                                                                            }
+                                                                            iconSize={
+                                                                                14
+                                                                            }
+                                                                        />
+                                                                    )}
+                                                            </HStack>
 
                                                             {/* Employee Details */}
                                                             <VStack
