@@ -55,17 +55,27 @@ export const useUpdateIndividualAttendanceMutation = () => {
         },
         onSuccess: (data, variables) => {
             const { date } = variables
-            
+
             // Invalidate and refetch employee attendance data for this date
-            queryClient.invalidateQueries({ 
-                queryKey: ['employeeAttendance', date] 
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/employees', date]
             })
-            
+
+            // Invalidate manager report status to update button state
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/attendance/manager-report/status', date]
+            })
+
             // Also invalidate attendance summary for calendar
-            queryClient.invalidateQueries({ 
-                queryKey: ['attendanceSummary'] 
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/attendance/range']
             })
-            
+
+            // Invalidate occupancy data
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/occupancy/range']
+            })
+
             console.log('Individual attendance updated successfully:', data)
         },
         onError: (error) => {
@@ -92,27 +102,27 @@ export const useManagerReportMutation = () => {
         },
         onSuccess: (data, variables) => {
             const { date } = variables
-            
+
             // Invalidate manager report status to immediately update button
-            queryClient.invalidateQueries({ 
-                queryKey: ['managerReportStatus', date] 
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/attendance/manager-report/status', date]
             })
-            
+
             // Invalidate and refetch employee attendance data for this date
-            queryClient.invalidateQueries({ 
-                queryKey: ['employeeAttendance', date] 
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/employees', date]
             })
-            
+
             // Also invalidate attendance summary for calendar indicators
-            queryClient.invalidateQueries({ 
-                queryKey: ['attendanceSummary'] 
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/attendance/range']
             })
-            
+
             // Invalidate quota data to update occupancy counts and calendar indicators
-            queryClient.invalidateQueries({ 
-                queryKey: ['quotasWithOccupancyRange'] 
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/occupancy/range']
             })
-            
+
             console.log('Manager report submitted successfully:', data)
         },
         onError: (error) => {
@@ -136,22 +146,22 @@ export const useSaveAttendanceMutation = () => {
         },
         onSuccess: (data, variables) => {
             const { date } = variables
-            
+
             // Invalidate and refetch employee attendance data for this date
-            queryClient.invalidateQueries({ 
-                queryKey: ['employeeAttendance', date] 
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/employees', date]
             })
-            
+
             // Also invalidate attendance summary for calendar
-            queryClient.invalidateQueries({ 
-                queryKey: ['attendanceSummary'] 
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/attendance/range']
             })
-            
+
             // Invalidate quota data to update occupancy counts
-            queryClient.invalidateQueries({ 
-                queryKey: ['quotasWithOccupancyRange'] 
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/occupancy/range']
             })
-            
+
             console.log('Attendance saved successfully:', data)
         },
         onError: (error) => {

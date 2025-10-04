@@ -54,6 +54,16 @@ router.put(
 
             await reservation.save()
 
+            // Reset manager report status when attendance is changed
+            const quota = await Quota.findOne({ date })
+            if (quota && quota.managerReported) {
+                quota.managerReported = false
+                quota.managerReportedAt = undefined
+                quota.managerReportedBy = undefined
+                await quota.save()
+                logger.info(`Manager report reset for date ${date} due to attendance change`)
+            }
+
             res.status(200).json({
                 message: 'Individual attendance updated successfully',
                 data: {

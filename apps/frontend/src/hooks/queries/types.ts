@@ -10,7 +10,9 @@
 export interface EmployeeAttendance {
     _id: string
     name: string
+    lastName?: string
     personalNumber?: string
+    phone?: string
     reserveUnit?: string
     workPlace?: string
     orderNumber?: string
@@ -25,6 +27,7 @@ export interface EmployeeAttendance {
     workDays?: string[] // Array of dates this employee should work
     reserveDays?: string[] // Array of reserve duty dates
     requestStatus?: string // Status of the reserve days request (pending, approved, denied)
+    fundingSource?: 'internal' | 'external' // Funding source (internal, external)
 }
 
 export interface DailyAttendanceData {
@@ -90,6 +93,7 @@ export interface QuotaWithOccupancy {
     date: string
     quota?: number
     currentOccupancy: number
+    externalOccupancy: number
     occupancyRate?: number
     capacityLeft: number
     capacityLeftPercent: number

@@ -70,8 +70,8 @@ const runMigrations = process.env.RUN_MIGRATIONS
         await createStudioForm()
         await createReserveDaysForm()
         await addMetricsToAllForms()
-        await seedPersonnelData()
-        await seedProjectManagement()
+        // await seedPersonnelData()
+        // await seedProjectManagement()
         logger.info('Running migrations')
     }
 })()

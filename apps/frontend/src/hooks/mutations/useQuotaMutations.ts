@@ -34,11 +34,11 @@ export const useCreateQuota = () => {
         onSuccess: () => {
             // Invalidate all quota-related queries
             queryClient.invalidateQueries({ queryKey: ['quotas'] })
-            queryClient.invalidateQueries({ queryKey: ['quotaWithOccupancy'] })
-            queryClient.invalidateQueries({ queryKey: ['quotasRange'] })
-            queryClient.invalidateQueries({
-                queryKey: ['quotasWithOccupancyRange'],
-            })
+            queryClient.invalidateQueries({ queryKey: ['quotas/date'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/range'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/occupancy/range'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/attendance/range'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/employees'] })
 
             toaster.success({
                 title: 'הצלחה',
@@ -80,11 +80,11 @@ export const useCreateQuotaRange = () => {
         onSuccess: (_, variables) => {
             // Invalidate all quota-related queries
             queryClient.invalidateQueries({ queryKey: ['quotas'] })
-            queryClient.invalidateQueries({ queryKey: ['quotaWithOccupancy'] })
-            queryClient.invalidateQueries({ queryKey: ['quotasRange'] })
-            queryClient.invalidateQueries({
-                queryKey: ['quotasWithOccupancyRange'],
-            })
+            queryClient.invalidateQueries({ queryKey: ['quotas/date'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/range'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/occupancy/range'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/attendance/range'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/employees'] })
 
             const dateCount = variables.endDate
                 ? Math.ceil(
@@ -132,15 +132,14 @@ export const useUpdateQuota = () => {
             })
             return response.data
         },
-        onSuccess: (data) => {
+        onSuccess: () => {
             // Invalidate all quota-related queries
             queryClient.invalidateQueries({ queryKey: ['quotas'] })
-            queryClient.invalidateQueries({ queryKey: ['quota', data._id] })
-            queryClient.invalidateQueries({ queryKey: ['quotaWithOccupancy'] })
-            queryClient.invalidateQueries({ queryKey: ['quotasRange'] })
-            queryClient.invalidateQueries({
-                queryKey: ['quotasWithOccupancyRange'],
-            })
+            queryClient.invalidateQueries({ queryKey: ['quotas/date'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/range'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/occupancy/range'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/attendance/range'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/employees'] })
 
             toaster.success({
                 title: 'הצלחה',
@@ -179,11 +178,11 @@ export const useDeleteQuota = () => {
         onSuccess: () => {
             // Invalidate all quota-related queries
             queryClient.invalidateQueries({ queryKey: ['quotas'] })
-            queryClient.invalidateQueries({ queryKey: ['quotaWithOccupancy'] })
-            queryClient.invalidateQueries({ queryKey: ['quotasRange'] })
-            queryClient.invalidateQueries({
-                queryKey: ['quotasWithOccupancyRange'],
-            })
+            queryClient.invalidateQueries({ queryKey: ['quotas/date'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/range'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/occupancy/range'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/attendance/range'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/employees'] })
 
             toaster.success({
                 title: 'הצלחה',
@@ -228,11 +227,11 @@ export const useDeleteQuotaRange = () => {
         onSuccess: (data) => {
             // Invalidate all quota-related queries
             queryClient.invalidateQueries({ queryKey: ['quotas'] })
-            queryClient.invalidateQueries({ queryKey: ['quotaWithOccupancy'] })
-            queryClient.invalidateQueries({ queryKey: ['quotasRange'] })
-            queryClient.invalidateQueries({
-                queryKey: ['quotasWithOccupancyRange'],
-            })
+            queryClient.invalidateQueries({ queryKey: ['quotas/date'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/range'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/occupancy/range'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/attendance/range'] })
+            queryClient.invalidateQueries({ queryKey: ['quotas/employees'] })
 
             toaster.success({
                 title: 'הצלחה',
