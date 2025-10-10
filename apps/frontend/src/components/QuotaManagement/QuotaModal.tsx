@@ -240,7 +240,7 @@ export function QuotaModal({
                                                     return true
                                                 },
                                             }}
-                                            helperText="אם לא מוגדר, הכמות תיושם לזמן בלתי מוגבל"
+                                            helperText="אם לא מוגדר, הכמות תיושם עד סוף החודש"
                                         />
                                     )}
                                 </>
@@ -274,7 +274,7 @@ export function QuotaModal({
                                         התאריכים שנבחר
                                         {hasEndDate && watchedEndDate
                                             ? ` (${formatDateForDisplay(watchedStartDate)} - ${formatDateForDisplay(watchedEndDate)})`
-                                            : ` (החל מ-${formatDateForDisplay(watchedStartDate)} ללא הגבלת זמן)`}
+                                            : ` (החל מ-${formatDateForDisplay(watchedStartDate)} עד סוף החודש)`}
                                     </Text>
                                 </Box>
                             )}
