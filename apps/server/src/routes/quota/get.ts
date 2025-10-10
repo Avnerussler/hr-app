@@ -4,6 +4,7 @@ import { Request, Response, Router } from 'express'
 import logger from '../../config/logger'
 import { asyncHandler } from '../../middleware'
 import { hasMoreThan2ConsecutiveDays } from '../../utils'
+import { eachDayOfInterval, parseISO, format } from 'date-fns'
 
 const router = Router()
 
@@ -272,7 +273,17 @@ router.get(
                 }
 
                 // Check if employee has more than 2 consecutive reserve days
-                const reserveDaysArray = formData.reserveDays || []
+                // Generate all dates between startDate and endDate for this reservation
+                const reserveDaysArray: string[] = []
+                if (formData.startDate && formData.endDate) {
+                    const dates = eachDayOfInterval({
+                        start: parseISO(formData.startDate),
+                        end: parseISO(formData.endDate),
+                    })
+                    reserveDaysArray.push(
+                        ...dates.map((date) => format(date, 'yyyy-MM-dd'))
+                    )
+                }
                 const hasConsecutiveDays =
                     hasMoreThan2ConsecutiveDays(reserveDaysArray)
 
@@ -297,7 +308,7 @@ router.get(
                         formData.attendance &&
                         formData.attendance[date] === true, // Check saved attendance data
                     workDays: [], // Could be calculated from the date range
-                    reserveDays: formData.reserveDays || [],
+                    reserveDays: reserveDaysArray,
                     requestStatus: formData.requestStatus,
                     fundingSource: formData.fundingSource || '',
                 }
