@@ -102,7 +102,7 @@ export interface QuotaWithOccupancy {
 export interface QuotasWithOccupancyResponse {
     data: QuotaWithOccupancy[]
     summary: {
-        totalQuotas: number
+        averageQuota: number
         totalOccupancy: number
         totalCapacityLeft: number
         averageOccupancyRate: number

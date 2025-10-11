@@ -145,11 +145,18 @@ router.get(
                 await Quota.getQuotasWithOccupancyForRange(startDate, endDate)
 
             // Calculate summary statistics
+            // Calculate average quota across all days in the date range
+            const totalQuotaSum = quotasWithOccupancy.reduce(
+                (sum, item) => sum + (item.quota || 0),
+                0
+            )
+            const averageQuota =
+                quotasWithOccupancy.length > 0
+                    ? Math.round(totalQuotaSum / quotasWithOccupancy.length)
+                    : 0
+
             const summary = {
-                totalQuotas: quotasWithOccupancy.reduce(
-                    (sum, item) => sum + (item.quota || 0),
-                    0
-                ),
+                averageQuota,
                 totalOccupancy: quotasWithOccupancy.reduce(
                     (sum, item) => sum + item.currentOccupancy,
                     0

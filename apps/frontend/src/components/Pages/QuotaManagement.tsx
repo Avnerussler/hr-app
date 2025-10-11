@@ -90,7 +90,7 @@ export default function QuotaManagement() {
     }>({ start: null, end: null, isSelecting: false })
 
     // Calculate the date range for current view
-    const { dateRange } = useMemo(() => {
+    const { dateRange, apiDateRange } = useMemo(() => {
         if (calendarView === 'monthly') {
             const monthStart = startOfMonth(currentDate)
             const monthEnd = endOfMonth(currentDate)
@@ -101,6 +101,10 @@ export default function QuotaManagement() {
                     start: format(calendarStart, 'yyyy-MM-dd'),
                     end: format(calendarEnd, 'yyyy-MM-dd'),
                 },
+                apiDateRange: {
+                    start: format(monthStart, 'yyyy-MM-dd'),
+                    end: format(monthEnd, 'yyyy-MM-dd'),
+                },
             }
         } else {
             const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 })
@@ -110,16 +114,26 @@ export default function QuotaManagement() {
                     start: format(weekStart, 'yyyy-MM-dd'),
                     end: format(weekEnd, 'yyyy-MM-dd'),
                 },
+                apiDateRange: {
+                    start: format(weekStart, 'yyyy-MM-dd'),
+                    end: format(weekEnd, 'yyyy-MM-dd'),
+                },
             }
         }
     }, [currentDate, calendarView])
 
-    // Fetch quota and occupancy data using TanStack Query
+    // Fetch quota and occupancy data for the full calendar view
     const {
         data: quotaData,
         isLoading: isLoadingQuotas,
         error: quotaError,
     } = useQuotasWithOccupancyRangeQuery(dateRange.start, dateRange.end)
+
+    // Fetch quota data for metric cards (only actual month/week)
+    const { data: metricsData } = useQuotasWithOccupancyRangeQuery(
+        apiDateRange.start,
+        apiDateRange.end
+    )
 
     // Fetch attendance summary data for calendar indicators
     const { data: attendanceSummary } = useAttendanceSummaryQuery(
@@ -462,19 +476,11 @@ export default function QuotaManagement() {
         }
     }
 
-    // Use summary from API if available, otherwise calculate from maps
-    const totalQuotas =
-        quotaData?.summary?.totalQuotas ||
-        Object.values(quotas).reduce((sum, quota) => sum + quota, 0)
-    const totalOccupancy =
-        quotaData?.summary?.totalOccupancy ||
-        Object.values(currentOccupancy).reduce((sum, occ) => sum + occ, 0)
-    const totalCapacityLeft =
-        quotaData?.summary?.totalCapacityLeft ||
-        Object.values(capacityData).reduce((sum, data) => sum + data.left, 0)
-    const averageOccupancyRate =
-        quotaData?.summary?.averageOccupancyRate ||
-        (totalQuotas > 0 ? Math.round((totalOccupancy / totalQuotas) * 100) : 0)
+    // Use metrics data from API for the actual month/week (not including overflow days)
+    const totalQuotas = metricsData?.summary?.averageQuota || 0
+    const totalOccupancy = metricsData?.summary?.totalOccupancy || 0
+    const totalCapacityLeft = metricsData?.summary?.totalCapacityLeft || 0
+    const averageOccupancyRate = metricsData?.summary?.averageOccupancyRate || 0
 
     // Show loading state
     if (isLoadingQuotas) {
@@ -544,7 +550,7 @@ export default function QuotaManagement() {
                 gap={4}
             >
                 <MetricCard
-                    label="סה״כ כמות מותרת"
+                    label="ממוצע כמות יומית"
                     value={totalQuotas}
                     icon={FaCalendarAlt}
                     color="blue"
