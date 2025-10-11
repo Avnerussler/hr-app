@@ -1,4 +1,4 @@
-import { VStack, Tabs, Button, Flex, Box } from '@chakra-ui/react'
+import { VStack, Tabs, Button, Flex, Box, IconButton } from '@chakra-ui/react'
 import {
     DrawerRoot,
     DrawerContent,
@@ -6,6 +6,7 @@ import {
     DrawerBody,
     DrawerFooter,
 } from '../ui/drawer'
+import { IoClose } from 'react-icons/io5'
 import {
     useForm,
     FormProvider,
@@ -37,7 +38,11 @@ interface DetailsDrawerProps {
 
 export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
     const methods = useForm()
-    const { reset, handleSubmit } = methods
+    const {
+        reset,
+        handleSubmit,
+        formState: { isDirty: hasChanges },
+    } = methods
     const [activeTab, setActiveTab] = useState<string | undefined>(undefined)
 
     const { formName, formId, formState, itemId } = useRouteContext()
@@ -54,7 +59,12 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
     })
 
     useEffect(() => {
-        if (formState === 'edit' && itemId && submittedData?.forms && formFields) {
+        if (
+            formState === 'edit' &&
+            itemId &&
+            submittedData?.forms &&
+            formFields
+        ) {
             const formData = submittedData.forms.find(
                 (form) => form._id === itemId
             )?.formData
@@ -63,21 +73,39 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                 const normalizedData = { ...formData }
 
                 // Flatten all fields from all sections
-                const allFields = formFields.sections?.flatMap(section => section.fields) || []
+                const allFields =
+                    formFields.sections?.flatMap((section) => section.fields) ||
+                    []
 
                 // Process each field
-                allFields.forEach(field => {
-                    const value = normalizedData[field.name as keyof typeof normalizedData]
+                allFields.forEach((field) => {
+                    const value =
+                        normalizedData[
+                            field.name as keyof typeof normalizedData
+                        ]
 
                     // Handle enhancedSelect - extract _id from object
-                    if (field.type === 'enhancedSelect' && value && typeof value === 'object' && '_id' in value) {
-                        (normalizedData as any)[field.name] = (value as any)._id
+                    if (
+                        field.type === 'enhancedSelect' &&
+                        value &&
+                        typeof value === 'object' &&
+                        '_id' in value
+                    ) {
+                        ;(normalizedData as any)[field.name] = (
+                            value as any
+                        )._id
                     }
 
                     // Handle enhancedMultipleSelect - extract _id from array of objects
-                    if (field.type === 'enhancedMultipleSelect' && Array.isArray(value)) {
-                        (normalizedData as any)[field.name] = value.map((item: any) =>
-                            typeof item === 'object' && '_id' in item ? item._id : item
+                    if (
+                        field.type === 'enhancedMultipleSelect' &&
+                        Array.isArray(value)
+                    ) {
+                        ;(normalizedData as any)[field.name] = value.map(
+                            (item: any) =>
+                                typeof item === 'object' && '_id' in item
+                                    ? item._id
+                                    : item
                         )
                     }
                 })
@@ -127,6 +155,7 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                 formName: formName,
             })
         }
+        onClose()
         reset(data)
     }
 
@@ -149,7 +178,17 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
         <DrawerRoot size="lg" open={isOpen} onOpenChange={onClose}>
             <DrawerContent display="flex" flexDirection="column" h="100%">
                 <DrawerHeader borderBottomWidth="1px" flexShrink={0}>
-                    {title}
+                    <Flex width="100%" justify="space-between" align="center">
+                        {title}
+                        <IconButton
+                            aria-label="Close drawer"
+                            onClick={onClose}
+                            variant="ghost"
+                            size="sm"
+                        >
+                            <IoClose />
+                        </IconButton>
+                    </Flex>
                 </DrawerHeader>
                 <FormProvider {...methods}>
                     <Box
@@ -211,18 +250,18 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                             </Tabs.Root>
                         </DrawerBody>
 
-                        {/* {hasChanges && ( */}
-                        <DrawerFooter borderTopWidth="1px" flexShrink={0}>
-                            <Flex justify="space-between" width="100%">
-                                <Button variant="outline" onClick={onClose}>
-                                    Cancel
-                                </Button>
-                                <Button type="submit" colorScheme="blue">
-                                    Update
-                                </Button>
-                            </Flex>
-                        </DrawerFooter>
-                        {/* )} */}
+                        {hasChanges && (
+                            <DrawerFooter borderTopWidth="1px" flexShrink={0}>
+                                <Flex justify="space-between" width="100%">
+                                    <Button variant="outline" onClick={onClose}>
+                                        Cancel
+                                    </Button>
+                                    <Button type="submit" colorScheme="blue">
+                                        Update
+                                    </Button>
+                                </Flex>
+                            </DrawerFooter>
+                        )}
                     </Box>
                 </FormProvider>
             </DrawerContent>
