@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.1.14'
+const CURRENT_VERSION = '1.1.15'
 
 export const createPersonalForm = async () => {
     try {
@@ -131,10 +131,150 @@ export const createPersonalForm = async () => {
                         },
 
                         {
-                            name: 'rule',
+                            name: 'studioRole',
+                            type: 'selectAutocomplete',
+                            label: 'תפקיד בסטודיו',
+                            placeholder: 'בחר תפקיד בסטודיו',
+                            required: false,
+                            defaultValue: '',
+                            options: [
+                                {
+                                    value: 'algorithmDeveloper',
+                                    label: 'Algorithm developer',
+                                    name: 'algorithmDeveloper',
+                                },
+                                {
+                                    value: 'algorithmResearch',
+                                    label: 'Algorithm Research',
+                                    name: 'algorithmResearch',
+                                },
+                                {
+                                    value: 'backendDeveloper',
+                                    label: 'Backend Developer',
+                                    name: 'backendDeveloper',
+                                },
+                                {
+                                    value: 'coo',
+                                    label: 'COO',
+                                    name: 'coo',
+                                },
+                                {
+                                    value: 'frontendDeveloper',
+                                    label: 'Frontend Developer',
+                                    name: 'frontendDeveloper',
+                                },
+                                {
+                                    value: 'fullstackDeveloper',
+                                    label: 'Fullstack Developer',
+                                    name: 'fullstackDeveloper',
+                                },
+                                {
+                                    value: 'hr',
+                                    label: 'HR',
+                                    name: 'hr',
+                                },
+                                {
+                                    value: 'hwEngineer',
+                                    label: 'HW Engineer',
+                                    name: 'hwEngineer',
+                                },
+                                {
+                                    value: 'productEngineer',
+                                    label: 'Product Engineer',
+                                    name: 'productEngineer',
+                                },
+                                {
+                                    value: 'uxui',
+                                    label: 'UX/UI',
+                                    name: 'uxui',
+                                },
+                                {
+                                    value: 'fieldPerson',
+                                    label: 'איש שטח',
+                                    name: 'fieldPerson',
+                                },
+                                {
+                                    value: 'wirelessOperator',
+                                    label: 'אלחוטן',
+                                    name: 'wirelessOperator',
+                                },
+                                {
+                                    value: 'academia',
+                                    label: 'אקדמיה',
+                                    name: 'academia',
+                                },
+                                {
+                                    value: 'acoustician',
+                                    label: 'אקוסטיקאי',
+                                    name: 'acoustician',
+                                },
+                                {
+                                    value: 'dataScience',
+                                    label: 'דאטה סיינס',
+                                    name: 'dataScience',
+                                },
+                                {
+                                    value: 'devops',
+                                    label: 'דבאופס',
+                                    name: 'devops',
+                                },
+                                {
+                                    value: 'projectManager',
+                                    label: 'מנהל פרויקט',
+                                    name: 'projectManager',
+                                },
+                                {
+                                    value: 'track',
+                                    label: 'מסלול',
+                                    name: 'track',
+                                },
+                                {
+                                    value: 'kaman',
+                                    label: 'קמ"ן',
+                                    name: 'kaman',
+                                },
+                                {
+                                    value: 'kamatz',
+                                    label: 'קמב"ץ',
+                                    name: 'kamatz',
+                                },
+                                {
+                                    value: 'teamLead',
+                                    label: 'ראש צוות',
+                                    name: 'teamLead',
+                                },
+                                {
+                                    value: 'algorithmTeamLead',
+                                    label: 'ראש צוות אלגוריתמיקה',
+                                    name: 'algorithmTeamLead',
+                                },
+                                {
+                                    value: 'softwareTeamLead',
+                                    label: 'ראש צוות תוכנה',
+                                    name: 'softwareTeamLead',
+                                },
+                                {
+                                    value: 'partnerships',
+                                    label: 'שותפויות',
+                                    name: 'partnerships',
+                                },
+                                {
+                                    value: 'operations',
+                                    label: 'אופרציה',
+                                    name: 'operations',
+                                },
+                                {
+                                    value: 'other',
+                                    label: 'אחר',
+                                    name: 'other',
+                                },
+                            ],
+                        },
+                        {
+                            name: 'reserveRole',
                             type: 'text',
-                            label: 'תפקיד',
-                            placeholder: 'תפקיד',
+                            label: 'תפקיד במילואים',
+                            placeholder: 'הזן תפקיד במילואים',
                             required: false,
                             defaultValue: '',
                         },
@@ -199,25 +339,30 @@ export const createPersonalForm = async () => {
                         {
                             name: 'reserveCategory',
                             type: 'select',
-                            label: 'אפיון',
-                            placeholder: 'בחר אפיון',
+                            label: 'סוג העסקה',
+                            placeholder: 'בחר סוג העסקה',
                             required: false,
                             defaultValue: '',
                             options: [
                                 {
-                                    value: 'Content Specialist',
-                                    label: 'מומחה תוכן',
-                                    name: 'Content Specialist',
+                                    value: 'reserves',
+                                    label: 'מילואים',
+                                    name: 'reserves',
                                 },
                                 {
-                                    value: 'Consultant',
+                                    value: 'consultant',
                                     label: 'יועץ',
-                                    name: 'Consultant',
+                                    name: 'consultant',
                                 },
                                 {
-                                    value: 'Team Leader',
-                                    label: 'ראש צוות',
-                                    name: 'Team Leader',
+                                    value: 'permanentService',
+                                    label: 'קבע',
+                                    name: 'permanentService',
+                                },
+                                {
+                                    value: 'mandatoryMilitaryService',
+                                    label: 'סדיר',
+                                    name: 'mandatoryMilitaryService',
                                 },
                                 { value: 'Other', label: 'אחר', name: 'Other' },
                             ],
@@ -273,14 +418,6 @@ export const createPersonalForm = async () => {
                             type: 'date',
                             label: 'תאריך סיום לימודים',
                             placeholder: 'תאריך סיום לימודים',
-                            required: false,
-                            defaultValue: '',
-                        },
-                        {
-                            name: 'extraCourses',
-                            type: 'textarea',
-                            label: 'קורסים והסמכות נוספות',
-                            placeholder: 'קורסים והסמכות נוספות',
                             required: false,
                             defaultValue: '',
                         },

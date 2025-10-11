@@ -61,6 +61,7 @@ export const ControlledInputField = ({
                         min={props.min}
                         max={props.max}
                         borderColor={error ? 'red.500' : undefined}
+                        dir={type === 'text' ? 'rtl' : undefined}
                     />
                     {error && (
                         <Field.ErrorText>{error.message}</Field.ErrorText>

@@ -7420,3 +7420,253 @@
 {"method":"GET","url":"/api/quotas/attendance/range/2025-10-26/2025-12-06","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:13:57.484Z","level":"info","message":"Incoming Request"}
 {"method":"GET","url":"/api/quotas/attendance/range/2025-10-26/2025-12-06","statusCode":200,"responseTime":"23ms","contentLength":6664,"timestamp":"2025-10-11T21:13:57.508Z","level":"info","message":"Request Success"}
 {"method":"GET","url":"/api/quotas/attendance/range/2025-10-26/2025-12-06","statusCode":200,"responseTime":"23ms","contentLength":6664,"timestamp":"2025-10-11T21:13:57.508Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/quotas/occupancy/range/2025-10-26/2025-12-06","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:15:54.056Z","level":"info","message":"Incoming Request"}
+{"method":"GET","url":"/api/quotas/attendance/range/2025-10-26/2025-12-06","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:15:54.063Z","level":"info","message":"Incoming Request"}
+{"method":"GET","url":"/api/quotas/occupancy/range/2025-11-01/2025-11-30","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:15:54.072Z","level":"info","message":"Incoming Request"}
+{"method":"GET","url":"/api/quotas/employees/2025-11-20","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:15:54.075Z","level":"info","message":"Incoming Request"}
+{"method":"GET","url":"/api/quotas/attendance/range/2025-10-26/2025-12-06","statusCode":200,"responseTime":"13ms","contentLength":6664,"timestamp":"2025-10-11T21:15:54.077Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/quotas/attendance/range/2025-10-26/2025-12-06","statusCode":200,"responseTime":"13ms","contentLength":6664,"timestamp":"2025-10-11T21:15:54.077Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/quotas/employees/2025-11-20","statusCode":200,"responseTime":"7ms","contentLength":130,"timestamp":"2025-10-11T21:15:54.082Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/quotas/employees/2025-11-20","statusCode":200,"responseTime":"7ms","contentLength":130,"timestamp":"2025-10-11T21:15:54.082Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/quotas/occupancy/range/2025-10-26/2025-12-06","statusCode":200,"responseTime":"27ms","contentLength":5590,"timestamp":"2025-10-11T21:15:54.084Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/quotas/occupancy/range/2025-10-26/2025-12-06","statusCode":200,"responseTime":"27ms","contentLength":5590,"timestamp":"2025-10-11T21:15:54.084Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/quotas/occupancy/range/2025-11-01/2025-11-30","statusCode":200,"responseTime":"14ms","contentLength":4163,"timestamp":"2025-10-11T21:15:54.086Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/quotas/occupancy/range/2025-11-01/2025-11-30","statusCode":200,"responseTime":"14ms","contentLength":4163,"timestamp":"2025-10-11T21:15:54.086Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:15:55.640Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631, options limit: 100","timestamp":"2025-10-11T21:15:55.641Z"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:15:55.644Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-10-11T21:15:55.644Z"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631?limit=10","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:15:55.647Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631, options limit: 10","timestamp":"2025-10-11T21:15:55.647Z"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631","statusCode":200,"responseTime":"417ms","contentLength":10862,"timestamp":"2025-10-11T21:15:56.058Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631","statusCode":200,"responseTime":"417ms","contentLength":10862,"timestamp":"2025-10-11T21:15:56.058Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631","statusCode":200,"responseTime":"417ms","contentLength":10862,"timestamp":"2025-10-11T21:15:56.058Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631?limit=10","statusCode":200,"responseTime":"412ms","contentLength":10862,"timestamp":"2025-10-11T21:15:56.059Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631?limit=10","statusCode":200,"responseTime":"412ms","contentLength":10862,"timestamp":"2025-10-11T21:15:56.059Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631?limit=10","statusCode":200,"responseTime":"412ms","contentLength":10862,"timestamp":"2025-10-11T21:15:56.059Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","statusCode":200,"responseTime":"1763ms","contentLength":1312046,"timestamp":"2025-10-11T21:15:57.412Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","statusCode":200,"responseTime":"1773ms","contentLength":1312046,"timestamp":"2025-10-11T21:15:57.417Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","responseTime":"1776ms","statusCode":304,"ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","level":"warn","message":"Slow Request","timestamp":"2025-10-11T21:15:57.420Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-10-11T21:22:47.213Z"}
+{"security":"✅","requestLogging":"✅","performanceMonitoring":"✅","rateLimiting":"✅","errorHandling":"✅","level":"info","message":"Middleware loaded:","timestamp":"2025-10-11T21:22:47.214Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)\n    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-10-11T21:22:47.225Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-10-11T21:22:47.228Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.14)","timestamp":"2025-10-11T21:22:47.240Z"}
+{"level":"info","message":"Project Management form is up to date (v1.2.4)","timestamp":"2025-10-11T21:22:47.244Z"}
+{"level":"info","message":"Reserve Days Management form is up to date (v1.0.3)","timestamp":"2025-10-11T21:22:47.247Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-10-11T21:22:47.248Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-10-11T21:22:47.248Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-10-11T21:22:47.253Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-10-11T21:22:47.253Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-10-11T21:22:47.255Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-10-11T21:22:47.255Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-10-11T21:22:47.255Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-10-11T21:25:09.266Z"}
+{"security":"✅","requestLogging":"✅","performanceMonitoring":"✅","rateLimiting":"✅","errorHandling":"✅","level":"info","message":"Middleware loaded:","timestamp":"2025-10-11T21:25:09.267Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)\n    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-10-11T21:25:09.275Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-10-11T21:25:09.278Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.14)","timestamp":"2025-10-11T21:25:09.292Z"}
+{"level":"info","message":"Project Management form is up to date (v1.2.4)","timestamp":"2025-10-11T21:25:09.296Z"}
+{"level":"info","message":"Reserve Days Management form is up to date (v1.0.3)","timestamp":"2025-10-11T21:25:09.299Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-10-11T21:25:09.299Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-10-11T21:25:09.299Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-10-11T21:25:09.305Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-10-11T21:25:09.305Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-10-11T21:25:09.308Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-10-11T21:25:09.308Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-10-11T21:25:09.308Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-10-11T21:25:18.163Z"}
+{"security":"✅","requestLogging":"✅","performanceMonitoring":"✅","rateLimiting":"✅","errorHandling":"✅","level":"info","message":"Middleware loaded:","timestamp":"2025-10-11T21:25:18.164Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)\n    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-10-11T21:25:18.173Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-10-11T21:25:18.176Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.14)","timestamp":"2025-10-11T21:25:18.191Z"}
+{"level":"info","message":"Project Management form is up to date (v1.2.4)","timestamp":"2025-10-11T21:25:18.195Z"}
+{"level":"info","message":"Reserve Days Management form is up to date (v1.0.3)","timestamp":"2025-10-11T21:25:18.198Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-10-11T21:25:18.198Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-10-11T21:25:18.198Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-10-11T21:25:18.205Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-10-11T21:25:18.205Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-10-11T21:25:18.207Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-10-11T21:25:18.208Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-10-11T21:25:18.208Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-10-11T21:25:33.630Z"}
+{"security":"✅","requestLogging":"✅","performanceMonitoring":"✅","rateLimiting":"✅","errorHandling":"✅","level":"info","message":"Middleware loaded:","timestamp":"2025-10-11T21:25:33.631Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)\n    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-10-11T21:25:33.638Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-10-11T21:25:33.641Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.14)","timestamp":"2025-10-11T21:25:33.655Z"}
+{"level":"info","message":"Project Management form is up to date (v1.2.4)","timestamp":"2025-10-11T21:25:33.659Z"}
+{"level":"info","message":"Reserve Days Management form is up to date (v1.0.3)","timestamp":"2025-10-11T21:25:33.662Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-10-11T21:25:33.662Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-10-11T21:25:33.662Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-10-11T21:25:33.668Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-10-11T21:25:33.668Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-10-11T21:25:33.671Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-10-11T21:25:33.671Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-10-11T21:25:33.671Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-10-11T21:25:57.107Z"}
+{"security":"✅","requestLogging":"✅","performanceMonitoring":"✅","rateLimiting":"✅","errorHandling":"✅","level":"info","message":"Middleware loaded:","timestamp":"2025-10-11T21:25:57.108Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)\n    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-10-11T21:25:57.117Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-10-11T21:25:57.120Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.14)","timestamp":"2025-10-11T21:25:57.135Z"}
+{"level":"info","message":"Project Management form is up to date (v1.2.4)","timestamp":"2025-10-11T21:25:57.140Z"}
+{"level":"info","message":"Reserve Days Management form is up to date (v1.0.3)","timestamp":"2025-10-11T21:25:57.143Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-10-11T21:25:57.143Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-10-11T21:25:57.143Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-10-11T21:25:57.149Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-10-11T21:25:57.149Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-10-11T21:25:57.152Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-10-11T21:25:57.152Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-10-11T21:25:57.152Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-10-11T21:36:29.587Z"}
+{"security":"✅","requestLogging":"✅","performanceMonitoring":"✅","rateLimiting":"✅","errorHandling":"✅","level":"info","message":"Middleware loaded:","timestamp":"2025-10-11T21:36:29.588Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)\n    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-10-11T21:36:29.598Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-10-11T21:36:29.601Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.14)","timestamp":"2025-10-11T21:36:29.614Z"}
+{"level":"info","message":"Project Management form is up to date (v1.2.4)","timestamp":"2025-10-11T21:36:29.619Z"}
+{"level":"info","message":"Reserve Days Management form is up to date (v1.0.3)","timestamp":"2025-10-11T21:36:29.622Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-10-11T21:36:29.622Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-10-11T21:36:29.622Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-10-11T21:36:29.628Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-10-11T21:36:29.629Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-10-11T21:36:29.631Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-10-11T21:36:29.631Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-10-11T21:36:29.631Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-10-11T21:39:36.986Z"}
+{"security":"✅","requestLogging":"✅","performanceMonitoring":"✅","rateLimiting":"✅","errorHandling":"✅","level":"info","message":"Middleware loaded:","timestamp":"2025-10-11T21:39:36.987Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)\n    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-10-11T21:39:36.995Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-10-11T21:39:36.997Z"}
+{"level":"info","message":"Personnel form is up to date (v1.1.14)","timestamp":"2025-10-11T21:39:37.012Z"}
+{"level":"info","message":"Project Management form is up to date (v1.2.4)","timestamp":"2025-10-11T21:39:37.017Z"}
+{"level":"info","message":"Reserve Days Management form is up to date (v1.0.3)","timestamp":"2025-10-11T21:39:37.021Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-10-11T21:39:37.022Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-10-11T21:39:37.022Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-10-11T21:39:37.027Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-10-11T21:39:37.027Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-10-11T21:39:37.030Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-10-11T21:39:37.030Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-10-11T21:39:37.030Z"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-10-11T21:39:51.300Z"}
+{"security":"✅","requestLogging":"✅","performanceMonitoring":"✅","rateLimiting":"✅","errorHandling":"✅","level":"info","message":"Middleware loaded:","timestamp":"2025-10-11T21:39:51.302Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)\n    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-10-11T21:39:51.310Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-10-11T21:39:51.313Z"}
+{"level":"info","message":"Updating Personnel form from v1.1.14 to v1.1.15","timestamp":"2025-10-11T21:39:51.328Z"}
+{"level":"info","message":"Project Management form is up to date (v1.2.4)","timestamp":"2025-10-11T21:39:51.344Z"}
+{"level":"info","message":"Reserve Days Management form is up to date (v1.0.3)","timestamp":"2025-10-11T21:39:51.348Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-10-11T21:39:51.349Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-10-11T21:39:51.349Z"}
+{"level":"info","message":"✅ Successfully added metrics to Project Management form","timestamp":"2025-10-11T21:39:51.351Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-10-11T21:39:51.351Z"}
+{"level":"info","message":"✅ Successfully added metrics to Personnel form","timestamp":"2025-10-11T21:39:51.353Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-10-11T21:39:51.353Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-10-11T21:39:51.353Z"}
+{"method":"GET","url":"/api/formfields/get/partialdata","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:39:53.913Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-10-11T21:39:53.915Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-10-11T21:39:53.919Z"}
+{"method":"GET","url":"/api/formfields/get/partialdata","statusCode":200,"responseTime":"6ms","contentLength":713,"timestamp":"2025-10-11T21:39:53.920Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/partialdata","statusCode":200,"responseTime":"7ms","contentLength":713,"timestamp":"2025-10-11T21:39:53.920Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:39:53.997Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631, options limit: 100","timestamp":"2025-10-11T21:39:53.999Z"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:39:54.010Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-10-11T21:39:54.010Z"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631?limit=10","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:39:54.013Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631, options limit: 10","timestamp":"2025-10-11T21:39:54.014Z"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631","statusCode":200,"responseTime":"355ms","contentLength":12668,"timestamp":"2025-10-11T21:39:54.353Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631","statusCode":200,"responseTime":"355ms","contentLength":12668,"timestamp":"2025-10-11T21:39:54.353Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631","statusCode":200,"responseTime":"355ms","contentLength":12668,"timestamp":"2025-10-11T21:39:54.353Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631?limit=10","statusCode":200,"responseTime":"342ms","contentLength":12668,"timestamp":"2025-10-11T21:39:54.355Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631?limit=10","statusCode":200,"responseTime":"342ms","contentLength":12668,"timestamp":"2025-10-11T21:39:54.355Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631?limit=10","statusCode":200,"responseTime":"342ms","contentLength":12668,"timestamp":"2025-10-11T21:39:54.355Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","statusCode":200,"responseTime":"1624ms","contentLength":1312046,"timestamp":"2025-10-11T21:39:55.640Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","statusCode":200,"responseTime":"1635ms","contentLength":1312046,"timestamp":"2025-10-11T21:39:55.645Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","responseTime":"1638ms","statusCode":304,"ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","level":"warn","message":"Slow Request","timestamp":"2025-10-11T21:39:55.648Z"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:48:51.265Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-10-11T21:48:51.266Z"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631?limit=10","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:48:51.270Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631, options limit: 10","timestamp":"2025-10-11T21:48:51.270Z"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631?limit=10","statusCode":200,"responseTime":"395ms","contentLength":12668,"timestamp":"2025-10-11T21:48:51.665Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631?limit=10","statusCode":200,"responseTime":"395ms","contentLength":12668,"timestamp":"2025-10-11T21:48:51.665Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631?limit=10","statusCode":200,"responseTime":"395ms","contentLength":12668,"timestamp":"2025-10-11T21:48:51.665Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/68ab5c1f3153cb4ddd4bee25","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:48:51.999Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"Getting form with ID: 68ab5c1f3153cb4ddd4bee25, options limit: 100","timestamp":"2025-10-11T21:48:51.999Z"}
+{"method":"GET","url":"/api/formsubmission/68ab5c1f3153cb4ddd4bee25","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:48:52.048Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"GET /formSubmission/68ab5c1f3153cb4ddd4bee25 - Request received","timestamp":"2025-10-11T21:48:52.048Z"}
+{"method":"GET","url":"/api/formfields/get/68ab5c1f3153cb4ddd4bee25?limit=10","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:48:52.094Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"Getting form with ID: 68ab5c1f3153cb4ddd4bee25, options limit: 10","timestamp":"2025-10-11T21:48:52.094Z"}
+{"method":"GET","url":"/api/formfields/get/68ab5c1f3153cb4ddd4bee25","statusCode":200,"responseTime":"1011ms","contentLength":4049,"timestamp":"2025-10-11T21:48:53.010Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/68ab5c1f3153cb4ddd4bee25","statusCode":200,"responseTime":"1011ms","contentLength":4049,"timestamp":"2025-10-11T21:48:53.010Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/68ab5c1f3153cb4ddd4bee25","statusCode":200,"responseTime":"1011ms","contentLength":4049,"timestamp":"2025-10-11T21:48:53.010Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/68ab5c1f3153cb4ddd4bee25","responseTime":"1012ms","statusCode":304,"ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","level":"warn","message":"Slow Request","timestamp":"2025-10-11T21:48:53.011Z"}
+{"method":"GET","url":"/api/formfields/get/68ab5c1f3153cb4ddd4bee25?limit=10","statusCode":200,"responseTime":"920ms","contentLength":4048,"timestamp":"2025-10-11T21:48:53.014Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/68ab5c1f3153cb4ddd4bee25?limit=10","statusCode":200,"responseTime":"920ms","contentLength":4048,"timestamp":"2025-10-11T21:48:53.014Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/68ab5c1f3153cb4ddd4bee25?limit=10","statusCode":200,"responseTime":"920ms","contentLength":4048,"timestamp":"2025-10-11T21:48:53.014Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/68ab5c1f3153cb4ddd4bee25","statusCode":200,"responseTime":"970ms","contentLength":4455,"timestamp":"2025-10-11T21:48:53.018Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/68ab5c1f3153cb4ddd4bee25","statusCode":200,"responseTime":"970ms","contentLength":4455,"timestamp":"2025-10-11T21:48:53.018Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","statusCode":200,"responseTime":"1755ms","contentLength":1312046,"timestamp":"2025-10-11T21:48:53.026Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","statusCode":200,"responseTime":"1765ms","contentLength":1312046,"timestamp":"2025-10-11T21:48:53.031Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","responseTime":"1768ms","statusCode":304,"ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","level":"warn","message":"Slow Request","timestamp":"2025-10-11T21:48:53.034Z"}
+{"method":"GET","url":"/api/formfields/get/partialdata","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:48:53.061Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"Getting partialData of forms","timestamp":"2025-10-11T21:48:53.061Z"}
+{"level":"info","message":"Got partialData of forms","timestamp":"2025-10-11T21:48:53.063Z"}
+{"method":"GET","url":"/api/formfields/get/partialdata","statusCode":200,"responseTime":"2ms","contentLength":713,"timestamp":"2025-10-11T21:48:53.063Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/partialdata","statusCode":200,"responseTime":"2ms","contentLength":713,"timestamp":"2025-10-11T21:48:53.063Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/68ab5c1f3153cb4ddd4bee25","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:48:53.247Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"GET /formSubmission/68ab5c1f3153cb4ddd4bee25 - Request received","timestamp":"2025-10-11T21:48:53.248Z"}
+{"method":"GET","url":"/api/formsubmission/68ab5c1f3153cb4ddd4bee25","statusCode":200,"responseTime":"16ms","contentLength":4455,"timestamp":"2025-10-11T21:48:53.264Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/68ab5c1f3153cb4ddd4bee25","statusCode":200,"responseTime":"16ms","contentLength":4455,"timestamp":"2025-10-11T21:48:53.264Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formFields/get/options/68ab5c1f3153cb4ddd4bee25/employeeName?page=1&limit=100&search=","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:48:59.795Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"Getting paginated options for field employeeName, page: 1, limit: 100, search: \"\"","timestamp":"2025-10-11T21:48:59.796Z"}
+{"method":"GET","url":"/api/formFields/get/options/68ab5c1f3153cb4ddd4bee25/employeeName?page=1&limit=100&search=","statusCode":200,"responseTime":"16ms","contentLength":16215,"timestamp":"2025-10-11T21:48:59.812Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formFields/get/options/68ab5c1f3153cb4ddd4bee25/employeeName?page=1&limit=100&search=","statusCode":200,"responseTime":"16ms","contentLength":16215,"timestamp":"2025-10-11T21:48:59.812Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formFields/get/options/68ab5c1f3153cb4ddd4bee25/employeeName?page=1&limit=100&search=e","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:49:00.282Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"Getting paginated options for field employeeName, page: 1, limit: 100, search: \"e\"","timestamp":"2025-10-11T21:49:00.283Z"}
+{"method":"GET","url":"/api/formFields/get/options/68ab5c1f3153cb4ddd4bee25/employeeName?page=1&limit=100&search=e","statusCode":200,"responseTime":"13ms","contentLength":91,"timestamp":"2025-10-11T21:49:00.296Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formFields/get/options/68ab5c1f3153cb4ddd4bee25/employeeName?page=1&limit=100&search=e","statusCode":200,"responseTime":"13ms","contentLength":91,"timestamp":"2025-10-11T21:49:00.296Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formFields/get/options/68ab5c1f3153cb4ddd4bee25/employeeName?page=1&limit=100&search=ee","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:49:01.129Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"Getting paginated options for field employeeName, page: 1, limit: 100, search: \"ee\"","timestamp":"2025-10-11T21:49:01.130Z"}
+{"method":"GET","url":"/api/formFields/get/options/68ab5c1f3153cb4ddd4bee25/employeeName?page=1&limit=100&search=ee","statusCode":200,"responseTime":"21ms","contentLength":91,"timestamp":"2025-10-11T21:49:01.151Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formFields/get/options/68ab5c1f3153cb4ddd4bee25/employeeName?page=1&limit=100&search=ee","statusCode":200,"responseTime":"22ms","contentLength":91,"timestamp":"2025-10-11T21:49:01.152Z","level":"info","message":"Request Success"}
+{"method":"POST","url":"/api/formFields/get/options/68ab5c1f3153cb4ddd4bee25/employeeName/byIds","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","contentType":"application/json","contentLength":"36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:49:05.118Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"Getting specific options for field employeeName, ids: 1","timestamp":"2025-10-11T21:49:05.131Z"}
+{"method":"POST","url":"/api/formFields/get/options/68ab5c1f3153cb4ddd4bee25/employeeName/byIds","statusCode":200,"responseTime":"20ms","contentLength":171,"timestamp":"2025-10-11T21:49:05.138Z","level":"info","message":"Request Success"}
+{"method":"POST","url":"/api/formFields/get/options/68ab5c1f3153cb4ddd4bee25/employeeName/byIds","statusCode":200,"responseTime":"20ms","contentLength":171,"timestamp":"2025-10-11T21:49:05.138Z","level":"info","message":"Request Success"}
+{"method":"POST","url":"/api/formsubmission/create","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","contentType":"application/json","contentLength":"350","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:49:14.293Z","level":"info","message":"Incoming Request"}
+{"formData":{"employeeName":"68dce3aff51f716b38b7b89c","startDate":"2025-10-13","endDate":"2025-10-23","fundingSource":"internal","fundingName":"","orderType":"","baseAccessApproval":"pending","vehicleEntry":"false","vehicleNumber":"","requestStatus":"pending","notes":""},"formId":"68ab5c1f3153cb4ddd4bee25","formName":"Reserve%20Days%20Management","level":"info","message":"Received form data:","timestamp":"2025-10-11T21:49:14.295Z"}
+{"level":"info","message":"Transforming form data for formId: 68ab5c1f3153cb4ddd4bee25","timestamp":"2025-10-11T21:49:14.296Z"}
+{"level":"info","message":"Found form definition: Reserve Days Management","timestamp":"2025-10-11T21:49:14.302Z"}
+{"level":"info","message":"Found 11 total fields","timestamp":"2025-10-11T21:49:14.302Z"}
+{"level":"info","message":"Found 1 foreign fields with values","timestamp":"2025-10-11T21:49:14.302Z"}
+{"level":"info","message":"Processing field: employeeName (enhancedSelect)","timestamp":"2025-10-11T21:49:14.302Z"}
+{"level":"info","message":"Looking up enhanced select value for employeeName: 68dce3aff51f716b38b7b89c","timestamp":"2025-10-11T21:49:14.302Z"}
+{"level":"info","message":"Transformed employeeName: דוד בקר 2117473","timestamp":"2025-10-11T21:49:14.305Z"}
+{"level":"info","message":"Form data transformation completed successfully","timestamp":"2025-10-11T21:49:14.305Z"}
+{"level":"info","message":"Transformation completed successfully","timestamp":"2025-10-11T21:49:14.305Z"}
+{"employeeName":{"_id":"68dce3aff51f716b38b7b89c","display":"דוד בקר 2117473","metadata":{"firstName":"דוד","lastName":"בקר","personalNumber":2117473}},"startDate":"2025-10-13","endDate":"2025-10-23","fundingSource":"internal","fundingName":"","orderType":"","baseAccessApproval":"pending","vehicleEntry":"false","vehicleNumber":"","requestStatus":"pending","notes":"","level":"info","message":"Creating form submission with data:","timestamp":"2025-10-11T21:49:14.305Z"}
+{"level":"info","message":"Form submission saved successfully","timestamp":"2025-10-11T21:49:14.314Z"}
+{"method":"POST","url":"/api/formsubmission/create","statusCode":201,"responseTime":"21ms","contentLength":587,"timestamp":"2025-10-11T21:49:14.314Z","level":"info","message":"Request Success"}
+{"method":"POST","url":"/api/formsubmission/create","statusCode":201,"responseTime":"21ms","contentLength":587,"timestamp":"2025-10-11T21:49:14.314Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/68ab5c1f3153cb4ddd4bee25","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:49:17.174Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"GET /formSubmission/68ab5c1f3153cb4ddd4bee25 - Request received","timestamp":"2025-10-11T21:49:17.175Z"}
+{"method":"GET","url":"/api/formsubmission/68ab5c1f3153cb4ddd4bee25","statusCode":200,"responseTime":"18ms","contentLength":5034,"timestamp":"2025-10-11T21:49:17.193Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/68ab5c1f3153cb4ddd4bee25","statusCode":200,"responseTime":"18ms","contentLength":5034,"timestamp":"2025-10-11T21:49:17.193Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:49:17.879Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"Getting form with ID: 689b9422b460f55175c6e631, options limit: 100","timestamp":"2025-10-11T21:49:17.879Z"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:49:17.884Z","level":"info","message":"Incoming Request"}
+{"level":"info","message":"GET /formSubmission/689b9422b460f55175c6e631 - Request received","timestamp":"2025-10-11T21:49:17.885Z"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631","statusCode":200,"responseTime":"381ms","contentLength":12668,"timestamp":"2025-10-11T21:49:18.260Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631","statusCode":200,"responseTime":"381ms","contentLength":12668,"timestamp":"2025-10-11T21:49:18.260Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formfields/get/689b9422b460f55175c6e631","statusCode":200,"responseTime":"381ms","contentLength":12668,"timestamp":"2025-10-11T21:49:18.260Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","statusCode":200,"responseTime":"1917ms","contentLength":1312046,"timestamp":"2025-10-11T21:49:19.807Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","statusCode":200,"responseTime":"1926ms","contentLength":1312046,"timestamp":"2025-10-11T21:49:19.811Z","level":"info","message":"Request Success"}
+{"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","responseTime":"1929ms","statusCode":304,"ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","level":"warn","message":"Slow Request","timestamp":"2025-10-11T21:49:19.814Z"}
+{"method":"POST","url":"/api/formsubmission/create","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36","contentType":"application/json","contentLength":"615","referer":"http://localhost:5173/","timestamp":"2025-10-11T21:49:28.788Z","level":"info","message":"Incoming Request"}
+{"formData":{"personalNumber":"3212123","RecruitmentYear":"","DismissYear":"","reserveUnit":"","studioRole":"","reserveRole":"","directBoss":"","rank":"","classificationClass":"","canBeRecited":"","reserveCategory":"","firstName":"asxsax","lastName":"asxa","userId":"","phone":"","email":"","city":"","linkedin":"","isActive":"true","degree":"","University":"","studyArea":"","yearOfGradation":"","workExperience":"","talentAndSkills":"","referralSource":"","FieldOfExpertise":"","Experience":"","workPlace":"","currentPosition":"","attendanceHistory":""},"formId":"689b9422b460f55175c6e631","formName":"Personnel","level":"info","message":"Received form data:","timestamp":"2025-10-11T21:49:28.790Z"}
+{"level":"info","message":"Transforming form data for formId: 689b9422b460f55175c6e631","timestamp":"2025-10-11T21:49:28.791Z"}
+{"level":"info","message":"Found form definition: Personnel","timestamp":"2025-10-11T21:49:28.799Z"}
+{"level":"info","message":"Found 32 total fields","timestamp":"2025-10-11T21:49:28.800Z"}
+{"level":"info","message":"Found 0 foreign fields with values","timestamp":"2025-10-11T21:49:28.800Z"}
+{"level":"info","message":"No foreign fields to transform","timestamp":"2025-10-11T21:49:28.800Z"}
+{"level":"info","message":"Transformation completed successfully","timestamp":"2025-10-11T21:49:28.800Z"}
+{"personalNumber":"3212123","RecruitmentYear":"","DismissYear":"","reserveUnit":"","studioRole":"","reserveRole":"","directBoss":"","rank":"","classificationClass":"","canBeRecited":"","reserveCategory":"","firstName":"asxsax","lastName":"asxa","userId":"","phone":"","email":"","city":"","linkedin":"","isActive":"true","degree":"","University":"","studyArea":"","yearOfGradation":"","workExperience":"","talentAndSkills":"","referralSource":"","FieldOfExpertise":"","Experience":"","workPlace":"","currentPosition":"","attendanceHistory":"","level":"info","message":"Creating form submission with data:","timestamp":"2025-10-11T21:49:28.800Z"}
+{"level":"info","message":"Form submission saved successfully","timestamp":"2025-10-11T21:49:28.805Z"}
+{"method":"POST","url":"/api/formsubmission/create","statusCode":201,"responseTime":"16ms","contentLength":743,"timestamp":"2025-10-11T21:49:28.806Z","level":"info","message":"Request Success"}
+{"method":"POST","url":"/api/formsubmission/create","statusCode":201,"responseTime":"17ms","contentLength":743,"timestamp":"2025-10-11T21:49:28.806Z","level":"info","message":"Request Success"}

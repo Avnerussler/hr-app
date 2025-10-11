@@ -42,13 +42,13 @@ export const ControlledSelectAutocompleteField = ({
                 )
 
                 return (
-                    <Field.Root orientation="vertical" invalid={!!error}>
+                    <Field.Root orientation="vertical" invalid={!!error} width="100%">
                         {props.label && (
                             <Field.Label>{props.label}</Field.Label>
                         )}
-                        <Box position="relative">
+                        <Box position="relative" width="100%">
                             <Input
-                                size={props.size || 'sm'}
+                                size={props.size}
                                 placeholder={props.placeholder}
                                 value={
                                     isOpen
@@ -87,22 +87,24 @@ export const ControlledSelectAutocompleteField = ({
                                     maxHeight="200px"
                                     overflowY="auto"
                                 >
-                                    {filteredOptions.map((option: SelectOption) => (
-                                        <Box
-                                            key={option.value}
-                                            px={3}
-                                            py={2}
-                                            cursor="pointer"
-                                            _hover={{ bg: 'gray.100' }}
-                                            onClick={() => {
-                                                field.onChange(option.value)
-                                                setIsOpen(false)
-                                                setSearchTerm('')
-                                            }}
-                                        >
-                                            {option.label}
-                                        </Box>
-                                    ))}
+                                    {filteredOptions.map(
+                                        (option: SelectOption) => (
+                                            <Box
+                                                key={option.value}
+                                                px={3}
+                                                py={2}
+                                                cursor="pointer"
+                                                _hover={{ bg: 'gray.100' }}
+                                                onClick={() => {
+                                                    field.onChange(option.value)
+                                                    setIsOpen(false)
+                                                    setSearchTerm('')
+                                                }}
+                                            >
+                                                {option.label}
+                                            </Box>
+                                        )
+                                    )}
                                 </Box>
                             )}
                             {isOpen &&
