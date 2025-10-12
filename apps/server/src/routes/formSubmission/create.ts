@@ -3,6 +3,7 @@ import { FormSubmissions, FormFields } from '../../models'
 import logger from '../../config/logger'
 import mongoose from 'mongoose'
 import { formValidationService } from '../../services/formValidation'
+import { bidirectionalSyncService } from '../../services/bidirectionalSync'
 
 const router = Router()
 
@@ -202,22 +203,25 @@ const transformFormData = async (formData: any, formId: string) => {
                             // Build display string from all foreign fields, filtering out booleans and empty values
                             const displayParts = field.foreignFields
                                 .map((fieldName) => doc.formData[fieldName])
-                                .filter(value =>
-                                    value !== null &&
-                                    value !== undefined &&
-                                    value !== '' &&
-                                    typeof value !== 'boolean'
+                                .filter(
+                                    (value) =>
+                                        value !== null &&
+                                        value !== undefined &&
+                                        value !== '' &&
+                                        typeof value !== 'boolean'
                                 )
-                                .map(value => String(value))
+                                .map((value) => String(value))
 
                             if (displayParts.length > 0) {
                                 transformedData[field.name] = {
                                     _id: fieldValue,
                                     display: displayParts.join(' '),
-                                    metadata
+                                    metadata,
                                 }
                                 logger.info(
-                                    `Transformed ${field.name}: ${displayParts.join(' ')}`
+                                    `Transformed ${
+                                        field.name
+                                    }: ${displayParts.join(' ')}`
                                 )
                             }
                         } else {
@@ -250,14 +254,18 @@ const transformFormData = async (formData: any, formId: string) => {
                                 )
                                 if (doc?.formData && field.foreignFields) {
                                     const displayParts = field.foreignFields
-                                        .map((fieldName) => doc.formData[fieldName])
-                                        .filter(value =>
-                                            value !== null &&
-                                            value !== undefined &&
-                                            value !== '' &&
-                                            typeof value !== 'boolean'
+                                        .map(
+                                            (fieldName) =>
+                                                doc.formData[fieldName]
                                         )
-                                        .map(value => String(value))
+                                        .filter(
+                                            (value) =>
+                                                value !== null &&
+                                                value !== undefined &&
+                                                value !== '' &&
+                                                typeof value !== 'boolean'
+                                        )
+                                        .map((value) => String(value))
 
                                     return {
                                         _id: id,
@@ -333,14 +341,23 @@ router.post(
 
         logger.info('Creating form submission with data:', transformedFormData)
 
-        const form = await FormSubmissions.create({
+        const form = (await FormSubmissions.create({
             formData: transformedFormData,
             formId,
             formName,
-        })
+        })) as mongoose.Document & { _id: mongoose.Types.ObjectId }
 
         await form.save()
         logger.info('Form submission saved successfully')
+
+        // Handle bidirectional sync after successful creation
+        await bidirectionalSyncService.handleBidirectionalSyncOnCreate(
+            formId,
+            formName,
+            form._id.toString(),
+            transformedFormData
+        )
+
         res.status(201).json({ form })
     })
 )

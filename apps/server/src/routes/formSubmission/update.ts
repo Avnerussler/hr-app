@@ -2,6 +2,7 @@ import { Request, Response, Router } from 'express'
 import { FormSubmissions, FormFields } from '../../models'
 import mongoose from 'mongoose'
 import logger from '../../config/logger'
+import { bidirectionalSyncService } from '../../services/bidirectionalSync'
 
 const transformFormData = async (formData: any, formId: string) => {
     try {
@@ -168,7 +169,7 @@ router.post('/', async (req: Request, res: Response) => {
     logger.info('POST /formSubmission/update - Request received')
     try {
         const { id, formData } = req.body
-        
+
         // Get the existing form to find its formId
         const existingForm = await FormSubmissions.findById(id)
         if (!existingForm) {
@@ -177,6 +178,9 @@ router.post('/', async (req: Request, res: Response) => {
             return
         }
 
+        // Store the old form data for bidirectional sync
+        const oldFormData = existingForm.formData
+
         // Transform the form data to include both reference and display values
         const transformedFormData = await transformFormData(formData, existingForm.formId.toString())
 
@@ -184,6 +188,15 @@ router.post('/', async (req: Request, res: Response) => {
             mongoose.Types.ObjectId.createFromHexString(id),
             { $set: { formData: transformedFormData } },
             { new: true } // Return the updated document
+        )
+
+        // Handle bidirectional sync after successful update
+        await bidirectionalSyncService.handleBidirectionalSyncOnUpdate(
+            existingForm.formId.toString(),
+            existingForm.formName,
+            id,
+            oldFormData,
+            transformedFormData
         )
 
         res.status(200).json({ form: updatedForm })

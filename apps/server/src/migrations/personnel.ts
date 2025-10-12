@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.1.15'
+const CURRENT_VERSION = '1.1.19'
 
 export const createPersonalForm = async () => {
     try {
@@ -367,6 +367,21 @@ export const createPersonalForm = async () => {
                                 { value: 'Other', label: 'אחר', name: 'Other' },
                             ],
                         },
+                        {
+                            name: 'assignedProjects',
+                            type: 'selectAutocomplete',
+                            label: 'שיוך לפרויקט',
+                            placeholder: 'בחר פרויקט',
+                            required: false,
+                            defaultValue: '',
+                            foreignFormName: 'Project Management',
+                            foreignField: 'projectName',
+                            bidirectionalSync: {
+                                enabled: true,
+                                targetFormName: 'Project Management',
+                                targetFieldName: 'projectPersonnel',
+                            },
+                        },
                     ],
                 },
 
@@ -538,6 +553,7 @@ export const createPersonalForm = async () => {
                 'rule',
                 'directBoss',
                 'talentAndSkills',
+                'assignedProjects',
                 'isActive',
             ],
         }

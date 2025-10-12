@@ -39,6 +39,12 @@ export interface FieldValidation {
     customValidation?: string
 }
 
+export interface BidirectionalSync {
+    enabled: boolean
+    targetFormName: string
+    targetFieldName: string
+}
+
 export interface FormFields {
     _id: string
     name: string
@@ -53,6 +59,7 @@ export interface FormFields {
     foreignFormName?: string
     foreignField?: string
     foreignFields?: string[]
+    bidirectionalSync?: BidirectionalSync
     validation?: FieldValidation
 }
 

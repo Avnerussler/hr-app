@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.2.4'
+const CURRENT_VERSION = '1.2.5'
 
 export const createStudioForm = async () => {
     try {
@@ -54,6 +54,11 @@ export const createStudioForm = async () => {
                                 'personalNumber',
                                 'isActive',
                             ],
+                            bidirectionalSync: {
+                                enabled: true,
+                                targetFormName: 'Personnel',
+                                targetFieldName: 'assignedProjects',
+                            },
                         },
 
                         {

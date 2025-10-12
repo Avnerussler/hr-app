@@ -31,6 +31,16 @@ const ItemSchema = new Schema(
     { _id: false }
 )
 
+// Subschema for bidirectional sync configuration
+const BidirectionalSyncSchema = new Schema(
+    {
+        enabled: { type: Boolean, required: true },
+        targetFormName: { type: String, required: true },
+        targetFieldName: { type: String, required: true },
+    },
+    { _id: false }
+)
+
 // Subschema for fields inside sections
 const FieldSchema = new Schema(
     {
@@ -52,6 +62,7 @@ const FieldSchema = new Schema(
         foreignFormName: { type: String },
         foreignField: { type: String },
         foreignFields: { type: [String] },
+        bidirectionalSync: { type: BidirectionalSyncSchema },
         options: [OptionSchema],
         items: {
             type: [ItemSchema],
