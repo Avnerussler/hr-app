@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.0.3'
+const CURRENT_VERSION = '1.0.4'
 
 export const createReserveDaysForm = async () => {
     try {
@@ -87,8 +87,16 @@ export const createReserveDaysForm = async () => {
                             defaultValue: '',
                             errorMessage: 'סוג צו הוא שדה חובה',
                             items: [
-                                { value: 'open', label: 'צו פתוח' },
-                                { value: 'daily', label: 'חד יומי' },
+                                { value: '8open', label: 'צו 8 פתוח' },
+                                { value: '8daily', label: 'צו 8 חד יומי' },
+                                {
+                                    value: 'routineOpen',
+                                    label: 'יממ שיגרה פתוח',
+                                },
+                                {
+                                    value: 'routineDaily',
+                                    label: 'יממ שיגרה חד יומי',
+                                },
                             ],
                         },
 
