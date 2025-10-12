@@ -250,18 +250,20 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                             </Tabs.Root>
                         </DrawerBody>
 
-                        {hasChanges && (
-                            <DrawerFooter borderTopWidth="1px" flexShrink={0}>
-                                <Flex justify="space-between" width="100%">
-                                    <Button variant="outline" onClick={onClose}>
-                                        Cancel
-                                    </Button>
-                                    <Button type="submit" colorScheme="blue">
-                                        Update
-                                    </Button>
-                                </Flex>
-                            </DrawerFooter>
-                        )}
+                        <DrawerFooter borderTopWidth="1px">
+                            <Flex justify="space-between" width="100%">
+                                <Button variant="outline" onClick={onClose}>
+                                    Cancel
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    colorScheme="blue"
+                                    disabled={!hasChanges}
+                                >
+                                    {formState === 'new' ? 'Create' : 'Update'}
+                                </Button>
+                            </Flex>
+                        </DrawerFooter>
                     </Box>
                 </FormProvider>
             </DrawerContent>
