@@ -72,8 +72,11 @@ export const seedPersonnelData = async () => {
             return
         }
 
-        // Check if data already exists
-        const existingCount = await FormSubmissions.countDocuments({ formName: 'Personnel' })
+        // Check if data already exists (excluding deleted records)
+        const existingCount = await FormSubmissions.countDocuments({
+            formName: 'Personnel',
+            isDeleted: false
+        })
         if (existingCount >= 1200) {
             logger.info(`Personnel data already seeded. Found ${existingCount} records.`)
             return
@@ -85,7 +88,8 @@ export const seedPersonnelData = async () => {
             personnelData.push({
                 formId: personnelForm._id,
                 formName: 'Personnel',
-                formData: generateRandomPersonnelData(i)
+                formData: generateRandomPersonnelData(i),
+                isDeleted: false
             })
         }
 

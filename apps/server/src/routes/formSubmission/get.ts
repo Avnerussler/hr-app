@@ -31,7 +31,8 @@ const transformFormData = async (formData: any, formId: string) => {
                 if (typeof fieldValue === 'string' && mongoose.Types.ObjectId.isValid(fieldValue)) {
                     const doc = await FormSubmissions.findOne({
                         _id: fieldValue,
-                        formName: field.foreignFormName
+                        formName: field.foreignFormName,
+                        isDeleted: false
                     }).lean()
 
                     const foreignField = field.foreignField
@@ -52,7 +53,8 @@ const transformFormData = async (formData: any, formId: string) => {
                     if (validIds.length > 0) {
                         const docs = await FormSubmissions.find({
                             _id: { $in: validIds },
-                            formName: field.foreignFormName
+                            formName: field.foreignFormName,
+                            isDeleted: false
                         }).lean()
 
                         transformedData[field.name] = validIds.map(id => {
@@ -69,7 +71,8 @@ const transformFormData = async (formData: any, formId: string) => {
                 if (typeof fieldValue === 'string' && mongoose.Types.ObjectId.isValid(fieldValue)) {
                     const doc = await FormSubmissions.findOne({
                         _id: fieldValue,
-                        formName: field.foreignFormName
+                        formName: field.foreignFormName,
+                        isDeleted: false
                     }).lean()
 
                     const foreignField = field.foreignField
@@ -85,7 +88,8 @@ const transformFormData = async (formData: any, formId: string) => {
                 if (typeof fieldValue === 'string' && mongoose.Types.ObjectId.isValid(fieldValue)) {
                     const doc = await FormSubmissions.findOne({
                         _id: fieldValue,
-                        formName: field.foreignFormName
+                        formName: field.foreignFormName,
+                        isDeleted: false
                     }).lean()
 
                     if (doc?.formData && field.foreignFields) {
@@ -125,7 +129,8 @@ const transformFormData = async (formData: any, formId: string) => {
                     if (validIds.length > 0) {
                         const docs = await FormSubmissions.find({
                             _id: { $in: validIds },
-                            formName: field.foreignFormName
+                            formName: field.foreignFormName,
+                            isDeleted: false
                         }).lean()
 
                         transformedData[field.name] = validIds.map(id => {
@@ -172,6 +177,7 @@ router.get('/select', async (req: Request, res: Response) => {
             {
                 $match: {
                     formId,
+                    isDeleted: false,
                 },
             },
             {
@@ -199,24 +205,26 @@ router.get('/', async (req: Request, res: Response) => {
     logger.info('GET /formSubmission - Request received')
     try {
         const { formName, formId, limit = 100, page = 1 } = req.query
-        
-        // Build query object
-        const query: any = {}
-        
+
+        // Build query object - exclude deleted forms
+        const query: any = {
+            isDeleted: false
+        }
+
         if (formName) {
             query.formName = formName
         }
-        
+
         if (formId) {
             query.formId = formId
         }
-        
+
         // Log the query for debugging
         logger.info('Query filters:', { formName, formId, query })
-        
+
         // Calculate pagination
         const skip = (Number(page) - 1) * Number(limit)
-        
+
         // Execute query with pagination
         const [forms, totalCount] = await Promise.all([
             FormSubmissions.find(query)
@@ -226,8 +234,8 @@ router.get('/', async (req: Request, res: Response) => {
                 .lean(),
             FormSubmissions.countDocuments(query)
         ])
-        
-        res.status(200).json({ 
+
+        res.status(200).json({
             forms,
             pagination: {
                 page: Number(page),
@@ -247,7 +255,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     try {
         const id = req.params.id
 
-        const forms = await FormSubmissions.find({ formId: id })
+        const forms = await FormSubmissions.find({ formId: id, isDeleted: false })
 
         // Transform each form's data to include display values for foreign fields
         const transformedForms = await Promise.all(

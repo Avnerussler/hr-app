@@ -70,6 +70,12 @@ export const useCreateFormSubmission = (
             queryClient.invalidateQueries({
                 queryKey: ['employeeAttendance'],
             })
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/attendance/range'],
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/occupancy/range'],
+            })
 
             toaster.success({
                 title: 'Success',
@@ -168,7 +174,12 @@ export const useUpdateFormSubmission = (
             queryClient.invalidateQueries({
                 queryKey: ['employeeAttendance'],
             })
-
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/attendance/range'],
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/occupancy/range'],
+            })
             // Show success notification
             toaster.success({
                 title: 'Success',
@@ -266,7 +277,12 @@ export const useDeleteFormSubmission = () => {
             queryClient.invalidateQueries({
                 queryKey: ['employeeAttendance'],
             })
-
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/attendance/range'],
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['quotas/occupancy/range'],
+            })
             // Show success notification
             toaster.success({
                 title: 'Success',

@@ -178,8 +178,8 @@ quotaSchema.statics.getCurrentOccupancy = async function (
         // Only count internal funding
 
         const occupancy = await FormSubmissions.countDocuments({
-            formName: 'Reserve%20Days%20Management',
             'formData.fundingSource': 'internal',
+            isDeleted: false,
             $or: [
                 // Case 1: Date falls within startDate and endDate range
                 {
@@ -240,8 +240,8 @@ quotaSchema.statics.getOccupancyForDateRange = async function (
         // Only count internal funding
         const reservations = await FormSubmissions.find(
             {
-                formName: 'Reserve%20Days%20Management',
                 'formData.fundingSource': 'internal',
+                isDeleted: false,
                 $or: [
                     // Reservations that start before and end within or after the range
                     {
@@ -327,8 +327,8 @@ quotaSchema.statics.getExternalOccupancyForDateRange = async function (
         // Get all reserve days submissions with external funding that overlap with the date range
         const reservations = await FormSubmissions.find(
             {
-                formName: 'Reserve%20Days%20Management',
                 'formData.fundingSource': 'external',
+                isDeleted: false,
                 $or: [
                     // Reservations that start before and end within or after the range
                     {

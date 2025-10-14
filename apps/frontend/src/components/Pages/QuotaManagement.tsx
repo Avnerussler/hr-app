@@ -851,7 +851,6 @@ export default function QuotaManagement() {
                                 w="full"
                             >
                                 {week.days.map((day) => {
-                                    console.log('Rendering day:', day)
                                     return (
                                         <Box
                                             key={day.date}

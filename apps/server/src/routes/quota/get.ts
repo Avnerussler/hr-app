@@ -203,6 +203,7 @@ router.get(
 
             // Find all Reserve Days Management form submissions that include this date
             const reservations = await FormSubmissions.find({
+                isDeleted: false,
                 $or: [
                     // Date falls within startDate and endDate range
                     {
@@ -231,6 +232,7 @@ router.get(
             const employeeRecords = await FormSubmissions.find({
                 _id: { $in: employeeDocIds },
                 formName: 'Personnel',
+                isDeleted: false,
             }).lean()
 
             // Create a map of employee data by document ID

@@ -5,6 +5,7 @@ export interface IFormSubmissions extends Document {
     formId: mongoose.Types.ObjectId
     formName: string
     formData: { [key: string]: any }
+    isDeleted: boolean
 }
 
 const FormSubmissionsSchema: Schema = new Schema(
@@ -19,6 +20,10 @@ const FormSubmissionsSchema: Schema = new Schema(
             required: true,
         },
         formData: { type: Object, required: true },
+        isDeleted: {
+            type: Boolean,
+            default: false,
+        },
     },
     { timestamps: true }
 )

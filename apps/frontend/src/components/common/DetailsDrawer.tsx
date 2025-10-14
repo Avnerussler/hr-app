@@ -20,6 +20,7 @@ import { AllFormSubmission } from '@/types/formType'
 import {
     useCreateFormSubmission,
     useUpdateFormSubmission,
+    useDeleteFormSubmission,
 } from '@/hooks/mutations'
 import { useQuery } from '@tanstack/react-query'
 import { useRouteContext } from '@/hooks/useRouteContext'
@@ -49,6 +50,7 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
     // Initialize mutation hooks
     const createEmployeeMutation = useCreateFormSubmission()
     const updateEmployeeMutation = useUpdateFormSubmission()
+    const deleteEmployeeMutation = useDeleteFormSubmission()
     const { data: submittedData } = useQuery<AllFormSubmission>({
         queryKey: ['formSubmission', formId],
     })
@@ -166,6 +168,22 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
         }
     }
 
+    const handleDelete = () => {
+        if (itemId) {
+            deleteEmployeeMutation.mutate(
+                {
+                    id: itemId,
+                    formId: formId,
+                },
+                {
+                    onSuccess: () => {
+                        onClose()
+                    },
+                }
+            )
+        }
+    }
+
     const sections: Section[] = useMemo(
         () => formFields?.sections || [],
         [formFields]
@@ -252,9 +270,20 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
 
                         <DrawerFooter borderTopWidth="1px">
                             <Flex justify="space-between" width="100%">
-                                <Button variant="outline" onClick={onClose}>
-                                    Cancel
-                                </Button>
+                                <Flex gap={2}>
+                                    <Button variant="outline" onClick={onClose}>
+                                        Cancel
+                                    </Button>
+                                    {formState === 'edit' && itemId && (
+                                        <Button
+                                            variant="outline"
+                                            colorScheme="red"
+                                            onClick={handleDelete}
+                                        >
+                                            Delete
+                                        </Button>
+                                    )}
+                                </Flex>
                                 <Button
                                     type="submit"
                                     colorScheme="blue"

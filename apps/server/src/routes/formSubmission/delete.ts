@@ -10,11 +10,18 @@ router.delete('/:id', async (req: Request, res: Response) => {
     try {
         const id = req.params.id
 
-        // Get the form before deletion to access its data for bidirectional sync
+        // Get the form before soft deletion to access its data for bidirectional sync
         const formToDelete = await FormSubmissions.findById(id)
         if (!formToDelete) {
             logger.warn(`Form with ID ${id} not found for deletion`)
             res.status(404).json({ message: 'Form not found' })
+            return
+        }
+
+        // Check if already deleted
+        if (formToDelete.isDeleted) {
+            logger.warn(`Form with ID ${id} is already deleted`)
+            res.status(400).json({ message: 'Form is already deleted' })
             return
         }
 
@@ -23,8 +30,12 @@ router.delete('/:id', async (req: Request, res: Response) => {
         const formId = formToDelete.formId.toString()
         const formName = formToDelete.formName
 
-        // Delete the form
-        const forms = await FormSubmissions.findOneAndDelete({ _id: id })
+        // Soft delete the form by setting isDeleted flag to true
+        const forms = await FormSubmissions.findByIdAndUpdate(
+            id,
+            { isDeleted: true },
+            { new: true }
+        )
 
         // Handle bidirectional sync after successful deletion
         await bidirectionalSyncService.handleBidirectionalSyncOnDelete(

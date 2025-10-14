@@ -74,6 +74,7 @@ router.post(
             const results = await FormSubmissions.find({
                 _id: { $in: objectIds },
                 formName: fieldConfig.foreignFormName,
+                isDeleted: false,
             })
                 .select('_id formData')
                 .lean()
@@ -168,7 +169,10 @@ router.get(
             }
 
             // Build search query dynamically based on foreignFields
-            const searchQuery: any = { formName: fieldConfig.foreignFormName }
+            const searchQuery: any = {
+                formName: fieldConfig.foreignFormName,
+                isDeleted: false
+            }
 
             if (
                 search &&
@@ -372,7 +376,10 @@ router.get('/:id', async (req: Request, res: Response) => {
                         {
                             $match: {
                                 $expr: {
-                                    $eq: ['$formName', '$$foreignFormName'],
+                                    $and: [
+                                        { $eq: ['$formName', '$$foreignFormName'] },
+                                        { $eq: ['$isDeleted', false] }
+                                    ]
                                 },
                             },
                         },
@@ -393,7 +400,10 @@ router.get('/:id', async (req: Request, res: Response) => {
                         {
                             $match: {
                                 $expr: {
-                                    $eq: ['$formName', '$$foreignFormName'],
+                                    $and: [
+                                        { $eq: ['$formName', '$$foreignFormName'] },
+                                        { $eq: ['$isDeleted', false] }
+                                    ]
                                 },
                             },
                         },

@@ -13,9 +13,10 @@ export const seedProjectManagement = async () => {
             return
         }
 
-        // Get all active personnel
+        // Get all active personnel (excluding deleted records)
         const allPersonnel = await FormSubmissions.find({
-            formName: 'Personnel'
+            formName: 'Personnel',
+            isDeleted: false
         }).lean()
 
         if (allPersonnel.length === 0) {
@@ -44,16 +45,23 @@ export const seedProjectManagement = async () => {
             { name: 'פרויקט אפסילון', status: 'active', teamSize: 14 },
         ]
 
-        // Delete existing project management records (optional - for clean seeding)
+        // Check existing project management records (optional - for clean seeding)
         const existingCount = await FormSubmissions.countDocuments({
-            formName: 'Project Management'
+            formName: 'Project Management',
+            isDeleted: false
         })
 
         if (existingCount > 0) {
-            logger.info(`Found ${existingCount} existing project records. Deleting...`)
-            await FormSubmissions.deleteMany({
-                formName: 'Project Management'
-            })
+            logger.info(`Found ${existingCount} existing project records. Soft deleting...`)
+            await FormSubmissions.updateMany(
+                {
+                    formName: 'Project Management',
+                    isDeleted: false
+                },
+                {
+                    $set: { isDeleted: true }
+                }
+            )
         }
 
         // Create projects with assigned personnel
@@ -72,7 +80,8 @@ export const seedProjectManagement = async () => {
                     projectManager: managerId,
                     projectPersonnel: teamIds,
                     projectStatus: project.status
-                }
+                },
+                isDeleted: false
             }
 
             const newProject = await FormSubmissions.create(projectData)

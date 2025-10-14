@@ -228,6 +228,7 @@ async function addToTargetField(
         const targetDoc = await FormSubmissions.findOne({
             _id: targetDocumentId,
             formName: targetFormName,
+            isDeleted: false,
         })
 
         if (!targetDoc) {
@@ -295,6 +296,7 @@ async function removeFromTargetField(
         const targetDoc = await FormSubmissions.findOne({
             _id: targetDocumentId,
             formName: targetFormName,
+            isDeleted: false,
         })
 
         if (!targetDoc) {
