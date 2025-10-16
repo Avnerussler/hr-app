@@ -98,6 +98,7 @@ export interface BusinessRule {
 
 export interface IForm {
     formName: string
+    displayName: string
     version?: string
     description?: string
     icon?: string

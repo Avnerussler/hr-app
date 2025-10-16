@@ -35,9 +35,9 @@ export const TableBody: FC<TableBodyProps> = ({ table, onRowClick }) => {
                             as="td"
                             key={cell.id}
                             p={2}
-                            verticalAlign="middle"
-                            whiteSpace="nowrap"
+                            verticalAlign="top"
                             color="foreground"
+                            maxW="400px"
                         >
                             {flexRender(
                                 cell.column.columnDef.cell,

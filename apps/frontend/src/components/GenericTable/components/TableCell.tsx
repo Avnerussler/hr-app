@@ -1,6 +1,15 @@
 import { FC } from 'react'
 import { CellContext } from '@tanstack/react-table'
-import { Link, Tag, HStack, Text, Button } from '@chakra-ui/react'
+import {
+    Link,
+    Tag,
+    HStack,
+    Text,
+    Button,
+    Box,
+    HoverCard,
+    Portal,
+} from '@chakra-ui/react'
 import { FormFields } from '@/types/fieldsType'
 import { useNavigate } from 'react-router-dom'
 import { useFormsQuery } from '@/hooks/queries/useFormQueries'
@@ -15,6 +24,97 @@ interface ForeignFieldValue {
 interface TableCellProps {
     info: CellContext<Record<string, unknown>, unknown>
     field: FormFields
+}
+
+const TextAreaCell: FC<{ text: string }> = ({ text }) => {
+    const MAX_LENGTH = 100
+
+    if (!text || text.length === 0) {
+        return <Text color="gray.500">—</Text>
+    }
+
+    const isTruncated = text.length > MAX_LENGTH
+    const displayText = isTruncated ? `${text.slice(0, MAX_LENGTH)}...` : text
+
+    if (!isTruncated) {
+        return (
+            <Text
+                color="foreground"
+                fontSize="sm"
+                whiteSpace="pre-wrap"
+                wordBreak="break-word"
+            >
+                {text}
+            </Text>
+        )
+    }
+
+    return (
+        <HoverCard.Root openDelay={200} closeDelay={100}>
+            <HoverCard.Trigger asChild>
+                <Box
+                    cursor="help"
+                    p={1}
+                    borderRadius="md"
+                    transition="background 0.2s"
+                    _hover={{
+                        bg: 'gray.50',
+                        _dark: {
+                            bg: 'gray.700',
+                        },
+                    }}
+                >
+                    <Text
+                        color="foreground"
+                        fontSize="sm"
+                        whiteSpace="pre-wrap"
+                        wordBreak="break-word"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        display="-webkit-box"
+                        css={{
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                        }}
+                    >
+                        {displayText}
+                    </Text>
+                </Box>
+            </HoverCard.Trigger>
+            <Portal>
+                <HoverCard.Positioner>
+                    <HoverCard.Content
+                        maxW="500px"
+                        maxH="400px"
+                        overflowY="auto"
+                        p={4}
+                        bg="white"
+                        borderWidth="1px"
+                        borderColor="gray.200"
+                        borderRadius="md"
+                        boxShadow="lg"
+                        _dark={{
+                            bg: 'gray.800',
+                            borderColor: 'gray.600',
+                        }}
+                    >
+                        <HoverCard.Arrow />
+                        <Box>
+                            <Text
+                                fontSize="sm"
+                                whiteSpace="pre-wrap"
+                                wordBreak="break-word"
+                                lineHeight="1.6"
+                                color="foreground"
+                            >
+                                {text}
+                            </Text>
+                        </Box>
+                    </HoverCard.Content>
+                </HoverCard.Positioner>
+            </Portal>
+        </HoverCard.Root>
+    )
 }
 
 export const TableCell: FC<TableCellProps> = ({ info, field }) => {
@@ -37,6 +137,10 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
                 `/${targetForm.formName}/${targetForm._id}?selectedRecord=${recordId}`
             )
         }
+    }
+
+    if (field.type === 'textarea' && typeof value === 'string') {
+        return <TextAreaCell text={value} />
     }
 
     if (field.type === 'file' && value) {

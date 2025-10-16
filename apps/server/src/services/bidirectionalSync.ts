@@ -65,8 +65,17 @@ export async function handleBidirectionalSyncOnCreate(
                 ? fieldValue
                 : [fieldValue]
 
+            // Extract IDs from objects or use directly if string
+            // Handles both raw IDs and transformed data with {_id, display}
+            const extractedIds = targetIds.map((item) => {
+                if (typeof item === 'object' && item?._id) {
+                    return item._id
+                }
+                return item
+            })
+
             // Filter valid IDs
-            const validIds = targetIds.filter(
+            const validIds = extractedIds.filter(
                 (id) =>
                     typeof id === 'string' &&
                     mongoose.Types.ObjectId.isValid(id)

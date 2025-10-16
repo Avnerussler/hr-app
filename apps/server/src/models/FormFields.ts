@@ -56,7 +56,7 @@ const FieldSchema = new Schema(
             minLength: { type: Number },
             maxLength: { type: Number },
             pattern: { type: String },
-            customValidation: { type: String }
+            customValidation: { type: String },
         },
         defaultValue: { type: String },
         foreignFormName: { type: String },
@@ -122,14 +122,14 @@ const BusinessRuleSchema = new Schema(
         id: { type: String, required: true },
         name: { type: String, required: true },
         description: { type: String },
-        ruleType: { 
-            type: String, 
+        ruleType: {
+            type: String,
             required: true,
-            enum: ['uniqueConstraint', 'dateRange', 'conditional', 'custom']
+            enum: ['uniqueConstraint', 'dateRange', 'conditional', 'custom'],
         },
         config: { type: Schema.Types.Mixed, required: true },
         errorMessage: { type: String, required: true },
-        enabled: { type: Boolean, default: true }
+        enabled: { type: Boolean, default: true },
     },
     { _id: false }
 )
@@ -150,6 +150,7 @@ const FormSchema: Schema = new Schema<TFormFields>(
         formName: { type: String, required: true, unique: true },
         version: { type: String, default: '1.0.0' },
         description: { type: String, default: '' },
+        displayName: { type: String, required: true },
         icon: { type: String, default: '' },
         sections: [SectionSchema],
         metrics: [MetricConfigSchema],

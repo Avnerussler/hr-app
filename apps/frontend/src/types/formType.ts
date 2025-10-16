@@ -8,6 +8,7 @@ export type AllFormSubmission = {
         icon: string
         formName: string
         formData: Record<string, unknown>[]
+        displayName: string
     }[]
 }
 

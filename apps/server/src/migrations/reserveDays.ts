@@ -1,16 +1,17 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.0.4'
+const CURRENT_VERSION = '1.0.6'
 
 export const createReserveDaysForm = async () => {
     try {
-        const formName = 'Reserve Days Management'
+        const formName = 'reserve_days_management'
         const existingForm = await FormFields.findOne({ formName })
 
         const formData = {
             version: CURRENT_VERSION,
             description: 'Reserve Days Management',
+            displayName: 'צווי מילואים',
             icon: 'FiCalendar',
             sections: [
                 {
@@ -25,7 +26,7 @@ export const createReserveDaysForm = async () => {
                             required: true,
                             defaultValue: '',
                             errorMessage: 'שם העובד הוא שדה חובה',
-                            foreignFormName: 'Personnel',
+                            foreignFormName: 'personnel',
                             foreignFields: [
                                 'firstName',
                                 'lastName',

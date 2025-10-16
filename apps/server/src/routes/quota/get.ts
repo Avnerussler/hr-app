@@ -228,10 +228,9 @@ router.get(
                 .map((r: any) => r.formData.employeeName?._id)
                 .filter((id: any) => id)
 
-            // Fetch full employee data from the Personnel form
+            // Fetch full employee data from the personnel form
             const employeeRecords = await FormSubmissions.find({
                 _id: { $in: employeeDocIds },
-                formName: 'Personnel',
                 isDeleted: false,
             }).lean()
 

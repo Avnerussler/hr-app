@@ -1,16 +1,17 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.1.19'
+const CURRENT_VERSION = '1.1.22'
 
 export const createPersonalForm = async () => {
     try {
-        const formName = 'Personnel'
+        const formName = 'personnel'
         const existingForm = await FormFields.findOne({ formName })
 
         const formData = {
             version: CURRENT_VERSION,
             description: 'Employee Management',
+            displayName: 'משאבי אנוש',
             icon: 'FiUsers',
             sections: [
                 {
@@ -374,11 +375,11 @@ export const createPersonalForm = async () => {
                             placeholder: 'בחר פרויקט',
                             required: false,
                             defaultValue: '',
-                            foreignFormName: 'Project Management',
+                            foreignFormName: 'project_management',
                             foreignField: 'projectName',
                             bidirectionalSync: {
                                 enabled: true,
-                                targetFormName: 'Project Management',
+                                targetFormName: 'project_management',
                                 targetFieldName: 'projectPersonnel',
                             },
                         },

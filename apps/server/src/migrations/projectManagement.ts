@@ -1,15 +1,16 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.2.5'
+const CURRENT_VERSION = '1.2.6'
 
 export const createStudioForm = async () => {
     try {
-        const formName = 'Project Management'
+        const formName = 'project_management'
         const existingForm = await FormFields.findOne({ formName })
 
         const formData = {
             version: CURRENT_VERSION,
+            displayName: 'ניהול פרויקטים',
             description: 'Project Tracking',
             icon: 'FiFolder',
             sections: [
@@ -32,7 +33,7 @@ export const createStudioForm = async () => {
                             placeholder: 'הזן את שם מנהל הפרויקט',
                             required: false,
                             defaultValue: '',
-                            foreignFormName: 'Personnel',
+                            foreignFormName: 'personnel',
                             foreignFields: [
                                 'firstName',
                                 'lastName',
@@ -47,7 +48,7 @@ export const createStudioForm = async () => {
                             placeholder: 'הזן את אנשי הצוות',
                             required: false,
                             defaultValue: '',
-                            foreignFormName: 'Personnel',
+                            foreignFormName: 'personnel',
                             foreignFields: [
                                 'firstName',
                                 'lastName',
@@ -56,7 +57,7 @@ export const createStudioForm = async () => {
                             ],
                             bidirectionalSync: {
                                 enabled: true,
-                                targetFormName: 'Personnel',
+                                targetFormName: 'personnel',
                                 targetFieldName: 'assignedProjects',
                             },
                         },
