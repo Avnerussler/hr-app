@@ -193,6 +193,7 @@ export function DynamicFormPage({
             /> */}
 
             <GenericTable
+                key={formId}
                 id={formId}
                 onRowClick={(rowId) => handleRowAction('view', { _id: rowId })}
             />

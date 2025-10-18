@@ -35,7 +35,9 @@ export const useTableState = ({ id }: UseTableStateProps) => {
     }, [sorting, columnFilters, globalFilter, tableStateManager])
 
     // Reset all filters and sorting
-    const handleClearFilters = (table?: Table<Record<string, unknown>> | undefined) => {
+    const handleClearFilters = (
+        table?: Table<Record<string, unknown>> | undefined
+    ) => {
         setSorting([])
         setColumnFilters([])
         setGlobalFilter('')
@@ -48,7 +50,9 @@ export const useTableState = ({ id }: UseTableStateProps) => {
     }
 
     // Sync column filters with table state
-    const syncColumnFilters = (table?: Table<Record<string, unknown>> | undefined) => {
+    const syncColumnFilters = (
+        table?: Table<Record<string, unknown>> | undefined
+    ) => {
         if (table) {
             const currentFilters = table.getState().columnFilters
             setColumnFilters(currentFilters)
