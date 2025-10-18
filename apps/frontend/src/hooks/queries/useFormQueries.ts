@@ -17,7 +17,28 @@ export interface FormSubmissionQueryParams {
     page?: number
 }
 
-export const useFormSubmissionsQuery = (params?: FormSubmissionQueryParams) => {
+export interface FormSubmissionQueryOptions {
+    params?: FormSubmissionQueryParams
+    enabled?: boolean
+}
+
+export const useFormSubmissionsQuery = (
+    paramsOrOptions?: FormSubmissionQueryParams | FormSubmissionQueryOptions
+) => {
+    // Handle both old API (params only) and new API (options object)
+    let params: FormSubmissionQueryParams | undefined
+    let enabled: boolean
+
+    if (paramsOrOptions && 'params' in paramsOrOptions) {
+        // New API: options object
+        params = paramsOrOptions.params
+        enabled = paramsOrOptions.enabled ?? (params?.formName || params?.formId ? true : false)
+    } else {
+        // Old API: params only
+        params = paramsOrOptions as FormSubmissionQueryParams | undefined
+        enabled = params?.formName || params?.formId ? true : false
+    }
+
     return useQuery<AllFormSubmission>({
         queryKey: ['formSubmission', params],
         queryFn: async () => {
@@ -30,7 +51,7 @@ export const useFormSubmissionsQuery = (params?: FormSubmissionQueryParams) => {
             return response.data
         },
         staleTime: 1000 * 60 * 3, // 3 minutes
-        enabled: true,
+        enabled,
     })
 }
 

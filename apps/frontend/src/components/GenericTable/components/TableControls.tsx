@@ -2,6 +2,8 @@ import { FC } from 'react'
 import { Flex, Box, Button } from '@chakra-ui/react'
 import { FiX, FiDownload } from 'react-icons/fi'
 import { DebouncedInput } from '../../DebounceInput'
+import { TableFilters } from './TableFilters'
+import { TableFilter } from '@/types/fieldsType'
 
 interface TableControlsProps {
     globalFilter: string
@@ -10,6 +12,12 @@ interface TableControlsProps {
     sorting: any[]
     columnFilters: any[]
     onExportToExcel?: () => void
+    filters?: TableFilter[]
+    filterValues?: Record<string, string | string[] | boolean>
+    onFilterChange?: (
+        filterId: string,
+        value: string | string[] | boolean
+    ) => void
 }
 
 export const TableControls: FC<TableControlsProps> = ({
@@ -19,10 +27,20 @@ export const TableControls: FC<TableControlsProps> = ({
     sorting,
     columnFilters,
     onExportToExcel,
+    filters,
+    filterValues,
+    onFilterChange,
 }) => {
     return (
-        <Flex gap={2} align="center">
-            <Box flex="1">
+        <Flex gap={2} direction={{ base: 'column', lg: 'row' }} align="stretch">
+            {filters && filters.length > 0 && filterValues && onFilterChange && (
+                <TableFilters
+                    filters={filters}
+                    filterValues={filterValues}
+                    onFilterChange={onFilterChange}
+                />
+            )}
+            <Box flex="1" minW="200px">
                 <DebouncedInput
                     value={globalFilter ?? ''}
                     onChange={(value) => setGlobalFilter(String(value))}

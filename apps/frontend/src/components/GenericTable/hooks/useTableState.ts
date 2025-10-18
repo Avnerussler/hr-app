@@ -23,6 +23,9 @@ export const useTableState = ({ id }: UseTableStateProps) => {
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
         initialState.columnFilters
     )
+    const [tableFilters, setTableFilters] = useState<
+        Record<string, string | string[] | boolean>
+    >(initialState.tableFilters)
 
     // Save state to localStorage whenever it changes
     useEffect(() => {
@@ -30,9 +33,10 @@ export const useTableState = ({ id }: UseTableStateProps) => {
             sorting,
             columnFilters,
             globalFilter,
+            tableFilters,
         }
         tableStateManager.saveTableState(state)
-    }, [sorting, columnFilters, globalFilter, tableStateManager])
+    }, [sorting, columnFilters, globalFilter, tableFilters, tableStateManager])
 
     // Reset all filters and sorting
     const handleClearFilters = (
@@ -41,6 +45,7 @@ export const useTableState = ({ id }: UseTableStateProps) => {
         setSorting([])
         setColumnFilters([])
         setGlobalFilter('')
+        setTableFilters({})
         tableStateManager.clearTableState()
 
         if (table) {
@@ -66,6 +71,8 @@ export const useTableState = ({ id }: UseTableStateProps) => {
         setSorting,
         columnFilters,
         setColumnFilters,
+        tableFilters,
+        setTableFilters,
         handleClearFilters,
         syncColumnFilters,
     }

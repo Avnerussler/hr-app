@@ -57,6 +57,23 @@ export interface FormSection {
     fields: FormFields[]
 }
 
+export interface FilterOption {
+    value: string
+    label: string
+}
+
+export interface TableFilter {
+    id: string
+    label: string
+    fieldName: string
+    type: 'select' | 'multiSelect' | 'radio' | 'switch'
+    options: FilterOption[]
+    defaultValue?: string | string[] | boolean
+    placeholder?: string
+    foreignFormName?: string
+    foreignField?: string
+}
+
 export interface IForm {
     formName: string
     description: string
@@ -64,4 +81,5 @@ export interface IForm {
     sections: FormSection[]
     metrics?: MetricConfig[]
     overviewFields?: string[]
+    filters?: TableFilter[]
 }

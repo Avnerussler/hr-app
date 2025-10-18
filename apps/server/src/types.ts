@@ -96,6 +96,21 @@ export interface BusinessRule {
     enabled?: boolean
 }
 
+export interface FilterOption {
+    value: string
+    label: string
+}
+
+export interface TableFilter {
+    id: string
+    label: string
+    fieldName: string
+    type: 'select' | 'multiSelect' | 'radio' | 'switch'
+    options: FilterOption[]
+    defaultValue?: string | string[] | boolean
+    placeholder?: string
+}
+
 export interface IForm {
     formName: string
     displayName: string
@@ -106,4 +121,5 @@ export interface IForm {
     metrics?: MetricConfig[]
     overviewFields?: string[]
     businessRules?: BusinessRule[]
+    filters?: TableFilter[]
 }

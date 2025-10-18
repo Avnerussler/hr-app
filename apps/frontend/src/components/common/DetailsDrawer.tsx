@@ -56,7 +56,7 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
     })
 
     const { data: formFields, isLoading: formFieldsLoading } = useQuery<IForm>({
-        queryKey: ['formFields/get', formId, { limit: 10 }],
+        queryKey: ['formFields/get', formId],
         staleTime: 1000 * 60 * 5,
     })
 

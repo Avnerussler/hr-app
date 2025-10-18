@@ -1,9 +1,9 @@
 import { FC } from 'react'
 import { Column } from '@tanstack/react-table'
-import { VStack, HStack, Text, IconButton, Box } from '@chakra-ui/react'
+import { VStack, HStack, Text, IconButton } from '@chakra-ui/react'
 import { FiChevronUp, FiChevronDown } from 'react-icons/fi'
 import { FormFields } from '@/types/fieldsType'
-import { Filter } from '../Filter'
+// import { Filter } from '../Filter'
 
 interface TableHeaderProps {
     column: Column<Record<string, unknown>, unknown>
@@ -38,11 +38,11 @@ export const TableHeader: FC<TableHeaderProps> = ({ column, field }) => {
                     )}
                 </IconButton>
             </HStack>
-            {column.getCanFilter() && (
+            {/* {column.getCanFilter() && (
                 <Box onClick={(e) => e.stopPropagation()}>
                     <Filter column={column} />
                 </Box>
-            )}
+            )} */}
         </VStack>
     )
 }

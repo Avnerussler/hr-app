@@ -23,6 +23,8 @@ import { exportToExcel } from './utils/exportToExcel'
 import { TableControls } from './components/TableControls'
 import { TableContainer } from './components/TableContainer'
 import { TablePagination } from './components/TablePagination'
+import { TableFilter } from '@/types/fieldsType'
+import { useMemo } from 'react'
 
 declare module '@tanstack/react-table' {
     //add fuzzy filter to the filterFns
@@ -38,9 +40,10 @@ interface GenericTableProps {
     isCanBeDeleted?: boolean
     withIndex?: boolean
     onRowClick?: (rowId: string) => void
+    filters?: TableFilter[]
 }
 
-export const GenericTable: FC<GenericTableProps> = ({ id, onRowClick }) => {
+export const GenericTable: FC<GenericTableProps> = ({ id, onRowClick, filters }) => {
     const [searchParams] = useSearchParams()
     const [pagination, setPagination] = useState(() => ({
         pageIndex: Math.max(0, parseInt(searchParams.get('page') || '1') - 1), // URL pages are 1-based, table is 0-based
@@ -67,13 +70,64 @@ export const GenericTable: FC<GenericTableProps> = ({ id, onRowClick }) => {
         setSorting,
         columnFilters,
         setColumnFilters,
+        tableFilters,
+        setTableFilters,
         handleClearFilters: clearFilters,
         syncColumnFilters,
     } = useTableState({ id })
 
-    const { formFields, data, isSuccess } = useTableData({ id })
+    const { formFields, data: rawData, isSuccess } = useTableData({ id })
     const { columns } = useTableColumns({ formFields, isSuccess })
     const { data: formsData } = useFormsQuery()
+
+    // Apply table filters to data
+    const data = useMemo(() => {
+        if (!filters || filters.length === 0 || !tableFilters || Object.keys(tableFilters).length === 0) {
+            return rawData
+        }
+
+        return rawData.filter((row) => {
+            return filters.every((filter: TableFilter) => {
+                const filterValue = tableFilters[filter.id]
+
+                // If no filter value is set or it's "all", don't filter
+                if (filterValue === undefined || filterValue === 'all') {
+                    return true
+                }
+
+                const rowValue = row[filter.fieldName]
+
+                // Handle different filter types
+                if (filter.type === 'switch') {
+                    return rowValue === filterValue
+                }
+
+                if (filter.type === 'radio' || filter.type === 'select') {
+                    // Convert both to strings for comparison
+                    return String(rowValue) === String(filterValue)
+                }
+
+                if (filter.type === 'multiSelect') {
+                    // If it's a multiselect and no values selected, show all
+                    if (!Array.isArray(filterValue) || filterValue.length === 0) {
+                        return true
+                    }
+                    // Check if row value matches any of the selected filter values
+                    return filterValue.includes(String(rowValue))
+                }
+
+                return true
+            })
+        })
+    }, [rawData, filters, tableFilters])
+
+    // Handle filter changes
+    const handleFilterChange = useCallback((filterId: string, value: string | string[] | boolean) => {
+        setTableFilters((prev) => ({
+            ...prev,
+            [filterId]: value,
+        }))
+    }, [setTableFilters])
 
     const table = useReactTable<Record<string, unknown>>({
         defaultColumn: {
@@ -149,6 +203,9 @@ export const GenericTable: FC<GenericTableProps> = ({ id, onRowClick }) => {
                 sorting={sorting}
                 columnFilters={columnFilters}
                 onExportToExcel={handleExportToExcel}
+                filters={filters}
+                filterValues={tableFilters}
+                onFilterChange={handleFilterChange}
             />
             <TableContainer table={table} onRowClick={onRowClick} />
             <TablePagination table={table} />

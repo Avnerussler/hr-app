@@ -678,6 +678,7 @@ router.get('/:id', async (req: Request, res: Response) => {
                     formName: { $first: '$formName' },
                     metrics: { $first: '$metrics' },
                     overviewFields: { $first: '$overviewFields' },
+                    filters: { $first: '$filters' },
                     createdAt: { $first: '$createdAt' },
                     updatedAt: { $first: '$updatedAt' },
                 },
@@ -690,6 +691,8 @@ router.get('/:id', async (req: Request, res: Response) => {
                     formName: { $first: '$formName' },
                     metrics: { $first: '$metrics' },
                     overviewFields: { $first: '$overviewFields' },
+                    filters: { $first: '$filters' },
+                    __filterLookup: { $first: '$__filterLookup' },
                     sections: {
                         $push: {
                             id: '$_id.sectionId',
@@ -708,6 +711,7 @@ router.get('/:id', async (req: Request, res: Response) => {
                     sections: 1,
                     metrics: 1,
                     overviewFields: 1,
+                    filters: 1,
                 },
             },
         ]
