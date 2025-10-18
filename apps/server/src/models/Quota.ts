@@ -108,7 +108,6 @@ const quotaSchema = new Schema<IQuota>(
 )
 
 // Index for efficient queries
-quotaSchema.index({ date: 1 })
 quotaSchema.index({ createdAt: -1 })
 
 // Static method to find quotas by date range
