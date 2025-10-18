@@ -247,7 +247,7 @@ export function Layout() {
                                                     fontWeight="medium"
                                                     color="sidebar.foreground"
                                                 >
-                                                    {item.formName}
+                                                    {item.displayName}
                                                 </Text>
                                                 <Text
                                                     fontSize="xs"

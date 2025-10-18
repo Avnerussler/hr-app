@@ -13,6 +13,7 @@ router.get('/partialData', async (req: Request, res: Response) => {
             'description',
             'icon',
             'overviewFields',
+            'displayName',
         ])
         logger.info('Got partialData of forms')
         res.status(200).json({ forms })
@@ -74,6 +75,7 @@ router.post(
             const results = await FormSubmissions.find({
                 _id: { $in: objectIds },
                 formName: fieldConfig.foreignFormName,
+                isDeleted: false,
             })
                 .select('_id formData')
                 .lean()
@@ -130,7 +132,11 @@ router.get(
     async (req: Request, res: Response): Promise<void> => {
         try {
             const { formId, fieldName } = req.params
-            const { page = '1', limit = '100', search: searchParam = '' } = req.query
+            const {
+                page = '1',
+                limit = '100',
+                search: searchParam = '',
+            } = req.query
             const search = String(searchParam)
 
             const pageNum = parseInt(page as string)
@@ -168,7 +174,10 @@ router.get(
             }
 
             // Build search query dynamically based on foreignFields
-            const searchQuery: any = { formName: fieldConfig.foreignFormName }
+            const searchQuery: any = {
+                formName: fieldConfig.foreignFormName,
+                isDeleted: false,
+            }
 
             if (
                 search &&
@@ -372,7 +381,15 @@ router.get('/:id', async (req: Request, res: Response) => {
                         {
                             $match: {
                                 $expr: {
-                                    $eq: ['$formName', '$$foreignFormName'],
+                                    $and: [
+                                        {
+                                            $eq: [
+                                                '$formName',
+                                                '$$foreignFormName',
+                                            ],
+                                        },
+                                        { $eq: ['$isDeleted', false] },
+                                    ],
                                 },
                             },
                         },
@@ -393,7 +410,15 @@ router.get('/:id', async (req: Request, res: Response) => {
                         {
                             $match: {
                                 $expr: {
-                                    $eq: ['$formName', '$$foreignFormName'],
+                                    $and: [
+                                        {
+                                            $eq: [
+                                                '$formName',
+                                                '$$foreignFormName',
+                                            ],
+                                        },
+                                        { $eq: ['$isDeleted', false] },
+                                    ],
                                 },
                             },
                         },
@@ -528,33 +553,6 @@ router.get('/:id', async (req: Request, res: Response) => {
                                                             },
                                                         },
                                                         name: '$sections.fields.name',
-                                                        metadata: {
-                                                            $arrayToObject: {
-                                                                $map: {
-                                                                    input: {
-                                                                        $cond: {
-                                                                            if: {
-                                                                                $isArray:
-                                                                                    '$sections.fields.foreignFields',
-                                                                            },
-                                                                            then: '$sections.fields.foreignFields',
-                                                                            else: [],
-                                                                        },
-                                                                    },
-                                                                    as: 'field',
-                                                                    in: {
-                                                                        k: '$$field',
-                                                                        v: {
-                                                                            $getField:
-                                                                                {
-                                                                                    field: '$$field',
-                                                                                    input: '$$doc.formData',
-                                                                                },
-                                                                        },
-                                                                    },
-                                                                },
-                                                            },
-                                                        },
                                                     },
                                                     else: {
                                                         value: {

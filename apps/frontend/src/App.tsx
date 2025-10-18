@@ -45,6 +45,7 @@ const createDynamicRouter = (formsData: any) => {
                       <DynamicFormPage
                           formId={form._id}
                           formName={form.formName}
+                          displayName={form.displayName}
                       />
                   ),
                   errorElement: <ErrorElement />,
@@ -55,6 +56,7 @@ const createDynamicRouter = (formsData: any) => {
                       <DynamicFormPage
                           formId={form._id}
                           formName={form.formName}
+                          displayName={form.displayName}
                       />
                   ),
                   errorElement: <ErrorElement />,
@@ -65,6 +67,7 @@ const createDynamicRouter = (formsData: any) => {
                       <DynamicFormPage
                           formId={form._id}
                           formName={form.formName}
+                          displayName={form.displayName}
                       />
                   ),
                   errorElement: <ErrorElement />,

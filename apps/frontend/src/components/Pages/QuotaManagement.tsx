@@ -90,7 +90,7 @@ export default function QuotaManagement() {
     }>({ start: null, end: null, isSelecting: false })
 
     // Calculate the date range for current view
-    const { dateRange } = useMemo(() => {
+    const { dateRange, apiDateRange } = useMemo(() => {
         if (calendarView === 'monthly') {
             const monthStart = startOfMonth(currentDate)
             const monthEnd = endOfMonth(currentDate)
@@ -101,6 +101,10 @@ export default function QuotaManagement() {
                     start: format(calendarStart, 'yyyy-MM-dd'),
                     end: format(calendarEnd, 'yyyy-MM-dd'),
                 },
+                apiDateRange: {
+                    start: format(monthStart, 'yyyy-MM-dd'),
+                    end: format(monthEnd, 'yyyy-MM-dd'),
+                },
             }
         } else {
             const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 })
@@ -110,16 +114,26 @@ export default function QuotaManagement() {
                     start: format(weekStart, 'yyyy-MM-dd'),
                     end: format(weekEnd, 'yyyy-MM-dd'),
                 },
+                apiDateRange: {
+                    start: format(weekStart, 'yyyy-MM-dd'),
+                    end: format(weekEnd, 'yyyy-MM-dd'),
+                },
             }
         }
     }, [currentDate, calendarView])
 
-    // Fetch quota and occupancy data using TanStack Query
+    // Fetch quota and occupancy data for the full calendar view
     const {
         data: quotaData,
         isLoading: isLoadingQuotas,
         error: quotaError,
     } = useQuotasWithOccupancyRangeQuery(dateRange.start, dateRange.end)
+
+    // Fetch quota data for metric cards (only actual month/week)
+    const { data: metricsData } = useQuotasWithOccupancyRangeQuery(
+        apiDateRange.start,
+        apiDateRange.end
+    )
 
     // Fetch attendance summary data for calendar indicators
     const { data: attendanceSummary } = useAttendanceSummaryQuery(
@@ -151,6 +165,7 @@ export default function QuotaManagement() {
                     leftPercent: number
                     occupancyRate: number
                     externalOccupancy: number
+                    internalOccupancy: number
                 }
             > = {}
 
@@ -165,6 +180,7 @@ export default function QuotaManagement() {
                         leftPercent: item.capacityLeftPercent,
                         occupancyRate: item.occupancyRate || 0,
                         externalOccupancy: item.externalOccupancy,
+                        internalOccupancy: item.currentOccupancy,
                     }
                 })
             }
@@ -462,19 +478,11 @@ export default function QuotaManagement() {
         }
     }
 
-    // Use summary from API if available, otherwise calculate from maps
-    const totalQuotas =
-        quotaData?.summary?.totalQuotas ||
-        Object.values(quotas).reduce((sum, quota) => sum + quota, 0)
-    const totalOccupancy =
-        quotaData?.summary?.totalOccupancy ||
-        Object.values(currentOccupancy).reduce((sum, occ) => sum + occ, 0)
-    const totalCapacityLeft =
-        quotaData?.summary?.totalCapacityLeft ||
-        Object.values(capacityData).reduce((sum, data) => sum + data.left, 0)
-    const averageOccupancyRate =
-        quotaData?.summary?.averageOccupancyRate ||
-        (totalQuotas > 0 ? Math.round((totalOccupancy / totalQuotas) * 100) : 0)
+    // Use metrics data from API for the actual month/week (not including overflow days)
+    const totalQuotas = metricsData?.summary?.averageQuota || 0
+    const totalOccupancy = metricsData?.summary?.totalOccupancy || 0
+    const totalCapacityLeft = metricsData?.summary?.totalCapacityLeft || 0
+    const averageOccupancyRate = metricsData?.summary?.averageOccupancyRate || 0
 
     // Show loading state
     if (isLoadingQuotas) {
@@ -544,7 +552,7 @@ export default function QuotaManagement() {
                 gap={4}
             >
                 <MetricCard
-                    label="סה״כ כמות מותרת"
+                    label="ממוצע כמות יומית"
                     value={totalQuotas}
                     icon={FaCalendarAlt}
                     color="blue"
@@ -842,207 +850,219 @@ export default function QuotaManagement() {
                                 gap={1}
                                 w="full"
                             >
-                                {week.days.map((day) => (
-                                    <Box
-                                        key={day.date}
-                                        p={2}
-                                        minH="80px"
-                                        borderRadius="md"
-                                        borderWidth={
-                                            isDateInRange(day.date)
-                                                ? '2px'
-                                                : '1px'
-                                        }
-                                        borderColor={
-                                            isDateInRange(day.date)
-                                                ? 'blue.500'
-                                                : day.isToday
-                                                  ? 'blue.500'
-                                                  : 'border'
-                                        }
-                                        bg={getDateBackgroundColor(day)}
-                                        opacity={day.isCurrentMonth ? 1 : 0.5}
-                                        cursor="pointer"
-                                        onClick={(e) =>
-                                            handleDayClick(day.date, e)
-                                        }
-                                        onContextMenu={(e) =>
-                                            handleRightClick(e, day.date)
-                                        }
-                                        _hover={{
-                                            bg: isDateInRange(day.date)
-                                                ? 'blue.300'
-                                                : 'gray.100',
-                                        }}
-                                    >
-                                        <VStack align="start" gap={1} w="full">
-                                            <HStack
-                                                justify="space-between"
+                                {week.days.map((day) => {
+                                    return (
+                                        <Box
+                                            key={day.date}
+                                            p={2}
+                                            minH="80px"
+                                            borderRadius="md"
+                                            borderWidth={
+                                                isDateInRange(day.date)
+                                                    ? '2px'
+                                                    : '1px'
+                                            }
+                                            borderColor={
+                                                isDateInRange(day.date)
+                                                    ? 'blue.500'
+                                                    : day.isToday
+                                                      ? 'blue.500'
+                                                      : 'border'
+                                            }
+                                            bg={getDateBackgroundColor(day)}
+                                            opacity={
+                                                day.isCurrentMonth ? 1 : 0.5
+                                            }
+                                            cursor="pointer"
+                                            onClick={(e) =>
+                                                handleDayClick(day.date, e)
+                                            }
+                                            onContextMenu={(e) =>
+                                                handleRightClick(e, day.date)
+                                            }
+                                            _hover={{
+                                                bg: isDateInRange(day.date)
+                                                    ? 'blue.300'
+                                                    : 'gray.100',
+                                            }}
+                                        >
+                                            <VStack
+                                                align="start"
+                                                gap={1}
                                                 w="full"
                                             >
-                                                <Text
-                                                    fontSize="xs"
-                                                    fontWeight={
-                                                        day.isToday
-                                                            ? 'bold'
-                                                            : 'normal'
-                                                    }
-                                                >
-                                                    {format(
-                                                        new Date(day.date),
-                                                        'd'
-                                                    )}
-                                                </Text>
-                                                <HStack gap={1}>
-                                                    {/* Holiday Indicator */}
-                                                    {getHolidaysByDate(day.date)
-                                                        .length > 0 && (
-                                                        <FaStar
-                                                            size={8}
-                                                            color="gold"
-                                                            title={`חגים: ${getHolidaysByDate(
-                                                                day.date
-                                                            )
-                                                                .map(
-                                                                    (h) =>
-                                                                        h.nameHebrew
-                                                                )
-                                                                .join(', ')}`}
-                                                        />
-                                                    )}
-                                                    {/* Attendance Status Indicator - Only show if attendance was reported */}
-                                                    {attendanceSummary?.[
-                                                        day.date
-                                                    ]?.managerReported && (
-                                                        <FaCheckCircle
-                                                            size={8}
-                                                            color="green"
-                                                            title={`נוכחות: ${attendanceSummary[day.date].attendanceRate}%`}
-                                                        />
-                                                    )}
-                                                    {/* Unapproved Reserve Days Warning */}
-                                                    {attendanceSummary?.[
-                                                        day.date
-                                                    ]
-                                                        ?.hasUnapprovedReserveDays && (
-                                                        <UnapprovedReserveDaysWarning
-                                                            unapprovedEmployees={
-                                                                attendanceSummary[
-                                                                    day.date
-                                                                ]
-                                                                    .unapprovedEmployees
-                                                            }
-                                                            iconSize={8}
-                                                        />
-                                                    )}
-                                                </HStack>
-                                            </HStack>
-
-                                            {(day.quota ||
-                                                day.currentOccupancy > 0 ||
-                                                externalOccupancy[day.date] >
-                                                    0) && (
-                                                <VStack
-                                                    align="start"
-                                                    gap={1}
+                                                <HStack
+                                                    justify="space-between"
                                                     w="full"
                                                 >
-                                                    {/* Top: (assigned)/(capacity) (percent) - Internal funding */}
                                                     <Text
-                                                        fontSize="2xs"
-                                                        fontWeight="semibold"
-                                                        textAlign="center"
-                                                        w="full"
+                                                        fontSize="xs"
+                                                        fontWeight={
+                                                            day.isToday
+                                                                ? 'bold'
+                                                                : 'normal'
+                                                        }
                                                     >
-                                                        {formatQuotaDisplay(
-                                                            day.currentOccupancy,
-                                                            day.quota || 0,
-                                                            day.quota
-                                                                ? capacityData[
-                                                                      day.date
-                                                                  ]
-                                                                      ?.occupancyRate ||
-                                                                      0
-                                                                : day.currentOccupancy >
-                                                                    0
-                                                                  ? 100
-                                                                  : 0
+                                                        {format(
+                                                            new Date(day.date),
+                                                            'd'
                                                         )}
                                                     </Text>
-
-                                                    {/* Progress bar - Internal funding */}
-                                                    <ProgressRoot
-                                                        value={Math.min(
-                                                            day.quota
-                                                                ? capacityData[
-                                                                      day.date
-                                                                  ]
-                                                                      ?.occupancyRate ||
-                                                                      0
-                                                                : day.currentOccupancy >
-                                                                    0
-                                                                  ? 100
-                                                                  : 0,
-                                                            100
+                                                    <HStack gap={1}>
+                                                        {/* Holiday Indicator */}
+                                                        {getHolidaysByDate(
+                                                            day.date
+                                                        ).length > 0 && (
+                                                            <FaStar
+                                                                size={8}
+                                                                color="gold"
+                                                                title={`חגים: ${getHolidaysByDate(
+                                                                    day.date
+                                                                )
+                                                                    .map(
+                                                                        (h) =>
+                                                                            h.nameHebrew
+                                                                    )
+                                                                    .join(
+                                                                        ', '
+                                                                    )}`}
+                                                            />
                                                         )}
-                                                        size="xs"
-                                                        w="full"
-                                                        colorPalette={getOccupancyColorPalette(
-                                                            day.quota
-                                                                ? capacityData[
-                                                                      day.date
-                                                                  ]
-                                                                      ?.occupancyRate ||
-                                                                      0
-                                                                : day.currentOccupancy >
-                                                                    0
-                                                                  ? 100
-                                                                  : 0
+                                                        {/* Attendance Status Indicator - Only show if attendance was reported */}
+                                                        {attendanceSummary?.[
+                                                            day.date
+                                                        ]?.managerReported && (
+                                                            <FaCheckCircle
+                                                                size={8}
+                                                                color="green"
+                                                                title={`נוכחות: ${attendanceSummary[day.date].attendanceRate}%`}
+                                                            />
                                                         )}
-                                                    >
-                                                        <ProgressBar />
-                                                    </ProgressRoot>
+                                                        {/* Unapproved Reserve Days Warning */}
+                                                        {attendanceSummary?.[
+                                                            day.date
+                                                        ]
+                                                            ?.hasUnapprovedReserveDays && (
+                                                            <UnapprovedReserveDaysWarning
+                                                                unapprovedEmployees={
+                                                                    attendanceSummary[
+                                                                        day.date
+                                                                    ]
+                                                                        .unapprovedEmployees
+                                                                }
+                                                                iconSize={8}
+                                                            />
+                                                        )}
+                                                    </HStack>
+                                                </HStack>
 
-                                                    {/* External funding count */}
-                                                    {externalOccupancy[
+                                                {(day.quota ||
+                                                    day.currentOccupancy > 0 ||
+                                                    externalOccupancy[
                                                         day.date
-                                                    ] > 0 && (
+                                                    ] > 0) && (
+                                                    <VStack
+                                                        align="start"
+                                                        gap={1}
+                                                        w="full"
+                                                    >
+                                                        {/* Top: (assigned)/(capacity) (percent) - Internal funding */}
                                                         <Text
-                                                            fontSize="xs"
-                                                            textAlign="end"
+                                                            fontSize="2xs"
+                                                            fontWeight="semibold"
+                                                            textAlign="center"
                                                             w="full"
                                                         >
-                                                            מימון חיצוני:
-                                                            {
-                                                                externalOccupancy[
-                                                                    day.date
-                                                                ]
-                                                            }
+                                                            {formatQuotaDisplay(
+                                                                day.currentOccupancy,
+                                                                day.quota || 0,
+                                                                day.quota
+                                                                    ? capacityData[
+                                                                          day
+                                                                              .date
+                                                                      ]
+                                                                          ?.occupancyRate ||
+                                                                          0
+                                                                    : day.currentOccupancy >
+                                                                        0
+                                                                      ? 100
+                                                                      : 0
+                                                            )}
                                                         </Text>
-                                                    )}
 
-                                                    {externalOccupancy[
-                                                        day.date
-                                                    ] > 0 && (
+                                                        {/* Progress bar - Internal funding */}
+                                                        <ProgressRoot
+                                                            value={Math.min(
+                                                                day.quota
+                                                                    ? capacityData[
+                                                                          day
+                                                                              .date
+                                                                      ]
+                                                                          ?.occupancyRate ||
+                                                                          0
+                                                                    : day.currentOccupancy >
+                                                                        0
+                                                                      ? 100
+                                                                      : 0,
+                                                                100
+                                                            )}
+                                                            size="xs"
+                                                            w="full"
+                                                            colorPalette={getOccupancyColorPalette(
+                                                                day.quota
+                                                                    ? capacityData[
+                                                                          day
+                                                                              .date
+                                                                      ]
+                                                                          ?.occupancyRate ||
+                                                                          0
+                                                                    : day.currentOccupancy >
+                                                                        0
+                                                                      ? 100
+                                                                      : 0
+                                                            )}
+                                                        >
+                                                            <ProgressBar />
+                                                        </ProgressRoot>
+
+                                                        {/* External funding count */}
+                                                        {externalOccupancy[
+                                                            day.date
+                                                        ] > 0 && (
+                                                            <Text
+                                                                fontSize="xs"
+                                                                textAlign="end"
+                                                                w="full"
+                                                            >
+                                                                מימון חיצוני:
+                                                                {
+                                                                    externalOccupancy[
+                                                                        day.date
+                                                                    ]
+                                                                }
+                                                            </Text>
+                                                        )}
+
                                                         <Text
                                                             fontSize="xs"
                                                             textAlign="end"
                                                             w="full"
                                                         >
                                                             סה״כ:
-                                                            {externalOccupancy[
+                                                            {capacityData[
                                                                 day.date
-                                                            ] +
+                                                            ]
+                                                                ?.internalOccupancy +
                                                                 externalOccupancy[
                                                                     day.date
                                                                 ]}
                                                         </Text>
-                                                    )}
-                                                </VStack>
-                                            )}
-                                        </VStack>
-                                    </Box>
-                                ))}
+                                                    </VStack>
+                                                )}
+                                            </VStack>
+                                        </Box>
+                                    )
+                                })}
                             </Grid>
                         ))}
                     </VStack>

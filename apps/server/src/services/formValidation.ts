@@ -215,6 +215,7 @@ class FormValidationService {
         const existingSubmissions = await FormSubmissions.find({
             $and: [
                 conditions,
+                { isDeleted: false },
                 // Add OR conditions for object vs direct value matching
                 ...fields.map((fieldPath: string) => {
                     const value = this.getNestedValue(formData, fieldPath)
@@ -314,6 +315,7 @@ class FormValidationService {
 
         const existingReservations = await FormSubmissions.find({
             formName: 'Reserve Days Management',
+            isDeleted: false,
             $and: [
                 {
                     $or: [

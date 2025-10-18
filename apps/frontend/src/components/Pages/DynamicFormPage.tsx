@@ -27,9 +27,14 @@ import { IForm } from '@/types/fieldsType'
 interface DynamicFormPageProps {
     formId: string
     formName: string
+    displayName: string
 }
 
-export function DynamicFormPage({ formId, formName }: DynamicFormPageProps) {
+export function DynamicFormPage({
+    formId,
+    formName,
+    displayName,
+}: DynamicFormPageProps) {
     // const [searchTerm, setSearchTerm] = useState('')
     const [searchParams] = useSearchParams()
     const navigate = useNavigate()
@@ -87,10 +92,16 @@ export function DynamicFormPage({ formId, formName }: DynamicFormPageProps) {
         rowData: Record<string, unknown>
     ) => {
         if (action === 'view') {
-            const editPath = generateEditPath(formName, formId, rowData._id as string)
+            const editPath = generateEditPath(
+                formName,
+                formId,
+                rowData._id as string
+            )
             // Preserve current search parameters (like page number)
             const searchParamsString = searchParams.toString()
-            const fullPath = searchParamsString ? `${editPath}?${searchParamsString}` : editPath
+            const fullPath = searchParamsString
+                ? `${editPath}?${searchParamsString}`
+                : editPath
             navigate(fullPath)
         }
     }
@@ -145,8 +156,8 @@ export function DynamicFormPage({ formId, formName }: DynamicFormPageProps) {
     return (
         <Box p={6}>
             <PageHeader
-                title={formName}
-                description={`Manage ${formName.toLowerCase()} records`}
+                title={displayName}
+                description={` ${displayName} `}
                 action={{
                     label: `Add ${formName}`,
                     onClick: handleAddNew,

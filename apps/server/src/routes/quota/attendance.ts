@@ -22,6 +22,7 @@ router.put(
             // Find any form submission where this employee has attendance data within date range
             const reservation = await FormSubmissions.findOne({
                 'formData.employeeName._id': employeeId,
+                isDeleted: false,
                 $or: [
                     {
                         'formData.startDate': { $lte: date },
@@ -200,6 +201,7 @@ router.post(
                     const reservation = await FormSubmissions.findOne({
                         'formData.employeeName._id': employeeId,
                         'formData.attendance': { $exists: true },
+                        isDeleted: false,
                     })
 
                     if (!reservation) {
@@ -269,9 +271,9 @@ router.get(
         try {
             const { startDate, endDate } = req.params
 
-            // Find all reservations that overlap with the date range
+            // Find all reservations that overlap with the date range (generic for all forms)
             const reservations = await FormSubmissions.find({
-                formName: 'Reserve%20Days%20Management',
+                isDeleted: false,
                 $or: [
                     // Case 1: Reservation spans across the requested range
                     {
@@ -443,6 +445,7 @@ router.get(
             const employeeReservations = await FormSubmissions.find({
                 'formData.employeeName._id': employeeId,
                 'formData.attendance': { $exists: true },
+                isDeleted: false,
             }).lean()
 
             if (!employeeReservations || employeeReservations.length === 0) {

@@ -4,6 +4,7 @@ import { Request, Response, Router } from 'express'
 import logger from '../../config/logger'
 import { asyncHandler } from '../../middleware'
 import { hasMoreThan2ConsecutiveDays } from '../../utils'
+import { eachDayOfInterval, parseISO, format } from 'date-fns'
 
 const router = Router()
 
@@ -144,11 +145,18 @@ router.get(
                 await Quota.getQuotasWithOccupancyForRange(startDate, endDate)
 
             // Calculate summary statistics
+            // Calculate average quota across all days in the date range
+            const totalQuotaSum = quotasWithOccupancy.reduce(
+                (sum, item) => sum + (item.quota || 0),
+                0
+            )
+            const averageQuota =
+                quotasWithOccupancy.length > 0
+                    ? Math.round(totalQuotaSum / quotasWithOccupancy.length)
+                    : 0
+
             const summary = {
-                totalQuotas: quotasWithOccupancy.reduce(
-                    (sum, item) => sum + (item.quota || 0),
-                    0
-                ),
+                averageQuota,
                 totalOccupancy: quotasWithOccupancy.reduce(
                     (sum, item) => sum + item.currentOccupancy,
                     0
@@ -195,6 +203,7 @@ router.get(
 
             // Find all Reserve Days Management form submissions that include this date
             const reservations = await FormSubmissions.find({
+                isDeleted: false,
                 $or: [
                     // Date falls within startDate and endDate range
                     {
@@ -219,10 +228,10 @@ router.get(
                 .map((r: any) => r.formData.employeeName?._id)
                 .filter((id: any) => id)
 
-            // Fetch full employee data from the Personnel form
+            // Fetch full employee data from the personnel form
             const employeeRecords = await FormSubmissions.find({
                 _id: { $in: employeeDocIds },
-                formName: 'Personnel',
+                isDeleted: false,
             }).lean()
 
             // Create a map of employee data by document ID
@@ -272,7 +281,17 @@ router.get(
                 }
 
                 // Check if employee has more than 2 consecutive reserve days
-                const reserveDaysArray = formData.reserveDays || []
+                // Generate all dates between startDate and endDate for this reservation
+                const reserveDaysArray: string[] = []
+                if (formData.startDate && formData.endDate) {
+                    const dates = eachDayOfInterval({
+                        start: parseISO(formData.startDate),
+                        end: parseISO(formData.endDate),
+                    })
+                    reserveDaysArray.push(
+                        ...dates.map((date) => format(date, 'yyyy-MM-dd'))
+                    )
+                }
                 const hasConsecutiveDays =
                     hasMoreThan2ConsecutiveDays(reserveDaysArray)
 
@@ -297,7 +316,7 @@ router.get(
                         formData.attendance &&
                         formData.attendance[date] === true, // Check saved attendance data
                     workDays: [], // Could be calculated from the date range
-                    reserveDays: formData.reserveDays || [],
+                    reserveDays: reserveDaysArray,
                     requestStatus: formData.requestStatus,
                     fundingSource: formData.fundingSource || '',
                 }

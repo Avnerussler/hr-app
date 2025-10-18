@@ -1,299 +1,13 @@
 import { Request, Response, Router } from 'express'
-import { FormSubmissions, FormFields } from '../../models'
+import { FormSubmissions } from '../../models'
 import logger from '../../config/logger'
 import mongoose from 'mongoose'
-import { formValidationService } from '../../services/formValidation'
+import { bidirectionalSyncService } from '../../services/bidirectionalSync'
+import { transformFormData } from '../../utils'
 
 const router = Router()
 
 import { validate, commonSchemas, asyncHandler } from '../../middleware'
-
-const transformFormData = async (formData: any, formId: string) => {
-    try {
-        logger.info(`Transforming form data for formId: ${formId}`)
-
-        // Validate inputs
-        if (!formData || typeof formData !== 'object') {
-            logger.warn('Invalid formData provided')
-            return formData
-        }
-
-        if (!formId || !mongoose.Types.ObjectId.isValid(formId)) {
-            logger.warn(`Invalid formId provided: ${formId}`)
-            return formData
-        }
-
-        // Get form field definitions
-        const formDefinition = await FormFields.findById(formId)
-        if (!formDefinition) {
-            logger.warn(`Form definition not found for formId: ${formId}`)
-            return formData
-        }
-
-        logger.info(`Found form definition: ${formDefinition.formName}`)
-
-        // Skip transformation if no sections
-        if (!formDefinition.sections || formDefinition.sections.length === 0) {
-            logger.info('No sections found in form definition')
-            return formData
-        }
-
-        const transformedData = { ...formData }
-
-        // Flatten all fields from all sections
-        const allFields = formDefinition.sections.flatMap(
-            (section) => section.fields || []
-        )
-
-        logger.info(`Found ${allFields.length} total fields`)
-
-        // Filter only fields with foreign relationships that have values
-        const foreignFields = allFields.filter(
-            (field) =>
-                field &&
-                field.foreignFormName &&
-                (field.foreignField || field.foreignFields) &&
-                field.name &&
-                formData[field.name] !== undefined &&
-                formData[field.name] !== null &&
-                formData[field.name] !== ''
-        )
-
-        logger.info(`Found ${foreignFields.length} foreign fields with values`)
-
-        if (foreignFields.length === 0) {
-            logger.info('No foreign fields to transform')
-            return formData
-        }
-
-        // Process each foreign field
-        for (const field of foreignFields) {
-            try {
-                logger.info(`Processing field: ${field.name} (${field.type})`)
-                const fieldValue = formData[field.name]
-
-                if (
-                    field.type === 'select' ||
-                    field.type === 'selectAutocomplete'
-                ) {
-                    // Single selection
-                    if (
-                        typeof fieldValue === 'string' &&
-                        mongoose.Types.ObjectId.isValid(fieldValue)
-                    ) {
-                        logger.info(
-                            `Looking up single value for ${field.name}: ${fieldValue}`
-                        )
-                        const doc = await FormSubmissions.findOne({
-                            _id: fieldValue,
-                            formName: field.foreignFormName,
-                        }).lean()
-
-                        const foreignField = field.foreignField
-                        if (
-                            doc?.formData &&
-                            foreignField &&
-                            doc.formData[foreignField]
-                        ) {
-                            transformedData[field.name] = {
-                                _id: fieldValue,
-                                display: doc.formData[foreignField],
-                            }
-                            logger.info(
-                                `Transformed ${field.name}: ${doc.formData[foreignField]}`
-                            )
-                        } else {
-                            logger.warn(
-                                `No data found for ${field.name} with id ${fieldValue}`
-                            )
-                        }
-                    }
-                } else if (field.type === 'multipleSelect') {
-                    // Multiple selection
-                    if (Array.isArray(fieldValue)) {
-                        const validIds = fieldValue.filter(
-                            (id) =>
-                                typeof id === 'string' &&
-                                mongoose.Types.ObjectId.isValid(id)
-                        )
-
-                        if (validIds.length > 0) {
-                            logger.info(
-                                `Looking up multiple values for ${field.name}: ${validIds}`
-                            )
-                            const docs = await FormSubmissions.find({
-                                _id: { $in: validIds },
-                                formName: field.foreignFormName,
-                            }).lean()
-
-                            const foreignField = field.foreignField
-                            transformedData[field.name] = validIds.map((id) => {
-                                const doc = docs.find(
-                                    (d) => d._id.toString() === id
-                                )
-                                return {
-                                    _id: id,
-                                    display:
-                                        (doc?.formData &&
-                                            foreignField &&
-                                            doc.formData[foreignField]) ||
-                                        id,
-                                }
-                            })
-                            logger.info(
-                                `Transformed ${field.name} with ${docs.length} matches`
-                            )
-                        }
-                    }
-                } else if (field.type === 'radio') {
-                    // Radio selection
-                    if (
-                        typeof fieldValue === 'string' &&
-                        mongoose.Types.ObjectId.isValid(fieldValue)
-                    ) {
-                        logger.info(
-                            `Looking up radio value for ${field.name}: ${fieldValue}`
-                        )
-                        const doc = await FormSubmissions.findOne({
-                            _id: fieldValue,
-                            formName: field.foreignFormName,
-                        }).lean()
-
-                        const foreignField = field.foreignField
-                        if (
-                            doc?.formData &&
-                            foreignField &&
-                            doc.formData[foreignField]
-                        ) {
-                            transformedData[field.name] = {
-                                _id: fieldValue,
-                                display: doc.formData[foreignField],
-                            }
-                            logger.info(
-                                `Transformed ${field.name}: ${doc.formData[foreignField]}`
-                            )
-                        } else {
-                            logger.warn(
-                                `No data found for radio ${field.name} with id ${fieldValue}`
-                            )
-                        }
-                    }
-                } else if (field.type === 'enhancedSelect') {
-                    // Enhanced single selection with multiple foreign fields
-                    if (
-                        typeof fieldValue === 'string' &&
-                        mongoose.Types.ObjectId.isValid(fieldValue)
-                    ) {
-                        logger.info(
-                            `Looking up enhanced select value for ${field.name}: ${fieldValue}`
-                        )
-                        const doc = await FormSubmissions.findOne({
-                            _id: fieldValue,
-                            formName: field.foreignFormName,
-                        }).lean()
-
-                        if (doc?.formData && field.foreignFields) {
-                            // Build metadata object
-                            const metadata: any = {}
-                            field.foreignFields.forEach((fieldName: string) => {
-                                metadata[fieldName] = doc.formData[fieldName]
-                            })
-
-                            // Build display string from all foreign fields, filtering out booleans and empty values
-                            const displayParts = field.foreignFields
-                                .map((fieldName) => doc.formData[fieldName])
-                                .filter(value =>
-                                    value !== null &&
-                                    value !== undefined &&
-                                    value !== '' &&
-                                    typeof value !== 'boolean'
-                                )
-                                .map(value => String(value))
-
-                            if (displayParts.length > 0) {
-                                transformedData[field.name] = {
-                                    _id: fieldValue,
-                                    display: displayParts.join(' '),
-                                    metadata
-                                }
-                                logger.info(
-                                    `Transformed ${field.name}: ${displayParts.join(' ')}`
-                                )
-                            }
-                        } else {
-                            logger.warn(
-                                `No data found for enhanced select ${field.name} with id ${fieldValue}`
-                            )
-                        }
-                    }
-                } else if (field.type === 'enhancedMultipleSelect') {
-                    // Enhanced multiple selection with multiple foreign fields
-                    if (Array.isArray(fieldValue)) {
-                        const validIds = fieldValue.filter(
-                            (id) =>
-                                typeof id === 'string' &&
-                                mongoose.Types.ObjectId.isValid(id)
-                        )
-
-                        if (validIds.length > 0) {
-                            logger.info(
-                                `Looking up enhanced multiple select values for ${field.name}: ${validIds}`
-                            )
-                            const docs = await FormSubmissions.find({
-                                _id: { $in: validIds },
-                                formName: field.foreignFormName,
-                            }).lean()
-
-                            transformedData[field.name] = validIds.map((id) => {
-                                const doc = docs.find(
-                                    (d) => d._id.toString() === id
-                                )
-                                if (doc?.formData && field.foreignFields) {
-                                    const displayParts = field.foreignFields
-                                        .map((fieldName) => doc.formData[fieldName])
-                                        .filter(value =>
-                                            value !== null &&
-                                            value !== undefined &&
-                                            value !== '' &&
-                                            typeof value !== 'boolean'
-                                        )
-                                        .map(value => String(value))
-
-                                    return {
-                                        _id: id,
-                                        display:
-                                            displayParts.length > 0
-                                                ? displayParts.join(' ')
-                                                : id,
-                                    }
-                                }
-                                return {
-                                    _id: id,
-                                    display: id,
-                                }
-                            })
-                            logger.info(
-                                `Transformed ${field.name} with ${docs.length} matches`
-                            )
-                        }
-                    }
-                }
-            } catch (fieldError) {
-                logger.error(
-                    `Error processing field ${field.name}:`,
-                    fieldError
-                )
-                // Continue with other fields
-            }
-        }
-
-        logger.info('Form data transformation completed successfully')
-        return transformedData
-    } catch (error) {
-        logger.error('Error transforming form data:', error)
-        return formData
-    }
-}
 
 router.post(
     '/',
@@ -333,14 +47,23 @@ router.post(
 
         logger.info('Creating form submission with data:', transformedFormData)
 
-        const form = await FormSubmissions.create({
+        const form = (await FormSubmissions.create({
             formData: transformedFormData,
             formId,
             formName,
-        })
+        })) as mongoose.Document & { _id: mongoose.Types.ObjectId }
 
         await form.save()
         logger.info('Form submission saved successfully')
+
+        // Handle bidirectional sync after successful creation
+        await bidirectionalSyncService.handleBidirectionalSyncOnCreate(
+            formId,
+            formName,
+            form._id.toString(),
+            transformedFormData
+        )
+
         res.status(201).json({ form })
     })
 )

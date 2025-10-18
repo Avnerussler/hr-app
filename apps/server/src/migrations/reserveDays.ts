@@ -1,16 +1,17 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.0.3'
+const CURRENT_VERSION = '1.0.7'
 
 export const createReserveDaysForm = async () => {
     try {
-        const formName = 'Reserve Days Management'
+        const formName = 'reserve_days_management'
         const existingForm = await FormFields.findOne({ formName })
 
         const formData = {
             version: CURRENT_VERSION,
             description: 'Reserve Days Management',
+            displayName: 'צווי מילואים',
             icon: 'FiCalendar',
             sections: [
                 {
@@ -25,7 +26,7 @@ export const createReserveDaysForm = async () => {
                             required: true,
                             defaultValue: '',
                             errorMessage: 'שם העובד הוא שדה חובה',
-                            foreignFormName: 'Personnel',
+                            foreignFormName: 'personnel',
                             foreignFields: [
                                 'firstName',
                                 'lastName',
@@ -46,7 +47,7 @@ export const createReserveDaysForm = async () => {
                             type: 'date',
                             label: 'תאריך סיום',
                             placeholder: 'בחר תאריך סיום',
-                            required: true,
+                            required: false,
                             defaultValue: '',
                             errorMessage: 'תאריך סיום הוא שדה חובה',
                         },
@@ -87,8 +88,16 @@ export const createReserveDaysForm = async () => {
                             defaultValue: '',
                             errorMessage: 'סוג צו הוא שדה חובה',
                             items: [
-                                { value: 'open', label: 'צו פתוח' },
-                                { value: 'daily', label: 'חד יומי' },
+                                { value: '8open', label: 'צו 8 פתוח' },
+                                { value: '8daily', label: 'צו 8 חד יומי' },
+                                {
+                                    value: 'routineOpen',
+                                    label: 'יממ שיגרה פתוח',
+                                },
+                                {
+                                    value: 'routineDaily',
+                                    label: 'יממ שיגרה חד יומי',
+                                },
                             ],
                         },
 
