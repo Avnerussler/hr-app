@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.0.6'
+const CURRENT_VERSION = '1.0.7'
 
 export const createReserveDaysForm = async () => {
     try {
@@ -47,7 +47,7 @@ export const createReserveDaysForm = async () => {
                             type: 'date',
                             label: 'תאריך סיום',
                             placeholder: 'בחר תאריך סיום',
-                            required: true,
+                            required: false,
                             defaultValue: '',
                             errorMessage: 'תאריך סיום הוא שדה חובה',
                         },
