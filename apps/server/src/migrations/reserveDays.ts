@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.0.7'
+const CURRENT_VERSION = '1.0.11'
 
 export const createReserveDaysForm = async () => {
     try {
@@ -180,6 +180,18 @@ export const createReserveDaysForm = async () => {
                             required: false,
                             defaultValue: '',
                         },
+                        {
+                            name: 'isActive',
+                            type: 'radio',
+                            label: 'סטטוס',
+                            placeholder: 'סטטוס',
+                            required: false,
+                            defaultValue: true,
+                            items: [
+                                { value: true, label: 'פעיל' },
+                                { value: false, label: 'לא פעיל' },
+                            ],
+                        },
                     ],
                 },
             ],
@@ -191,6 +203,46 @@ export const createReserveDaysForm = async () => {
                 'requestStatus',
                 'startDate',
                 'endDate',
+                'isActive',
+            ],
+            filters: [
+                {
+                    id: 'isActiveFilter',
+                    label: 'סטטוס',
+                    fieldName: 'isActive',
+                    type: 'select',
+                    placeholder: 'בחר סטטוס',
+                    options: [
+                        { value: 'all', label: 'כל הצווים' },
+                        { value: 'true', label: 'צווים פעילים' },
+                        { value: 'false', label: 'צווים לא פעילים' },
+                    ],
+                    defaultValue: 'all',
+                },
+                {
+                    id: 'requestStatus',
+                    label: 'סטטוס בקשה',
+                    fieldName: 'requestStatus',
+                    type: 'select',
+                    placeholder: 'בחר סטטוס בקשה',
+                    options: [
+                        {
+                            value: 'pending',
+                            label: 'ממתין לטיפול',
+                            name: 'pending',
+                        },
+                        {
+                            value: 'approved',
+                            label: 'אושר',
+                            name: 'approved',
+                        },
+                        {
+                            value: 'denied',
+                            label: 'נדחה',
+                            name: 'denied',
+                        },
+                    ],
+                },
             ],
         }
 

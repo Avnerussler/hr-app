@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.1.22'
+const CURRENT_VERSION = '1.1.27'
 
 export const createPersonalForm = async () => {
     try {
@@ -556,6 +556,46 @@ export const createPersonalForm = async () => {
                 'talentAndSkills',
                 'assignedProjects',
                 'isActive',
+            ],
+            filters: [
+                {
+                    id: 'isActiveFilter',
+                    label: 'סטטוס',
+                    fieldName: 'isActive',
+                    type: 'select',
+                    placeholder: 'בחר סטטוס',
+                    options: [
+                        { value: 'all', label: 'הכל' },
+                        { value: 'true', label: 'פעיל' },
+                        { value: 'false', label: 'לא פעיל' },
+                    ],
+                    defaultValue: 'all',
+                },
+                // {
+                //     id: 'assignedProjectsFilter',
+                //     label: 'פרויקט',
+                //     fieldName: 'assignedProjects',
+                //     type: 'select',
+                //     placeholder: 'בחר פרויקט',
+                //     options: [],
+                //     defaultValue: 'all',
+                //     foreignFormName: 'project_management',
+                //     foreignField: 'projectName',
+                // },
+                {
+                    id: 'reserveCategoryFilter',
+                    label: 'סוג העסקה',
+                    fieldName: 'reserveCategory',
+                    type: 'multiSelect',
+                    placeholder: 'בחר סוג העסקה',
+                    options: [
+                        { value: 'reserves', label: 'מילואים' },
+                        { value: 'consultant', label: 'יועץ' },
+                        { value: 'permanentService', label: 'קבע' },
+                        { value: 'mandatoryMilitaryService', label: 'סדיר' },
+                        { value: 'Other', label: 'אחר' },
+                    ],
+                },
             ],
         }
 

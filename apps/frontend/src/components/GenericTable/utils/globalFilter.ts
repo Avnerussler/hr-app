@@ -36,15 +36,31 @@ export const globalFilter: FilterFn<FormFields> = (
         // Convert value to searchable text
         let searchableText = ''
 
-        if (options.length > 0 && Array.isArray(rawValue)) {
+        // Handle enhancedSelect/enhancedMultipleSelect format: {_id, display, metadata}
+        if (
+            typeof rawValue === 'object' &&
+            rawValue != null &&
+            !Array.isArray(rawValue) &&
+            'display' in rawValue
+        ) {
+            const foreignValue = rawValue as { _id: string; display: string; metadata?: Record<string, any> }
+            searchableText = foreignValue.display
+        } else if (options.length > 0 && Array.isArray(rawValue)) {
             // Handle multipleSelect with array values
-            const matchingLabels = rawValue
-                .map(
-                    (val: string) =>
-                        options.find((option) => option.value === val)?.label
-                )
-                .filter(Boolean)
-            searchableText = matchingLabels.join(' ')
+            // Check if it's enhancedMultipleSelect format (array of {_id, display})
+            if (rawValue.length > 0 && typeof rawValue[0] === 'object' && rawValue[0] != null && 'display' in rawValue[0]) {
+                const foreignValues = rawValue as Array<{ _id: string; display: string; metadata?: Record<string, any> }>
+                searchableText = foreignValues.map(v => v.display).join(' ')
+            } else {
+                // Standard multipleSelect with string values
+                const matchingLabels = rawValue
+                    .map(
+                        (val: string) =>
+                            options.find((option) => option.value === val)?.label
+                    )
+                    .filter(Boolean)
+                searchableText = matchingLabels.join(' ')
+            }
         } else if (options.length > 0 && typeof rawValue === 'string') {
             // Handle select fields
             const matchingOption = options.find((option) =>

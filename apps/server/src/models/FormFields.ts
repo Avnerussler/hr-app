@@ -134,6 +134,35 @@ const BusinessRuleSchema = new Schema(
     { _id: false }
 )
 
+// Subschema for filter options
+const FilterOptionSchema = new Schema(
+    {
+        value: { type: String, required: true },
+        label: { type: String, required: true },
+    },
+    { _id: false }
+)
+
+// Subschema for table filters
+const TableFilterSchema = new Schema(
+    {
+        id: { type: String, required: true },
+        label: { type: String, required: true },
+        fieldName: { type: String, required: true },
+        type: {
+            type: String,
+            required: true,
+            enum: ['select', 'multiSelect', 'radio', 'switch'],
+        },
+        options: [FilterOptionSchema],
+        defaultValue: { type: Schema.Types.Mixed },
+        placeholder: { type: String },
+        foreignFormName: { type: String },
+        foreignField: { type: String },
+    },
+    { _id: false }
+)
+
 // Subschema for sections
 const SectionSchema = new Schema(
     {
@@ -156,6 +185,7 @@ const FormSchema: Schema = new Schema<TFormFields>(
         metrics: [MetricConfigSchema],
         overviewFields: { type: [String], default: [] },
         businessRules: [BusinessRuleSchema],
+        filters: [TableFilterSchema],
     },
     { timestamps: true }
 )

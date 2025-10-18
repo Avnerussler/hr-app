@@ -57,22 +57,6 @@ export function DynamicFormPage({
         metricsConfig
     )
 
-    // const statusOptions = createListCollection({
-    //     items: [
-    //         { value: 'all', label: 'All Status' },
-    //         { value: 'active', label: 'Active' },
-    //         { value: 'inactive', label: 'Inactive' },
-    //     ],
-    // })
-
-    // const typeOptions = createListCollection({
-    //     items: [
-    //         { value: 'all', label: 'All Types' },
-    //         { value: 'consultant', label: 'Consultant' },
-    //         { value: 'reserve', label: 'Reserve' },
-    //     ],
-    // })
-
     const { formState, itemId } = useRouteContext()
     const IS_DRAWER_OPEN = useDrawerState()
 
@@ -113,24 +97,6 @@ export function DynamicFormPage({
     const onClose = () => {
         navigate(-1)
     }
-    // const filters: Filter[] = [
-    //     {
-    //         label: 'Status',
-    //         collection: statusOptions,
-    //         onValueChange: (value: FilterOption[] | { value: string[] }) => {
-    //             // Filter logic handled by GenericTable
-    //         },
-    //         placeholder: 'Select status',
-    //     },
-    //     {
-    //         label: 'Type',
-    //         collection: typeOptions,
-    //         onValueChange: (value: FilterOption[] | { value: string[] }) => {
-    //             // Filter logic handled by GenericTable
-    //         },
-    //         placeholder: 'Select type',
-    //     },
-    // ]
 
     // Icon mapping for metrics
     const iconMap: Record<string, any> = {
@@ -193,8 +159,10 @@ export function DynamicFormPage({
             /> */}
 
             <GenericTable
+                key={formId}
                 id={formId}
                 onRowClick={(rowId) => handleRowAction('view', { _id: rowId })}
+                filters={formFields?.filters}
             />
 
             <DetailsDrawer

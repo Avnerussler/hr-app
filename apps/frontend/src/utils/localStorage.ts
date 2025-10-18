@@ -109,6 +109,7 @@ export interface TableState {
     sorting: { id: string; desc: boolean }[]
     columnFilters: { id: string; value: unknown }[]
     globalFilter: string
+    tableFilters: Record<string, string | string[] | boolean>
 }
 
 export const createTableStateManager = (tableId: string) => {
@@ -130,6 +131,7 @@ export const createTableStateManager = (tableId: string) => {
                 sorting: [],
                 columnFilters: [],
                 globalFilter: '',
+                tableFilters: {},
             }
 
             return (
