@@ -154,7 +154,7 @@ export const addMetricsToProjectForm = async () => {
         )
 
         const result = await FormFields.updateOne(
-            { formName: 'Project Management' },
+            { formName: 'project_management' },
             {
                 $set: {
                     metrics: projectMetricsConfig,
@@ -182,7 +182,7 @@ export const addMetricsToPersonnelForm = async () => {
         logger.info('Adding metrics configuration to Personnel form...')
 
         const result = await FormFields.updateOne(
-            { formName: 'Personnel' }, // Hebrew name for Personnel
+            { formName: 'personnel' }, // Hebrew name for Personnel
             {
                 $set: {
                     metrics: personnelMetricsConfig,
