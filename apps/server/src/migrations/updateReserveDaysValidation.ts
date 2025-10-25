@@ -6,8 +6,8 @@ export const updateReserveDaysValidation = async () => {
         logger.info('Starting Reserve Days Management validation update...')
 
         // Find the Reserve Days Management form
-        const reserveDaysForm = await FormFields.findOne({ 
-            formName: 'Reserve Days Management' 
+        const reserveDaysForm = await FormFields.findOne({
+            formName: 'reserve_days_management',
         })
 
         if (!reserveDaysForm) {
@@ -19,15 +19,17 @@ export const updateReserveDaysValidation = async () => {
         const businessRule = {
             id: 'reserveDaysOverlap',
             name: 'Prevent Overlapping Reserve Days',
-            description: 'Prevents the same employee from being reserved for overlapping date periods',
+            description:
+                'Prevents the same employee from being reserved for overlapping date periods',
             ruleType: 'custom' as const,
             config: {
                 employeeField: 'employeeName',
                 startDateField: 'startDate',
-                endDateField: 'endDate'
+                endDateField: 'endDate',
             },
-            errorMessage: 'This employee already has reserve days scheduled for overlapping dates',
-            enabled: true
+            errorMessage:
+                'This employee already has reserve days scheduled for overlapping dates',
+            enabled: true,
         }
 
         // Update the form to include business rules if it doesn't exist
@@ -43,7 +45,9 @@ export const updateReserveDaysValidation = async () => {
         if (!existingRule) {
             reserveDaysForm.businessRules.push(businessRule)
             await reserveDaysForm.save()
-            logger.info('Successfully added Reserve Days overlap validation rule')
+            logger.info(
+                'Successfully added Reserve Days overlap validation rule'
+            )
         } else {
             logger.info('Reserve Days overlap validation rule already exists')
         }
@@ -58,22 +62,27 @@ export const updateReserveDaysValidation = async () => {
                     // Ensure dates are not in the past
                     field.validation.customValidation = 'futureDate'
                 }
-                
+
                 if (field.name === 'orderNumber' && field.type === 'text') {
                     if (!field.validation) {
                         field.validation = {}
                     }
                     field.validation.pattern = '^[A-Za-z0-9-]+$'
-                    field.errorMessage = 'Order number can only contain letters, numbers, and hyphens'
+                    field.errorMessage =
+                        'Order number can only contain letters, numbers, and hyphens'
                 }
             })
         })
 
         await reserveDaysForm.save()
-        logger.info('Reserve Days Management form validation updated successfully')
-
+        logger.info(
+            'Reserve Days Management form validation updated successfully'
+        )
     } catch (error) {
-        logger.error('Error updating Reserve Days Management validation:', error)
+        logger.error(
+            'Error updating Reserve Days Management validation:',
+            error
+        )
         throw error
     }
 }

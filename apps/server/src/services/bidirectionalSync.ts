@@ -109,7 +109,6 @@ export async function handleBidirectionalSyncOnCreate(
  */
 export async function handleBidirectionalSyncOnUpdate(
     formId: string,
-    formName: string,
     submissionId: string,
     oldFormData: any,
     newFormData: any

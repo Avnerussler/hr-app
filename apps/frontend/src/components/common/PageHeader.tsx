@@ -27,52 +27,53 @@ export function PageHeader({
     const allActions = actions || (action ? [action] : [])
 
     return (
-        <Flex justify="space-between" align="center" mb={6}>
-            <Box>
-                <HStack gap={3} align="center">
-                    {Icon && (
-                        <Box
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="center"
-                            w="48px"
-                            h="48px"
-                            bg="primary"
-                            borderRadius="lg"
-                            shadow="sm"
-                        >
-                            <Icon
-                                size="24px"
-                                color="var(--primary-foreground)"
-                            />
-                        </Box>
-                    )}
-                    <Box>
-                        <Heading size="lg">{title}</Heading>
-                        {description && (
-                            <Text color="gray.500">{description}</Text>
-                        )}
-                    </Box>
-                </HStack>
-            </Box>
-            {allActions.length > 0 && (
-                <HStack gap={2}>
-                    {allActions.map((actionItem, index) => {
-                        const ActionIcon = actionItem.icon
-                        return (
-                            <Button
-                                key={index}
-                                onClick={actionItem.onClick}
-                                variant={actionItem.variant || 'solid'}
-                                disabled={actionItem.disabled}
+        <>
+            <Flex justify="space-between" align="center" mb={6}>
+                <Box>
+                    <HStack gap={3} align="center">
+                        {Icon && (
+                            <Box
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                w="48px"
+                                h="48px"
+                                bg="primary"
+                                borderRadius="lg"
+                                shadow="sm"
                             >
-                                {ActionIcon && <ActionIcon />}
-                                {actionItem.label}
-                            </Button>
-                        )
-                    })}
+                                <Icon
+                                    size="24px"
+                                    color="var(--primary-foreground)"
+                                />
+                            </Box>
+                        )}
+                        <Box>
+                            <Heading size="lg">{title}</Heading>
+                            {description && (
+                                <Text color="gray.500">{description}</Text>
+                            )}
+                        </Box>
+                    </HStack>
+                </Box>
+                <HStack gap={2}>
+                    {allActions.length > 0 &&
+                        allActions.map((actionItem, index) => {
+                            const ActionIcon = actionItem.icon
+                            return (
+                                <Button
+                                    key={index}
+                                    onClick={actionItem.onClick}
+                                    variant={actionItem.variant || 'solid'}
+                                    disabled={actionItem.disabled}
+                                >
+                                    {ActionIcon && <ActionIcon />}
+                                    {actionItem.label}
+                                </Button>
+                            )
+                        })}
                 </HStack>
-            )}
-        </Flex>
+            </Flex>
+        </>
     )
 }

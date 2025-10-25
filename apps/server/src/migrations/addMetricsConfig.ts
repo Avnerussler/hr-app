@@ -54,6 +54,59 @@ const projectMetricsConfig: MetricConfig[] = [
     },
 ]
 
+const reserveDaysMetricsConfig: MetricConfig[] = [
+    {
+        id: 'total',
+        title: 'סה"כ צווים',
+        icon: 'FaList',
+        color: 'blue.500',
+        type: 'count',
+        calculation: {
+            type: 'total',
+        },
+    },
+    {
+        id: 'pending',
+        title: 'ממתינים לאישור',
+        icon: 'FaHourglassHalf',
+        color: 'orange.500',
+        type: 'count',
+        calculation: {
+            type: 'filtered',
+            field: 'requestStatus',
+            value: 'pending',
+            operator: '=',
+        },
+    },
+    {
+        id: 'approved',
+        title: 'אושרו',
+        icon: 'FaCheck',
+        color: 'green.500',
+        type: 'count',
+        calculation: {
+            type: 'filtered',
+            field: 'requestStatus',
+            value: 'approved',
+            operator: '=',
+        },
+    },
+
+    {
+        id: 'denied',
+        title: 'נדחו',
+        icon: 'FaTimes',
+        color: 'red.600',
+        type: 'count',
+        calculation: {
+            type: 'filtered',
+            field: 'requestStatus',
+            value: 'denied',
+            operator: '=',
+        },
+    },
+]
+
 const personnelMetricsConfig: MetricConfig[] = [
     {
         id: 'active',
@@ -149,12 +202,45 @@ export const addMetricsToPersonnelForm = async () => {
     }
 }
 
+export const addMetricsToReserveDaysForm = async () => {
+    try {
+        logger.info(
+            'Adding metrics configuration to Reserve Days Management form...'
+        )
+
+        const result = await FormFields.updateOne(
+            { formName: 'reserve_days_management' },
+            {
+                $set: {
+                    metrics: reserveDaysMetricsConfig,
+                    updatedAt: new Date(),
+                },
+            }
+        )
+
+        if (result.matchedCount === 0) {
+            logger.info('Reserve Days Management form not found')
+            return
+        }
+
+        logger.info(
+            '✅ Successfully added metrics to Reserve Days Management form'
+        )
+    } catch (error) {
+        logger.error(
+            '❌ Error adding metrics to Reserve Days Management form:',
+            error
+        )
+    }
+}
+
 export const addMetricsToAllForms = async () => {
     try {
         logger.info('🚀 Starting metrics configuration migration...')
 
         await addMetricsToProjectForm()
         await addMetricsToPersonnelForm()
+        await addMetricsToReserveDaysForm()
 
         logger.info(
             '✅ Metrics configuration migration completed successfully!'

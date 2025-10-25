@@ -21,20 +21,28 @@ router.put(
 
             // Find any form submission where this employee has attendance data within date range
             const reservation = await FormSubmissions.findOne({
-                'formData.employeeName._id': employeeId,
                 isDeleted: false,
                 $or: [
+                    // Try both formats: object with _id and direct string
+                    { 'formData.employeeName._id': employeeId },
+                    { 'formData.employeeName': employeeId },
+                ],
+                $and: [
                     {
-                        'formData.startDate': { $lte: date },
-                        'formData.endDate': { $gte: date },
-                    },
-                    {
-                        'formData.startDate': date,
-                        'formData.endDate': { $exists: false },
-                    },
-                    {
-                        'formData.startDate': date,
-                        'formData.endDate': '',
+                        $or: [
+                            {
+                                'formData.startDate': { $lte: date },
+                                'formData.endDate': { $gte: date },
+                            },
+                            {
+                                'formData.startDate': date,
+                                'formData.endDate': { $exists: false },
+                            },
+                            {
+                                'formData.startDate': date,
+                                'formData.endDate': '',
+                            },
+                        ],
                     },
                 ],
             })
@@ -62,7 +70,9 @@ router.put(
                 quota.managerReportedAt = undefined
                 quota.managerReportedBy = undefined
                 await quota.save()
-                logger.info(`Manager report reset for date ${date} due to attendance change`)
+                logger.info(
+                    `Manager report reset for date ${date} due to attendance change`
+                )
             }
 
             res.status(200).json({
@@ -199,9 +209,11 @@ router.post(
                 try {
                     // Find any form submission where this employee has attendance data
                     const reservation = await FormSubmissions.findOne({
-                        'formData.employeeName._id': employeeId,
-                        'formData.attendance': { $exists: true },
                         isDeleted: false,
+                        $or: [
+                            { 'formData.employeeName._id': employeeId },
+                            { 'formData.employeeName': employeeId },
+                        ],
                     })
 
                     if (!reservation) {
@@ -271,7 +283,7 @@ router.get(
         try {
             const { startDate, endDate } = req.params
 
-            // Find all reservations that overlap with the date range (generic for all forms)
+            // Find all reservations that overlap with the date range
             const reservations = await FormSubmissions.find({
                 isDeleted: false,
                 $or: [
@@ -297,6 +309,42 @@ router.get(
                         'formData.endDate': '',
                     },
                 ],
+            }).lean()
+
+            // Get unique employee IDs to fetch personnel data
+            const employeeIds = [
+                ...new Set(
+                    reservations
+                        .map((r: any) => {
+                            const empName = r.formData.employeeName
+                            if (typeof empName === 'object' && empName?._id) {
+                                return empName._id.toString()
+                            } else if (typeof empName === 'string') {
+                                return empName
+                            }
+                            return null
+                        })
+                        .filter((id: any) => id)
+                ),
+            ]
+
+            // Fetch personnel records for all employees
+            const personnelRecords = await FormSubmissions.find({
+                _id: { $in: employeeIds },
+
+                isDeleted: false,
+            }).lean()
+
+            // Create a map of employee data by ID
+            const employeeDataMap = new Map()
+            personnelRecords.forEach((record: any) => {
+                const fullName = `${record.formData.firstName || ''} ${
+                    record.formData.lastName || ''
+                }`.trim()
+                employeeDataMap.set(
+                    record._id.toString(),
+                    fullName || 'עובד לא ידוע'
+                )
             })
 
             // Calculate attendance summary for each date
@@ -343,12 +391,20 @@ router.get(
                     ? new Date(formData.endDate)
                     : resStartDate
 
-                // Get employee name for error messages
-                const employeeName =
+                // Get employee ID and name from personnel data
+                let employeeId = null
+                if (
                     typeof formData.employeeName === 'object' &&
-                    formData.employeeName.display
-                        ? formData.employeeName.display
-                        : formData.employeeName || 'עובד לא ידוע'
+                    formData.employeeName?._id
+                ) {
+                    employeeId = formData.employeeName._id.toString()
+                } else if (typeof formData.employeeName === 'string') {
+                    employeeId = formData.employeeName
+                }
+
+                const employeeName = employeeId
+                    ? employeeDataMap.get(employeeId) || 'עובד לא ידוע'
+                    : 'עובד לא ידוע'
 
                 // Check if request status is not approved
                 const requestStatus = formData.requestStatus || 'pending'
@@ -370,8 +426,9 @@ router.get(
 
                         // Track unapproved reserve days
                         if (isNotApproved) {
-                            attendanceSummary[dateStr].hasUnapprovedReserveDays =
-                                true
+                            attendanceSummary[
+                                dateStr
+                            ].hasUnapprovedReserveDays = true
                             // Only add if not already in the list (same employee might appear multiple times)
                             if (
                                 !attendanceSummary[
@@ -440,12 +497,13 @@ router.get(
             const { employeeId } = req.params
             const limit = parseInt(req.query.limit as string) || 30
 
-            // Find all reservation records for this employee by matching employeeName._id
-            // (regardless of form name - more flexible)
+            // Find all reservation records for this employee
             const employeeReservations = await FormSubmissions.find({
-                'formData.employeeName._id': employeeId,
-                'formData.attendance': { $exists: true },
                 isDeleted: false,
+                $or: [
+                    { 'formData.employeeName._id': employeeId },
+                    { 'formData.employeeName': employeeId },
+                ],
             }).lean()
 
             if (!employeeReservations || employeeReservations.length === 0) {

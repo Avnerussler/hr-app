@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.0.11'
+const CURRENT_VERSION = '1.0.14'
 
 export const createReserveDaysForm = async () => {
     try {
@@ -124,6 +124,11 @@ export const createReserveDaysForm = async () => {
                                     label: 'נדחה',
                                     name: 'rejected',
                                 },
+                                {
+                                    value: 'amanGuard',
+                                    label: 'משמר אמ״ן',
+                                    name: 'amanGuard',
+                                },
                             ],
                         },
                         {
@@ -225,7 +230,13 @@ export const createReserveDaysForm = async () => {
                     fieldName: 'requestStatus',
                     type: 'select',
                     placeholder: 'בחר סטטוס בקשה',
+                    defaultValue: 'all',
                     options: [
+                        {
+                            value: 'all',
+                            label: 'כל הבקשות',
+                            name: 'all',
+                        },
                         {
                             value: 'pending',
                             label: 'ממתין לטיפול',

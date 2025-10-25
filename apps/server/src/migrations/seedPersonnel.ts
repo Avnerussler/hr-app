@@ -1,6 +1,8 @@
 import { FormSubmissions, FormFields } from '../models'
 import logger from '../config/logger'
 import { faker } from '@faker-js/faker'
+import { transformFormData } from '../utils'
+import { bidirectionalSyncService } from '../services/bidirectionalSync'
 
 const generateRandomPersonnelData = (index: number) => {
     const hebrewFirstNames = [
@@ -222,6 +224,165 @@ const generateRandomPersonnelData = (index: number) => {
     }
 }
 
+/**
+ * Create projects from personnel assignments
+ * This runs AFTER personnel have been seeded
+ * Uses transformFormData and bidirectionalSync for proper data handling
+ */
+const createProjectsFromAssignments = async (
+    projectAssignments: Map<string, string[]>
+) => {
+    try {
+        // Get the Project Management form
+        const projectForm = await FormFields.findOne({
+            formName: 'project_management',
+        })
+
+        if (!projectForm) {
+            logger.error('Project Management form not found')
+            return {
+                created: 0,
+                updated: 0,
+                errors: 0,
+            }
+        }
+
+        let created = 0
+        let updated = 0
+        let errors = 0
+
+        for (const [
+            projectName,
+            personnelIds,
+        ] of projectAssignments.entries()) {
+            try {
+                // Check if project already exists
+                const existingProject = await FormSubmissions.findOne({
+                    formName: 'project_management',
+                    'formData.projectName': projectName,
+                    isDeleted: false,
+                })
+
+                if (existingProject) {
+                    logger.info(
+                        `Project "${projectName}" already exists, updating with new personnel`
+                    )
+
+                    // Get current personnel IDs (extract from objects if they exist)
+                    const currentPersonnel =
+                        existingProject.formData.projectPersonnel || []
+                    const currentIds = currentPersonnel.map((p: any) =>
+                        typeof p === 'string' ? p : p._id || p
+                    )
+
+                    // Merge with new personnel IDs, removing duplicates
+                    const mergedIds = [
+                        ...new Set([...currentIds, ...personnelIds]),
+                    ]
+
+                    // Prepare updated form data with RAW IDs first
+                    const updatedFormData = {
+                        ...existingProject.formData,
+                        projectPersonnel: mergedIds,
+                    }
+
+                    // Transform to get proper display format
+                    const transformedFormData = await transformFormData(
+                        updatedFormData,
+                        projectForm._id.toString()
+                    )
+
+                    // Update the project with transformed data
+                    await FormSubmissions.updateOne(
+                        { _id: existingProject._id },
+                        {
+                            $set: {
+                                'formData.projectPersonnel':
+                                    transformedFormData.projectPersonnel,
+                            },
+                        }
+                    )
+
+                    // Handle bidirectional sync for the update
+                    await bidirectionalSyncService.handleBidirectionalSyncOnUpdate(
+                        projectForm._id.toString(),
+
+                        (existingProject._id as any).toString(),
+                        existingProject.formData,
+                        transformedFormData
+                    )
+
+                    logger.info(
+                        `Updated project "${projectName}" with ${personnelIds.length} new personnel (total: ${mergedIds.length})`
+                    )
+                    updated++
+                } else {
+                    logger.info(`Creating new project "${projectName}"`)
+
+                    // Create new project with raw IDs
+                    const projectManager = personnelIds[0] || null
+                    const projectPersonnel = personnelIds
+
+                    const rawFormData = {
+                        projectName: projectName,
+                        projectManager: projectManager,
+                        projectPersonnel: projectPersonnel,
+                        projectStatus: 'active',
+                    }
+
+                    // Transform the form data to include display values
+                    const transformedFormData = await transformFormData(
+                        rawFormData,
+                        projectForm._id.toString()
+                    )
+
+                    // Create the project submission with TRANSFORMED data
+                    const newProject = await FormSubmissions.create({
+                        formId: projectForm._id.toString(),
+                        formName: 'project_management',
+                        formData: transformedFormData,
+                        isDeleted: false,
+                    })
+
+                    // Handle bidirectional sync to update personnel records
+                    await bidirectionalSyncService.handleBidirectionalSyncOnCreate(
+                        projectForm._id.toString(),
+                        'project_management',
+                        (newProject._id as any).toString(),
+                        transformedFormData
+                    )
+
+                    logger.info(
+                        `Created project "${projectName}" with ${personnelIds.length} personnel`
+                    )
+                    created++
+                }
+            } catch (error) {
+                errors++
+                logger.error(
+                    `Error creating/updating project "${projectName}":`,
+                    error
+                )
+            }
+        }
+
+        logger.info('Project creation completed')
+        logger.info(
+            `Summary: ${created} created, ${updated} updated, ${errors} errors`
+        )
+
+        return {
+            created,
+            updated,
+            errors,
+            total: projectAssignments.size,
+        }
+    } catch (error) {
+        logger.error('Error creating projects from assignments:', error)
+        throw error
+    }
+}
+
 export const seedPersonnelData = async () => {
     try {
         logger.info('Starting personnel data seeding process...')
@@ -260,13 +421,28 @@ export const seedPersonnelData = async () => {
             })
         }
 
-        // Insert in batches for better performance
+        // Insert in batches for better performance and track project assignments
         const batchSize = 100
         let insertedCount = 0
+        const projectAssignments = new Map<string, string[]>() // Map: projectName -> personnelIds[]
 
         for (let i = 0; i < personnelData.length; i += batchSize) {
             const batch = personnelData.slice(i, i + batchSize)
-            await FormSubmissions.insertMany(batch)
+            const insertedBatch = await FormSubmissions.insertMany(batch)
+
+            // Track project assignments for each inserted personnel
+            insertedBatch.forEach((personnel) => {
+                const projectName = personnel.formData.projectAssign
+                if (projectName && personnel._id) {
+                    if (!projectAssignments.has(projectName)) {
+                        projectAssignments.set(projectName, [])
+                    }
+                    projectAssignments
+                        .get(projectName)!
+                        .push((personnel._id as any).toString())
+                }
+            })
+
             insertedCount += batch.length
             logger.info(
                 `Inserted ${insertedCount}/${personnelData.length} personnel records`
@@ -274,6 +450,20 @@ export const seedPersonnelData = async () => {
         }
 
         logger.info(`Successfully seeded ${insertedCount} personnel records`)
+
+        // Step 2: Create projects and assign personnel
+        logger.info('Starting project creation and personnel assignment...')
+        const projectResults = await createProjectsFromAssignments(
+            projectAssignments
+        )
+
+        return {
+            personnel: {
+                inserted: insertedCount,
+                total: personnelData.length,
+            },
+            projects: projectResults,
+        }
     } catch (error) {
         logger.error('Personnel data seeding error:', error)
         throw error

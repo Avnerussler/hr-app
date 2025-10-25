@@ -92,7 +92,7 @@ const createProjectsFromAssignments = async (
                     // The normalizeToArray function in sync service handles both raw and transformed data
                     await bidirectionalSyncService.handleBidirectionalSyncOnUpdate(
                         projectForm._id.toString(),
-                        'project_management',
+
                         (existingProject._id as any).toString(),
                         existingProject.formData,
                         transformedFormData

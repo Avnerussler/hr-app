@@ -32,23 +32,11 @@ router.post(
         //     })
         // }
 
-        // Transform the form data to include both reference and display values
-        let transformedFormData = formData
-        try {
-            transformedFormData = await transformFormData(formData, formId)
-            logger.info('Transformation completed successfully')
-        } catch (transformError) {
-            logger.error(
-                'Transformation failed, using original data:',
-                transformError
-            )
-            transformedFormData = formData
-        }
+        logger.info('Creating form submission with data:', formData)
 
-        logger.info('Creating form submission with data:', transformedFormData)
-
+        // Store formData as-is (raw IDs) - transformation happens only when reading
         const form = (await FormSubmissions.create({
-            formData: transformedFormData,
+            formData: formData,
             formId,
             formName,
         })) as mongoose.Document & { _id: mongoose.Types.ObjectId }
@@ -61,10 +49,28 @@ router.post(
             formId,
             formName,
             form._id.toString(),
-            transformedFormData
+            formData  // Use raw formData
         )
 
-        res.status(201).json({ form })
+        // Transform the data for the response to the frontend
+        let transformedFormData = formData
+        try {
+            transformedFormData = await transformFormData(form.toObject().formData, formId)
+            logger.info('Transformation completed successfully')
+        } catch (transformError) {
+            logger.error(
+                'Transformation failed, using original data:',
+                transformError
+            )
+            transformedFormData = formData
+        }
+
+        res.status(201).json({
+            form: {
+                ...form.toObject(),
+                formData: transformedFormData
+            }
+        })
     })
 )
 
