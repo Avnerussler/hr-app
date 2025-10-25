@@ -15653,3 +15653,19 @@
 {"method":"GET","url":"/api/quotas/employees/68fd215dd62fcf659ca384bc/attendance-history?limit=20","statusCode":200,"responseTime":"4ms","contentLength":206,"timestamp":"2025-10-25T19:14:27.372Z","level":"info","message":"Request Success"}
 {"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","statusCode":200,"responseTime":"13ms","contentLength":2005,"timestamp":"2025-10-25T19:14:27.383Z","level":"info","message":"Request Success"}
 {"method":"GET","url":"/api/formsubmission/689b9422b460f55175c6e631","statusCode":200,"responseTime":"13ms","contentLength":2005,"timestamp":"2025-10-25T19:14:27.383Z","level":"info","message":"Request Success"}
+{"level":"info","message":"Server is running on http://localhost:3001","timestamp":"2025-10-25T19:18:34.047Z"}
+{"security":"✅","requestLogging":"✅","performanceMonitoring":"✅","rateLimiting":"✅","errorHandling":"✅","level":"info","message":"Middleware loaded:","timestamp":"2025-10-25T19:18:34.048Z"}
+{"message":"⚠️ MinIO not available:","stack":"AggregateError\n    at internalConnectMultiple (node:net:1139:18)\n    at afterConnectMultiple (node:net:1712:7)\n    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)","errors":[{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"::1","port":9000},{"errno":-61,"code":"ECONNREFUSED","syscall":"connect","address":"127.0.0.1","port":9000}],"code":"ECONNREFUSED","level":"warn","timestamp":"2025-10-25T19:18:34.055Z"}
+{"level":"info","message":"MongoDB Connected 🚀","timestamp":"2025-10-25T19:18:34.057Z"}
+{"level":"info","message":"personnel form is up to date (v1.1.27)","timestamp":"2025-10-25T19:18:34.071Z"}
+{"level":"info","message":"project_management form is up to date (v1.2.6)","timestamp":"2025-10-25T19:18:34.077Z"}
+{"level":"info","message":"reserve_days_management form is up to date (v1.0.14)","timestamp":"2025-10-25T19:18:34.082Z"}
+{"level":"info","message":"🚀 Starting metrics configuration migration...","timestamp":"2025-10-25T19:18:34.082Z"}
+{"level":"info","message":"Adding metrics configuration to Project Management form...","timestamp":"2025-10-25T19:18:34.082Z"}
+{"level":"info","message":"Project Management form not found","timestamp":"2025-10-25T19:18:34.091Z"}
+{"level":"info","message":"Adding metrics configuration to Personnel form...","timestamp":"2025-10-25T19:18:34.092Z"}
+{"level":"info","message":"Personnel form not found","timestamp":"2025-10-25T19:18:34.095Z"}
+{"level":"info","message":"Adding metrics configuration to Reserve Days Management form...","timestamp":"2025-10-25T19:18:34.095Z"}
+{"level":"info","message":"✅ Successfully added metrics to Reserve Days Management form","timestamp":"2025-10-25T19:18:34.097Z"}
+{"level":"info","message":"✅ Metrics configuration migration completed successfully!","timestamp":"2025-10-25T19:18:34.097Z"}
+{"level":"info","message":"Running migrations","timestamp":"2025-10-25T19:18:34.097Z"}
