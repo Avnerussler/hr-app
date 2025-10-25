@@ -2,7 +2,6 @@ import ExcelJS from 'exceljs'
 import path from 'path'
 import { FormSubmissions, FormFields } from '../models'
 import logger from '../config/logger'
-import { transformFormData } from '../utils'
 import { bidirectionalSyncService } from '../services/bidirectionalSync'
 
 interface PersonnelRow {
@@ -12,7 +11,6 @@ interface PersonnelRow {
 /**
  * Create projects from personnel assignments
  * This runs AFTER personnel have been imported
- * Uses transformFormData and bidirectionalSync for proper data handling
  */
 const createProjectsFromAssignments = async (
     projectAssignments: Map<string, string[]>
@@ -65,37 +63,29 @@ const createProjectsFromAssignments = async (
                         ...new Set([...currentIds, ...personnelIds]),
                     ]
 
-                    // Prepare updated form data with RAW IDs first
+                    // Prepare updated form data with RAW IDs only
                     const updatedFormData = {
                         ...existingProject.formData,
                         projectPersonnel: mergedIds,
                     }
 
-                    // Transform to get proper display format
-                    const transformedFormData = await transformFormData(
-                        updatedFormData,
-                        projectForm._id.toString()
-                    )
-
-                    // Update the project with transformed data
+                    // Update the project with RAW IDs (not transformed data)
                     await FormSubmissions.updateOne(
                         { _id: existingProject._id },
                         {
                             $set: {
-                                'formData.projectPersonnel':
-                                    transformedFormData.projectPersonnel,
+                                'formData.projectPersonnel': mergedIds,
                             },
                         }
                     )
 
                     // Handle bidirectional sync for the update
-                    // The normalizeToArray function in sync service handles both raw and transformed data
+                    // Pass the raw IDs in the formData
                     await bidirectionalSyncService.handleBidirectionalSyncOnUpdate(
                         projectForm._id.toString(),
-
                         (existingProject._id as any).toString(),
                         existingProject.formData,
-                        transformedFormData
+                        updatedFormData
                     )
 
                     logger.info(
@@ -105,12 +95,12 @@ const createProjectsFromAssignments = async (
                 } else {
                     logger.info(`Creating new project "${projectName}"`)
 
-                    // Create new project with raw IDs
+                    // Create new project with raw IDs only
                     // All personnel are added to the team
                     const projectManager = personnelIds[0] || null
                     const projectPersonnel = personnelIds
 
-                    const rawFormData = {
+                    const formData = {
                         projectName: projectName,
                         projectManager: projectManager,
                         projectPersonnel: projectPersonnel,
@@ -118,28 +108,15 @@ const createProjectsFromAssignments = async (
                     }
 
                     logger.info(
-                        `Raw form data for project "${projectName}":`,
-                        JSON.stringify(rawFormData, null, 2)
+                        `Form data for project "${projectName}":`,
+                        JSON.stringify(formData, null, 2)
                     )
 
-                    // Transform the form data to include display values
-                    // This is necessary for the UI to display properly
-                    const transformedFormData = await transformFormData(
-                        rawFormData,
-                        projectForm._id.toString()
-                    )
-
-                    logger.info(
-                        `Transformed form data for project "${projectName}":`,
-                        JSON.stringify(transformedFormData, null, 2)
-                    )
-
-                    // Create the project submission with TRANSFORMED data
-                    // This matches how the UI creates projects
+                    // Create the project submission with RAW IDs (not transformed)
                     const newProject = await FormSubmissions.create({
                         formId: projectForm._id.toString(),
                         formName: 'project_management',
-                        formData: transformedFormData,
+                        formData: formData,
                         isDeleted: false,
                     })
 
@@ -150,7 +127,7 @@ const createProjectsFromAssignments = async (
                     )
 
                     // Handle bidirectional sync to update personnel records
-                    // Pass transformed data - the sync service extracts IDs from objects
+                    // Pass raw formData with IDs only
                     logger.info(
                         `Starting bidirectional sync for project "${projectName}"...`
                     )
@@ -158,7 +135,7 @@ const createProjectsFromAssignments = async (
                         projectForm._id.toString(),
                         'project_management',
                         (newProject._id as any).toString(),
-                        transformedFormData
+                        formData
                     )
 
                     logger.info(
