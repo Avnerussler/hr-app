@@ -7,6 +7,7 @@ import {
     FiBarChart2,
     FiTrendingUp,
     FiRefreshCw,
+    FiUsers,
 } from 'react-icons/fi'
 import { HiFolderOpen } from 'react-icons/hi'
 import { PageHeader } from '../common/PageHeader'
@@ -17,6 +18,7 @@ import {
     useDateRangeSummaryQuery,
     useProjectAnalyticsQuery,
     useExternalByUnitQuery,
+    useEmployeesOnReserveQuery,
 } from '../../hooks/queries/useStatisticsQueries'
 
 export function Dashboard() {
@@ -25,6 +27,11 @@ export function Dashboard() {
         startDate: format(subDays(new Date(), 30), 'yyyy-MM-dd'),
         endDate: format(new Date(), 'yyyy-MM-dd'),
     })
+
+    // Selected date for employees on reserve report - default to today
+    const [selectedDate, setSelectedDate] = useState(
+        format(new Date(), 'yyyy-MM-dd')
+    )
 
     // Auto-refresh interval (5 minutes)
     const [lastRefreshed, setLastRefreshed] = useState(new Date())
@@ -44,6 +51,7 @@ export function Dashboard() {
         dateRange.startDate,
         dateRange.endDate
     )
+    const employeesOnReserve = useEmployeesOnReserveQuery(selectedDate)
 
     // Auto-refresh logic
     useEffect(() => {
@@ -54,6 +62,7 @@ export function Dashboard() {
             dateRangeSummary.refetch()
             projectAnalytics.refetch()
             externalByUnit.refetch()
+            employeesOnReserve.refetch()
             setLastRefreshed(new Date())
         }, 60 * 1000) // 5 minutes
 
@@ -64,6 +73,7 @@ export function Dashboard() {
         dateRangeSummary,
         projectAnalytics,
         externalByUnit,
+        employeesOnReserve,
     ])
 
     // Manual refresh
@@ -72,6 +82,7 @@ export function Dashboard() {
         dateRangeSummary.refetch()
         projectAnalytics.refetch()
         externalByUnit.refetch()
+        employeesOnReserve.refetch()
         setLastRefreshed(new Date())
     }
 
@@ -297,6 +308,34 @@ export function Dashboard() {
                     isLoading={externalByUnit.isLoading}
                     minHeight="400px"
                 />
+
+                {/* Report 5: Employees on Reserve */}
+                <Box>
+                    <Flex gap={4} align="center" mb={4}>
+                        <Text fontWeight="semibold" color="gray.700">
+                            בחר תאריך לדוח עובדים על צו:
+                        </Text>
+                        <input
+                            type="date"
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                            style={{
+                                padding: '0.5rem',
+                                borderRadius: '0.375rem',
+                                border: '1px solid #E2E8F0',
+                            }}
+                        />
+                    </Flex>
+                    <StatisticsTable
+                        title="עובדים על צו בתאריך מוגדר"
+                        description={`רשימת כל העובדים על צו ביום ${selectedDate}`}
+                        icon={<FiUsers size={20} />}
+                        headers={employeesOnReserve.data?.data.headers || []}
+                        rows={employeesOnReserve.data?.data.rows || []}
+                        isLoading={employeesOnReserve.isLoading}
+                        minHeight="400px"
+                    />
+                </Box>
             </Stack>
         </Box>
     )

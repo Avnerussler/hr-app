@@ -36,6 +36,7 @@ const AVAILABLE_REPORTS = [
     { label: 'סכימת ימי מילואים לפי טווח תאריכים', value: 'date_range_summary' },
     { label: 'סכימה לפי פרויקטים', value: 'project_analytics' },
     { label: 'סכימת ימי מילואים חיצוניים לפי יחידות', value: 'external_by_unit' },
+    { label: 'רשימת עובדים על צו בתאריך מוגדר', value: 'employees_on_reserve' },
 ]
 
 const TIME_FRAME_OPTIONS = [

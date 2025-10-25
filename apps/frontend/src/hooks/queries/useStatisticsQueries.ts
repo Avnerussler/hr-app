@@ -144,6 +144,22 @@ export const useMultipleReportsQuery = (
 }
 
 /**
+ * Hook to fetch employees on reserve report
+ * Shows all employees who should be on reserve on a specific date, grouped by project
+ */
+export const useEmployeesOnReserveQuery = (date: string, projectId?: string) => {
+    return useQuery<StatisticsResponse, Error>({
+        queryKey: [
+            'statistics/employees-on-reserve',
+            undefined,
+            { date, projectId },
+        ],
+        staleTime: 1000 * 60 * 5,
+        enabled: !!date,
+    })
+}
+
+/**
  * Hook to fetch personnel list for a specific date/project/funding source
  * Used when clicking on numbers in reports to see detailed list
  */

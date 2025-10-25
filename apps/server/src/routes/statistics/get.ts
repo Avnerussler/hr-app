@@ -64,6 +64,13 @@ router.get(
                             endDate as string
                         )
                     break
+                case 'employees_on_reserve':
+                    // Use startDate as the date for this report
+                    reports[type] =
+                        await statisticsService.generateEmployeesOnReserveReport(
+                            startDate as string
+                        )
+                    break
                 default:
                     logger.warn(`Unknown report type: ${type}`)
             }
@@ -191,6 +198,38 @@ router.get(
             metadata: {
                 startDate,
                 endDate,
+                generatedAt: new Date().toISOString(),
+            },
+        })
+    })
+)
+
+/**
+ * GET /api/statistics/employees-on-reserve
+ * Get list of all employees who should be on reserve on a specific date
+ * Query params: date (required), projectId (optional)
+ */
+router.get(
+    '/employees-on-reserve',
+    asyncHandler(async (req: Request, res: Response) => {
+        const { date, projectId } = req.query
+
+        if (!date) {
+            return res.status(400).json({
+                error: 'Missing required parameter: date',
+            })
+        }
+
+        const report = await statisticsService.generateEmployeesOnReserveReport(
+            date as string,
+            projectId as string | undefined
+        )
+
+        res.status(200).json({
+            data: report,
+            metadata: {
+                date,
+                projectId,
                 generatedAt: new Date().toISOString(),
             },
         })

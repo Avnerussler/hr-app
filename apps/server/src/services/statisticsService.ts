@@ -598,6 +598,159 @@ class StatisticsService {
     }
 
     /**
+     * Report 5: Employees on Reserve by Date and Project
+     * Shows all employees who should be on reserve on a specific date, grouped by project
+     */
+    async generateEmployeesOnReserveReport(
+        date: string,
+        projectId?: string
+    ): Promise<ReportData> {
+        try {
+            logger.info('Generating employees on reserve report', {
+                date,
+                projectId,
+            })
+
+            // Get all active reserve days for the specified date
+            const reserveDays = await FormSubmissions.find({
+                formName: 'reserve_days_management',
+                isDeleted: false,
+                'formData.startDate': { $lte: date },
+                'formData.endDate': { $gte: date },
+            }).lean()
+
+            // Group by project
+            const projectEmployees = new Map<
+                string,
+                Array<{
+                    employeeName: string
+                    personalNumber: string
+                    unitName: string
+                    fundingSource: string
+                    orderType: string
+                    startDate: string
+                    endDate: string
+                    projectId: string
+                }>
+            >()
+
+            // Process each reserve day
+            for (const reserve of reserveDays) {
+                const employeeId = reserve.formData.employeeName
+
+                if (!employeeId) {
+                    logger.warn('Missing employee ID in reserve record', {
+                        reserveId: reserve._id,
+                    })
+                    continue
+                }
+
+                // Get the personnel record
+                const personnel = await FormSubmissions.findOne({
+                    _id: employeeId,
+                    isDeleted: false,
+                }).lean()
+
+                if (!personnel) {
+                    logger.warn('Personnel record not found', {
+                        employeeId,
+                    })
+                    continue
+                }
+
+                const assignedProjectId = personnel.formData.assignedProjects
+                let projectName = 'ללא פרויקט'
+                let actualProjectId = ''
+
+                // Get the project details if assigned
+                if (assignedProjectId) {
+                    const project = await FormSubmissions.findOne({
+                        _id: assignedProjectId,
+                        formName: 'project_management',
+                        isDeleted: false,
+                    }).lean()
+
+                    if (project) {
+                        projectName =
+                            project.formData.projectName || 'ללא פרויקט'
+                        actualProjectId = project._id.toString()
+                    }
+                }
+
+                // Filter by project if specified
+                if (projectId && actualProjectId !== projectId) {
+                    continue
+                }
+
+                if (!projectEmployees.has(projectName)) {
+                    projectEmployees.set(projectName, [])
+                }
+
+                const employeeData = {
+                    employeeName: `${personnel.formData.firstName || ''} ${
+                        personnel.formData.lastName || ''
+                    }`.trim(),
+                    personalNumber: personnel.formData.personalNumber || '',
+                    unitName: personnel.formData.unitName || '',
+                    fundingSource:
+                        reserve.formData.fundingSource === 'internal'
+                            ? 'סטודיו'
+                            : 'חיצוני',
+                    orderType: reserve.formData.orderType || '',
+                    startDate: reserve.formData.startDate,
+                    endDate: reserve.formData.endDate,
+                    projectId: actualProjectId,
+                }
+
+                projectEmployees.get(projectName)!.push(employeeData)
+            }
+
+            // Build report rows
+            const rows: any[][] = []
+
+            for (const [projectName, employees] of projectEmployees.entries()) {
+                // Sort employees by name
+                employees.sort((a, b) =>
+                    a.employeeName.localeCompare(b.employeeName)
+                )
+
+                for (const employee of employees) {
+                    rows.push([
+                        projectName,
+                        employee.employeeName,
+                        employee.personalNumber,
+                        employee.unitName,
+                        employee.fundingSource,
+                        employee.orderType,
+                        employee.startDate,
+                        employee.endDate,
+                    ])
+                }
+            }
+
+            return {
+                headers: [
+                    'פרויקט',
+                    'שם עובד',
+                    'מספר אישי',
+                    'יחידה',
+                    'מקור מימון',
+                    'סוג צו',
+                    'תאריך התחלה',
+                    'תאריך סיום',
+                ],
+                rows,
+            }
+        } catch (error) {
+            logger.error(
+                'Failed to generate employees on reserve report',
+                error
+            )
+            throw error
+        }
+    }
+
+    /**
      * Get detailed list of personnel for a report
      * Used when clicking on numbers to see the list
      */

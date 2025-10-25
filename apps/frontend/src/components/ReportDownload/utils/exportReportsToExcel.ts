@@ -31,8 +31,16 @@ const fetchReportData = async (
                 ? 'statistics/daily-summary'
                 : `statistics/${reportType.replace(/_/g, '-')}`
 
-        const queryParams =
-            reportType === 'daily_summary' ? {} : { startDate, endDate }
+        // Build query params based on report type
+        let queryParams: Record<string, string> = {}
+        if (reportType === 'daily_summary') {
+            queryParams = {}
+        } else if (reportType === 'employees_on_reserve') {
+            // This endpoint expects 'date' not 'startDate/endDate'
+            queryParams = { date: startDate }
+        } else {
+            queryParams = { startDate, endDate }
+        }
 
         const queryKey = [url, undefined, queryParams]
 
@@ -72,6 +80,7 @@ const getReportName = (reportType: string): string => {
         date_range_summary: 'סכימת ימי מילואים לפי טווח',
         project_analytics: 'סכימה לפי פרויקטים',
         external_by_unit: 'ימי מילואים חיצוניים לפי יחידות',
+        employees_on_reserve: 'עובדים על צו',
     }
     return names[reportType] || reportType
 }
@@ -163,9 +172,25 @@ export const exportReportsToExcel = async ({
             headerRow.alignment = { horizontal: 'center', vertical: 'middle' }
             headerRow.height = 25
 
-            // Add data rows
+            // Add data rows - convert objects to display strings
             reportData.rows.forEach((row) => {
-                const excelRow = worksheet.addRow(row)
+                // Convert each cell value to a displayable string
+                const processedRow = row.map((cell) => {
+                    if (cell === null || cell === undefined) {
+                        return ''
+                    }
+                    if (typeof cell === 'object') {
+                        // Handle object fields (like assignedProjects with display property)
+                        if ('display' in cell && cell.display) {
+                            return String(cell.display)
+                        }
+                        // Fallback to JSON representation for other objects
+                        return JSON.stringify(cell)
+                    }
+                    return cell
+                })
+
+                const excelRow = worksheet.addRow(processedRow)
                 excelRow.alignment = { horizontal: 'right', vertical: 'middle' }
             })
 
@@ -177,6 +202,14 @@ export const exportReportsToExcel = async ({
                         header.length,
                         ...reportData.rows.map((row) => {
                             const value = row[index]
+                            // Handle objects with display property
+                            if (
+                                value &&
+                                typeof value === 'object' &&
+                                'display' in value
+                            ) {
+                                return String(value.display || '').length
+                            }
                             return String(value || '').length
                         })
                     )

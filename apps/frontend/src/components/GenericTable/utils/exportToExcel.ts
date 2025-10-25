@@ -105,8 +105,24 @@ const formatCellValue = (
                 return value
                     ? new Date(value as string).toLocaleTimeString('he-IL')
                     : ''
-            case 'multipleSelect': {
+            case 'multipleSelect':
+            case 'enhancedMultipleSelect': {
                 if (!Array.isArray(value)) return String(value)
+
+                // Handle new format where items are objects with {_id, display}
+                if (
+                    value.length > 0 &&
+                    typeof value[0] === 'object' &&
+                    value[0] !== null &&
+                    '_id' in value[0] &&
+                    'display' in value[0]
+                ) {
+                    return value
+                        .map((item: { _id: string; display: string }) =>
+                            String(item.display)
+                        )
+                        .join(', ')
+                }
 
                 const selectedItems =
                     field.options?.filter((opt) =>
@@ -170,7 +186,20 @@ const formatCellValue = (
 
                 return selectedItems.map((item) => item.label).join(', ')
             }
-            case 'select': {
+            case 'select':
+            case 'selectAutocomplete':
+            case 'enhancedSelect': {
+                // Handle new format where foreign fields store {_id, display}
+                if (
+                    typeof value === 'object' &&
+                    value !== null &&
+                    '_id' in value &&
+                    'display' in value
+                ) {
+                    const foreignValue = value as { _id: string; display: string }
+                    return String(foreignValue.display)
+                }
+
                 // Find the label for the selected option
                 const option = field.options?.find((opt) => opt.value === value)
                 if (option) {
