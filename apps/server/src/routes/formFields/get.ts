@@ -553,6 +553,34 @@ router.get('/:id', async (req: Request, res: Response) => {
                                                             },
                                                         },
                                                         name: '$sections.fields.name',
+                                                        metadata: {
+                                                            $cond: {
+                                                                if: {
+                                                                    $isArray:
+                                                                        '$sections.fields.foreignFields',
+                                                                },
+                                                                then: {
+                                                                    $arrayToObject:
+                                                                        {
+                                                                            $map: {
+                                                                                input: '$sections.fields.foreignFields',
+                                                                                as: 'fieldName',
+                                                                                in: {
+                                                                                    k: '$$fieldName',
+                                                                                    v: {
+                                                                                        $getField:
+                                                                                            {
+                                                                                                field: '$$fieldName',
+                                                                                                input: '$$doc.formData',
+                                                                                            },
+                                                                                    },
+                                                                                },
+                                                                            },
+                                                                        },
+                                                                },
+                                                                else: {},
+                                                            },
+                                                        },
                                                     },
                                                     else: {
                                                         value: {

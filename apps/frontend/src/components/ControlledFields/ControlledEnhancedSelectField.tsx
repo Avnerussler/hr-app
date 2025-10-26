@@ -1,5 +1,13 @@
 import { FC, RefObject, useState, useCallback, useMemo } from 'react'
-import { createListCollection, Field, Box, Input, Text, Spinner, Flex } from '@chakra-ui/react'
+import {
+    createListCollection,
+    Field,
+    Box,
+    Input,
+    Text,
+    Spinner,
+    Flex,
+} from '@chakra-ui/react'
 import {
     SelectContent,
     SelectItem,
@@ -14,7 +22,7 @@ import { useEnhancedSelectOptions } from '@/hooks/useEnhancedSelectOptions'
 
 // Helper component to render a field value with appropriate formatting
 const FieldValue: FC<{ value: any }> = ({ value }) => {
-    // Check if value is boolean
+    // Check if value is boolean or string boolean (for isActive field)
     if (typeof value === 'boolean' || value === 'true' || value === 'false') {
         const boolValue = value === true || value === 'true'
         return (
@@ -30,7 +38,8 @@ const FieldValue: FC<{ value: any }> = ({ value }) => {
     }
 
     // Regular text value
-    return <Text>{value}</Text>
+
+    return <Text fontSize="sm">{value}</Text>
 }
 
 // Helper to render formatted option with metadata
@@ -63,6 +72,9 @@ export const ControlledEnhancedSelectField: FC<
 > = ({ control, name, options: initialOptions = [], ...props }) => {
     const [isOpen, setIsOpen] = useState(false)
     const { formId } = useRouteContext()
+
+    // Extract non-DOM props that shouldn't be passed to SelectRoot
+    const { label, placeholder, defaultValue, ...selectRootProps } = props
 
     // Watch for the current field value (single value, not array)
     const fieldValue = useWatch({ control, name })
@@ -118,7 +130,7 @@ export const ControlledEnhancedSelectField: FC<
         <Controller
             name={name}
             control={control}
-            defaultValue={props.defaultValue}
+            defaultValue={defaultValue}
             render={({ field }) => {
                 const selectedValue = field.value || ''
 
@@ -134,7 +146,7 @@ export const ControlledEnhancedSelectField: FC<
                             collection={frameworks}
                             size="sm"
                             positioning={{ placement: 'bottom-start' }}
-                            {...props}
+                            {...selectRootProps}
                             open={isOpen}
                             onOpenChange={(e) => {
                                 setIsOpen(e.open)
@@ -147,14 +159,20 @@ export const ControlledEnhancedSelectField: FC<
                             }
                             onInteractOutside={() => field.onBlur()}
                         >
-                            <SelectLabel>{props.label}</SelectLabel>
+                            <SelectLabel>{label}</SelectLabel>
                             <Box position="relative">
-                                <SelectTrigger onClick={() => setIsOpen(!isOpen)}>
-                                    <SelectValueText
-                                        placeholder={
-                                            selectedOption?.label || props.placeholder
-                                        }
-                                    />
+                                <SelectTrigger
+                                    onClick={() => setIsOpen(!isOpen)}
+                                >
+                                    {selectedOption ? (
+                                        <FormattedOption
+                                            option={selectedOption}
+                                        />
+                                    ) : (
+                                        <SelectValueText
+                                            placeholder={placeholder}
+                                        />
+                                    )}
                                 </SelectTrigger>
                             </Box>
 
@@ -182,18 +200,31 @@ export const ControlledEnhancedSelectField: FC<
                                         placeholder="Search..."
                                         size="sm"
                                         value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        onChange={(e) =>
+                                            setSearchTerm(e.target.value)
+                                        }
                                         onClick={(e) => e.stopPropagation()}
                                     />
-                                    {searchTerm && paginatedData?.pagination && (
-                                        <Text fontSize="xs" color="gray.500" mt="1">
-                                            Found {paginatedData.pagination.total} results
-                                        </Text>
-                                    )}
+                                    {searchTerm &&
+                                        paginatedData?.pagination && (
+                                            <Text
+                                                fontSize="xs"
+                                                color="gray.500"
+                                                mt="1"
+                                            >
+                                                Found{' '}
+                                                {paginatedData.pagination.total}{' '}
+                                                results
+                                            </Text>
+                                        )}
                                 </Box>
 
                                 {/* Options list */}
-                                <Box maxH="250px" overflowY="auto" onScroll={handleScroll}>
+                                <Box
+                                    maxH="250px"
+                                    overflowY="auto"
+                                    onScroll={handleScroll}
+                                >
                                     {isLoading && !displayOptions.length ? (
                                         <Box p="4" textAlign="center">
                                             <Spinner size="sm" />
@@ -204,38 +235,63 @@ export const ControlledEnhancedSelectField: FC<
                                     ) : displayOptions.length > 0 ? (
                                         <>
                                             {frameworks.items.map((option) => (
-                                                <SelectItem item={option} key={option.value}>
-                                                    <FormattedOption option={option} />
+                                                <SelectItem
+                                                    item={option}
+                                                    key={option.value}
+                                                >
+                                                    <FormattedOption
+                                                        option={option}
+                                                    />
                                                 </SelectItem>
                                             ))}
                                             {/* Infinite scroll loading indicator */}
-                                            {isOpen && paginatedData?.pagination?.hasMore && (
-                                                <Box p="2" textAlign="center" minH="40px">
-                                                    {isFetching ? (
-                                                        <>
-                                                            <Spinner size="sm" />
+                                            {isOpen &&
+                                                paginatedData?.pagination
+                                                    ?.hasMore && (
+                                                    <Box
+                                                        p="2"
+                                                        textAlign="center"
+                                                        minH="40px"
+                                                    >
+                                                        {isFetching ? (
+                                                            <>
+                                                                <Spinner size="sm" />
+                                                                <Text
+                                                                    fontSize="xs"
+                                                                    color="gray.500"
+                                                                    mt="1"
+                                                                >
+                                                                    Loading
+                                                                    more...
+                                                                </Text>
+                                                            </>
+                                                        ) : (
                                                             <Text
                                                                 fontSize="xs"
                                                                 color="gray.500"
-                                                                mt="1"
                                                             >
-                                                                Loading more...
+                                                                Scroll for more
+                                                                (
+                                                                {(paginatedData
+                                                                    ?.pagination
+                                                                    ?.total ||
+                                                                    0) -
+                                                                    displayOptions.length}{' '}
+                                                                remaining)
                                                             </Text>
-                                                        </>
-                                                    ) : (
-                                                        <Text fontSize="xs" color="gray.500">
-                                                            Scroll for more (
-                                                            {(paginatedData?.pagination?.total ||
-                                                                0) - displayOptions.length}{' '}
-                                                            remaining)
-                                                        </Text>
-                                                    )}
-                                                </Box>
-                                            )}
+                                                        )}
+                                                    </Box>
+                                                )}
                                         </>
                                     ) : (
-                                        <Box p="4" textAlign="center" color="gray.500">
-                                            <Text fontSize="sm">No options available</Text>
+                                        <Box
+                                            p="4"
+                                            textAlign="center"
+                                            color="gray.500"
+                                        >
+                                            <Text fontSize="sm">
+                                                No options available
+                                            </Text>
                                         </Box>
                                     )}
                                 </Box>
