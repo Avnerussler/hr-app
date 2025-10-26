@@ -14,7 +14,6 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { format } from 'date-fns'
 import { he } from 'date-fns/locale'
 import { ControlledInputField } from '../ControlledFields/ControlledInputField'
-import { ControlledDateField } from '../ControlledFields/ControlledDateField'
 import { ControlledTextareaField } from '../ControlledFields/ControlledTextareaField'
 import {
     useCreateQuotaRange,
@@ -183,9 +182,10 @@ export function QuotaModal({
                             />
 
                             {!isEditing && (
-                                <ControlledDateField
+                                <ControlledInputField
                                     control={control as any}
                                     name="startDate"
+                                    type="date"
                                     label="תאריך התחלה"
                                     required
                                     rules={{
@@ -217,9 +217,10 @@ export function QuotaModal({
                                     </Box>
 
                                     {hasEndDate && (
-                                        <ControlledDateField
+                                        <ControlledInputField
                                             control={control as any}
                                             name="endDate"
+                                            type="date"
                                             label="תאריך סיום"
                                             rules={{
                                                 required: hasEndDate

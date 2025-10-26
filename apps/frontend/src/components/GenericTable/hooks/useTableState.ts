@@ -25,7 +25,7 @@ export const useTableState = ({ id }: UseTableStateProps) => {
     )
     const [tableFilters, setTableFilters] = useState<
         Record<string, string | string[] | boolean>
-    >(initialState.tableFilters)
+    >(initialState.tableFilters || {})
 
     // Save state to localStorage whenever it changes
     useEffect(() => {

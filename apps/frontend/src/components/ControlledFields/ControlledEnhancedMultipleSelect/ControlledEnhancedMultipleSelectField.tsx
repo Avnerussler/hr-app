@@ -9,7 +9,7 @@ import {
 import { Control, Controller, FieldValues, useWatch } from 'react-hook-form'
 import { useRouteContext } from '@/hooks/useRouteContext'
 import { useEnhancedSelectOptions } from '@/hooks/useEnhancedSelectOptions'
-import { SelectedItemsDisplay } from './SelectedItemsDisplay'
+import { SelectedItemsDisplay, FormattedOption } from './SelectedItemsDisplay'
 import { SelectDropdownContent } from './SelectDropdownContent'
 
 interface ControlledEnhancedMultipleSelectFieldProps extends FieldValues {
@@ -114,20 +114,28 @@ export const ControlledEnhancedMultipleSelectField: FC<
                                 <SelectTrigger
                                     onClick={() => setIsOpen(!isOpen)}
                                 >
-                                    <SelectValueText
-                                        placeholder={
-                                            selectedOptions.length > 0
-                                                ? `${selectedOptions.length} selected`
-                                                : props.placeholder
-                                        }
-                                    />
+                                    {selectedOptions.length === 1 ? (
+                                        <FormattedOption
+                                            option={selectedOptions[0]}
+                                        />
+                                    ) : (
+                                        <SelectValueText
+                                            placeholder={
+                                                selectedOptions.length > 0
+                                                    ? `${selectedOptions.length} selected`
+                                                    : props.placeholder
+                                            }
+                                        />
+                                    )}
                                 </SelectTrigger>
-
-                                {/* Selected items display */}
-                                <SelectedItemsDisplay
-                                    selectedOptions={selectedOptions}
-                                    onRemove={handleRemove}
-                                />
+                                {/* Selected items display - only show when multiple
+                                items selected */}
+                                {selectedOptions.length > 1 && (
+                                    <SelectedItemsDisplay
+                                        selectedOptions={selectedOptions}
+                                        onRemove={handleRemove}
+                                    />
+                                )}
                             </Box>
 
                             {/* Dropdown content */}

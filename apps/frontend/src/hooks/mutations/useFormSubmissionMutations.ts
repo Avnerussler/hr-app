@@ -163,6 +163,12 @@ export const useUpdateFormSubmission = (
             // Also update the detailed view if it exists
             queryClient.setQueryData(['formSubmission/detail', id], data.form)
 
+            // IMPORTANT: Invalidate ALL form submission queries because bidirectional sync
+            // may have updated related forms on the server
+            queryClient.invalidateQueries({
+                queryKey: ['formSubmission'],
+            })
+
             // Invalidate quota and attendance queries if this is a Reserve Days form
             // Check if formName contains Reserve or מילואים
             queryClient.invalidateQueries({

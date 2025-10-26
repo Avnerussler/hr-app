@@ -1,11 +1,12 @@
-import { Box, Button, HStack, Input } from '@chakra-ui/react'
-import { FaBell } from 'react-icons/fa'
+import { Box, Button, HStack, useDisclosure } from '@chakra-ui/react'
 import { useLocation } from 'react-router-dom'
 import {
     BreadcrumbRoot,
     BreadcrumbLink,
     BreadcrumbCurrentLink,
 } from '../ui/breadcrumb'
+import { ReportDownloadDialog } from '../ReportDownload/ReportDownloadDialog'
+import { FiDownload } from 'react-icons/fi'
 
 interface TopBarProps {
     pageName?: string
@@ -34,7 +35,7 @@ function getModuleDisplayName(pathname: string): string {
 export function TopBar({ pageName }: TopBarProps) {
     const location = useLocation()
     const moduleName = getModuleDisplayName(location.pathname)
-
+    const { open, onOpen, onClose } = useDisclosure()
     return (
         <Box
             as="header"
@@ -63,34 +64,39 @@ export function TopBar({ pageName }: TopBarProps) {
                         </BreadcrumbCurrentLink>
                     )}
                 </BreadcrumbRoot>
-
-                <HStack gap={3}>
-                    <Box
-                        display={{ base: 'none', md: 'block' }}
-                        position="relative"
-                    >
-                        {/* Add icon if needed: leftIcon inside InputGroup */}
-                        <Input
-                            placeholder="Search..."
-                            w="256px"
-                            pl={4}
-                            bg="gray.100"
-                        />
-                    </Box>
-                    <Button variant="ghost" size="sm" position="relative">
-                        <FaBell />
-                        <Box
-                            position="absolute"
-                            top="-4px"
-                            right="-4px"
-                            w="8px"
-                            h="8px"
-                            bg="red.500"
-                            borderRadius="full"
-                        />
-                    </Button>
-                </HStack>
+                <Button onClick={onOpen} variant="outline" colorScheme="blue">
+                    <FiDownload />
+                    הורד דוחות
+                </Button>
+                <ReportDownloadDialog isOpen={open} onClose={onClose} />
             </HStack>
         </Box>
     )
 }
+
+//   <HStack gap={3}>
+//                     <Box
+//                         display={{ base: 'none', md: 'block' }}
+//                         position="relative"
+//                     >
+//                         {/* Add icon if needed: leftIcon inside InputGroup */}
+//                         <Input
+//                             placeholder="Search..."
+//                             w="256px"
+//                             pl={4}
+//                             bg="gray.100"
+//                         />
+//                     </Box>
+//                     <Button variant="ghost" size="sm" position="relative">
+//                         <FaBell />
+//                         <Box
+//                             position="absolute"
+//                             top="-4px"
+//                             right="-4px"
+//                             w="8px"
+//                             h="8px"
+//                             bg="red.500"
+//                             borderRadius="full"
+//                         />
+//                     </Button>
+//                 </HStack>

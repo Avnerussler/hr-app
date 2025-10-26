@@ -221,11 +221,20 @@ router.get(
                         'formData.endDate': date,
                     },
                 ],
-            })
+            }).lean()
 
             // Get employee document IDs to fetch full employee data
             const employeeDocIds = reservations
-                .map((r: any) => r.formData.employeeName?._id)
+                .map((r: any) => {
+                    const empName = r.formData.employeeName
+                    // Handle both object with _id and direct ID string
+                    if (typeof empName === 'object' && empName?._id) {
+                        return empName._id.toString()
+                    } else if (typeof empName === 'string') {
+                        return empName
+                    }
+                    return null
+                })
                 .filter((id: any) => id)
 
             // Fetch full employee data from the personnel form
@@ -244,40 +253,41 @@ router.get(
             const employees = reservations.map((reservation: any) => {
                 const formData = reservation.formData
 
-                // Handle employee name - it might be an object with display property or a string
+                // Get employee ID
+                let employeeId = null
+                if (
+                    typeof formData.employeeName === 'object' &&
+                    formData.employeeName?._id
+                ) {
+                    employeeId = formData.employeeName._id.toString()
+                } else if (typeof formData.employeeName === 'string') {
+                    employeeId = formData.employeeName
+                }
+
+                // Handle employee name - get from personnel data
                 let employeeName = 'Unknown Employee'
                 let lastName = ''
                 let personalNumber = ''
                 let phone = ''
 
-                if (formData.employeeName) {
-                    if (
-                        typeof formData.employeeName === 'object' &&
-                        formData.employeeName._id
-                    ) {
-                        // Use display name if available
-                        employeeName =
-                            formData.employeeName.display || 'Unknown Employee'
-
-                        // Try to get full employee data using the document _id
-                        const fullEmployeeData = employeeDataMap.get(
-                            formData.employeeName._id
-                        )
-                        if (fullEmployeeData) {
-                            // Use firstName from full data if available
-                            if (fullEmployeeData.firstName) {
-                                employeeName = fullEmployeeData.firstName
-                            }
-                            lastName = fullEmployeeData.lastName || ''
-                            personalNumber =
-                                fullEmployeeData.personalNumber?.toString() ||
-                                fullEmployeeData.userId?.toString() ||
-                                ''
-                            phone = fullEmployeeData.phone || ''
-                        }
-                    } else if (typeof formData.employeeName === 'string') {
-                        employeeName = formData.employeeName
-                    }
+                // Try to get full employee data from personnel
+                const fullEmployeeData = employeeDataMap.get(employeeId)
+                if (fullEmployeeData) {
+                    // Use firstName from full data if available
+                    employeeName =
+                        fullEmployeeData.firstName || 'Unknown Employee'
+                    lastName = fullEmployeeData.lastName || ''
+                    personalNumber =
+                        fullEmployeeData.personalNumber?.toString() ||
+                        fullEmployeeData.userId?.toString() ||
+                        ''
+                    phone = fullEmployeeData.phone || ''
+                } else if (
+                    typeof formData.employeeName === 'object' &&
+                    formData.employeeName?.display
+                ) {
+                    // Fallback to display name if available
+                    employeeName = formData.employeeName.display
                 }
 
                 // Check if employee has more than 2 consecutive reserve days
@@ -296,7 +306,8 @@ router.get(
                     hasMoreThan2ConsecutiveDays(reserveDaysArray)
 
                 return {
-                    _id: formData.employeeName?._id,
+                    _id: employeeId,
+                    employeeId: employeeId,
                     name: employeeName,
                     lastName: lastName,
                     personalNumber: personalNumber,

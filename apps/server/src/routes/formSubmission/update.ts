@@ -11,14 +11,20 @@ const transformFormData = async (formData: any, formId: string) => {
         if (!formDefinition) return formData
 
         const transformedData = { ...formData }
-        
+
         // Flatten all fields from all sections using flatMap
-        const allFields = formDefinition.sections?.flatMap(section => section.fields) || []
-        
+        const allFields =
+            formDefinition.sections?.flatMap((section) => section.fields) || []
+
         // Filter only fields with foreign relationships that have values
-        const foreignFields = allFields.filter(field =>
-            (field.foreignFormName && field.foreignField && formData[field.name]) ||
-            (field.foreignFormName && field.foreignFields && formData[field.name])
+        const foreignFields = allFields.filter(
+            (field) =>
+                (field.foreignFormName &&
+                    field.foreignField &&
+                    formData[field.name]) ||
+                (field.foreignFormName &&
+                    field.foreignFields &&
+                    formData[field.name])
         )
 
         if (foreignFields.length === 0) return formData
@@ -26,67 +32,95 @@ const transformFormData = async (formData: any, formId: string) => {
         // Process each foreign field
         for (const field of foreignFields) {
             const fieldValue = formData[field.name]
-            
-            if (field.type === 'select' || field.type === 'selectAutocomplete') {
+
+            if (
+                field.type === 'select' ||
+                field.type === 'selectAutocomplete'
+            ) {
                 // Single selection
-                if (typeof fieldValue === 'string' && mongoose.Types.ObjectId.isValid(fieldValue)) {
+                if (
+                    typeof fieldValue === 'string' &&
+                    mongoose.Types.ObjectId.isValid(fieldValue)
+                ) {
                     const doc = await FormSubmissions.findOne({
                         _id: fieldValue,
-                        formName: field.foreignFormName
+                        formName: field.foreignFormName,
                     }).lean()
-                    
+
                     const foreignField = field.foreignField
-                    if (doc?.formData && foreignField && doc.formData[foreignField]) {
+                    if (
+                        doc?.formData &&
+                        foreignField &&
+                        doc.formData[foreignField]
+                    ) {
                         transformedData[field.name] = {
                             _id: fieldValue,
-                            display: doc.formData[foreignField]
+                            display: doc.formData[foreignField],
                         }
                     }
                 }
             } else if (field.type === 'multipleSelect') {
                 // Multiple selection
                 if (Array.isArray(fieldValue)) {
-                    const validIds = fieldValue.filter(id => 
-                        typeof id === 'string' && mongoose.Types.ObjectId.isValid(id)
+                    const validIds = fieldValue.filter(
+                        (id) =>
+                            typeof id === 'string' &&
+                            mongoose.Types.ObjectId.isValid(id)
                     )
-                    
+
                     if (validIds.length > 0) {
                         const docs = await FormSubmissions.find({
                             _id: { $in: validIds },
-                            formName: field.foreignFormName
+                            formName: field.foreignFormName,
                         }).lean()
-                        
-                        transformedData[field.name] = validIds.map(id => {
-                            const doc = docs.find(d => d._id.toString() === id)
+
+                        transformedData[field.name] = validIds.map((id) => {
+                            const doc = docs.find(
+                                (d) => d._id.toString() === id
+                            )
                             return {
                                 _id: id,
-                                display: (doc?.formData && field.foreignField && doc.formData[field.foreignField]) || id
+                                display:
+                                    (doc?.formData &&
+                                        field.foreignField &&
+                                        doc.formData[field.foreignField]) ||
+                                    id,
                             }
                         })
                     }
                 }
             } else if (field.type === 'radio') {
                 // Radio selection
-                if (typeof fieldValue === 'string' && mongoose.Types.ObjectId.isValid(fieldValue)) {
+                if (
+                    typeof fieldValue === 'string' &&
+                    mongoose.Types.ObjectId.isValid(fieldValue)
+                ) {
                     const doc = await FormSubmissions.findOne({
                         _id: fieldValue,
-                        formName: field.foreignFormName
+                        formName: field.foreignFormName,
                     }).lean()
 
                     const foreignField = field.foreignField
-                    if (doc?.formData && foreignField && doc.formData[foreignField]) {
+                    if (
+                        doc?.formData &&
+                        foreignField &&
+                        doc.formData[foreignField]
+                    ) {
                         transformedData[field.name] = {
                             _id: fieldValue,
-                            display: doc.formData[foreignField]
+                            display: doc.formData[foreignField],
                         }
                     }
                 }
             } else if (field.type === 'enhancedSelect') {
                 // Enhanced single selection with multiple foreign fields
-                if (typeof fieldValue === 'string' && mongoose.Types.ObjectId.isValid(fieldValue)) {
+                if (
+                    typeof fieldValue === 'string' &&
+                    mongoose.Types.ObjectId.isValid(fieldValue)
+                ) {
                     const doc = await FormSubmissions.findOne({
                         _id: fieldValue,
-                        formName: field.foreignFormName
+                        formName: field.foreignFormName,
                     }).lean()
 
                     if (doc?.formData && field.foreignFields) {
@@ -98,20 +132,21 @@ const transformFormData = async (formData: any, formId: string) => {
 
                         // Build display string from all foreign fields, filtering out booleans and empty values
                         const displayParts = field.foreignFields
-                            .map(fieldName => doc.formData[fieldName])
-                            .filter(value =>
-                                value !== null &&
-                                value !== undefined &&
-                                value !== '' &&
-                                typeof value !== 'boolean'
+                            .map((fieldName) => doc.formData[fieldName])
+                            .filter(
+                                (value) =>
+                                    value !== null &&
+                                    value !== undefined &&
+                                    value !== '' &&
+                                    typeof value !== 'boolean'
                             )
-                            .map(value => String(value))
+                            .map((value) => String(value))
 
                         if (displayParts.length > 0) {
                             transformedData[field.name] = {
                                 _id: fieldValue,
                                 display: displayParts.join(' '),
-                                metadata
+                                metadata,
                             }
                         }
                     }
@@ -119,44 +154,52 @@ const transformFormData = async (formData: any, formId: string) => {
             } else if (field.type === 'enhancedMultipleSelect') {
                 // Enhanced multiple selection with multiple foreign fields
                 if (Array.isArray(fieldValue)) {
-                    const validIds = fieldValue.filter(id =>
-                        typeof id === 'string' && mongoose.Types.ObjectId.isValid(id)
+                    const validIds = fieldValue.filter(
+                        (id) =>
+                            typeof id === 'string' &&
+                            mongoose.Types.ObjectId.isValid(id)
                     )
 
                     if (validIds.length > 0) {
                         const docs = await FormSubmissions.find({
                             _id: { $in: validIds },
-                            formName: field.foreignFormName
+                            formName: field.foreignFormName,
                         }).lean()
 
-                        transformedData[field.name] = validIds.map(id => {
-                            const doc = docs.find(d => d._id.toString() === id)
+                        transformedData[field.name] = validIds.map((id) => {
+                            const doc = docs.find(
+                                (d) => d._id.toString() === id
+                            )
                             if (doc?.formData && field.foreignFields) {
                                 const displayParts = field.foreignFields
-                                    .map(fieldName => doc.formData[fieldName])
-                                    .filter(value =>
-                                        value !== null &&
-                                        value !== undefined &&
-                                        value !== '' &&
-                                        typeof value !== 'boolean'
+                                    .map((fieldName) => doc.formData[fieldName])
+                                    .filter(
+                                        (value) =>
+                                            value !== null &&
+                                            value !== undefined &&
+                                            value !== '' &&
+                                            typeof value !== 'boolean'
                                     )
-                                    .map(value => String(value))
+                                    .map((value) => String(value))
 
                                 return {
                                     _id: id,
-                                    display: displayParts.length > 0 ? displayParts.join(' ') : id
+                                    display:
+                                        displayParts.length > 0
+                                            ? displayParts.join(' ')
+                                            : id,
                                 }
                             }
                             return {
                                 _id: id,
-                                display: id
+                                display: id,
                             }
                         })
                     }
                 }
             }
         }
-        
+
         return transformedData
     } catch (error) {
         logger.error('Error transforming form data:', error)
@@ -181,25 +224,33 @@ router.post('/', async (req: Request, res: Response) => {
         // Store the old form data for bidirectional sync
         const oldFormData = existingForm.formData
 
-        // Transform the form data to include both reference and display values
-        const transformedFormData = await transformFormData(formData, existingForm.formId.toString())
-
+        // Store formData as-is (raw IDs) - transformation happens only when reading
         const updatedForm = await FormSubmissions.findByIdAndUpdate(
             mongoose.Types.ObjectId.createFromHexString(id),
-            { $set: { formData: transformedFormData } },
+            { $set: { formData: formData } },
             { new: true } // Return the updated document
         )
 
         // Handle bidirectional sync after successful update
         await bidirectionalSyncService.handleBidirectionalSyncOnUpdate(
             existingForm.formId.toString(),
-            existingForm.formName,
             id,
             oldFormData,
-            transformedFormData
+            formData  // Use raw formData, not transformed
         )
 
-        res.status(200).json({ form: updatedForm })
+        // Transform the data for the response to the frontend
+        const transformedFormData = await transformFormData(
+            updatedForm!.formData,
+            existingForm.formId.toString()
+        )
+
+        res.status(200).json({
+            form: {
+                ...updatedForm!.toObject(),
+                formData: transformedFormData
+            }
+        })
     } catch (error) {
         logger.error('Error updating form:', error)
         res.status(500).json({ message: 'Error updating form', error })

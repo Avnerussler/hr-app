@@ -11,6 +11,7 @@ import {
     createReserveDaysForm,
     seedPersonnelData,
     seedProjectManagement,
+    seedReserveDaysData,
 } from './migrations'
 import {
     globalErrorHandler,
@@ -72,6 +73,7 @@ const runMigrations = process.env.RUN_MIGRATIONS
         await addMetricsToAllForms()
         // await seedPersonnelData()
         // await seedProjectManagement()
+        // await seedReserveDaysData()
         logger.info('Running migrations')
     }
 })()
