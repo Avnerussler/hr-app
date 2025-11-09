@@ -361,16 +361,13 @@ router.get('/:id', async (req: Request, res: Response) => {
         logger.info(
             `Getting form with ID: ${id}, options limit: ${optionsLimit}`
         )
+        // Simplified pipeline - fetch form and process options in JavaScript
         const pipeline = [
             { $match: { _id: new mongoose.Types.ObjectId(id) } },
-
-            // Unwind sections
             { $unwind: '$sections' },
-
-            // Unwind fields in each section
             { $unwind: '$sections.fields' },
 
-            // Lookup for foreign data (for dynamic select options)
+            // Lookup for foreign data
             {
                 $lookup: {
                     from: 'form_submissions',
@@ -393,13 +390,13 @@ router.get('/:id', async (req: Request, res: Response) => {
                                 },
                             },
                         },
-                        { $limit: optionsLimit }, // Limit options for performance
+                        { $limit: optionsLimit },
                     ],
                     as: 'foreignData',
                 },
             },
 
-            // Get total count for pagination
+            // Get total count
             {
                 $lookup: {
                     from: 'form_submissions',
@@ -425,197 +422,6 @@ router.get('/:id', async (req: Request, res: Response) => {
                         { $count: 'total' },
                     ],
                     as: 'foreignDataCount',
-                },
-            },
-
-            // Dynamically set options
-            {
-                $addFields: {
-                    'sections.fields.options': {
-                        $cond: {
-                            if: {
-                                $and: [
-                                    {
-                                        $or: [
-                                            {
-                                                $eq: [
-                                                    '$sections.fields.type',
-                                                    'select',
-                                                ],
-                                            },
-                                            {
-                                                $eq: [
-                                                    '$sections.fields.type',
-                                                    'selectAutocomplete',
-                                                ],
-                                            },
-                                            {
-                                                $eq: [
-                                                    '$sections.fields.type',
-                                                    'multipleSelect',
-                                                ],
-                                            },
-                                            {
-                                                $eq: [
-                                                    '$sections.fields.type',
-                                                    'enhancedMultipleSelect',
-                                                ],
-                                            },
-                                        ],
-                                    },
-                                    {
-                                        $ne: [
-                                            '$sections.fields.foreignFormName',
-                                            null,
-                                        ],
-                                    },
-                                ],
-                            },
-                            then: {
-                                $cond: {
-                                    if: { $gt: [{ $size: '$foreignData' }, 0] },
-                                    then: {
-                                        $map: {
-                                            input: '$foreignData',
-                                            as: 'doc',
-                                            in: {
-                                                $cond: {
-                                                    if: {
-                                                        $eq: [
-                                                            '$sections.fields.type',
-                                                            'enhancedMultipleSelect',
-                                                        ],
-                                                    },
-                                                    then: {
-                                                        value: {
-                                                            $toString:
-                                                                '$$doc._id',
-                                                        },
-                                                        label: {
-                                                            $cond: {
-                                                                if: {
-                                                                    $isArray:
-                                                                        '$sections.fields.foreignFields',
-                                                                },
-                                                                then: {
-                                                                    $reduce: {
-                                                                        input: '$sections.fields.foreignFields',
-                                                                        initialValue:
-                                                                            '',
-                                                                        in: {
-                                                                            $concat:
-                                                                                [
-                                                                                    '$$value',
-                                                                                    {
-                                                                                        $cond: {
-                                                                                            if: {
-                                                                                                $eq: [
-                                                                                                    '$$value',
-                                                                                                    '',
-                                                                                                ],
-                                                                                            },
-                                                                                            then: '',
-                                                                                            else: ' ',
-                                                                                        },
-                                                                                    },
-                                                                                    {
-                                                                                        $toString:
-                                                                                            {
-                                                                                                $getField:
-                                                                                                    {
-                                                                                                        field: '$$this',
-                                                                                                        input: '$$doc.formData',
-                                                                                                    },
-                                                                                            },
-                                                                                    },
-                                                                                ],
-                                                                        },
-                                                                    },
-                                                                },
-                                                                else: {
-                                                                    $cond: {
-                                                                        if: {
-                                                                            $ne: [
-                                                                                '$sections.fields.foreignField',
-                                                                                null,
-                                                                            ],
-                                                                        },
-                                                                        then: {
-                                                                            $getField:
-                                                                                {
-                                                                                    field: '$sections.fields.foreignField',
-                                                                                    input: '$$doc.formData',
-                                                                                },
-                                                                        },
-                                                                        else: '',
-                                                                    },
-                                                                },
-                                                            },
-                                                        },
-                                                        name: '$sections.fields.name',
-                                                        metadata: {
-                                                            $cond: {
-                                                                if: {
-                                                                    $isArray:
-                                                                        '$sections.fields.foreignFields',
-                                                                },
-                                                                then: {
-                                                                    $arrayToObject:
-                                                                        {
-                                                                            $map: {
-                                                                                input: '$sections.fields.foreignFields',
-                                                                                as: 'fieldName',
-                                                                                in: {
-                                                                                    k: '$$fieldName',
-                                                                                    v: {
-                                                                                        $getField:
-                                                                                            {
-                                                                                                field: '$$fieldName',
-                                                                                                input: '$$doc.formData',
-                                                                                            },
-                                                                                    },
-                                                                                },
-                                                                            },
-                                                                        },
-                                                                },
-                                                                else: {},
-                                                            },
-                                                        },
-                                                    },
-                                                    else: {
-                                                        value: {
-                                                            $toString:
-                                                                '$$doc._id',
-                                                        },
-                                                        label: {
-                                                            $cond: {
-                                                                if: {
-                                                                    $ne: [
-                                                                        '$sections.fields.foreignField',
-                                                                        null,
-                                                                    ],
-                                                                },
-                                                                then: {
-                                                                    $getField: {
-                                                                        field: '$sections.fields.foreignField',
-                                                                        input: '$$doc.formData',
-                                                                    },
-                                                                },
-                                                                else: '',
-                                                            },
-                                                        },
-                                                        name: '$sections.fields.name',
-                                                    },
-                                                },
-                                            },
-                                        },
-                                    },
-                                    else: '$sections.fields.options',
-                                },
-                            },
-                            else: '$sections.fields.options',
-                        },
-                    },
                 },
             },
 
@@ -648,9 +454,7 @@ router.get('/:id', async (req: Request, res: Response) => {
                             placeholder: '$sections.fields.placeholder',
                             required: '$sections.fields.required',
                             defaultValue: '$sections.fields.defaultValue',
-                            options: {
-                                $ifNull: ['$sections.fields.options', []],
-                            },
+                            options: '$sections.fields.options',
                             items: { $ifNull: ['$sections.fields.items', []] },
                             errorMessage: {
                                 $ifNull: ['$sections.fields.errorMessage', ''],
@@ -658,49 +462,8 @@ router.get('/:id', async (req: Request, res: Response) => {
                             foreignFormName: '$sections.fields.foreignFormName',
                             foreignField: '$sections.fields.foreignField',
                             foreignFields: '$sections.fields.foreignFields',
-                            optionsPagination: {
-                                $cond: {
-                                    if: {
-                                        $and: [
-                                            {
-                                                $ne: [
-                                                    '$sections.fields.foreignFormName',
-                                                    null,
-                                                ],
-                                            },
-                                            {
-                                                $gt: [
-                                                    {
-                                                        $size: '$foreignDataCount',
-                                                    },
-                                                    0,
-                                                ],
-                                            },
-                                        ],
-                                    },
-                                    then: {
-                                        total: {
-                                            $arrayElemAt: [
-                                                '$foreignDataCount.total',
-                                                0,
-                                            ],
-                                        },
-                                        limit: optionsLimit,
-                                        hasMore: {
-                                            $gt: [
-                                                {
-                                                    $arrayElemAt: [
-                                                        '$foreignDataCount.total',
-                                                        0,
-                                                    ],
-                                                },
-                                                optionsLimit,
-                                            ],
-                                        },
-                                    },
-                                    else: null,
-                                },
-                            },
+                            foreignData: '$foreignData',
+                            foreignDataCount: '$foreignDataCount',
                         },
                     },
                     formName: { $first: '$formName' },
@@ -720,7 +483,6 @@ router.get('/:id', async (req: Request, res: Response) => {
                     metrics: { $first: '$metrics' },
                     overviewFields: { $first: '$overviewFields' },
                     filters: { $first: '$filters' },
-                    __filterLookup: { $first: '$__filterLookup' },
                     sections: {
                         $push: {
                             id: '$_id.sectionId',
@@ -731,7 +493,6 @@ router.get('/:id', async (req: Request, res: Response) => {
                 },
             },
 
-            // Final projection to match IForm interface
             {
                 $project: {
                     _id: 0,
@@ -744,14 +505,90 @@ router.get('/:id', async (req: Request, res: Response) => {
             },
         ]
 
-        const form = await FormFields.aggregate(pipeline)
+        const result = await FormFields.aggregate(pipeline)
 
-        if (!form.length) {
+        if (!result.length) {
             res.status(204).json({ message: 'Form not found' })
             return
         }
 
-        res.status(200).send(form[0])
+        // Post-process options in JavaScript (more reliable than complex aggregation)
+        const form = result[0]
+        for (const section of form.sections) {
+            for (const field of section.fields) {
+                // Check if this is a select field with foreign data
+                const isSelectType = [
+                    'select',
+                    'selectAutocomplete',
+                    'multipleSelect',
+                    'enhancedMultipleSelect',
+                ].includes(field.type)
+
+                if (
+                    isSelectType &&
+                    field.foreignFormName &&
+                    field.foreignData &&
+                    field.foreignData.length > 0
+                ) {
+                    // Process foreign data into options
+                    if (
+                        field.type === 'enhancedMultipleSelect' &&
+                        field.foreignFields
+                    ) {
+                        // Enhanced select with multiple fields
+                        field.options = field.foreignData.map((doc: any) => {
+                            const label = field.foreignFields
+                                .map((fieldName: string) => doc.formData[fieldName])
+                                .filter(Boolean)
+                                .join(' ')
+
+                            const metadata: any = {}
+                            field.foreignFields.forEach((fieldName: string) => {
+                                metadata[fieldName] = doc.formData[fieldName]
+                            })
+
+                            return {
+                                value: doc._id.toString(),
+                                label,
+                                name: field.name,
+                                metadata,
+                            }
+                        })
+                    } else if (field.foreignField) {
+                        // Standard select with single field
+                        field.options = field.foreignData.map((doc: any) => ({
+                            value: doc._id.toString(),
+                            label: doc.formData[field.foreignField] || '',
+                            name: field.name,
+                        }))
+                    }
+
+                    // Set pagination info
+                    if (
+                        field.foreignDataCount &&
+                        field.foreignDataCount.length > 0
+                    ) {
+                        const total = field.foreignDataCount[0].total
+                        field.optionsPagination = {
+                            total,
+                            limit: optionsLimit,
+                            hasMore: total > optionsLimit,
+                        }
+                    }
+                }
+
+                // Ensure options is always an array
+                if (!field.options) {
+                    field.options = []
+                }
+
+                // Clean up temporary fields
+                delete field.foreignData
+                delete field.foreignDataCount
+            }
+        }
+
+        res.status(200).send(form)
     } catch (error) {
         logger.error('Error getting form:', error)
         res.status(500).json({ message: 'Error getting form', error })

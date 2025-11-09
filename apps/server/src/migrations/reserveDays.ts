@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.0.14'
+const CURRENT_VERSION = '1.0.15'
 
 export const createReserveDaysForm = async () => {
     try {
@@ -100,7 +100,32 @@ export const createReserveDaysForm = async () => {
                                 },
                             ],
                         },
-
+                        {
+                            name: 'requestStatus',
+                            type: 'select',
+                            label: 'סטטוס בקשה',
+                            placeholder: 'בחר סטטוס בקשה',
+                            required: true,
+                            defaultValue: 'pending',
+                            errorMessage: 'סטטוס בקשה הוא שדה חובה',
+                            options: [
+                                {
+                                    value: 'pending',
+                                    label: 'ממתין לטיפול',
+                                    name: 'pending',
+                                },
+                                {
+                                    value: 'approved',
+                                    label: 'אושר',
+                                    name: 'approved',
+                                },
+                                {
+                                    value: 'denied',
+                                    label: 'נדחה',
+                                    name: 'denied',
+                                },
+                            ],
+                        },
                         {
                             name: 'baseAccessApproval',
                             type: 'select',
@@ -151,32 +176,7 @@ export const createReserveDaysForm = async () => {
                             required: false,
                             defaultValue: '',
                         },
-                        {
-                            name: 'requestStatus',
-                            type: 'select',
-                            label: 'סטטוס בקשה',
-                            placeholder: 'בחר סטטוס בקשה',
-                            required: true,
-                            defaultValue: 'pending',
-                            errorMessage: 'סטטוס בקשה הוא שדה חובה',
-                            options: [
-                                {
-                                    value: 'pending',
-                                    label: 'ממתין לטיפול',
-                                    name: 'pending',
-                                },
-                                {
-                                    value: 'approved',
-                                    label: 'אושר',
-                                    name: 'approved',
-                                },
-                                {
-                                    value: 'denied',
-                                    label: 'נדחה',
-                                    name: 'denied',
-                                },
-                            ],
-                        },
+
                         {
                             name: 'notes',
                             type: 'textarea',
