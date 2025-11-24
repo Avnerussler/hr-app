@@ -284,8 +284,10 @@ router.get(
             const { startDate, endDate } = req.params
 
             // Find all reservations that overlap with the date range
+            // Exclude denied requests
             const reservations = await FormSubmissions.find({
                 isDeleted: false,
+                'formData.requestStatus': { $ne: 'denied' },
                 $or: [
                     // Case 1: Reservation spans across the requested range
                     {

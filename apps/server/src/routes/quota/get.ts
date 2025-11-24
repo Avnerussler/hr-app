@@ -202,8 +202,10 @@ router.get(
             const { date } = req.params
 
             // Find all Reserve Days Management form submissions that include this date
+            // Exclude denied requests
             const reservations = await FormSubmissions.find({
                 isDeleted: false,
+                'formData.requestStatus': { $ne: 'denied' },
                 $or: [
                     // Date falls within startDate and endDate range
                     {
@@ -250,19 +252,28 @@ router.get(
             })
 
             // Map reservations to employee attendance data
-            const employees = reservations.map((reservation: any) => {
-                const formData = reservation.formData
+            const employees = reservations
+                .map((reservation: any) => {
+                    const formData = reservation.formData
 
-                // Get employee ID
-                let employeeId = null
-                if (
-                    typeof formData.employeeName === 'object' &&
-                    formData.employeeName?._id
-                ) {
-                    employeeId = formData.employeeName._id.toString()
-                } else if (typeof formData.employeeName === 'string') {
-                    employeeId = formData.employeeName
-                }
+                    // Get employee ID
+                    let employeeId = null
+                    if (
+                        typeof formData.employeeName === 'object' &&
+                        formData.employeeName?._id
+                    ) {
+                        employeeId = formData.employeeName._id.toString()
+                    } else if (typeof formData.employeeName === 'string') {
+                        employeeId = formData.employeeName
+                    }
+
+                    // Skip this reservation if no valid employee ID
+                    if (!employeeId) {
+                        logger.warn(
+                            `Skipping reservation ${reservation._id} - no valid employeeName`
+                        )
+                        return null
+                    }
 
                 // Handle employee name - get from personnel data
                 let employeeName = 'Unknown Employee'
@@ -294,13 +305,24 @@ router.get(
                 // Generate all dates between startDate and endDate for this reservation
                 const reserveDaysArray: string[] = []
                 if (formData.startDate && formData.endDate) {
-                    const dates = eachDayOfInterval({
-                        start: parseISO(formData.startDate),
-                        end: parseISO(formData.endDate),
-                    })
-                    reserveDaysArray.push(
-                        ...dates.map((date) => format(date, 'yyyy-MM-dd'))
-                    )
+                    try {
+                        const dates = eachDayOfInterval({
+                            start: parseISO(formData.startDate),
+                            end: parseISO(formData.endDate),
+                        })
+                        reserveDaysArray.push(
+                            ...dates.map((date) => format(date, 'yyyy-MM-dd'))
+                        )
+                    } catch (dateError) {
+                        logger.warn(
+                            `Invalid date format for reservation ${reservation._id}: startDate=${formData.startDate}, endDate=${formData.endDate}`,
+                            dateError
+                        )
+                        // If single date is valid, use it
+                        if (formData.startDate) {
+                            reserveDaysArray.push(formData.startDate)
+                        }
+                    }
                 }
                 const hasConsecutiveDays =
                     hasMoreThan2ConsecutiveDays(reserveDaysArray)
@@ -325,13 +347,15 @@ router.get(
                     isAttendanceRequired: true,
                     hasAttended:
                         formData.attendance &&
+                        typeof formData.attendance === 'object' &&
                         formData.attendance[date] === true, // Check saved attendance data
                     workDays: [], // Could be calculated from the date range
                     reserveDays: reserveDaysArray,
-                    requestStatus: formData.requestStatus,
+                    requestStatus: formData.requestStatus || '',
                     fundingSource: formData.fundingSource || '',
                 }
             })
+            .filter((emp) => emp !== null) // Remove null entries
 
             // Calculate statistics
             const statistics = {
