@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.1.27'
+const CURRENT_VERSION = '1.1.32'
 
 export const createPersonalForm = async () => {
     try {
@@ -44,7 +44,15 @@ export const createPersonalForm = async () => {
                             required: false,
                             defaultValue: '',
                         },
-
+                        {
+                            name: 'personalNumber',
+                            type: 'number',
+                            label: 'מספר אישי',
+                            placeholder: 'הזן מספר אישי',
+                            required: true,
+                            defaultValue: '',
+                            errorMessage: 'מספר אישי הוא שדה חובה',
+                        },
                         {
                             name: 'phone',
                             type: 'tel',
@@ -78,6 +86,15 @@ export const createPersonalForm = async () => {
                             required: false,
                             defaultValue: '',
                         },
+
+                        {
+                            name: 'note',
+                            type: 'textarea',
+                            label: 'כללי',
+                            placeholder: 'הזן הערה כללית',
+                            required: false,
+                            defaultValue: '',
+                        },
                         {
                             name: 'isActive',
                             type: 'radio',
@@ -97,15 +114,6 @@ export const createPersonalForm = async () => {
                     id: 'militaryInformation',
                     name: 'מידע צבאי',
                     fields: [
-                        {
-                            name: 'personalNumber',
-                            type: 'number',
-                            label: 'מספר אישי',
-                            placeholder: 'הזן מספר אישי',
-                            required: true,
-                            defaultValue: '',
-                            errorMessage: 'מספר אישי הוא שדה חובה',
-                        },
                         {
                             name: 'RecruitmentYear',
                             type: 'date',
@@ -549,12 +557,12 @@ export const createPersonalForm = async () => {
                 'firstName',
                 'lastName',
                 'personalNumber',
-                'projectAssign',
                 'reserveCategory',
                 'rule',
                 'directBoss',
                 'talentAndSkills',
                 'assignedProjects',
+                'studioRole',
                 'isActive',
             ],
             filters: [
@@ -571,17 +579,69 @@ export const createPersonalForm = async () => {
                     ],
                     defaultValue: 'all',
                 },
-                // {
-                //     id: 'assignedProjectsFilter',
-                //     label: 'פרויקט',
-                //     fieldName: 'assignedProjects',
-                //     type: 'select',
-                //     placeholder: 'בחר פרויקט',
-                //     options: [],
-                //     defaultValue: 'all',
-                //     foreignFormName: 'project_management',
-                //     foreignField: 'projectName',
-                // },
+                {
+                    id: 'studioRoleFilter',
+                    label: 'תפקיד בסטודיו',
+                    fieldName: 'studioRole',
+                    type: 'multiSelect',
+                    placeholder: 'בחר תפקיד בסטודיו',
+                    options: [
+                        {
+                            value: 'algorithmDeveloper',
+                            label: 'Algorithm developer',
+                        },
+                        {
+                            value: 'algorithmResearch',
+                            label: 'Algorithm Research',
+                        },
+                        {
+                            value: 'backendDeveloper',
+                            label: 'Backend Developer',
+                        },
+                        { value: 'coo', label: 'COO' },
+                        {
+                            value: 'frontendDeveloper',
+                            label: 'Frontend Developer',
+                        },
+                        {
+                            value: 'fullstackDeveloper',
+                            label: 'Fullstack Developer',
+                        },
+                        { value: 'hr', label: 'HR' },
+                        { value: 'hwEngineer', label: 'HW Engineer' },
+                        { value: 'productEngineer', label: 'Product Engineer' },
+                        { value: 'uxui', label: 'UX/UI' },
+                        { value: 'fieldPerson', label: 'איש שטח' },
+                        { value: 'wirelessOperator', label: 'אלחוטן' },
+                        { value: 'academia', label: 'אקדמיה' },
+                        { value: 'acoustician', label: 'אקוסטיקאי' },
+                        { value: 'dataScience', label: 'דאטה סיינס' },
+                        { value: 'devops', label: 'דבאופס' },
+                        { value: 'projectManager', label: 'מנהל פרויקט' },
+                        { value: 'track', label: 'מסלול' },
+                        { value: 'kaman', label: 'קמ"ן' },
+                        { value: 'kamatz', label: 'קמב"ץ' },
+                        { value: 'teamLead', label: 'ראש צוות' },
+                        {
+                            value: 'algorithmTeamLead',
+                            label: 'ראש צוות אלגוריתמיקה',
+                        },
+                        { value: 'softwareTeamLead', label: 'ראש צוות תוכנה' },
+                        { value: 'partnerships', label: 'שותפויות' },
+                        { value: 'operations', label: 'אופרציה' },
+                        { value: 'other', label: 'אחר' },
+                    ],
+                },
+
+                {
+                    id: 'assignedProjectsFilter',
+                    label: 'שיוך לפרויקט',
+                    fieldName: 'assignedProjects',
+                    type: 'multiSelect',
+                    placeholder: 'בחר פרויקט',
+                    foreignFormName: 'project_management',
+                    foreignField: 'projectName',
+                },
                 {
                     id: 'reserveCategoryFilter',
                     label: 'סוג העסקה',

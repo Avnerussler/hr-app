@@ -112,7 +112,26 @@ export const GenericTable: FC<GenericTableProps> = ({ id, onRowClick, filters })
                     if (!Array.isArray(filterValue) || filterValue.length === 0) {
                         return true
                     }
-                    // Check if row value matches any of the selected filter values
+
+                    // If rowValue is an array (e.g., assignedProjects with multiple projects), check if any of its values match any filter value
+                    if (Array.isArray(rowValue)) {
+                        return rowValue.some((val: unknown) => {
+                            const stringVal = typeof val === 'object' && val !== null && '_id' in val
+                                ? String((val as { _id: unknown })._id)
+                                : typeof val === 'object' && val !== null && 'value' in val
+                                ? String((val as { value: unknown }).value)
+                                : String(val)
+                            return filterValue.includes(stringVal)
+                        })
+                    }
+
+                    // If rowValue is an object with _id (e.g., single project assignment), extract the _id
+                    if (typeof rowValue === 'object' && rowValue !== null && '_id' in rowValue) {
+                        const idValue = String((rowValue as { _id: unknown })._id)
+                        return filterValue.includes(idValue)
+                    }
+
+                    // If rowValue is a simple value, check if it matches any of the selected filter values
                     return filterValue.includes(String(rowValue))
                 }
 

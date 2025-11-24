@@ -178,6 +178,7 @@ quotaSchema.statics.getCurrentOccupancy = async function (
 
         const occupancy = await FormSubmissions.countDocuments({
             'formData.fundingSource': 'internal',
+            'formData.requestStatus': { $ne: 'denied' },
             isDeleted: false,
             $or: [
                 // Case 1: Date falls within startDate and endDate range
@@ -236,10 +237,11 @@ quotaSchema.statics.getOccupancyForDateRange = async function (
         // Use imported FormSubmissions model
 
         // Get all reserve days submissions that overlap with the date range
-        // Only count internal funding
+        // Only count internal funding and exclude denied requests
         const reservations = await FormSubmissions.find(
             {
                 'formData.fundingSource': 'internal',
+                'formData.requestStatus': { $ne: 'denied' },
                 isDeleted: false,
                 $or: [
                     // Reservations that start before and end within or after the range
@@ -324,9 +326,11 @@ quotaSchema.statics.getExternalOccupancyForDateRange = async function (
 ): Promise<Record<string, number>> {
     try {
         // Get all reserve days submissions with external funding that overlap with the date range
+        // Exclude denied requests
         const reservations = await FormSubmissions.find(
             {
                 'formData.fundingSource': 'external',
+                'formData.requestStatus': { $ne: 'denied' },
                 isDeleted: false,
                 $or: [
                     // Reservations that start before and end within or after the range

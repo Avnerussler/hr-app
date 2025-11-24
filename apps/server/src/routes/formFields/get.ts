@@ -588,6 +588,44 @@ router.get('/:id', async (req: Request, res: Response) => {
             }
         }
 
+        // Process filters with dynamic options from foreign forms
+        if (form.filters && Array.isArray(form.filters)) {
+            for (const filter of form.filters) {
+                // Check if filter has foreign form configuration
+                if (filter.foreignFormName && filter.foreignField) {
+                    // Fetch options from the foreign form
+                    const foreignData = await FormSubmissions.find({
+                        formName: filter.foreignFormName,
+                        isDeleted: false,
+                    })
+                        .select('_id formData')
+                        .limit(optionsLimit)
+                        .lean()
+
+                    // Convert foreign data to options
+                    filter.options = foreignData.map((doc: any) => ({
+                        value: doc._id.toString(),
+                        label: doc.formData[filter.foreignField] || '',
+                    }))
+
+                    // Get total count for pagination
+                    const total = await FormSubmissions.countDocuments({
+                        formName: filter.foreignFormName,
+                        isDeleted: false,
+                    })
+
+                    filter.optionsPagination = {
+                        total,
+                        limit: optionsLimit,
+                        hasMore: total > optionsLimit,
+                    }
+                } else if (!filter.options) {
+                    // Ensure options is always an array
+                    filter.options = []
+                }
+            }
+        }
+
         res.status(200).send(form)
     } catch (error) {
         logger.error('Error getting form:', error)
