@@ -83,3 +83,23 @@ tasks:
     desc: Stop and remove Docker containers
     dir: apps/server
     cmd: docker compose -f 'docker/compose.yml' down
+
+  test:
+    desc: Run Playwright tests
+    cmd: npm run test
+
+  test:headed:
+    desc: Run Playwright tests in headed mode
+    cmd: npm run test:headed
+
+  test:ui:
+    desc: Run Playwright tests with UI
+    cmd: npm run test:ui
+
+  e2e:
+    desc: Run end-to-end tests
+    cmd: npm run e2e
+
+  e2e:headed:
+    desc: Run end-to-end tests in headed mode
+    cmd: npm run e2e:headed

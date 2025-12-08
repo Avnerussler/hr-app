@@ -73,6 +73,30 @@ MongoDB and Minio should now be running.
 
 ---
 
+## Testing
+
+This project includes comprehensive end-to-end tests using Playwright.
+
+### Quick Start
+
+```sh
+# Check if all required services are running
+npm run services:check
+
+# Start all services automatically
+npm run services:start
+
+# Run tests
+npm test
+
+# Stop all services
+npm run services:stop
+```
+
+For detailed testing instructions, troubleshooting, and best practices, see [TESTING.md](./TESTING.md).
+
+---
+
 ## Additional Information
 
 - The frontend will typically run on `http://localhost:5173`.

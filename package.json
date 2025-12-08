@@ -1,0 +1,25 @@
+{
+ "name": "hr-app",
+ "version": "1.0.0",
+ "scripts": {
+  "pretest": "bash scripts/check-services.sh",
+  "test": "playwright test",
+  "test:headed": "playwright test --headed",
+  "test:ui": "playwright test --ui",
+  "test:debug": "playwright test --debug",
+  "test:chromium": "playwright test --project=chromium",
+  "test:firefox": "playwright test --project=firefox",
+  "test:webkit": "playwright test --project=webkit",
+  "test:report": "playwright show-report",
+  "e2e": "playwright test",
+  "e2e:headed": "playwright test --headed",
+  "e2e:ui": "playwright test --ui",
+  "services:start": "bash scripts/start-all-services.sh",
+  "services:stop": "bash scripts/stop-all-services.sh",
+  "services:check": "bash scripts/check-services.sh"
+ },
+ "devDependencies": {
+  "@faker-js/faker": "^10.1.0",
+  "@playwright/test": "^1.57.0"
+ }
+}
