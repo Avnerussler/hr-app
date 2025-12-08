@@ -65,6 +65,7 @@ export const SelectDropdownContent: FC<SelectDropdownContentProps> = ({
                     value={searchTerm}
                     onChange={(e) => onSearchChange(e.target.value)}
                     onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
                 />
                 {debouncedSearch && paginatedData?.pagination && (
                     <Text fontSize="xs" color="gray.500" mt="1">

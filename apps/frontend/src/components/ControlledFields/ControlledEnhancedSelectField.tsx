@@ -204,6 +204,7 @@ export const ControlledEnhancedSelectField: FC<
                                             setSearchTerm(e.target.value)
                                         }
                                         onClick={(e) => e.stopPropagation()}
+                                        onKeyDown={(e) => e.stopPropagation()}
                                     />
                                     {searchTerm &&
                                         paginatedData?.pagination && (
