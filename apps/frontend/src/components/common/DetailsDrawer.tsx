@@ -1,4 +1,14 @@
-import { VStack, Tabs, Button, Flex, Box, IconButton } from '@chakra-ui/react'
+import {
+    VStack,
+    Tabs,
+    Button,
+    Flex,
+    Box,
+    IconButton,
+    Text,
+    Heading,
+    Badge,
+} from '@chakra-ui/react'
 import {
     DrawerRoot,
     DrawerContent,
@@ -24,6 +34,7 @@ import {
 } from '@/hooks/mutations'
 import { useQuery } from '@tanstack/react-query'
 import { useRouteContext } from '@/hooks/useRouteContext'
+import { Avatar } from '../ui/avatar'
 
 export interface Section {
     id: string
@@ -59,6 +70,74 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
         queryKey: ['formFields/get', formId],
         staleTime: 1000 * 60 * 5,
     })
+
+    // Get employee data for header display
+    const employeeData = useMemo(() => {
+        if (formState === 'edit' && itemId && submittedData?.forms) {
+            const formData = submittedData.forms.find(
+                (form) => form._id === itemId
+            )?.formData
+
+            if (formData) {
+                // Helper to extract string from possible object/array values
+                const extractString = (value: any): string => {
+                    if (!value) return ''
+                    if (typeof value === 'string') return value
+                    if (typeof value === 'object' && value.display)
+                        return value.display
+                    if (typeof value === 'object' && value.label)
+                        return value.label
+                    return String(value)
+                }
+
+                // Try different possible name field combinations
+                const firstName = extractString((formData as any).firstName)
+                const lastName = extractString((formData as any).lastName)
+                const fullName = extractString((formData as any).fullName)
+                const name = extractString((formData as any).name)
+                const employeeName = extractString(
+                    (formData as any).employeeName
+                )
+                const projectName = extractString((formData as any).projectName)
+                const role = extractString(
+                    (formData as any).studioRole || (formData as any).role
+                )
+                const department = extractString((formData as any).department)
+
+                // Get full name
+                let displayName = ''
+                if (firstName || lastName) {
+                    displayName = `${firstName} ${lastName}`.trim()
+                } else {
+                    displayName =
+                        fullName || name || employeeName || projectName
+                }
+
+                // Get initials
+                let initials = ''
+                if (firstName && lastName) {
+                    initials =
+                        `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
+                } else if (displayName && typeof displayName === 'string') {
+                    const nameParts = displayName.split(' ')
+                    if (nameParts.length >= 2) {
+                        initials =
+                            `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`.toUpperCase()
+                    } else if (nameParts[0]) {
+                        initials = nameParts[0].substring(0, 2).toUpperCase()
+                    }
+                }
+
+                return {
+                    name: displayName,
+                    initials,
+                    role,
+                    department,
+                }
+            }
+        }
+        return null
+    }, [formState, itemId, submittedData?.forms])
 
     useEffect(() => {
         if (
@@ -194,10 +273,106 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
     }
     return (
         <DrawerRoot size="lg" open={isOpen} onOpenChange={onClose}>
-            <DrawerContent display="flex" flexDirection="column" h="100%">
-                <DrawerHeader borderBottomWidth="1px" flexShrink={0}>
-                    <Flex width="100%" justify="space-between" align="center">
-                        {title}
+            <DrawerContent
+                display="flex"
+                flexDirection="column"
+                h="100%"
+                bg="gray.50"
+                _dark={{ bg: 'gray.900' }}
+            >
+                <DrawerHeader
+                    flexShrink={0}
+                    py={5}
+                    px={6}
+                    bg="white"
+                    _dark={{ bg: 'gray.800' }}
+                    borderBottom="1px"
+                    borderColor="gray.200"
+                >
+                    <Flex
+                        width="100%"
+                        justify="space-between"
+                        align="center"
+                        gap={4}
+                    >
+                        <Flex align="center" gap={4} flex={1}>
+                            {employeeData ? (
+                                <>
+                                    <Avatar
+                                        name={employeeData.name}
+                                        bg="gray.200"
+                                        _dark={{ bg: 'gray.600' }}
+                                        color="gray.700"
+                                        fontWeight="bold"
+                                        fontSize="xl"
+                                    ></Avatar>
+
+                                    <Box>
+                                        <Flex align="center" gap={2} mb={0.5}>
+                                            <Heading
+                                                size="lg"
+                                                fontWeight="bold"
+                                                color="gray.900"
+                                                _dark={{ color: 'white' }}
+                                            >
+                                                {employeeData.name}
+                                            </Heading>
+                                            {formState === 'new' && (
+                                                <Badge
+                                                    colorScheme="green"
+                                                    variant="solid"
+                                                    px={2}
+                                                    py={0.5}
+                                                    borderRadius="md"
+                                                    fontSize="xs"
+                                                >
+                                                    NEW
+                                                </Badge>
+                                            )}
+                                        </Flex>
+                                        {(employeeData.role ||
+                                            employeeData.department) && (
+                                            <Text
+                                                fontSize="md"
+                                                color="gray.600"
+                                                _dark={{ color: 'gray.400' }}
+                                            >
+                                                {[
+                                                    employeeData.role,
+                                                    employeeData.department,
+                                                ]
+                                                    .filter(Boolean)
+                                                    .join(' • ')}
+                                            </Text>
+                                        )}
+                                    </Box>
+                                </>
+                            ) : (
+                                <Box>
+                                    <Heading
+                                        size="lg"
+                                        fontWeight="bold"
+                                        color="gray.900"
+                                        _dark={{ color: 'white' }}
+                                    >
+                                        {title}
+                                    </Heading>
+                                    {formState === 'new' && (
+                                        <Badge
+                                            colorScheme="green"
+                                            variant="solid"
+                                            px={2}
+                                            py={0.5}
+                                            borderRadius="md"
+                                            fontSize="xs"
+                                            mt={1}
+                                        >
+                                            NEW
+                                        </Badge>
+                                    )}
+                                </Box>
+                            )}
+                        </Flex>
                         <IconButton
                             aria-label="Close drawer"
                             onClick={onClose}
@@ -215,8 +390,18 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                             handleFormSubmit,
                             handleFormError
                         )}
+                        display="flex"
+                        flexDirection="column"
+                        flex="1"
+                        overflow="hidden"
                     >
-                        <DrawerBody>
+                        <DrawerBody
+                            bg="white"
+                            _dark={{ bg: 'gray.800' }}
+                            p={0}
+                            flex="1"
+                            overflow="hidden"
+                        >
                             <Tabs.Root
                                 defaultValue={sections[0]?.id}
                                 value={activeTab}
@@ -229,6 +414,8 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                                             onClick={() =>
                                                 setActiveTab(section.id)
                                             }
+                                            px={5}
+                                            py={3}
                                         >
                                             {section.name}
                                         </Tabs.Trigger>
@@ -242,10 +429,15 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                                         value={section.id}
                                         flex="1"
                                         overflowY="auto"
-                                        minH={'calc(100vh - 155px)'}
-                                        maxH={'calc(100vh - 155px)'}
+                                        maxH={'calc(100vh - 190px)'}
+                                        minH={'calc(100vh - 190px)'}
                                     >
-                                        <VStack gap={4} align="stretch" pb={4}>
+                                        <VStack
+                                            gap={4}
+                                            align="stretch"
+                                            p={6}
+                                            pb={4}
+                                        >
                                             {section.fields.map((field) => (
                                                 <FormGenerator
                                                     {...field}
@@ -268,10 +460,27 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                             </Tabs.Root>
                         </DrawerBody>
 
-                        <DrawerFooter borderTopWidth="1px">
-                            <Flex justify="space-between" width="100%">
-                                <Flex gap={2}>
-                                    <Button variant="outline" onClick={onClose}>
+                        <DrawerFooter
+                            borderTopWidth="1px"
+                            borderColor="gray.200"
+                            _dark={{ borderColor: 'gray.700' }}
+                            bg="white"
+                            py={6}
+                            px={6}
+                            shadow="md"
+                            flexShrink={0}
+                            position="sticky"
+                            bottom={0}
+                        >
+                            <Flex justify="space-between" width="100%" gap={3}>
+                                <Flex gap={3}>
+                                    <Button
+                                        variant="outline"
+                                        onClick={onClose}
+                                        size="lg"
+                                        px={6}
+                                        fontWeight="semibold"
+                                    >
                                         Cancel
                                     </Button>
                                     {formState === 'edit' && itemId && (
@@ -279,6 +488,9 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                                             variant="outline"
                                             colorScheme="red"
                                             onClick={handleDelete}
+                                            size="lg"
+                                            px={6}
+                                            fontWeight="semibold"
                                         >
                                             Delete
                                         </Button>
@@ -288,8 +500,28 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                                     type="submit"
                                     colorScheme="blue"
                                     disabled={!hasChanges}
+                                    size="lg"
+                                    px={8}
+                                    fontWeight="bold"
+                                    bgGradient={
+                                        hasChanges
+                                            ? 'linear(to-r, blue.500, purple.600)'
+                                            : undefined
+                                    }
+                                    _hover={
+                                        hasChanges
+                                            ? {
+                                                  bgGradient:
+                                                      'linear(to-r, blue.600, purple.700)',
+                                                  transform: 'translateY(-2px)',
+                                                  shadow: 'lg',
+                                              }
+                                            : {}
+                                    }
                                 >
-                                    {formState === 'new' ? 'Create' : 'Update'}
+                                    {formState === 'new'
+                                        ? '✨ Create'
+                                        : '💾 Update'}
                                 </Button>
                             </Flex>
                         </DrawerFooter>

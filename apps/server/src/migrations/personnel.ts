@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.1.32'
+const CURRENT_VERSION = '1.1.34'
 
 export const createPersonalForm = async () => {
     try {
@@ -83,6 +83,14 @@ export const createPersonalForm = async () => {
                             type: 'text',
                             label: 'לינקדאין',
                             placeholder: 'הזן את שם המשתמש לינקדאין',
+                            required: false,
+                            defaultValue: '',
+                        },
+                        {
+                            name: 'vehicleNumber',
+                            type: 'text',
+                            label: 'מספר רכב',
+                            placeholder: 'הזן מספר רכב',
                             required: false,
                             defaultValue: '',
                         },
@@ -564,6 +572,7 @@ export const createPersonalForm = async () => {
                 'assignedProjects',
                 'studioRole',
                 'isActive',
+                'createdAt',
             ],
             filters: [
                 {
