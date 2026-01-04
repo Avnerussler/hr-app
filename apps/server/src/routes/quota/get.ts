@@ -3,7 +3,7 @@ import { FormSubmissions } from '../../models/FormSubmissions'
 import { Request, Response, Router } from 'express'
 import logger from '../../config/logger'
 import { asyncHandler } from '../../middleware'
-import { hasMoreThan1ConsecutiveDay } from '../../utils'
+import { hasMoreThan1ConsecutiveDay, isEmployeeEndingToday } from '../../utils'
 import { eachDayOfInterval, parseISO, format } from 'date-fns'
 
 const router = Router()
@@ -201,9 +201,8 @@ router.get(
         try {
             const { date } = req.params
 
-            // Find all Reserve Days Management form submissions that include this date
-            // Exclude denied requests
-            const reservations = await FormSubmissions.find({
+            // First, find all reservations that include this specific date to get the employee IDs
+            const reservationsForDate = await FormSubmissions.find({
                 isDeleted: false,
                 'formData.requestStatus': { $ne: 'denied' },
                 $or: [
@@ -225,25 +224,37 @@ router.get(
                 ],
             }).lean()
 
-            // Get employee document IDs to fetch full employee data
-            const employeeDocIds = reservations
-                .map((r: any) => {
-                    const empName = r.formData.employeeName
-                    // Handle both object with _id and direct ID string
-                    if (typeof empName === 'object' && empName?._id) {
-                        return empName._id.toString()
-                    } else if (typeof empName === 'string') {
-                        return empName
-                    }
-                    return null
-                })
-                .filter((id: any) => id)
+            // Get unique employee document IDs
+            const employeeDocIds = Array.from(
+                new Set(
+                    reservationsForDate
+                        .map((r: any) => {
+                            const empName = r.formData.employeeName
+                            // Handle both object with _id and direct ID string
+                            if (typeof empName === 'object' && empName?._id) {
+                                return empName._id.toString()
+                            } else if (typeof empName === 'string') {
+                                return empName
+                            }
+                            return null
+                        })
+                        .filter((id: any) => id)
+                )
+            )
 
-            // Fetch full employee data from the personnel form
-            const employeeRecords = await FormSubmissions.find({
-                _id: { $in: employeeDocIds },
-                isDeleted: false,
-            }).lean()
+            // Fetch full employee data AND all their reservations in parallel
+            const [employeeRecords, allEmployeeReservations] =
+                await Promise.all([
+                    FormSubmissions.find({
+                        _id: { $in: employeeDocIds },
+                        isDeleted: false,
+                    }).lean(),
+                    FormSubmissions.find({
+                        isDeleted: false,
+                        'formData.requestStatus': { $ne: 'denied' },
+                        'formData.employeeName': { $in: employeeDocIds },
+                    }).lean(),
+                ])
 
             // Create a map of employee data by document ID
             const employeeDataMap = new Map()
@@ -251,8 +262,30 @@ router.get(
                 employeeDataMap.set(record._id.toString(), record.formData)
             })
 
+            // Create a map of reservations by employee ID for checking consecutive orders
+            const reservationsByEmployee = new Map<string, any[]>()
+            allEmployeeReservations.forEach((reservation: any) => {
+                const formData = reservation.formData
+                let employeeId = null
+                if (
+                    typeof formData.employeeName === 'object' &&
+                    formData.employeeName?._id
+                ) {
+                    employeeId = formData.employeeName._id.toString()
+                } else if (typeof formData.employeeName === 'string') {
+                    employeeId = formData.employeeName
+                }
+
+                if (employeeId) {
+                    if (!reservationsByEmployee.has(employeeId)) {
+                        reservationsByEmployee.set(employeeId, [])
+                    }
+                    reservationsByEmployee.get(employeeId)!.push(reservation)
+                }
+            })
+
             // Map reservations to employee attendance data
-            const employees = reservations
+            const employees = reservationsForDate
                 .map((reservation: any) => {
                     const formData = reservation.formData
 
@@ -329,6 +362,16 @@ router.get(
                     const hasConsecutiveDays =
                         hasMoreThan1ConsecutiveDay(reserveDaysArray)
 
+                    // Check if this employee is truly ending today or if reservation continues
+                    const employeeReservations =
+                        reservationsByEmployee.get(employeeId) || []
+                    const isEndingToday = isEmployeeEndingToday(
+                        reservation,
+                        employeeReservations,
+                        date,
+                        hasConsecutiveDays
+                    )
+
                     return {
                         _id: employeeId,
                         employeeId: employeeId,
@@ -344,8 +387,7 @@ router.get(
                         startDate: formData.startDate,
                         endDate: formData.endDate,
                         isStartingToday: formData.startDate === date,
-                        isEndingToday:
-                            formData.endDate === date && hasConsecutiveDays,
+                        isEndingToday: isEndingToday,
                         isAttendanceRequired: true,
                         hasAttended:
                             formData.attendance &&

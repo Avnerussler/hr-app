@@ -6,6 +6,9 @@
         "dev": "nodemon src/server.ts",
         "build": "tsc",
         "start": "node dist/server.js",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage",
         "import:personnel": "ts-node src/scripts/runPersonnelImport.ts",
         "import:reserveDays": "ts-node src/scripts/runReserveDaysImport.ts",
         "delete:reserveDays": "ts-node src/scripts/deleteReserveDaysData.ts",
@@ -35,13 +38,16 @@
     "devDependencies": {
         "@types/cors": "^2.8.17",
         "@types/express": "^5.0.0",
+        "@types/jest": "^29.5.14",
         "@types/joi": "^17.2.2",
         "@types/minio": "^7.1.0",
         "@types/mongoose": "^5.11.96",
         "@types/multer": "^1.4.12",
         "@types/node": "^22.13.4",
         "@types/uuid": "^10.0.0",
+        "jest": "^29.7.0",
         "nodemon": "^3.1.9",
+        "ts-jest": "^29.2.5",
         "ts-node": "^10.9.2",
         "typescript": "^5.7.3"
     }
