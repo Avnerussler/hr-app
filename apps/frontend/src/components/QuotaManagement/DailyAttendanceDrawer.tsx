@@ -1,4 +1,4 @@
-import { VStack, HStack, Text, Box, Button } from '@chakra-ui/react'
+import { VStack, HStack, Text, Box, Button, Input } from '@chakra-ui/react'
 import {
     DrawerRoot,
     DrawerContent,
@@ -126,6 +126,40 @@ export function DailyAttendanceDrawer({
     const handleFilterClick = (filter: FilterType) => {
         setActiveFilter(activeFilter === filter ? 'all' : filter)
     }
+
+    // Search state for employees list
+    const [searchQuery, setSearchQuery] = useState<string>('')
+
+    const employeeToSearchString = (emp: any) => {
+        if (!emp) return ''
+        const parts: string[] = []
+        if (emp.firstName) parts.push(emp.firstName)
+        if (emp.lastName) parts.push(emp.lastName)
+        if (emp.displayName) parts.push(emp.displayName)
+        if (emp.employeeNumber) parts.push(String(emp.employeeNumber))
+        if (emp.email) parts.push(emp.email)
+        if (emp.position) parts.push(emp.position)
+        if (emp.department) parts.push(emp.department)
+        if (emp._id) parts.push(emp._id)
+        // fallback: include any primitive values
+        try {
+            const extra = Object.values(emp)
+                .filter((v) => typeof v === 'string' || typeof v === 'number')
+                .map((v) => String(v))
+            parts.push(...extra)
+        } catch {
+            /* ignore */
+        }
+        return parts.join(' ').toLowerCase()
+    }
+
+    const searchedEmployees = useMemo(() => {
+        const q = searchQuery.trim().toLowerCase()
+        if (!q) return filteredEmployees
+        return filteredEmployees.filter((emp) =>
+            employeeToSearchString(emp).includes(q)
+        )
+    }, [filteredEmployees, searchQuery])
 
     const handleAttendanceToggle = async (
         employeeId: string,
@@ -258,7 +292,7 @@ export function DailyAttendanceDrawer({
                         <Box>
                             <HStack justify="space-between" mb={4}>
                                 <Text fontSize="lg" fontWeight="bold">
-                                    רשימת עובדים ({filteredEmployees.length})
+                                    רשימת עובדים ({searchedEmployees.length})
                                 </Text>
                                 {activeFilter !== 'all' && (
                                     <Button
@@ -271,6 +305,17 @@ export function DailyAttendanceDrawer({
                                 )}
                             </HStack>
 
+                            <Box mb={3}>
+                                <Input
+                                    placeholder="חפש עובדים (שם, ת.ז., מייל...)"
+                                    size="sm"
+                                    value={searchQuery}
+                                    onChange={(e) =>
+                                        setSearchQuery(e.target.value)
+                                    }
+                                />
+                            </Box>
+
                             {isLoading ? (
                                 <Box textAlign="center" p={8}>
                                     <Text>טוען נתוני עובדים...</Text>
@@ -281,17 +326,17 @@ export function DailyAttendanceDrawer({
                                         שגיאה בטעינת נתונים
                                     </Text>
                                 </Box>
-                            ) : filteredEmployees.length === 0 ? (
+                            ) : searchedEmployees.length === 0 ? (
                                 <Box textAlign="center" p={8}>
                                     <Text color="gray.500">
-                                        {activeFilter === 'all'
+                                        {activeFilter === 'all' && !searchQuery
                                             ? 'אין עובדים שצריכים להגיע היום'
                                             : 'אין עובדים בסינון זה'}
                                     </Text>
                                 </Box>
                             ) : (
                                 <VStack gap={3} align="stretch">
-                                    {filteredEmployees.map((employee) => (
+                                    {searchedEmployees.map((employee) => (
                                         <EmployeeAttendanceCard
                                             key={employee._id}
                                             employee={employee}
