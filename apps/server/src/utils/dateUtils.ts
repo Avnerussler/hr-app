@@ -66,19 +66,6 @@ export const isEmployeeEndingToday = (
     // Calculate the next day
     const nextDay = format(addDays(parseISO(date), 1), 'yyyy-MM-dd')
 
-    // Debug logging
-    console.log('=== isEmployeeEndingToday Debug ===')
-    console.log('Current reservation ID:', currentReservation._id)
-    console.log('Checking date:', date)
-    console.log('End date:', formData.endDate)
-    console.log('Start date:', formData.startDate)
-    console.log('Has consecutive days:', hasConsecutiveDays)
-    console.log('Next day:', nextDay)
-    console.log(
-        'All employee reservations count:',
-        allEmployeeReservations.length
-    )
-
     // Check if any other reservation for this employee starts on the next day
     const hasConsecutiveOrder = allEmployeeReservations.some(
         (otherRes: any) => {
@@ -98,15 +85,10 @@ export const isEmployeeEndingToday = (
 
             const otherFormData = otherRes.formData
             const startsNextDay = otherFormData.startDate === nextDay
-            console.log('Starts next day?', startsNextDay)
             // Check if the other reservation starts on the next day
             return startsNextDay
         }
     )
-
-    console.log('Has consecutive order:', hasConsecutiveOrder)
-    console.log('Result (is ending today):', !hasConsecutiveOrder)
-    console.log('=================================')
 
     // If there's a consecutive order, this is NOT ending today (continuation)
     // If there's NO consecutive order, this IS ending today
