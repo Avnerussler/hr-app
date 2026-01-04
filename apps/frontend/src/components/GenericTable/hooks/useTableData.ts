@@ -25,9 +25,10 @@ export const useTableData = ({ id }: UseTableDataProps) => {
                       _id: form._id,
                       // ensure createdAt is available for table columns
                       createdAt:
-                          (form as any).createdAt || form.formData?.createdAt,
+                          (form as any).createdAt ||
+                          (form.formData as any)?.createdAt,
                   }))
-                : [],
+                : ([] as any[]),
         [isSuccess, submittedData]
     )
 
