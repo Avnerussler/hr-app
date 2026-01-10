@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.1.34'
+const CURRENT_VERSION = '1.1.35'
 
 export const createPersonalForm = async () => {
     try {
@@ -279,6 +279,11 @@ export const createPersonalForm = async () => {
                                     value: 'operations',
                                     label: 'אופרציה',
                                     name: 'operations',
+                                },
+                                {
+                                    value: 'performanceResearch',
+                                    label: `חק"ב`,
+                                    name: 'performanceResearch',
                                 },
                                 {
                                     value: 'other',
