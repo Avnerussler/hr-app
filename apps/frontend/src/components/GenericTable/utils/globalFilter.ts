@@ -50,7 +50,7 @@ export const globalFilter: FilterFn<FormFields> = (
             const foreignValue = rawValue as {
                 _id: string
                 display: string
-                metadata?: Record<string, any>
+                metadata?: Record<string, unknown>
             }
             searchableText = foreignValue.display
 
@@ -80,7 +80,7 @@ export const globalFilter: FilterFn<FormFields> = (
                 const foreignValues = rawValue as Array<{
                     _id: string
                     display: string
-                    metadata?: Record<string, any>
+                    metadata?: Record<string, unknown>
                 }>
                 const displays = foreignValues.map((v) => v.display)
                 searchableText = displays.join(' ')

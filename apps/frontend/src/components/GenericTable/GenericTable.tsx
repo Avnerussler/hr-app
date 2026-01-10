@@ -30,12 +30,12 @@ import { useMemo } from 'react'
 declare module '@tanstack/react-table' {
     //add fuzzy filter to the filterFns
     interface FilterFns {
-        fuzzy: FilterFn<any>
-        global: FilterFn<any>
+        fuzzy: FilterFn<unknown>
+        global: FilterFn<unknown>
     }
     //add rank sort to the sortingFns
     interface SortingFns {
-        rank: SortingFn<any>
+        rank: SortingFn<unknown>
     }
 }
 
@@ -146,7 +146,7 @@ export const GenericTable: FC<GenericTableProps> = ({
             autoSortEnabledRef.current = false
             setSorting([])
         }
-    }, [globalFilter])
+    }, [globalFilter, sorting.length, columns, setSorting])
 
     // Apply table filters to data
     const data = useMemo(() => {
