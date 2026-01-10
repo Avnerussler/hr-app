@@ -3,6 +3,14 @@ import { Box, Input, Text, Spinner } from '@chakra-ui/react'
 import { SelectItem, SelectContent } from '@/components/ui/select'
 import { createListCollection } from '@chakra-ui/react'
 import { FormattedOption } from './SelectedItemsDisplay'
+import {
+    MenuContent,
+    MenuItem,
+    MenuRoot,
+    MenuContextTrigger,
+} from '@/components/ui/menu'
+import { useNavigate } from 'react-router-dom'
+import { useFormsQuery } from '@/hooks/queries/useFormQueries'
 
 interface SelectDropdownContentProps {
     searchTerm: string
@@ -14,6 +22,7 @@ interface SelectDropdownContentProps {
     paginatedData: any
     debouncedSearch: string
     onScroll: (e: React.UIEvent<HTMLDivElement>) => void
+    foreignFormName?: string
 }
 
 export const SelectDropdownContent: FC<SelectDropdownContentProps> = ({
@@ -26,8 +35,25 @@ export const SelectDropdownContent: FC<SelectDropdownContentProps> = ({
     paginatedData,
     debouncedSearch,
     onScroll,
+    foreignFormName,
 }) => {
     const scrollContainerRef = useRef<HTMLDivElement>(null)
+    const menuPortalRef = useRef<HTMLElement | null>(null)
+    const navigate = useNavigate()
+    const { data: formsData } = useFormsQuery()
+
+    const handleNavigateToSource = (optionValue: string) => {
+        if (!foreignFormName || !optionValue) return
+
+        const targetForm = formsData?.forms?.find(
+            (form) => form.formName === foreignFormName
+        )
+        if (targetForm) {
+            navigate(
+                `/${targetForm.formName}/${targetForm._id}?selectedRecord=${optionValue}`
+            )
+        }
+    }
 
     const frameworks = (
         options: {
@@ -65,6 +91,7 @@ export const SelectDropdownContent: FC<SelectDropdownContentProps> = ({
                     value={searchTerm}
                     onChange={(e) => onSearchChange(e.target.value)}
                     onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
                 />
                 {debouncedSearch && paginatedData?.pagination && (
                     <Text fontSize="xs" color="gray.500" mt="1">
@@ -89,11 +116,45 @@ export const SelectDropdownContent: FC<SelectDropdownContentProps> = ({
                     </Box>
                 ) : displayOptions.length > 0 ? (
                     <>
-                        {frameworks(displayOptions).items.map((option) => (
-                            <SelectItem item={option} key={option.value}>
-                                <FormattedOption option={option} />
-                            </SelectItem>
-                        ))}
+                        {frameworks(displayOptions).items.map((option) =>
+                            foreignFormName ? (
+                                <MenuRoot key={option.value}>
+                                    <MenuContextTrigger asChild>
+                                        <Box w="full">
+                                            <SelectItem item={option}>
+                                                <FormattedOption
+                                                    option={option}
+                                                />
+                                            </SelectItem>
+                                        </Box>
+                                    </MenuContextTrigger>
+                                    <MenuContent
+                                        portalled={true}
+                                        portalRef={
+                                            menuPortalRef as unknown as React.RefObject<HTMLElement>
+                                        }
+                                        bg="white"
+                                        boxShadow="md"
+                                        borderRadius="md"
+                                    >
+                                        <MenuItem
+                                            value="navigate"
+                                            onClick={() =>
+                                                handleNavigateToSource(
+                                                    option.value
+                                                )
+                                            }
+                                        >
+                                            Navigate to Source
+                                        </MenuItem>
+                                    </MenuContent>
+                                </MenuRoot>
+                            ) : (
+                                <SelectItem item={option} key={option.value}>
+                                    <FormattedOption option={option} />
+                                </SelectItem>
+                            )
+                        )}
                         {/* Infinite scroll loading indicator */}
                         {isOpen && paginatedData?.pagination?.hasMore && (
                             <Box p="2" textAlign="center" minH="40px">
@@ -125,6 +186,8 @@ export const SelectDropdownContent: FC<SelectDropdownContentProps> = ({
                     </Box>
                 )}
             </Box>
+            {/* Portal container for context menus (used by MenuContent.portalRef) */}
+            <Box as="div" ref={menuPortalRef} />
         </SelectContent>
     )
 }

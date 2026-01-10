@@ -149,6 +149,7 @@ export const ControlledEnhancedMultipleSelectField: FC<
                                 paginatedData={paginatedData}
                                 debouncedSearch={searchTerm}
                                 onScroll={handleScroll}
+                                foreignFormName={props.foreignFormName}
                             />
                         </SelectRoot>
                     </Field.Root>

@@ -47,6 +47,11 @@ jobs:
       cd apps/frontend
       npm run build
 
+   - name: Run server tests
+     run: |
+      cd apps/server
+      npm test
+
    - name: Run server build
      run: |
       cd apps/server

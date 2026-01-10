@@ -41,9 +41,15 @@ interface GenericTableProps {
     withIndex?: boolean
     onRowClick?: (rowId: string) => void
     filters?: TableFilter[]
+    showCreatedAt?: boolean
 }
 
-export const GenericTable: FC<GenericTableProps> = ({ id, onRowClick, filters }) => {
+export const GenericTable: FC<GenericTableProps> = ({
+    id,
+    onRowClick,
+    filters,
+    showCreatedAt,
+}) => {
     const [searchParams] = useSearchParams()
     const [pagination, setPagination] = useState(() => ({
         pageIndex: Math.max(0, parseInt(searchParams.get('page') || '1') - 1), // URL pages are 1-based, table is 0-based
@@ -77,12 +83,21 @@ export const GenericTable: FC<GenericTableProps> = ({ id, onRowClick, filters })
     } = useTableState({ id })
 
     const { formFields, data: rawData, isSuccess } = useTableData({ id })
-    const { columns } = useTableColumns({ formFields, isSuccess })
+    const { columns } = useTableColumns({
+        formFields,
+        isSuccess,
+        showCreatedAt,
+    })
     const { data: formsData } = useFormsQuery()
 
     // Apply table filters to data
     const data = useMemo(() => {
-        if (!filters || filters.length === 0 || !tableFilters || Object.keys(tableFilters).length === 0) {
+        if (
+            !filters ||
+            filters.length === 0 ||
+            !tableFilters ||
+            Object.keys(tableFilters).length === 0
+        ) {
             return rawData
         }
 
@@ -109,25 +124,41 @@ export const GenericTable: FC<GenericTableProps> = ({ id, onRowClick, filters })
 
                 if (filter.type === 'multiSelect') {
                     // If it's a multiselect and no values selected, show all
-                    if (!Array.isArray(filterValue) || filterValue.length === 0) {
+                    if (
+                        !Array.isArray(filterValue) ||
+                        filterValue.length === 0
+                    ) {
                         return true
                     }
 
                     // If rowValue is an array (e.g., assignedProjects with multiple projects), check if any of its values match any filter value
                     if (Array.isArray(rowValue)) {
                         return rowValue.some((val: unknown) => {
-                            const stringVal = typeof val === 'object' && val !== null && '_id' in val
-                                ? String((val as { _id: unknown })._id)
-                                : typeof val === 'object' && val !== null && 'value' in val
-                                ? String((val as { value: unknown }).value)
-                                : String(val)
+                            const stringVal =
+                                typeof val === 'object' &&
+                                val !== null &&
+                                '_id' in val
+                                    ? String((val as { _id: unknown })._id)
+                                    : typeof val === 'object' &&
+                                        val !== null &&
+                                        'value' in val
+                                      ? String(
+                                            (val as { value: unknown }).value
+                                        )
+                                      : String(val)
                             return filterValue.includes(stringVal)
                         })
                     }
 
                     // If rowValue is an object with _id (e.g., single project assignment), extract the _id
-                    if (typeof rowValue === 'object' && rowValue !== null && '_id' in rowValue) {
-                        const idValue = String((rowValue as { _id: unknown })._id)
+                    if (
+                        typeof rowValue === 'object' &&
+                        rowValue !== null &&
+                        '_id' in rowValue
+                    ) {
+                        const idValue = String(
+                            (rowValue as { _id: unknown })._id
+                        )
                         return filterValue.includes(idValue)
                     }
 
@@ -141,12 +172,15 @@ export const GenericTable: FC<GenericTableProps> = ({ id, onRowClick, filters })
     }, [rawData, filters, tableFilters])
 
     // Handle filter changes
-    const handleFilterChange = useCallback((filterId: string, value: string | string[] | boolean) => {
-        setTableFilters((prev) => ({
-            ...prev,
-            [filterId]: value,
-        }))
-    }, [setTableFilters])
+    const handleFilterChange = useCallback(
+        (filterId: string, value: string | string[] | boolean) => {
+            setTableFilters((prev) => ({
+                ...prev,
+                [filterId]: value,
+            }))
+        },
+        [setTableFilters]
+    )
 
     const table = useReactTable<Record<string, unknown>>({
         defaultColumn: {

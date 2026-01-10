@@ -184,58 +184,132 @@ router.get(
                 fieldConfig.foreignFields &&
                 fieldConfig.foreignFields.length > 0
             ) {
-                // Search across all foreign fields (both string and numeric)
-                const searchConditions = fieldConfig.foreignFields.flatMap(
-                    (fieldName: string) => {
-                        const conditions: any[] = [
-                            // String regex search (case-insensitive)
-                            {
-                                [`formData.${fieldName}`]: {
-                                    $regex: search,
-                                    $options: 'i',
-                                },
-                            },
-                        ]
+                // Split search term by spaces to support multi-field search (e.g., "John Doe")
+                // Trim the entire search term and split by one or more spaces, filtering empty strings
+                const searchWords = search
+                    .trim()
+                    .split(/\s+/)
+                    .filter((word) => word.trim().length > 0)
 
-                        // If search term is numeric, also search for partial matches in numeric fields
-                        const numericSearch = Number(search)
-                        if (!isNaN(numericSearch) && search.trim() !== '') {
-                            // Use $expr with $toString to search numeric fields as strings for partial matches
-                            conditions.push({
-                                $expr: {
-                                    $regexMatch: {
-                                        input: {
-                                            $toString: `$formData.${fieldName}`,
+                if (searchWords.length > 1) {
+                    // Multi-word search: each word must match at least one field (AND logic across words)
+                    searchQuery.$and = searchWords.map((word: string) => {
+                        const wordConditions =
+                            fieldConfig.foreignFields.flatMap(
+                                (fieldName: string) => {
+                                    const conditions: any[] = [
+                                        // String regex search (case-insensitive)
+                                        {
+                                            [`formData.${fieldName}`]: {
+                                                $regex: word,
+                                                $options: 'i',
+                                            },
                                         },
-                                        regex: search,
-                                        options: 'i',
+                                    ]
+
+                                    // If word is numeric, also search for partial matches in numeric fields
+                                    const numericSearch = Number(word)
+                                    if (
+                                        !isNaN(numericSearch) &&
+                                        word.trim() !== ''
+                                    ) {
+                                        conditions.push({
+                                            $expr: {
+                                                $regexMatch: {
+                                                    input: {
+                                                        $toString: `$formData.${fieldName}`,
+                                                    },
+                                                    regex: word,
+                                                    options: 'i',
+                                                },
+                                            },
+                                        })
+                                    }
+
+                                    // If word is boolean-like, also search as boolean
+                                    if (word.toLowerCase() === 'true') {
+                                        conditions.push({
+                                            [`formData.${fieldName}`]: true,
+                                        })
+                                        conditions.push({
+                                            [`formData.${fieldName}`]: 'true',
+                                        })
+                                    } else if (word.toLowerCase() === 'false') {
+                                        conditions.push({
+                                            [`formData.${fieldName}`]: false,
+                                        })
+                                        conditions.push({
+                                            [`formData.${fieldName}`]: 'false',
+                                        })
+                                    }
+
+                                    return conditions
+                                }
+                            )
+
+                        return { $or: wordConditions }
+                    })
+                } else {
+                    // Single word search: OR logic across all fields
+                    // Use the cleaned search word instead of the original search term
+                    const cleanedSearch = searchWords[0] || search.trim()
+                    const searchConditions = fieldConfig.foreignFields.flatMap(
+                        (fieldName: string) => {
+                            const conditions: any[] = [
+                                // String regex search (case-insensitive)
+                                {
+                                    [`formData.${fieldName}`]: {
+                                        $regex: cleanedSearch,
+                                        $options: 'i',
                                     },
                                 },
-                            })
+                            ]
+
+                            // If search term is numeric, also search for partial matches in numeric fields
+                            const numericSearch = Number(cleanedSearch)
+                            if (
+                                !isNaN(numericSearch) &&
+                                cleanedSearch.trim() !== ''
+                            ) {
+                                // Use $expr with $toString to search numeric fields as strings for partial matches
+                                conditions.push({
+                                    $expr: {
+                                        $regexMatch: {
+                                            input: {
+                                                $toString: `$formData.${fieldName}`,
+                                            },
+                                            regex: cleanedSearch,
+                                            options: 'i',
+                                        },
+                                    },
+                                })
+                            }
+
+                            // If search term is boolean-like, also search as boolean
+                            if (cleanedSearch.toLowerCase() === 'true') {
+                                conditions.push({
+                                    [`formData.${fieldName}`]: true,
+                                })
+                                conditions.push({
+                                    [`formData.${fieldName}`]: 'true',
+                                })
+                            } else if (
+                                cleanedSearch.toLowerCase() === 'false'
+                            ) {
+                                conditions.push({
+                                    [`formData.${fieldName}`]: false,
+                                })
+                                conditions.push({
+                                    [`formData.${fieldName}`]: 'false',
+                                })
+                            }
+
+                            return conditions
                         }
+                    )
 
-                        // If search term is boolean-like, also search as boolean
-                        if (search.toLowerCase() === 'true') {
-                            conditions.push({
-                                [`formData.${fieldName}`]: true,
-                            })
-                            conditions.push({
-                                [`formData.${fieldName}`]: 'true',
-                            })
-                        } else if (search.toLowerCase() === 'false') {
-                            conditions.push({
-                                [`formData.${fieldName}`]: false,
-                            })
-                            conditions.push({
-                                [`formData.${fieldName}`]: 'false',
-                            })
-                        }
-
-                        return conditions
-                    }
-                )
-
-                searchQuery.$or = searchConditions
+                    searchQuery.$or = searchConditions
+                }
             } else if (search && fieldConfig.foreignField) {
                 // Fallback to single foreignField
                 const conditions: any[] = [
@@ -538,7 +612,10 @@ router.get('/:id', async (req: Request, res: Response) => {
                         // Enhanced select with multiple fields
                         field.options = field.foreignData.map((doc: any) => {
                             const label = field.foreignFields
-                                .map((fieldName: string) => doc.formData[fieldName])
+                                .map(
+                                    (fieldName: string) =>
+                                        doc.formData[fieldName]
+                                )
                                 .filter(Boolean)
                                 .join(' ')
 

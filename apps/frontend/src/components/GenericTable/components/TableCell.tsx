@@ -143,6 +143,14 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
         return <TextAreaCell text={value} />
     }
 
+    if (field.type === 'date' && value) {
+        return (
+            <Text color="foreground" fontSize="sm">
+                {String(value)}
+            </Text>
+        )
+    }
+
     if (field.type === 'file' && value) {
         return (
             <Link

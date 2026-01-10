@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.2.6'
+const CURRENT_VERSION = '1.2.7'
 
 export const createStudioForm = async () => {
     try {
@@ -95,6 +95,7 @@ export const createStudioForm = async () => {
                 'projectManager',
                 'projectPersonnel',
                 'projectStatus',
+                'createdAt',
             ],
         }
 

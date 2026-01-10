@@ -21,10 +21,14 @@ export const useTableData = ({ id }: UseTableDataProps) => {
         () =>
             isSuccess && submittedData?.forms?.length
                 ? submittedData.forms.flatMap((form) => ({
-                    ...form.formData,
-                    _id: form._id
-                }))
-                : [],
+                      ...form.formData,
+                      _id: form._id,
+                      // ensure createdAt is available for table columns
+                      createdAt:
+                          (form as any).createdAt ||
+                          (form.formData as any)?.createdAt,
+                  }))
+                : ([] as any[]),
         [isSuccess, submittedData]
     )
 

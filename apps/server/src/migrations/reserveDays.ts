@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.0.15'
+const CURRENT_VERSION = '1.0.16'
 
 export const createReserveDaysForm = async () => {
     try {
@@ -209,6 +209,7 @@ export const createReserveDaysForm = async () => {
                 'startDate',
                 'endDate',
                 'isActive',
+                'createdAt',
             ],
             filters: [
                 {
