@@ -115,7 +115,7 @@ export const GenericTable: FC<GenericTableProps> = ({
 
     const sortingFns = useMemo(
         () => ({
-            rank: rankSort,
+            rank: rankSort as SortingFn<unknown>,
         }),
         []
     )
