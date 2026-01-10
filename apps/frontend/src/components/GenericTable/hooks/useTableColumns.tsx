@@ -65,6 +65,7 @@ export const useTableColumns = ({
                         id: field._id,
                         enableSorting: true,
                         enableColumnFilter: true,
+                        sortingFn: 'rank',
                         meta: {
                             filterVariant:
                                 field.type === 'number'

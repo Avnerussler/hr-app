@@ -8,6 +8,7 @@ import {
     FilterFn,
 } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
+import { rankSort } from '@/components/GenericTable/utils/rankSort'
 
 // Simple fuzzy filter for statistics
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -90,6 +91,9 @@ export function StatisticsTable({
             fuzzy: fuzzyFilter,
             global: globalFilter,
         },
+        sortingFns: {
+            rank: rankSort,
+        },
     })
 
     if (isLoading) {
@@ -130,7 +134,11 @@ export function StatisticsTable({
                 <Flex align="center" gap={2}>
                     {icon && <Box color="blue.600">{icon}</Box>}
                     <Box flex="1">
-                        <Text fontSize="lg" fontWeight="semibold" color="gray.800">
+                        <Text
+                            fontSize="lg"
+                            fontWeight="semibold"
+                            color="gray.800"
+                        >
                             {title}
                         </Text>
                         {description && (
@@ -142,7 +150,12 @@ export function StatisticsTable({
                 </Flex>
             </Box>
 
-            <Box position="relative" w="full" overflowX="auto" overflowY="hidden">
+            <Box
+                position="relative"
+                w="full"
+                overflowX="auto"
+                overflowY="hidden"
+            >
                 <Box as="table" w="full" fontSize="sm" minW="fit-content">
                     <Box as="thead">
                         {table.getHeaderGroups().map((headerGroup) => (

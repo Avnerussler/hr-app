@@ -8,9 +8,9 @@ import {
     getFacetedMinMaxValues,
     getPaginationRowModel,
 } from '@tanstack/react-table'
-import { FC, useEffect, useCallback, useState } from 'react'
+import { FC, useEffect, useCallback, useState, useRef } from 'react'
 import { VStack } from '@chakra-ui/react'
-import { FilterFn } from '@tanstack/react-table'
+import { FilterFn, SortingFn } from '@tanstack/react-table'
 import { useSearchParams } from 'react-router-dom'
 
 import { useTableState } from './hooks/useTableState'
@@ -19,6 +19,7 @@ import { useTableColumns } from './hooks/useTableColumns'
 import { useFormsQuery } from '@/hooks/queries/useFormQueries'
 import { fuzzyFilter } from './utils/fuzzyFilter'
 import { globalFilter as customGlobalFilter } from './utils/globalFilter'
+import { rankSort } from './utils/rankSort'
 import { exportToExcel } from './utils/exportToExcel'
 import { TableControls } from './components/TableControls'
 import { TableContainer } from './components/TableContainer'
@@ -29,8 +30,12 @@ import { useMemo } from 'react'
 declare module '@tanstack/react-table' {
     //add fuzzy filter to the filterFns
     interface FilterFns {
-        fuzzy: FilterFn<any>
-        global: FilterFn<any>
+        fuzzy: FilterFn<unknown>
+        global: FilterFn<unknown>
+    }
+    //add rank sort to the sortingFns
+    interface SortingFns {
+        rank: SortingFn<unknown>
     }
 }
 
@@ -89,6 +94,59 @@ export const GenericTable: FC<GenericTableProps> = ({
         showCreatedAt,
     })
     const { data: formsData } = useFormsQuery()
+
+    // Memoize table configuration objects to prevent re-renders
+    const defaultColumn = useMemo(
+        () => ({
+            size: 100,
+            minSize: 50,
+            maxSize: 100,
+        }),
+        []
+    )
+
+    const filterFns = useMemo(
+        () => ({
+            fuzzy: fuzzyFilter,
+            global: customGlobalFilter,
+        }),
+        []
+    )
+
+    const sortingFns = useMemo(
+        () => ({
+            rank: rankSort as SortingFn<unknown>,
+        }),
+        []
+    )
+
+    // Track if we auto-enabled sorting
+    const autoSortEnabledRef = useRef(false)
+    const previousGlobalFilterRef = useRef('')
+
+    // Auto-sort by rank when global filter becomes active
+    useEffect(() => {
+        const wasFiltering = !!previousGlobalFilterRef.current
+        const isFiltering = !!globalFilter
+        previousGlobalFilterRef.current = globalFilter
+
+        // When filter starts: auto-sort by first column if not manually sorted
+        if (
+            !wasFiltering &&
+            isFiltering &&
+            sorting.length === 0 &&
+            columns.length > 0
+        ) {
+            autoSortEnabledRef.current = true
+            setSorting([{ id: columns[0].id as string, desc: false }])
+        }
+
+        // When filter clears: remove auto-sort if it was auto-enabled
+        if (wasFiltering && !isFiltering && autoSortEnabledRef.current) {
+            autoSortEnabledRef.current = false
+            setSorting([])
+        }
+    }, [globalFilter, sorting.length, columns, setSorting])
 
     // Apply table filters to data
     const data = useMemo(() => {
@@ -183,11 +241,7 @@ export const GenericTable: FC<GenericTableProps> = ({
     )
 
     const table = useReactTable<Record<string, unknown>>({
-        defaultColumn: {
-            size: 100,
-            minSize: 50,
-            maxSize: 100,
-        },
+        defaultColumn,
         columnResizeDirection: 'rtl',
         data,
         columns,
@@ -209,10 +263,8 @@ export const GenericTable: FC<GenericTableProps> = ({
         onColumnFiltersChange: setColumnFilters,
         onPaginationChange: setPagination,
         globalFilterFn: 'global',
-        filterFns: {
-            fuzzy: fuzzyFilter,
-            global: customGlobalFilter,
-        },
+        filterFns,
+        sortingFns,
         enableSorting: true,
         enableColumnFilters: true,
         enableGlobalFilter: true,

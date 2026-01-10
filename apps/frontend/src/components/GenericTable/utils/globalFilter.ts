@@ -36,42 +36,83 @@ export const globalFilter: FilterFn<FormFields> = (
         // Convert value to searchable text
         let searchableText = ''
 
-        // Handle enhancedSelect/enhancedMultipleSelect format: {_id, display, metadata}
+        // Skip if value is null or undefined
+        if (rawValue == null) {
+            return
+        }
+
+        // Handle enhancedSelect format: {_id, display, metadata}
         if (
             typeof rawValue === 'object' &&
-            rawValue != null &&
             !Array.isArray(rawValue) &&
             'display' in rawValue
         ) {
-            const foreignValue = rawValue as { _id: string; display: string; metadata?: Record<string, any> }
+            const foreignValue = rawValue as {
+                _id: string
+                display: string
+                metadata?: Record<string, unknown>
+            }
             searchableText = foreignValue.display
-        } else if (options.length > 0 && Array.isArray(rawValue)) {
-            // Handle multipleSelect with array values
+
+            // Also search metadata fields if they exist
+            if (foreignValue.metadata) {
+                const metadataText = Object.values(foreignValue.metadata)
+                    .filter((v) => v != null && typeof v !== 'object')
+                    .map((v) => String(v))
+                    .join(' ')
+                if (metadataText) {
+                    searchableText += ' ' + metadataText
+                }
+            }
+        }
+        // Handle arrays - check for enhanced format first
+        else if (Array.isArray(rawValue)) {
+            if (rawValue.length === 0) {
+                return
+            }
+
             // Check if it's enhancedMultipleSelect format (array of {_id, display})
-            if (rawValue.length > 0 && typeof rawValue[0] === 'object' && rawValue[0] != null && 'display' in rawValue[0]) {
-                const foreignValues = rawValue as Array<{ _id: string; display: string; metadata?: Record<string, any> }>
-                searchableText = foreignValues.map(v => v.display).join(' ')
-            } else {
-                // Standard multipleSelect with string values
+            if (
+                typeof rawValue[0] === 'object' &&
+                rawValue[0] != null &&
+                'display' in rawValue[0]
+            ) {
+                const foreignValues = rawValue as Array<{
+                    _id: string
+                    display: string
+                    metadata?: Record<string, unknown>
+                }>
+                const displays = foreignValues.map((v) => v.display)
+                searchableText = displays.join(' ')
+            }
+            // Handle standard multipleSelect with string values and options
+            else if (options.length > 0 && typeof rawValue[0] === 'string') {
                 const matchingLabels = rawValue
                     .map(
                         (val: string) =>
-                            options.find((option) => option.value === val)?.label
+                            options.find((option) => option.value === val)
+                                ?.label
                     )
                     .filter(Boolean)
                 searchableText = matchingLabels.join(' ')
             }
-        } else if (options.length > 0 && typeof rawValue === 'string') {
-            // Handle select fields
+            // Handle other primitive arrays
+            else {
+                searchableText = rawValue
+                    .filter((v) => v != null)
+                    .map((v) => String(v))
+                    .join(' ')
+            }
+        }
+        // Handle select fields with options
+        else if (options.length > 0 && typeof rawValue === 'string') {
             const matchingOption = options.find((option) =>
-                rawValue?.includes(option.value)
+                rawValue.includes(option.value)
             )
             searchableText = matchingOption?.label || rawValue
-        } else if (Array.isArray(rawValue)) {
-            // Handle other array values
-            searchableText = rawValue.map((v) => String(v)).join(' ')
-        } else if (rawValue != null) {
-            // Handle primitive values
+        }
+        // Handle primitive values (string, number, boolean)
+        else {
             searchableText = String(rawValue)
         }
 
@@ -80,16 +121,41 @@ export const globalFilter: FilterFn<FormFields> = (
         }
     })
 
-    // Combine all searchable text
-    const combinedText = searchableTexts.join(' ')
+    // Rank each field individually and keep the BEST rank
+    // This ensures exact matches in specific fields (like "אברהם לוי" in firstName + lastName) rank highest
+    let bestRank = rankItem('', value) // Start with no match
+    const rankedFields: Array<{ text: string; rank: number }> = []
 
-    // Rank the combined text against the search value
-    const itemRank = rankItem(combinedText, value)
-
-    // Add meta data
-    addMeta({
-        itemRank,
+    // Rank individual fields
+    searchableTexts.forEach((text) => {
+        const fieldRank = rankItem(text, value)
+        if (fieldRank.passed) {
+            rankedFields.push({ text, rank: fieldRank.rankedValue })
+            // Keep the best rank
+            if (fieldRank.rankedValue > bestRank.rankedValue) {
+                bestRank = fieldRank
+            }
+        }
     })
 
-    return itemRank.passed
+    // Also rank combinations of adjacent fields (for firstName + lastName matches)
+    for (let i = 0; i < searchableTexts.length - 1; i++) {
+        const combined = searchableTexts[i] + ' ' + searchableTexts[i + 1]
+        const combinedRank = rankItem(combined, value)
+        if (
+            combinedRank.passed &&
+            combinedRank.rankedValue > bestRank.rankedValue
+        ) {
+            rankedFields.push({
+                text: combined,
+                rank: combinedRank.rankedValue,
+            })
+            bestRank = combinedRank
+        }
+    }
+
+    // Store the best ranking info in meta under 'global' key
+    addMeta(bestRank)
+
+    return bestRank.passed
 }
