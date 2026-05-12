@@ -13,8 +13,8 @@ frontend:
   service:
     type: LoadBalancer
     port: 80
-  env: {}
-  # VITE_BASE_URL: "http://chart-hr-app-backend"
+  env:
+    BACKEND_URL: "http://chart-hr-app-backend:8080"
 
   resources: {}
   # limits:
