@@ -81,6 +81,7 @@ export const useCreateFormSubmission = (
                 title: 'Success',
                 description: 'Form submitted successfully',
                 duration: 5000,
+                closable: true,
             })
         },
         onError(error: any) {
@@ -88,9 +89,12 @@ export const useCreateFormSubmission = (
 
             if (error.response?.status === 409) {
                 toaster.error({
-                    title: 'הזמנה חופפת',
-                    description: error.response.data?.message ?? 'לעובד זה כבר קיימת הזמנה חופפת בתאריכים אלו',
+                    title: 'צו חופף',
+                    description:
+                        error.response.data?.message ??
+                        'לעובד זה כבר קיים צו חופף בתאריכים אלו',
                     duration: 8000,
+                    closable: true,
                 })
             } else if (
                 error.response?.status === 400 &&
@@ -114,12 +118,14 @@ export const useCreateFormSubmission = (
                         title: 'שגיאת ולידציה',
                         description: validationError.message,
                         duration: 8000,
+                        closable: true,
                     })
                 })
             } else {
                 toaster.error({
                     title: 'שגיאה',
                     description: 'שליחת הטופס נכשלה. אנא נסה שוב.',
+                    closable: true,
                 })
             }
         },
@@ -192,7 +198,8 @@ export const useUpdateFormSubmission = (
             toaster.success({
                 title: 'Success',
                 description: 'Form updated successfully',
-                duration: 5000,
+                duration: 3000,
+                closable: true,
             })
         },
         onError(error: any) {
@@ -200,9 +207,12 @@ export const useUpdateFormSubmission = (
 
             if (error.response?.status === 409) {
                 toaster.error({
-                    title: 'הזמנה חופפת',
-                    description: error.response.data?.message ?? 'לעובד זה כבר קיימת הזמנה חופפת בתאריכים אלו',
-                    duration: 8000,
+                    title: 'צו חופף',
+                    description:
+                        error.response.data?.message ??
+                        'לעובד זה כבר קיימת צו חופף בתאריכים אלו',
+                    duration: 3000,
+                    closable: true,
                 })
             } else if (
                 error.response?.status === 400 &&
@@ -226,6 +236,7 @@ export const useUpdateFormSubmission = (
                         title: 'שגיאת ולידציה',
                         description: validationError.message,
                         duration: 8000,
+                        closable: true,
                     })
                 })
             } else {
@@ -233,6 +244,7 @@ export const useUpdateFormSubmission = (
                     title: 'שגיאה',
                     description: 'עדכון הטופס נכשל. אנא נסה שוב.',
                     duration: 5000,
+                    closable: true,
                 })
             }
         },
@@ -298,6 +310,7 @@ export const useDeleteFormSubmission = () => {
                 title: 'Success',
                 description: 'Form deleted successfully',
                 duration: 5000,
+                closable: true,
             })
         },
         onError(error) {
@@ -307,6 +320,7 @@ export const useDeleteFormSubmission = () => {
                 title: 'Error',
                 description: 'Failed to delete form. Please try again.',
                 duration: 5000,
+                closable: true,
             })
         },
     })
