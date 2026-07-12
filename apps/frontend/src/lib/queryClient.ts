@@ -44,7 +44,7 @@ export const queryClient = new QueryClient({
                 console.error('Mutation Error:', error)
             },
             onSuccess: () => {},
-            throwOnError: true,
+            throwOnError: false,
             mutationFn: defaultMutationFn as MutationFunction<unknown, unknown>,
         },
     },

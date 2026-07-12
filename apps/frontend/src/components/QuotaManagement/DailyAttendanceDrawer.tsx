@@ -8,7 +8,7 @@ import {
     DrawerTitle,
     DrawerCloseTrigger,
 } from '../ui/drawer'
-import { useMemo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { format } from 'date-fns'
 import { he } from 'date-fns/locale'
 import {
@@ -20,6 +20,7 @@ import {
 } from 'react-icons/fa'
 import { MetricCard } from '../common/MetricCard'
 import { EmployeeAttendanceCard } from './EmployeeAttendanceCard'
+import { AttendanceReportModal } from './AttendanceReportModal'
 import {
     useEmployeeAttendanceQuery,
     useManagerReportStatusQuery,
@@ -28,8 +29,13 @@ import {
     useUpdateIndividualAttendanceMutation,
     useManagerReportMutation,
 } from '@/hooks/mutations'
-
-import type { EmployeeAttendance } from '@/hooks/queries'
+import {
+    PaginationRoot,
+    PaginationItems,
+    PaginationPrevTrigger,
+    PaginationNextTrigger,
+} from '../ui/pagination'
+import useDebounce from '@/hooks/useDebounce'
 
 interface DailyAttendanceDrawerProps {
     isOpen: boolean
@@ -41,132 +47,178 @@ type FilterType =
     | 'all'
     | 'starting'
     | 'ending'
-    | 'total'
     | 'attended'
     | 'internal'
     | 'external'
+
+const PAGE_SIZE = 30
+
+const FILTER_LABELS: Record<FilterType, string> = {
+    all: 'כל העובדים',
+    starting: 'מתחילים היום',
+    ending: 'מסיימים היום',
+    attended: 'הגיעו בפועל',
+    internal: 'מימון פנימי',
+    external: 'מימון חיצוני',
+}
+
+interface StatsProps {
+    startingToday: number
+    endingToday: number
+    totalRequired: number
+    totalAttended: number
+    internalCount: number
+    externalCount: number
+    activeFilter: FilterType
+    onFilterClick: (filter: FilterType) => void
+}
+
+const AttendanceStats = memo(function AttendanceStats({
+    startingToday,
+    endingToday,
+    totalRequired,
+    totalAttended,
+    internalCount,
+    externalCount,
+    activeFilter,
+    onFilterClick,
+}: StatsProps) {
+    return (
+        <Box>
+            <Text fontSize="lg" fontWeight="bold" mb={4}>
+                סטטיסטיקות יומיות
+            </Text>
+            <HStack gap={4} wrap="wrap">
+                <MetricCard
+                    label="מתחילים היום"
+                    value={startingToday}
+                    icon={FaSignInAlt}
+                    color="green"
+                    onClick={() => onFilterClick('starting')}
+                    isActive={activeFilter === 'starting'}
+                />
+                <MetricCard
+                    label="מסיימים היום"
+                    value={endingToday}
+                    icon={FaSignOutAlt}
+                    color="orange"
+                    onClick={() => onFilterClick('ending')}
+                    isActive={activeFilter === 'ending'}
+                />
+                <MetricCard
+                    label="סה״כ נדרשים"
+                    value={totalRequired}
+                    icon={FaUsers}
+                    color="blue"
+                    onClick={() => onFilterClick('all')}
+                    isActive={activeFilter === 'all'}
+                />
+                <MetricCard
+                    label="הגיעו בפועל"
+                    value={totalAttended}
+                    icon={FaCalendarCheck}
+                    color={totalAttended === totalRequired ? 'green' : 'purple'}
+                    onClick={() => onFilterClick('attended')}
+                    isActive={activeFilter === 'attended'}
+                />
+                <MetricCard
+                    label="מימון פנימי"
+                    value={internalCount}
+                    icon={FaBuilding}
+                    color="teal"
+                    onClick={() => onFilterClick('internal')}
+                    isActive={activeFilter === 'internal'}
+                />
+                <MetricCard
+                    label="מימון חיצוני"
+                    value={externalCount}
+                    icon={FaBuilding}
+                    color="cyan"
+                    onClick={() => onFilterClick('external')}
+                    isActive={activeFilter === 'external'}
+                />
+            </HStack>
+        </Box>
+    )
+})
 
 export function DailyAttendanceDrawer({
     isOpen,
     onClose,
     selectedDate,
 }: DailyAttendanceDrawerProps) {
-    // Filter state
     const [activeFilter, setActiveFilter] = useState<FilterType>('all')
+    const [searchQuery, setSearchQuery] = useState<string>('')
+    const [page, setPage] = useState(1)
+    const [isReportOpen, setIsReportOpen] = useState(false)
 
-    // Initialize mutations
+    const debouncedSearch = useDebounce(searchQuery, 300)
+
     const updateIndividualMutation = useUpdateIndividualAttendanceMutation()
     const managerReportMutation = useManagerReportMutation()
 
-    // Fetch real employee data for the selected date
+    // Stats query — always fetches full-day totals, never re-fetches on filter/page change
+    const { data: statsData } = useEmployeeAttendanceQuery({
+        date: selectedDate,
+        filter: 'all',
+        search: '',
+        page: 1,
+        limit: 1,
+    })
+
+    // List query — responds to filter, search, and page
     const {
         data: attendanceData,
         isLoading,
         error,
-    } = useEmployeeAttendanceQuery(selectedDate)
+    } = useEmployeeAttendanceQuery({
+        date: selectedDate,
+        filter: activeFilter,
+        search: debouncedSearch,
+        page,
+        limit: PAGE_SIZE,
+    })
 
-    // Check if manager has already reported for this date
     const { data: managerReportStatus, isLoading: isLoadingManagerStatus } =
         useManagerReportStatusQuery(selectedDate)
 
-    const employees: EmployeeAttendance[] = attendanceData?.employees || []
-    const apiStats = attendanceData?.statistics
-
-    // Calculate internal and external counts
-    const internalCount = useMemo(
-        () =>
-            employees.filter((emp) => emp.fundingSource === 'internal').length,
-        [employees]
-    )
-
-    const externalCount = useMemo(
-        () =>
-            employees.filter((emp) => emp.fundingSource === 'external').length,
-        [employees]
-    )
-
-    // Use API stats directly since we save immediately
     const stats = useMemo(() => {
-        if (!apiStats) {
-            return {
-                startingToday: 0,
-                endingToday: 0,
-                totalRequired: 0,
-                totalAttended: 0,
-            }
+        const s = statsData?.statistics
+        return {
+            startingToday: s?.startingToday ?? 0,
+            endingToday: s?.endingToday ?? 0,
+            totalRequired: s?.totalRequired ?? 0,
+            totalAttended: s?.totalAttended ?? 0,
+            internalCount: s?.internalCount ?? 0,
+            externalCount: s?.externalCount ?? 0,
         }
+    }, [statsData?.statistics])
 
-        return apiStats
-    }, [apiStats])
+    const pagination = attendanceData?.pagination
+    const employees = attendanceData?.employees ?? []
 
-    // Filter employees based on active filter
-    const filteredEmployees = useMemo(() => {
-        switch (activeFilter) {
-            case 'starting':
-                return employees.filter((emp) => emp.isStartingToday)
-            case 'ending':
-                return employees.filter((emp) => emp.isEndingToday)
-            case 'attended':
-                return employees.filter((emp) => emp.hasAttended)
-            case 'internal':
-                return employees.filter(
-                    (emp) => emp.fundingSource === 'internal'
-                )
-            case 'external':
-                return employees.filter(
-                    (emp) => emp.fundingSource === 'external'
-                )
-            case 'total':
-            case 'all':
-            default:
-                return employees
-        }
-    }, [employees, activeFilter])
+    const handleClearFilter = () => {
+        setActiveFilter('all')
+        setSearchQuery('')
+        setPage(1)
+    }
 
     const handleFilterClick = (filter: FilterType) => {
-        setActiveFilter(activeFilter === filter ? 'all' : filter)
-    }
-
-    // Search state for employees list
-    const [searchQuery, setSearchQuery] = useState<string>('')
-
-    const employeeToSearchString = (emp: any) => {
-        if (!emp) return ''
-        const parts: string[] = []
-        if (emp.firstName) parts.push(emp.firstName)
-        if (emp.lastName) parts.push(emp.lastName)
-        if (emp.displayName) parts.push(emp.displayName)
-        if (emp.employeeNumber) parts.push(String(emp.employeeNumber))
-        if (emp.email) parts.push(emp.email)
-        if (emp.position) parts.push(emp.position)
-        if (emp.department) parts.push(emp.department)
-        if (emp._id) parts.push(emp._id)
-        // fallback: include any primitive values
-        try {
-            const extra = Object.values(emp)
-                .filter((v) => typeof v === 'string' || typeof v === 'number')
-                .map((v) => String(v))
-            parts.push(...extra)
-        } catch {
-            /* ignore */
+        if (filter === 'all') {
+            handleClearFilter()
+            return
         }
-        return parts.join(' ').toLowerCase()
+        const next = activeFilter === filter ? 'all' : filter
+        setActiveFilter(next)
+        setSearchQuery('')
+        setPage(1)
     }
-
-    const searchedEmployees = useMemo(() => {
-        const q = searchQuery.trim().toLowerCase()
-        if (!q) return filteredEmployees
-        return filteredEmployees.filter((emp) =>
-            employeeToSearchString(emp).includes(q)
-        )
-    }, [filteredEmployees, searchQuery])
 
     const handleAttendanceToggle = async (
         employeeId: string,
         attended: boolean
     ) => {
         try {
-            // Update immediately in DB
             await updateIndividualMutation.mutateAsync({
                 employeeId,
                 date: selectedDate,
@@ -184,13 +236,12 @@ export function DailyAttendanceDrawer({
             })
         } catch (error) {
             console.error('Failed to submit manager report:', error)
-            // Don't close drawer on error so user can retry
         }
     }
 
-    // Manager has reported if we have the status and it's true
     const hasManagerReported = managerReportStatus?.hasReported ?? false
     const isManagerReporting = managerReportMutation.isPending
+    const hasActiveFilters = activeFilter !== 'all' || searchQuery !== ''
 
     const formatDateDisplay = (dateStr: string) => {
         try {
@@ -218,87 +269,23 @@ export function DailyAttendanceDrawer({
 
                 <DrawerBody>
                     <VStack gap={6} align="stretch">
-                        {/* Statistics Cards */}
-                        <Box>
-                            <Text fontSize="lg" fontWeight="bold" mb={4}>
-                                סטטיסטיקות יומיות
-                            </Text>
-                            <HStack gap={4} wrap="wrap">
-                                <MetricCard
-                                    label="מתחילים היום"
-                                    value={stats.startingToday}
-                                    icon={FaSignInAlt}
-                                    color="green"
-                                    onClick={() =>
-                                        handleFilterClick('starting')
-                                    }
-                                    isActive={activeFilter === 'starting'}
-                                />
-                                <MetricCard
-                                    label="מסיימים היום"
-                                    value={stats.endingToday}
-                                    icon={FaSignOutAlt}
-                                    color="orange"
-                                    onClick={() => handleFilterClick('ending')}
-                                    isActive={activeFilter === 'ending'}
-                                />
-                                <MetricCard
-                                    label="סה״כ נדרשים"
-                                    value={stats.totalRequired}
-                                    icon={FaUsers}
-                                    color="blue"
-                                    onClick={() => handleFilterClick('total')}
-                                    isActive={activeFilter === 'total'}
-                                />
-                                <MetricCard
-                                    label="הגיעו בפועל"
-                                    value={stats.totalAttended}
-                                    icon={FaCalendarCheck}
-                                    color={
-                                        stats.totalAttended ===
-                                        stats.totalRequired
-                                            ? 'green'
-                                            : 'purple'
-                                    }
-                                    onClick={() =>
-                                        handleFilterClick('attended')
-                                    }
-                                    isActive={activeFilter === 'attended'}
-                                />
-                                <MetricCard
-                                    label="מימון פנימי"
-                                    value={internalCount}
-                                    icon={FaBuilding}
-                                    color="teal"
-                                    onClick={() =>
-                                        handleFilterClick('internal')
-                                    }
-                                    isActive={activeFilter === 'internal'}
-                                />
-                                <MetricCard
-                                    label="מימון חיצוני"
-                                    value={externalCount}
-                                    icon={FaBuilding}
-                                    color="cyan"
-                                    onClick={() =>
-                                        handleFilterClick('external')
-                                    }
-                                    isActive={activeFilter === 'external'}
-                                />
-                            </HStack>
-                        </Box>
+                        <AttendanceStats
+                            {...stats}
+                            activeFilter={activeFilter}
+                            onFilterClick={handleFilterClick}
+                        />
 
                         {/* Employee List */}
                         <Box>
                             <HStack justify="space-between" mb={4}>
                                 <Text fontSize="lg" fontWeight="bold">
-                                    רשימת עובדים ({searchedEmployees.length})
+                                    רשימת עובדים ({pagination?.total ?? 0})
                                 </Text>
-                                {activeFilter !== 'all' && (
+                                {hasActiveFilters && (
                                     <Button
                                         size="sm"
                                         variant="ghost"
-                                        onClick={() => setActiveFilter('all')}
+                                        onClick={handleClearFilter}
                                     >
                                         נקה סינון
                                     </Button>
@@ -326,17 +313,17 @@ export function DailyAttendanceDrawer({
                                         שגיאה בטעינת נתונים
                                     </Text>
                                 </Box>
-                            ) : searchedEmployees.length === 0 ? (
+                            ) : employees.length === 0 ? (
                                 <Box textAlign="center" p={8}>
                                     <Text color="gray.500">
-                                        {activeFilter === 'all' && !searchQuery
+                                        {!hasActiveFilters
                                             ? 'אין עובדים שצריכים להגיע היום'
                                             : 'אין עובדים בסינון זה'}
                                     </Text>
                                 </Box>
                             ) : (
                                 <VStack gap={3} align="stretch">
-                                    {searchedEmployees.map((employee) => (
+                                    {employees.map((employee) => (
                                         <EmployeeAttendanceCard
                                             key={employee._id}
                                             employee={employee}
@@ -349,6 +336,25 @@ export function DailyAttendanceDrawer({
                                         />
                                     ))}
                                 </VStack>
+                            )}
+
+                            {pagination && pagination.totalPages > 1 && (
+                                <HStack justify="center" mt={4}>
+                                    <PaginationRoot
+                                        count={pagination.total}
+                                        pageSize={PAGE_SIZE}
+                                        page={page}
+                                        onPageChange={(details) =>
+                                            setPage(details.page)
+                                        }
+                                    >
+                                        <HStack gap={1}>
+                                            <PaginationPrevTrigger />
+                                            <PaginationItems />
+                                            <PaginationNextTrigger />
+                                        </HStack>
+                                    </PaginationRoot>
+                                </HStack>
                             )}
                         </Box>
                     </VStack>
@@ -375,9 +381,24 @@ export function DailyAttendanceDrawer({
                                       : 'דווח לקישור'}
                             </Button>
                         </HStack>
+                        <Button
+                            variant="outline"
+                            onClick={() => setIsReportOpen(true)}
+                        >
+                            הצג דוח
+                        </Button>
                     </HStack>
                 </DrawerFooter>
             </DrawerContent>
+
+            <AttendanceReportModal
+                isOpen={isReportOpen}
+                onClose={() => setIsReportOpen(false)}
+                date={selectedDate}
+                filter={activeFilter}
+                search={debouncedSearch}
+                title={FILTER_LABELS[activeFilter]}
+            />
         </DrawerRoot>
     )
 }

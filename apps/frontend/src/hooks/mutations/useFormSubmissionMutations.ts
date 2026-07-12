@@ -86,14 +86,18 @@ export const useCreateFormSubmission = (
         onError(error: any) {
             console.error('Error creating form submission:', error)
 
-            // Handle validation errors specifically
-            if (
+            if (error.response?.status === 409) {
+                toaster.error({
+                    title: 'הזמנה חופפת',
+                    description: error.response.data?.message ?? 'לעובד זה כבר קיימת הזמנה חופפת בתאריכים אלו',
+                    duration: 8000,
+                })
+            } else if (
                 error.response?.status === 400 &&
                 error.response?.data?.errors
             ) {
                 const validationErrors = error.response.data.errors
 
-                // Handle field-specific errors if callback provided
                 if (onFieldError) {
                     validationErrors.forEach((validationError: any) => {
                         if (validationError.field) {
@@ -105,7 +109,6 @@ export const useCreateFormSubmission = (
                     })
                 }
 
-                // Show toast notifications for all errors
                 validationErrors.forEach((validationError: any) => {
                     toaster.error({
                         title: 'שגיאת ולידציה',
@@ -114,7 +117,6 @@ export const useCreateFormSubmission = (
                     })
                 })
             } else {
-                // Generic error handling
                 toaster.error({
                     title: 'שגיאה',
                     description: 'שליחת הטופס נכשלה. אנא נסה שוב.',
@@ -196,14 +198,18 @@ export const useUpdateFormSubmission = (
         onError(error: any) {
             console.error('Error updating form submission:', error)
 
-            // Handle validation errors specifically
-            if (
+            if (error.response?.status === 409) {
+                toaster.error({
+                    title: 'הזמנה חופפת',
+                    description: error.response.data?.message ?? 'לעובד זה כבר קיימת הזמנה חופפת בתאריכים אלו',
+                    duration: 8000,
+                })
+            } else if (
                 error.response?.status === 400 &&
                 error.response?.data?.errors
             ) {
                 const validationErrors = error.response.data.errors
 
-                // Handle field-specific errors if callback provided
                 if (onFieldError) {
                     validationErrors.forEach((validationError: any) => {
                         if (validationError.field) {
@@ -215,7 +221,6 @@ export const useUpdateFormSubmission = (
                     })
                 }
 
-                // Show toast notifications for all errors
                 validationErrors.forEach((validationError: any) => {
                     toaster.error({
                         title: 'שגיאת ולידציה',
@@ -224,7 +229,6 @@ export const useUpdateFormSubmission = (
                     })
                 })
             } else {
-                // Generic error handling
                 toaster.error({
                     title: 'שגיאה',
                     description: 'עדכון הטופס נכשל. אנא נסה שוב.',

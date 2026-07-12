@@ -1,4 +1,5 @@
 import { format, addDays, parseISO } from 'date-fns'
+import { IFormSubmissions } from '../models/FormSubmissions'
 
 /**
  * Check if an array of date strings contains more than 1 consecutive day
@@ -43,23 +44,20 @@ export const hasMoreThan1ConsecutiveDay = (reserveDays: string[]): boolean => {
  * @returns true if this is an ending day (no consecutive order), false if reservation continues
  */
 export const isEmployeeEndingToday = (
-    currentReservation: any,
-    allEmployeeReservations: any[],
+    currentReservation: IFormSubmissions,
+    allEmployeeReservations: IFormSubmissions[],
     date: string,
     hasConsecutiveDays: boolean
 ): boolean => {
+    // Single-day reservations never count as "ending today"
+    if (!hasConsecutiveDays) {
+        return false
+    }
+
     const formData = currentReservation.formData
 
     // First check: is today the end date?
     if (formData.endDate !== date) {
-        return false
-    }
-
-    // If this is a single-day reservation (no consecutive days),
-    // we still need to check if there's a continuation the next day
-    // For multi-day reservations, only report ending if it has consecutive days
-    if (!hasConsecutiveDays && formData.startDate !== formData.endDate) {
-        // Multi-day reservation but doesn't have consecutive days (shouldn't happen)
         return false
     }
 
@@ -70,13 +68,7 @@ export const isEmployeeEndingToday = (
     const hasConsecutiveOrder = allEmployeeReservations.some(
         (otherRes: any) => {
             const isCurrentRes =
-                otherRes._id.toString() === currentReservation._id.toString()
-            console.log('Checking reservation:', {
-                id: otherRes._id,
-                startDate: otherRes.formData.startDate,
-                endDate: otherRes.formData.endDate,
-                isCurrent: isCurrentRes,
-            })
+                otherRes._id.toString() === (currentReservation._id as unknown as { toString(): string }).toString()
 
             // Skip the current reservation
             if (isCurrentRes) {

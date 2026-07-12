@@ -1,82 +1,71 @@
 import { FormSubmissions, FormFields } from '../models'
 import logger from '../config/logger'
+import { faker } from '@faker-js/faker'
 
 export const seedProjectManagement = async () => {
     try {
         logger.info('Starting Project Management seeding...')
 
-        // Get the Project Management form ID
-        const projectForm = await FormFields.findOne({
-            formName: 'project_management',
-        })
+        const projectForm = await FormFields.findOne({ formName: 'project_management' })
         if (!projectForm) {
             logger.error('Project Management form not found')
             return
         }
 
-        // Get all active personnel (excluding deleted records)
+        const existingCount = await FormSubmissions.countDocuments({
+            formName: 'project_management',
+            isDeleted: false,
+        })
+        if (existingCount > 0) {
+            logger.info(`Project Management data already seeded. Found ${existingCount} records.`)
+            return
+        }
+
         const allPersonnel = await FormSubmissions.find({
             formName: 'personnel',
             isDeleted: false,
-        }).lean()
+        })
+            .select('_id')
+            .lean()
 
         if (allPersonnel.length === 0) {
-            logger.error('No personnel found for assignment')
+            logger.error('No personnel found. Please seed personnel first.')
             return
         }
 
         logger.info(`Found ${allPersonnel.length} personnel records`)
 
-        // Helper function to get random personnel
-        const getRandomPersonnel = (count: number, exclude: string[] = []) => {
-            const available = allPersonnel
-                .filter((p) => !exclude.includes(p._id.toString()))
-                .map((p) => p._id.toString())
+        const shuffle = <T>(arr: T[]): T[] => arr.slice().sort(() => Math.random() - 0.5)
 
-            const shuffled = available.sort(() => 0.5 - Math.random())
-            return shuffled.slice(0, Math.min(count, available.length))
-        }
-
-        // Define project data
         const projects = [
-            { name: 'פרויקט אלפא', status: 'active', teamSize: 12 },
-            { name: 'פרויקט ביתא', status: 'active', teamSize: 15 },
-            { name: 'פרויקט גאמא', status: 'active', teamSize: 10 },
-            { name: 'פרויקט דלתא', status: 'pending', teamSize: 13 },
-            { name: 'פרויקט אפסילון', status: 'active', teamSize: 14 },
+            { name: 'פרויקט אלפא', status: 'active', teamSize: 15 },
+            { name: 'פרויקט ביתא', status: 'active', teamSize: 18 },
+            { name: 'פרויקט גאמא', status: 'active', teamSize: 12 },
+            { name: 'פרויקט דלתא', status: 'pending', teamSize: 14 },
+            { name: 'פרויקט אפסילון', status: 'active', teamSize: 16 },
+            { name: 'פרויקט זטא', status: 'inactive', teamSize: 10 },
+            { name: 'פרויקט אטא', status: 'active', teamSize: 20 },
         ]
 
-        // Check existing project management records (optional - for clean seeding)
-        const existingCount = await FormSubmissions.countDocuments({
-            formName: 'project_management',
-            isDeleted: false,
-        })
+        const allIds = shuffle(allPersonnel.map((p) => p._id.toString()))
+        let idCursor = 0
 
-        if (existingCount > 0) {
-            logger.info(
-                `Found ${existingCount} existing project records. Soft deleting...`
-            )
-            await FormSubmissions.updateMany(
-                {
-                    formName: 'project_management',
-                    isDeleted: false,
-                },
-                {
-                    $set: { isDeleted: true },
-                }
-            )
+        const pick = (count: number): string[] => {
+            const result: string[] = []
+            for (let i = 0; i < count && idCursor < allIds.length; i++, idCursor++) {
+                result.push(allIds[idCursor])
+            }
+            return result
         }
 
-        // Create projects with assigned personnel
         for (const project of projects) {
-            // Get random project manager
-            const managerId = getRandomPersonnel(1)[0]
+            const teamIds = pick(project.teamSize)
+            if (teamIds.length === 0) break
 
-            // Get random team members (excluding the manager)
-            const teamIds = getRandomPersonnel(project.teamSize, [managerId])
+            const managerId = faker.helpers.arrayElement(teamIds)
 
-            const projectData = {
-                formId: projectForm._id.toString(),
+            await FormSubmissions.create({
+                formId: projectForm._id,
                 formName: 'project_management',
                 formData: {
                     projectName: project.name,
@@ -85,16 +74,14 @@ export const seedProjectManagement = async () => {
                     projectStatus: project.status,
                 },
                 isDeleted: false,
-            }
+            })
 
-            const newProject = await FormSubmissions.create(projectData)
-            logger.info(
-                `Created project: ${project.name} with ${teamIds.length} team members`
-            )
+            logger.info(`Created project "${project.name}" with ${teamIds.length} members`)
         }
 
         logger.info('Project Management seeding completed successfully')
     } catch (error) {
         logger.error('Error seeding Project Management:', error)
+        throw error
     }
 }

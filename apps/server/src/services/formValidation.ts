@@ -1,11 +1,20 @@
 import { FormFields, FormSubmissions } from '../models'
 import logger from '../config/logger'
-import mongoose from 'mongoose'
+import mongoose, { Document } from 'mongoose'
+import type {
+    IForm,
+    BusinessRule,
+    UniqueConstraintConfig,
+    DateRangeConfig,
+    ConditionalConfig,
+    NoOverlapConfig,
+} from '../types'
 
 export interface ValidationError {
     field?: string
     message: string
     code: string
+    statusCode?: number
 }
 
 export interface ValidationResult {
@@ -13,166 +22,141 @@ export interface ValidationResult {
     errors: ValidationError[]
 }
 
+type FormDefinition = IForm & Document
+
 class FormValidationService {
     async validateFormSubmission(
-        formData: any,
+        formData: Record<string, unknown>,
         formId: string,
-        formName: string
+        _formName: string,
+        excludeId?: string
     ): Promise<ValidationResult> {
         try {
-            const formDefinition = await FormFields.findById(formId)
+            const formDefinition = await FormFields.findById(formId) as FormDefinition | null
             if (!formDefinition) {
                 return {
                     isValid: false,
-                    errors: [{ message: 'Form definition not found', code: 'FORM_NOT_FOUND' }]
+                    errors: [{ message: 'Form definition not found', code: 'FORM_NOT_FOUND' }],
                 }
             }
 
             const errors: ValidationError[] = []
-
-            // 1. Field-level validation
             await this.validateFields(formData, formDefinition, errors)
+            await this.validateBusinessRules(formData, formDefinition, errors, excludeId)
 
-            // 2. Business rules validation
-            await this.validateBusinessRules(formData, formDefinition, errors)
-
-            return {
-                isValid: errors.length === 0,
-                errors
-            }
+            return { isValid: errors.length === 0, errors }
         } catch (error) {
             logger.error('Form validation error:', error)
             return {
                 isValid: false,
-                errors: [{ message: 'Validation service error', code: 'VALIDATION_ERROR' }]
+                errors: [{ message: 'Validation service error', code: 'VALIDATION_ERROR' }],
             }
         }
     }
 
     private async validateFields(
-        formData: any,
-        formDefinition: any,
+        formData: Record<string, unknown>,
+        formDefinition: FormDefinition,
         errors: ValidationError[]
     ): Promise<void> {
-        const allFields = formDefinition.sections?.flatMap((section: any) => section.fields || []) || []
+        const allFields = formDefinition.sections?.flatMap(s => s.fields ?? []) ?? []
 
         for (const field of allFields) {
             const value = formData[field.name]
-            
-            // Required field validation
+
             if (field.required && (value === undefined || value === null || value === '')) {
                 errors.push({
                     field: field.name,
-                    message: field.errorMessage || `${field.label || field.name} is required`,
-                    code: 'REQUIRED_FIELD'
+                    message: field.errorMessages || `${field.label || field.name} is required`,
+                    code: 'REQUIRED_FIELD',
                 })
                 continue
             }
 
-            // Skip further validation if field is empty and not required
-            if (value === undefined || value === null || value === '') {
-                continue
-            }
+            if (value === undefined || value === null || value === '') continue
 
-            // Field-specific validation
             if (field.validation) {
-                this.validateFieldConstraints(field, value, errors)
+                this.validateFieldConstraints(field.name, field.label ?? field.name, field.validation, value, errors)
             }
         }
     }
 
-    private validateFieldConstraints(field: any, value: any, errors: ValidationError[]): void {
-        const validation = field.validation
-        
-        // String length validation
+    private validateFieldConstraints(
+        fieldName: string,
+        fieldLabel: string,
+        validation: IForm['sections'][0]['fields'][0]['validation'],
+        value: unknown,
+        errors: ValidationError[]
+    ): void {
+        if (!validation) return
+
         if (typeof value === 'string') {
             if (validation.minLength && value.length < validation.minLength) {
-                errors.push({
-                    field: field.name,
-                    message: `${field.label} must be at least ${validation.minLength} characters`,
-                    code: 'MIN_LENGTH'
-                })
+                errors.push({ field: fieldName, message: `${fieldLabel} must be at least ${validation.minLength} characters`, code: 'MIN_LENGTH' })
             }
             if (validation.maxLength && value.length > validation.maxLength) {
-                errors.push({
-                    field: field.name,
-                    message: `${field.label} must be at most ${validation.maxLength} characters`,
-                    code: 'MAX_LENGTH'
-                })
+                errors.push({ field: fieldName, message: `${fieldLabel} must be at most ${validation.maxLength} characters`, code: 'MAX_LENGTH' })
             }
-            if (validation.pattern) {
-                const regex = new RegExp(validation.pattern)
-                if (!regex.test(value)) {
-                    errors.push({
-                        field: field.name,
-                        message: field.errorMessage || `${field.label} format is invalid`,
-                        code: 'PATTERN_MISMATCH'
-                    })
-                }
+            if (validation.pattern && !new RegExp(validation.pattern).test(value)) {
+                errors.push({ field: fieldName, message: `${fieldLabel} format is invalid`, code: 'PATTERN_MISMATCH' })
             }
         }
 
-        // Numeric validation
         if (typeof value === 'number') {
             if (validation.min !== undefined && value < validation.min) {
-                errors.push({
-                    field: field.name,
-                    message: `${field.label} must be at least ${validation.min}`,
-                    code: 'MIN_VALUE'
-                })
+                errors.push({ field: fieldName, message: `${fieldLabel} must be at least ${validation.min}`, code: 'MIN_VALUE' })
             }
             if (validation.max !== undefined && value > validation.max) {
-                errors.push({
-                    field: field.name,
-                    message: `${field.label} must be at most ${validation.max}`,
-                    code: 'MAX_VALUE'
-                })
+                errors.push({ field: fieldName, message: `${fieldLabel} must be at most ${validation.max}`, code: 'MAX_VALUE' })
             }
         }
     }
 
     private async validateBusinessRules(
-        formData: any,
-        formDefinition: any,
-        errors: ValidationError[]
+        formData: Record<string, unknown>,
+        formDefinition: FormDefinition,
+        errors: ValidationError[],
+        excludeId?: string
     ): Promise<void> {
-        const businessRules = formDefinition.businessRules || []
+        const businessRules: BusinessRule[] = formDefinition.businessRules ?? []
 
         for (const rule of businessRules) {
             if (!rule.enabled) continue
 
             try {
-                const isValid = await this.validateBusinessRule(formData, rule, formDefinition)
+                const isValid = await this.validateBusinessRule(formData, rule, formDefinition, excludeId)
                 if (!isValid) {
                     errors.push({
                         message: rule.errorMessage,
-                        code: rule.ruleType.toUpperCase()
+                        code: rule.ruleType.toUpperCase(),
+                        ...(rule.statusCode && { statusCode: rule.statusCode }),
                     })
                 }
             } catch (error) {
                 logger.error(`Business rule validation error for rule ${rule.id}:`, error)
-                errors.push({
-                    message: 'Business rule validation failed',
-                    code: 'BUSINESS_RULE_ERROR'
-                })
+                errors.push({ message: 'Business rule validation failed', code: 'BUSINESS_RULE_ERROR' })
             }
         }
     }
 
     private async validateBusinessRule(
-        formData: any,
-        rule: any,
-        formDefinition: any
+        formData: Record<string, unknown>,
+        rule: BusinessRule,
+        formDefinition: FormDefinition,
+        excludeId?: string
     ): Promise<boolean> {
         switch (rule.ruleType) {
             case 'uniqueConstraint':
-                return await this.validateUniqueConstraint(formData, rule, formDefinition)
+                return this.validateUniqueConstraint(formData, rule.config as UniqueConstraintConfig, formDefinition, excludeId)
             case 'dateRange':
-                return this.validateDateRange(formData, rule)
+                return this.validateDateRange(formData, rule.config as DateRangeConfig)
             case 'conditional':
-                return this.validateConditional(formData, rule)
+                return this.validateConditional(formData, rule.config as ConditionalConfig)
+            case 'noOverlap':
+                return this.validateNoOverlap(formData, rule.config as NoOverlapConfig, formDefinition, excludeId)
             case 'custom':
-                return await this.validateCustomRule(formData, rule, formDefinition)
+                logger.warn(`Custom rule type not implemented: ${rule.id}`)
+                return true
             default:
                 logger.warn(`Unknown business rule type: ${rule.ruleType}`)
                 return true
@@ -180,193 +164,157 @@ class FormValidationService {
     }
 
     private async validateUniqueConstraint(
-        formData: any,
-        rule: any,
-        formDefinition: any
+        formData: Record<string, unknown>,
+        config: UniqueConstraintConfig,
+        formDefinition: FormDefinition,
+        excludeId?: string
     ): Promise<boolean> {
-        const { fields, query } = rule.config
-        
-        if (!fields || !Array.isArray(fields)) {
+        const { fields, query } = config
+
+        if (!fields?.length) {
             logger.warn('uniqueConstraint rule missing fields configuration')
             return true
         }
 
-        // Build query conditions
-        const conditions: any = { formName: formDefinition.formName }
-        
+        const conditions: Record<string, unknown> = { formName: formDefinition.formName }
+
         for (const fieldPath of fields) {
             const value = this.getNestedValue(formData, fieldPath)
             if (value !== undefined) {
-                // Handle both object references and direct values
-                if (typeof value === 'object' && value._id) {
-                    conditions[`formData.${fieldPath}._id`] = value._id
-                    conditions[`formData.${fieldPath}`] = value._id
+                if (value !== null && typeof value === 'object' && '_id' in value) {
+                    conditions[`formData.${fieldPath}`] = (value as { _id: unknown })._id
                 } else {
                     conditions[`formData.${fieldPath}`] = value
                 }
             }
         }
 
-        // Add any additional query conditions from config
-        if (query) {
-            Object.assign(conditions, query)
-        }
+        if (query) Object.assign(conditions, query)
 
-        const existingSubmissions = await FormSubmissions.find({
-            $and: [
-                conditions,
-                { isDeleted: false },
-                // Add OR conditions for object vs direct value matching
-                ...fields.map((fieldPath: string) => {
-                    const value = this.getNestedValue(formData, fieldPath)
-                    if (typeof value === 'object' && value._id) {
-                        return {
-                            $or: [
-                                { [`formData.${fieldPath}._id`]: value._id },
-                                { [`formData.${fieldPath}`]: value._id }
-                            ]
-                        }
-                    }
-                    return { [`formData.${fieldPath}`]: value }
-                })
-            ]
-        })
-
-        return existingSubmissions.length === 0
-    }
-
-    private validateDateRange(formData: any, rule: any): boolean {
-        const { startDateField, endDateField, maxDays, minDays } = rule.config
-        
-        const startDate = new Date(formData[startDateField])
-        const endDate = new Date(formData[endDateField])
-        
-        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-            return false
-        }
-        
-        if (startDate > endDate) {
-            return false
-        }
-        
-        const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-        
-        if (maxDays !== undefined && daysDiff > maxDays) {
-            return false
-        }
-        
-        if (minDays !== undefined && daysDiff < minDays) {
-            return false
-        }
-        
-        return true
-    }
-
-    private validateConditional(formData: any, rule: any): boolean {
-        const { condition, then } = rule.config
-        
-        // Evaluate condition
-        if (this.evaluateCondition(formData, condition)) {
-            // If condition is true, validate the "then" rules
-            return this.evaluateCondition(formData, then)
-        }
-        
-        return true
-    }
-
-    private async validateCustomRule(
-        formData: any,
-        rule: any,
-        formDefinition: any
-    ): Promise<boolean> {
-        // For custom rules, we can implement specific business logic
-        // This is where you'd add the Reserve Days overlap validation
-        if (rule.id === 'reserveDaysOverlap') {
-            return await this.validateReserveDaysOverlap(formData, formDefinition)
-        }
-        
-        logger.warn(`Unknown custom rule: ${rule.id}`)
-        return true
-    }
-
-    private async validateReserveDaysOverlap(formData: any, formDefinition: any): Promise<boolean> {
-        if (formDefinition.formName !== 'Reserve Days Management') {
-            return true
-        }
-
-        const { employeeName, startDate, endDate } = formData
-        
-        if (!employeeName || !startDate || !endDate) {
-            return true
-        }
-
-        const employeeId = typeof employeeName === 'object' ? employeeName._id : employeeName
-
-        if (!employeeId) {
-            return true
-        }
-
-        const start = new Date(startDate)
-        const end = new Date(endDate)
-
-        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-            return true
-        }
-
-        const existingReservations = await FormSubmissions.find({
-            formName: 'Reserve Days Management',
-            isDeleted: false,
-            $and: [
-                {
-                    $or: [
-                        { 'formData.employeeName._id': employeeId },
-                        { 'formData.employeeName': employeeId }
-                    ]
-                },
-                {
-                    $or: [
-                        // New period overlaps with existing
-                        {
-                            'formData.startDate': { $lte: endDate },
-                            'formData.endDate': { $gte: startDate }
-                        }
-                    ]
+        const andClauses: Record<string, unknown>[] = [
+            conditions,
+            { isDeleted: false },
+            ...fields.map(fieldPath => {
+                const value = this.getNestedValue(formData, fieldPath)
+                if (value !== null && typeof value === 'object' && '_id' in value) {
+                    const id = (value as { _id: unknown })._id
+                    return { $or: [{ [`formData.${fieldPath}._id`]: id }, { [`formData.${fieldPath}`]: id }] }
                 }
-            ]
-        })
+                return { [`formData.${fieldPath}`]: value }
+            }),
+        ]
 
-        return existingReservations.length === 0
+        if (excludeId && mongoose.Types.ObjectId.isValid(excludeId)) {
+            andClauses.push({ _id: { $ne: new mongoose.Types.ObjectId(excludeId) } })
+        }
+
+        const existing = await FormSubmissions.findOne({ $and: andClauses })
+        return existing === null
     }
 
-    private evaluateCondition(formData: any, condition: any): boolean {
-        // Simple condition evaluation - can be extended
+    private validateDateRange(
+        formData: Record<string, unknown>,
+        config: DateRangeConfig
+    ): boolean {
+        const { startDateField, endDateField, maxDays, minDays } = config
+
+        const startDate = new Date(formData[startDateField] as string)
+        const endDate = new Date(formData[endDateField] as string)
+
+        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) return false
+        if (startDate > endDate) return false
+
+        const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / 86400000)
+        if (maxDays !== undefined && daysDiff > maxDays) return false
+        if (minDays !== undefined && daysDiff < minDays) return false
+
+        return true
+    }
+
+    private validateConditional(
+        formData: Record<string, unknown>,
+        config: ConditionalConfig
+    ): boolean {
+        if (this.evaluateCondition(formData, config.condition)) {
+            return this.evaluateCondition(formData, config.then)
+        }
+        return true
+    }
+
+    /**
+     * Generic no-overlap validator — field names come from rule.config in the DB.
+     * Prevents two submissions on the same form from having overlapping date ranges
+     * for the same entity (e.g. same employee).
+     */
+    private async validateNoOverlap(
+        formData: Record<string, unknown>,
+        config: NoOverlapConfig,
+        formDefinition: FormDefinition,
+        excludeId?: string
+    ): Promise<boolean> {
+        const { entityField, startDateField, endDateField } = config
+
+        const entityValue = formData[entityField]
+        const startDate = formData[startDateField] as string | undefined
+        const endDate = formData[endDateField] as string | undefined
+
+        if (!entityValue || !startDate) return true
+
+        const entityId =
+            entityValue !== null && typeof entityValue === 'object' && '_id' in entityValue
+                ? (entityValue as { _id: string })._id
+                : (entityValue as string)
+
+        if (!entityId) return true
+
+        const resolvedEndDate = endDate ?? startDate
+
+        const query: Record<string, unknown> = {
+            formName: formDefinition.formName,
+            isDeleted: false,
+            $or: [
+                { [`formData.${entityField}._id`]: entityId },
+                { [`formData.${entityField}`]: entityId },
+            ],
+            [`formData.${startDateField}`]: { $lte: resolvedEndDate },
+            [`formData.${endDateField}`]: { $gte: startDate },
+        }
+
+        if (excludeId && mongoose.Types.ObjectId.isValid(excludeId)) {
+            query._id = { $ne: new mongoose.Types.ObjectId(excludeId) }
+        }
+
+        const overlap = await FormSubmissions.findOne(query)
+        return overlap === null
+    }
+
+    private evaluateCondition(
+        formData: Record<string, unknown>,
+        condition: { field: string; operator: string; value: unknown }
+    ): boolean {
         const { field, operator, value } = condition
         const fieldValue = this.getNestedValue(formData, field)
-        
+
         switch (operator) {
-            case '=':
-                return fieldValue === value
-            case '!=':
-                return fieldValue !== value
-            case '>':
-                return fieldValue > value
-            case '<':
-                return fieldValue < value
-            case '>=':
-                return fieldValue >= value
-            case '<=':
-                return fieldValue <= value
-            case 'includes':
-                return Array.isArray(fieldValue) && fieldValue.includes(value)
-            case 'exists':
-                return fieldValue !== undefined && fieldValue !== null && fieldValue !== ''
-            default:
-                return true
+            case '=': return fieldValue === value
+            case '!=': return fieldValue !== value
+            case '>': return (fieldValue as number) > (value as number)
+            case '<': return (fieldValue as number) < (value as number)
+            case '>=': return (fieldValue as number) >= (value as number)
+            case '<=': return (fieldValue as number) <= (value as number)
+            case 'includes': return Array.isArray(fieldValue) && fieldValue.includes(value)
+            case 'exists': return fieldValue !== undefined && fieldValue !== null && fieldValue !== ''
+            default: return true
         }
     }
 
-    private getNestedValue(obj: any, path: string): any {
-        return path.split('.').reduce((current, key) => current?.[key], obj)
+    private getNestedValue(obj: Record<string, unknown>, path: string): unknown {
+        return path.split('.').reduce<unknown>((current, key) => {
+            if (current !== null && typeof current === 'object') {
+                return (current as Record<string, unknown>)[key]
+            }
+            return undefined
+        }, obj)
     }
 }
 

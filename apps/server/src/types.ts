@@ -86,13 +86,44 @@ export interface MetricConfig {
     calculation: MetricCalculation
 }
 
+export interface UniqueConstraintConfig {
+    fields: string[]
+    query?: Record<string, unknown>
+}
+
+export interface DateRangeConfig {
+    startDateField: string
+    endDateField: string
+    maxDays?: number
+    minDays?: number
+}
+
+export interface ConditionalConfig {
+    condition: { field: string; operator: string; value: unknown }
+    then: { field: string; operator: string; value: unknown }
+}
+
+export interface NoOverlapConfig {
+    entityField: string
+    startDateField: string
+    endDateField: string
+}
+
+export type BusinessRuleConfig =
+    | UniqueConstraintConfig
+    | DateRangeConfig
+    | ConditionalConfig
+    | NoOverlapConfig
+    | Record<string, unknown>
+
 export interface BusinessRule {
     id: string
     name: string
     description?: string
-    ruleType: 'uniqueConstraint' | 'dateRange' | 'conditional' | 'custom'
-    config: any
+    ruleType: 'uniqueConstraint' | 'dateRange' | 'conditional' | 'custom' | 'noOverlap'
+    config: BusinessRuleConfig
     errorMessage: string
+    statusCode?: number
     enabled?: boolean
 }
 

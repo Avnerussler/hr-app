@@ -37,6 +37,14 @@ export interface DailyAttendanceData {
         endingToday: number
         totalRequired: number
         totalAttended: number
+        internalCount: number
+        externalCount: number
+    }
+    pagination?: {
+        page: number
+        limit: number
+        total: number
+        totalPages: number
     }
 }
 

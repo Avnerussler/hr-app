@@ -194,12 +194,49 @@ router.get(
     })
 )
 
+interface EmployeeAttendanceRecord {
+    _id: string
+    employeeId: string
+    name: string
+    lastName: string
+    personalNumber: string
+    phone: string
+    reserveUnit: string
+    workPlace: string
+    orderNumber: string
+    orderType: string
+    isActive: boolean
+    startDate: string
+    endDate: string
+    isStartingToday: boolean
+    isEndingToday: boolean
+    isAttendanceRequired: boolean
+    hasAttended: boolean
+    workDays: string[]
+    reserveDays: string[]
+    requestStatus: string
+    fundingSource: string
+}
+
 // Get employees scheduled for a specific date
 router.get(
     '/employees/:date',
     asyncHandler(async (req: Request, res: Response) => {
         try {
             const { date } = req.params
+            const {
+                filter = 'all',
+                search = '',
+                page = '1',
+                limit = '30',
+            } = req.query as {
+                filter?: string
+                search?: string
+                page?: string
+                limit?: string
+            }
+            const pageNum = Math.max(1, parseInt(page, 10) || 1)
+            const limitNum = Math.max(1, Math.min(10000, parseInt(limit, 10) || 30))
 
             // First, find all reservations that include this specific date to get the employee IDs
             const reservationsForDate = await FormSubmissions.find({
@@ -286,7 +323,7 @@ router.get(
 
             // Map reservations to employee attendance data
             const employees = reservationsForDate
-                .map((reservation: any) => {
+                .map((reservation: any): EmployeeAttendanceRecord | null => {
                     const formData = reservation.formData
 
                     // Get employee ID
@@ -399,24 +436,75 @@ router.get(
                         fundingSource: formData.fundingSource || '',
                     }
                 })
-                .filter((emp) => emp !== null) // Remove null entries
+                .filter((emp): emp is EmployeeAttendanceRecord => emp !== null) as EmployeeAttendanceRecord[]
 
-            // Calculate statistics
+            // Calculate statistics from full unfiltered array
             const statistics = {
-                startingToday: employees.filter((emp) => emp.isStartingToday)
-                    .length,
-                endingToday: employees.filter((emp) => emp.isEndingToday)
-                    .length,
+                startingToday: employees.filter((emp) => emp.isStartingToday).length,
+                endingToday: employees.filter((emp) => emp.isEndingToday).length,
                 totalRequired: employees.length,
-                totalAttended: employees.filter((emp) => emp.hasAttended)
-                    .length,
+                totalAttended: employees.filter((emp) => emp.hasAttended).length,
+                internalCount: employees.filter((emp) => emp.fundingSource === 'internal').length,
+                externalCount: employees.filter((emp) => emp.fundingSource === 'external').length,
             }
+
+            // Apply filter
+            let filtered = employees
+            switch (filter) {
+                case 'starting':
+                    filtered = filtered.filter((emp) => emp.isStartingToday)
+                    break
+                case 'ending':
+                    filtered = filtered.filter((emp) => emp.isEndingToday)
+                    break
+                case 'attended':
+                    filtered = filtered.filter((emp) => emp.hasAttended)
+                    break
+                case 'internal':
+                    filtered = filtered.filter((emp) => emp.fundingSource === 'internal')
+                    break
+                case 'external':
+                    filtered = filtered.filter((emp) => emp.fundingSource === 'external')
+                    break
+            }
+
+            // Apply text search
+            if (search && typeof search === 'string' && search.trim()) {
+                const q = search.trim().toLowerCase()
+                filtered = filtered.filter((emp) => {
+                    const haystack = [
+                        emp.name,
+                        emp.lastName,
+                        emp.personalNumber,
+                        emp.phone,
+                        emp.reserveUnit,
+                        emp.workPlace,
+                        emp.orderNumber,
+                        emp.orderType,
+                    ]
+                        .filter(Boolean)
+                        .join(' ')
+                        .toLowerCase()
+                    return haystack.includes(q)
+                })
+            }
+
+            // Paginate
+            const total = filtered.length
+            const totalPages = Math.ceil(total / limitNum) || 1
+            const pagedEmployees = filtered.slice((pageNum - 1) * limitNum, pageNum * limitNum)
 
             res.status(200).json({
                 data: {
                     date,
-                    employees,
+                    employees: pagedEmployees,
                     statistics,
+                    pagination: {
+                        page: pageNum,
+                        limit: limitNum,
+                        total,
+                        totalPages,
+                    },
                 },
             })
         } catch (error) {

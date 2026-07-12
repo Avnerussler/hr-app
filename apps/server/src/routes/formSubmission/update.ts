@@ -3,6 +3,7 @@ import { FormSubmissions, FormFields } from '../../models'
 import mongoose from 'mongoose'
 import logger from '../../config/logger'
 import { bidirectionalSyncService } from '../../services/bidirectionalSync'
+import { formValidationService } from '../../services/formValidation'
 
 const transformFormData = async (formData: any, formId: string) => {
     try {
@@ -218,6 +219,25 @@ router.post('/', async (req: Request, res: Response) => {
         if (!existingForm) {
             logger.warn(`Form with ID ${id} not found for update`)
             res.status(404).json({ message: 'Form not found' })
+            return
+        }
+
+        const validationResult = await formValidationService.validateFormSubmission(
+            formData,
+            existingForm.formId.toString(),
+            existingForm.formName,
+            id
+        )
+
+        if (!validationResult.isValid) {
+            logger.warn('Form validation failed on update:', validationResult.errors)
+            const firstError = validationResult.errors[0]
+            const httpStatus = firstError?.statusCode ?? 400
+            res.status(httpStatus).json({
+                error: 'Validation failed',
+                message: firstError?.message,
+                errors: validationResult.errors,
+            })
             return
         }
 

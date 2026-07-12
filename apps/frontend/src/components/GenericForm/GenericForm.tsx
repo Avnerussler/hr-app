@@ -13,12 +13,14 @@ interface GenericFormProps {
     formId: string
     defaultValues?: FieldValues
     formMode: 'create' | 'update'
+    onSuccess?: () => void
 }
 
 export const GenericForm: FC<GenericFormProps> = ({
     formId,
     defaultValues,
     formMode,
+    onSuccess,
 }) => {
     const { control, handleSubmit, setError, clearErrors } =
         useForm<FieldValues>({
@@ -51,17 +53,15 @@ export const GenericForm: FC<GenericFormProps> = ({
             clearErrors()
 
             if (formMode === 'update' && defaultValues?._id) {
-                updateMutation.mutate({
-                    formData: data,
-                    id: defaultValues._id,
-                    formId,
-                })
+                updateMutation.mutate(
+                    { formData: data, id: defaultValues._id, formId },
+                    { onSuccess }
+                )
             } else {
-                createMutation.mutate({
-                    formData: data,
-                    formId,
-                    formName: formFields?.formName || '',
-                })
+                createMutation.mutate(
+                    { formData: data, formId, formName: formFields?.formName || '' },
+                    { onSuccess }
+                )
             }
         } catch (error) {
             console.error('Error submitting form:', error)
