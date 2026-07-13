@@ -4,6 +4,7 @@ import logger from '../../config/logger'
 import mongoose from 'mongoose'
 import { bidirectionalSyncService } from '../../services/bidirectionalSync'
 import { transformFormData } from '../../utils'
+import { formValidationService } from '../../services/formValidation'
 
 const router = Router()
 
@@ -17,20 +18,22 @@ router.post(
 
         logger.info(`Received form data:`, { formData, formId, formName })
 
-        // Validate form data using the generic validation service
-        // const validationResult = await formValidationService.validateFormSubmission(
-        //     formData,
-        //     formId,
-        //     formName
-        // )
+        const validationResult = await formValidationService.validateFormSubmission(
+            formData,
+            formId,
+            formName
+        )
 
-        // if (!validationResult.isValid) {
-        //     logger.warn('Form validation failed:', validationResult.errors)
-        //     return res.status(400).json({
-        //         error: 'Validation failed',
-        //         errors: validationResult.errors
-        //     })
-        // }
+        if (!validationResult.isValid) {
+            logger.warn('Form validation failed:', validationResult.errors)
+            const firstError = validationResult.errors[0]
+            const httpStatus = firstError?.statusCode ?? 400
+            return res.status(httpStatus).json({
+                error: 'Validation failed',
+                message: firstError?.message,
+                errors: validationResult.errors,
+            })
+        }
 
         logger.info('Creating form submission with data:', formData)
 

@@ -19,11 +19,10 @@ router.put(
                     .json({ message: 'Invalid attendance data' })
             }
 
-            // Find any form submission where this employee has attendance data within date range
-            const reservation = await FormSubmissions.findOne({
+            // Find ALL reservations for this employee covering this date, then update all of them
+            const reservations = await FormSubmissions.find({
                 isDeleted: false,
                 $or: [
-                    // Try both formats: object with _id and direct string
                     { 'formData.employeeName._id': employeeId },
                     { 'formData.employeeName': employeeId },
                 ],
@@ -47,21 +46,21 @@ router.put(
                 ],
             })
 
-            if (!reservation) {
+            if (!reservations.length) {
                 return res
                     .status(404)
                     .json({ message: 'Employee reservation not found' })
             }
 
-            // Update attendance record in the formData
-            if (!reservation.formData.attendance) {
-                reservation.formData.attendance = {}
+            // Update attendance on ALL matching reservations so get.ts always reads the right value
+            for (const reservation of reservations) {
+                if (!reservation.formData.attendance) {
+                    reservation.formData.attendance = {}
+                }
+                reservation.formData.attendance[date] = hasAttended
+                reservation.markModified('formData')
+                await reservation.save()
             }
-
-            reservation.formData.attendance[date] = hasAttended
-            reservation.markModified('formData')
-
-            await reservation.save()
 
             // Reset manager report status when attendance is changed
             const quota = await Quota.findOne({ date })

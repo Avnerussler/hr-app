@@ -6,15 +6,22 @@ import type {
     AttendanceHistoryData,
 } from './types'
 
-/**
- * Hook to get employee attendance data for a specific date using quota API
- * Gets employees scheduled from Reserve Days Management forms
- */
-export const useEmployeeAttendanceQuery = (selectedDate: string) => {
+export interface EmployeeAttendanceQueryParams {
+    date: string
+    filter?: string
+    search?: string
+    page?: number
+    limit?: number
+}
+
+export const useEmployeeAttendanceQuery = (
+    params: EmployeeAttendanceQueryParams,
+    options?: { enabled?: boolean }
+) => {
+    const { date, filter = 'all', search = '', page = 1, limit = 30 } = params
     return useQuery<any, Error, DailyAttendanceData>({
-        queryKey: ['quotas/employees', selectedDate],
+        queryKey: ['quotas/employees', date, { filter, search, page, limit }],
         select: (data: any) => {
-            // Transform API response to match our interface
             const apiData = data.data
             return {
                 employees: apiData?.employees || [],
@@ -23,11 +30,14 @@ export const useEmployeeAttendanceQuery = (selectedDate: string) => {
                     endingToday: 0,
                     totalRequired: 0,
                     totalAttended: 0,
+                    internalCount: 0,
+                    externalCount: 0,
                 },
+                pagination: apiData?.pagination,
             }
         },
-        enabled: !!selectedDate,
-        staleTime: 0, // Always consider stale to ensure fresh data
+        enabled: !!date && (options?.enabled ?? true),
+        staleTime: 0,
         refetchOnMount: true,
         refetchOnWindowFocus: true,
     })

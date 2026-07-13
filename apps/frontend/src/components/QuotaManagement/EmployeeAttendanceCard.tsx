@@ -153,6 +153,9 @@ export function EmployeeAttendanceCard({
                     colorScheme={currentAttendance ? 'green' : 'gray'}
                     size="sm"
                     px={2}
+                    cursor="pointer"
+                    onClick={() => onAttendanceToggle(employee._id, !currentAttendance)}
+                    _hover={{ opacity: 0.75 }}
                 >
                     {currentAttendance ? 'נוכח' : 'לא הגיע'}
                 </Badge>

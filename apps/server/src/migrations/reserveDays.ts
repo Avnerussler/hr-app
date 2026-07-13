@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.0.16'
+const CURRENT_VERSION = '1.0.17'
 
 export const createReserveDaysForm = async () => {
     try {
@@ -256,6 +256,22 @@ export const createReserveDaysForm = async () => {
                     ],
                 },
             ],
+            businessRules: [
+                {
+                    id: 'reserveDaysOverlap',
+                    name: 'Prevent Overlapping Reserve Days',
+                    description: 'Prevents the same employee from being reserved for overlapping date periods',
+                    ruleType: 'noOverlap',
+                    enabled: true,
+                    statusCode: 409,
+                    errorMessage: 'לעובד זה כבר קיים צו בתאריכים אלו',
+                    config: {
+                        entityField: 'employeeName',
+                        startDateField: 'startDate',
+                        endDateField: 'endDate',
+                    },
+                },
+            ],
         }
 
         if (existingForm) {
@@ -269,7 +285,7 @@ export const createReserveDaysForm = async () => {
             logger.info(
                 `Updating ${formName} form from v${existingVersion} to v${CURRENT_VERSION}`
             )
-            await FormFields.updateOne({ formName }, formData)
+            await FormFields.updateOne({ formName }, { $set: formData })
         } else {
             logger.info(`Creating new ${formName} form (v${CURRENT_VERSION})`)
             const formDocument = new FormFields({

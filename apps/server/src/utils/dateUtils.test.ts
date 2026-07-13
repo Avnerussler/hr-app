@@ -1,4 +1,5 @@
 import { hasMoreThan1ConsecutiveDay, isEmployeeEndingToday } from './dateUtils'
+import { IFormSubmissions } from '../models/FormSubmissions'
 
 describe('dateUtils', () => {
     describe('hasMoreThan1ConsecutiveDay', () => {
@@ -105,7 +106,7 @@ describe('dateUtils', () => {
                 startDate,
                 endDate,
             },
-        })
+        }) as unknown as IFormSubmissions
 
         describe('basic ending scenarios', () => {
             it('should return false when today is not the end date', () => {
@@ -123,7 +124,7 @@ describe('dateUtils', () => {
                 expect(result).toBe(false)
             })
 
-            it('should return true for single-day reservation with no consecutive order', () => {
+            it('should return false for single-day reservation (less than 2 days)', () => {
                 const reservation = createReservation(
                     'res1',
                     '2025-12-16',
@@ -135,7 +136,7 @@ describe('dateUtils', () => {
                     '2025-12-16',
                     false // No consecutive days (single day)
                 )
-                expect(result).toBe(true) // Single-day reservation should report as ending
+                expect(result).toBe(false) // Single-day reservations never count as ending today
             })
 
             it('should return true when ending today with no consecutive order', () => {
@@ -248,8 +249,8 @@ describe('dateUtils', () => {
                 expect(result).toBe(false) // Should NOT report as ending
             })
 
-            it('should report ending on 19/12 when no order on 20/12', () => {
-                // Order 2: 19/12/25 (last day, no continuation)
+            it('should return false for single-day reservation even with no continuation', () => {
+                // Order 2: 19/12/25 (single-day, no continuation)
                 const order2 = createReservation(
                     'order2',
                     '2025-12-19',
@@ -260,9 +261,9 @@ describe('dateUtils', () => {
                     order2,
                     [order2],
                     '2025-12-19',
-                    false // Single day, no consecutive days in this order
+                    false // Single day, less than 2 days
                 )
-                expect(result).toBe(true) // True because single-day reservation with no continuation
+                expect(result).toBe(false) // Single-day reservations never count as ending today
             })
 
             it('should report ending on last day of multi-day final order', () => {
@@ -282,14 +283,14 @@ describe('dateUtils', () => {
                 expect(result).toBe(true) // Should report as ending
             })
 
-            it('should not report ending on 19/12 if there is order on 20/12', () => {
+            it('should return false for single-day reservation regardless of continuation', () => {
                 // Order 1: 16-18/12/25
                 const order1 = createReservation(
                     'order1',
                     '2025-12-16',
                     '2025-12-18'
                 )
-                // Order 2: 19/12/25 (single day but continues)
+                // Order 2: 19/12/25 (single day)
                 const order2 = createReservation(
                     'order2',
                     '2025-12-19',
@@ -306,9 +307,9 @@ describe('dateUtils', () => {
                     order2,
                     [order1, order2, order3],
                     '2025-12-19',
-                    false // Single day
+                    false // Single day — less than 2 days
                 )
-                expect(result).toBe(false) // Should NOT report as ending because continues to 20/12
+                expect(result).toBe(false) // Single-day reservations never count as ending today
             })
         })
 

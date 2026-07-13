@@ -125,10 +125,11 @@ const BusinessRuleSchema = new Schema(
         ruleType: {
             type: String,
             required: true,
-            enum: ['uniqueConstraint', 'dateRange', 'conditional', 'custom'],
+            enum: ['uniqueConstraint', 'dateRange', 'conditional', 'custom', 'noOverlap'],
         },
         config: { type: Schema.Types.Mixed, required: true },
         errorMessage: { type: String, required: true },
+        statusCode: { type: Number },
         enabled: { type: Boolean, default: true },
     },
     { _id: false }
