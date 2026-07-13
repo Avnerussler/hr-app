@@ -81,7 +81,7 @@ export const useTableData = ({
                       _id: form._id,
                       createdAt:
                           form.createdAt ||
-                          (form.formData as Record<string, unknown>)?.createdAt,
+                          (form.formData as unknown as Record<string, unknown>)?.createdAt,
                   }))
                 : ([] as Record<string, unknown>[]),
         [isSuccess, submittedData]

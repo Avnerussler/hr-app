@@ -14,13 +14,13 @@ export const TableBody: FC<TableBodyProps> = ({ table, onRowClick }) => {
     return (
         <Box as="tbody">
             {rows.length === 0 && (
-                <Box as="tr">
-                    <Box as="td" colSpan={colCount} h="300px" textAlign="center" verticalAlign="middle">
+                <tr>
+                    <td colSpan={colCount} style={{ height: '300px', textAlign: 'center', verticalAlign: 'middle' }}>
                         <Text color="muted.foreground" fontSize="sm">
                             No results found
                         </Text>
-                    </Box>
-                </Box>
+                    </td>
+                </tr>
             )}
             {rows.map((row) => (
                 <Box
