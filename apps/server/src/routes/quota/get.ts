@@ -489,6 +489,9 @@ router.get(
                 })
             }
 
+            // Sort by last name
+            filtered.sort((a, b) => a.lastName.localeCompare(b.lastName, 'he'))
+
             // Paginate
             const total = filtered.length
             const totalPages = Math.ceil(total / limitNum) || 1
