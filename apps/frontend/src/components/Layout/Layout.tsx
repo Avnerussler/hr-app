@@ -302,15 +302,17 @@ export function Layout() {
             {/* Main Content */}
             <Box
                 flex="1"
-                overflow="auto"
-                // bg="muted"
-                p={6}
+                overflow="hidden"
+                display="flex"
+                flexDirection="column"
                 _dark={{
                     bg: 'bg.subtle',
                 }}
             >
                 <TopBar />
-                <Outlet />
+                <Box flex="1" overflow="auto" p={6}>
+                    <Outlet />
+                </Box>
             </Box>
         </Flex>
     )

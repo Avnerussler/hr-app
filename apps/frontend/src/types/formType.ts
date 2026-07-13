@@ -1,6 +1,23 @@
 import { FormFields } from './fieldsType'
 import { ListCollection } from '@chakra-ui/react'
 
+export type CalculatedMetric = {
+    id: string
+    title: string
+    value: number
+    icon?: string
+    color?: string
+}
+
+export type SubmissionDetail = {
+    _id: string
+    formId: string
+    formName: string
+    formData: Record<string, unknown>
+    createdAt?: string
+    updatedAt?: string
+}
+
 export type AllFormSubmission = {
     forms: {
         _id: string
@@ -9,7 +26,14 @@ export type AllFormSubmission = {
         formName: string
         formData: Record<string, unknown>[]
         displayName: string
+        createdAt?: string
     }[]
+    pagination: {
+        page: number
+        limit: number
+        total: number
+        pages: number
+    }
 }
 
 export type FormSubmission = {
