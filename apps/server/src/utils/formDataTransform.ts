@@ -2,6 +2,40 @@ import { FormSubmissions, FormFields } from '../models'
 import logger from '../config/logger'
 import mongoose from 'mongoose'
 
+// ISO date string pattern: "YYYY-MM-DDTHH:mm:ss.sssZ" or "YYYY-MM-DD"
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?Z?)?$/
+
+/**
+ * Coerce form field values to their correct DB types after JSON deserialization.
+ * JSON.stringify turns Date objects into ISO strings — this converts them back.
+ * Also coerces boolean strings for radio/switch fields.
+ */
+export const coerceFormDataTypes = async (
+    formData: Record<string, unknown>,
+    formId: string
+): Promise<Record<string, unknown>> => {
+    if (!mongoose.Types.ObjectId.isValid(formId)) return formData
+    const formDef = await FormFields.findById(formId).lean()
+    if (!formDef) return formData
+    const allFields = formDef.sections?.flatMap((s: any) => s.fields ?? []) ?? []
+    const result = { ...formData }
+    for (const field of allFields) {
+        const value = result[field.name]
+        if (value === undefined || value === null || value === '') continue
+        if (field.type === 'date' && typeof value === 'string' && ISO_DATE_RE.test(value)) {
+            const d = new Date(value)
+            if (!isNaN(d.getTime())) result[field.name] = d
+        }
+        if ((field.type === 'radio' || field.type === 'switch') && (value === 'true' || value === 'false')) {
+            const items: { value: unknown }[] = field.items ?? []
+            if (items.some((i) => i.value === 'true' || i.value === 'false')) {
+                result[field.name] = value === 'true'
+            }
+        }
+    }
+    return result
+}
+
 /**
  * Transform form data to include display values for foreign references
  * Handles various field types: select, multipleSelect, enhancedSelect, enhancedMultipleSelect, radio

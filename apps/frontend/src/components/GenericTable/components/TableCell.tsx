@@ -393,6 +393,14 @@ export const TableCell: FC<TableCellProps> = ({ info, field }) => {
         )
     }
 
+    if (field.type === 'switch' || (field.type === 'radio' && typeof value === 'boolean')) {
+        const boolVal = typeof value === 'boolean' ? value : value === 'true'
+        const label = field.items?.find(
+            (item) => (item.value as unknown) === boolVal || item.value === String(boolVal)
+        )?.label ?? String(value)
+        return <Text color="foreground">{label}</Text>
+    }
+
     if (field.type === 'radio') {
         // Handle new format where foreign fields store {_id, display}
         if (

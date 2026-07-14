@@ -19,6 +19,8 @@ export const ControlledSelectField = ({
     control,
     name,
     options,
+    required,
+    label,
     ...props
 }: ControlledSelectFieldProps) => {
     const frameworks = (options: { label: string; value: string }[]) =>
@@ -30,10 +32,10 @@ export const ControlledSelectField = ({
         <Controller
             name={name}
             control={control}
-            defaultValue={props.defaultValue}
-            render={({ field }) => {
+            rules={{ required: required ? `${label} הוא שדה חובה` : false }}
+            render={({ field, fieldState: { error } }) => {
                 return (
-                    <Field.Root orientation="vertical">
+                    <Field.Root orientation="vertical" invalid={!!error}>
                         <SelectRoot
                             collection={frameworks(options)}
                             size="sm"
@@ -44,7 +46,7 @@ export const ControlledSelectField = ({
                             }
                             onInteractOutside={() => field.onBlur()}
                         >
-                            <SelectLabel>{props.label}</SelectLabel>
+                            <SelectLabel>{label}</SelectLabel>
                             <SelectTrigger>
                                 <SelectValueText
                                     placeholder={
@@ -69,6 +71,7 @@ export const ControlledSelectField = ({
                                 ))}
                             </SelectContent>
                         </SelectRoot>
+                        {error && <Field.ErrorText>{error.message}</Field.ErrorText>}
                     </Field.Root>
                 )
             }}

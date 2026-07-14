@@ -9,6 +9,7 @@
         "test": "jest --watchAll=false",
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage",
+        "migrate:coerce-types": "ts-node src/migrations/coerceFieldTypes.ts",
         "import:personnel": "ts-node src/scripts/runPersonnelImport.ts",
         "import:reserveDays": "ts-node src/scripts/runReserveDaysImport.ts",
         "delete:reserveDays": "ts-node src/scripts/deleteReserveDaysData.ts",

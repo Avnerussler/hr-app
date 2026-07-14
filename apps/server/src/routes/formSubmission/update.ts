@@ -4,6 +4,7 @@ import mongoose from 'mongoose'
 import logger from '../../config/logger'
 import { bidirectionalSyncService } from '../../services/bidirectionalSync'
 import { formValidationService } from '../../services/formValidation'
+import { coerceFormData } from '../../middleware'
 
 const transformFormData = async (formData: any, formId: string) => {
     try {
@@ -209,15 +210,13 @@ const transformFormData = async (formData: any, formId: string) => {
 }
 
 const router = Router()
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', coerceFormData, async (req: Request, res: Response) => {
     logger.info('POST /formSubmission/update - Request received')
     try {
         const { id, formData } = req.body
 
-        // Get the existing form to find its formId
         const existingForm = await FormSubmissions.findById(id)
         if (!existingForm) {
-            logger.warn(`Form with ID ${id} not found for update`)
             res.status(404).json({ message: 'Form not found' })
             return
         }
@@ -241,34 +240,31 @@ router.post('/', async (req: Request, res: Response) => {
             return
         }
 
-        // Store the old form data for bidirectional sync
+        const formId = existingForm.formId.toString()
         const oldFormData = existingForm.formData
 
-        // Store formData as-is (raw IDs) - transformation happens only when reading
         const updatedForm = await FormSubmissions.findByIdAndUpdate(
             mongoose.Types.ObjectId.createFromHexString(id),
-            { $set: { formData: formData } },
-            { new: true } // Return the updated document
+            { $set: { formData } },
+            { new: true }
         )
 
-        // Handle bidirectional sync after successful update
         await bidirectionalSyncService.handleBidirectionalSyncOnUpdate(
-            existingForm.formId.toString(),
+            formId,
             id,
             oldFormData,
-            formData  // Use raw formData, not transformed
+            formData
         )
 
-        // Transform the data for the response to the frontend
         const transformedFormData = await transformFormData(
             updatedForm!.formData,
-            existingForm.formId.toString()
+            formId
         )
 
         res.status(200).json({
             form: {
                 ...updatedForm!.toObject(),
-                formData: transformedFormData
+                formData: transformedFormData,
             }
         })
     } catch (error) {

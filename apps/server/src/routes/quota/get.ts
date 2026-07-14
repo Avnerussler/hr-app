@@ -2,9 +2,9 @@ import Quota from '../../models/Quota'
 import { FormSubmissions } from '../../models/FormSubmissions'
 import { Request, Response, Router } from 'express'
 import logger from '../../config/logger'
-import { asyncHandler } from '../../middleware'
-import { hasMoreThan1ConsecutiveDay, isEmployeeEndingToday } from '../../utils'
-import { eachDayOfInterval, parseISO, format } from 'date-fns'
+import { asyncHandler, validate, schemas } from '../../middleware'
+import { isEmployeeEndingToday, isSameDay } from '../../utils'
+import { eachDayOfInterval } from 'date-fns'
 
 const router = Router()
 
@@ -212,8 +212,8 @@ interface EmployeeAttendanceRecord {
     isEndingToday: boolean
     isAttendanceRequired: boolean
     hasAttended: boolean
-    workDays: string[]
-    reserveDays: string[]
+    workDays: Date[]
+    reserveDays: Date[]
     requestStatus: string
     fundingSource: string
 }
@@ -221,9 +221,10 @@ interface EmployeeAttendanceRecord {
 // Get employees scheduled for a specific date
 router.get(
     '/employees/:date',
+    validate(schemas.dateParam),
     asyncHandler(async (req: Request, res: Response) => {
         try {
-            const { date } = req.params
+            const date = (req.params as unknown as { date: Date }).date
             const {
                 filter = 'all',
                 search = '',
@@ -243,20 +244,13 @@ router.get(
                 isDeleted: false,
                 'formData.requestStatus': { $ne: 'denied' },
                 $or: [
-                    // Date falls within startDate and endDate range
                     {
                         'formData.startDate': { $lte: date },
                         'formData.endDate': { $gte: date },
                     },
-                    // Single day reservation (startDate equals the date)
                     {
                         'formData.startDate': date,
                         'formData.endDate': { $exists: false },
-                    },
-                    // startDate equals endDate equals the date
-                    {
-                        'formData.startDate': date,
-                        'formData.endDate': date,
                     },
                 ],
             }).lean()
@@ -321,6 +315,8 @@ router.get(
                 }
             })
 
+            const dateStr = date.toISOString().slice(0, 10)
+
             // Map reservations to employee attendance data
             const employees = reservationsForDate
                 .map((reservation: any): EmployeeAttendanceRecord | null => {
@@ -354,7 +350,6 @@ router.get(
                     // Try to get full employee data from personnel
                     const fullEmployeeData = employeeDataMap.get(employeeId)
                     if (fullEmployeeData) {
-                        // Use firstName from full data if available
                         employeeName =
                             fullEmployeeData.firstName || 'Unknown Employee'
                         lastName = fullEmployeeData.lastName || ''
@@ -367,37 +362,29 @@ router.get(
                         typeof formData.employeeName === 'object' &&
                         formData.employeeName?.display
                     ) {
-                        // Fallback to display name if available
                         employeeName = formData.employeeName.display
                     }
 
-                    // Check if employee has more than 2 consecutive reserve days
-                    // Generate all dates between startDate and endDate for this reservation
-                    const reserveDaysArray: string[] = []
+                    const reserveDaysArray: Date[] = []
                     if (formData.startDate && formData.endDate) {
                         try {
-                            const dates = eachDayOfInterval({
-                                start: parseISO(formData.startDate),
-                                end: parseISO(formData.endDate),
-                            })
                             reserveDaysArray.push(
-                                ...dates.map((date) =>
-                                    format(date, 'yyyy-MM-dd')
-                                )
+                                ...eachDayOfInterval({
+                                    start: new Date(formData.startDate),
+                                    end: new Date(formData.endDate),
+                                })
                             )
                         } catch (dateError) {
                             logger.warn(
-                                `Invalid date format for reservation ${reservation._id}: startDate=${formData.startDate}, endDate=${formData.endDate}`,
+                                `Invalid date range for reservation ${reservation._id}: startDate=${formData.startDate}, endDate=${formData.endDate}`,
                                 dateError
                             )
-                            // If single date is valid, use it
                             if (formData.startDate) {
-                                reserveDaysArray.push(formData.startDate)
+                                reserveDaysArray.push(new Date(formData.startDate))
                             }
                         }
                     }
-                    const hasConsecutiveDays =
-                        hasMoreThan1ConsecutiveDay(reserveDaysArray)
+                    const hasConsecutiveDays = reserveDaysArray.length > 1
 
                     // Check if this employee is truly ending today or if reservation continues
                     const employeeReservations =
@@ -408,6 +395,8 @@ router.get(
                         date,
                         hasConsecutiveDays
                     )
+
+                    const startDate = formData.startDate ? new Date(formData.startDate) : null
 
                     return {
                         _id: employeeId,
@@ -423,13 +412,13 @@ router.get(
                         isActive: true,
                         startDate: formData.startDate,
                         endDate: formData.endDate,
-                        isStartingToday: formData.startDate === date,
+                        isStartingToday: startDate !== null && isSameDay(startDate, date),
                         isEndingToday: isEndingToday,
                         isAttendanceRequired: true,
                         hasAttended:
                             formData.attendance &&
                             typeof formData.attendance === 'object' &&
-                            formData.attendance[date] === true, // Check saved attendance data
+                            formData.attendance[dateStr] === true,
                         workDays: [], // Could be calculated from the date range
                         reserveDays: reserveDaysArray,
                         requestStatus: formData.requestStatus || '',
@@ -499,7 +488,7 @@ router.get(
 
             res.status(200).json({
                 data: {
-                    date,
+                    date: dateStr,
                     employees: pagedEmployees,
                     statistics,
                     pagination: {

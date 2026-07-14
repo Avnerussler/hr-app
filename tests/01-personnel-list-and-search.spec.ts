@@ -34,23 +34,56 @@ test.describe('Module 1: Personnel Management', () => {
   await expect(page.getByRole('columnheader', { name: 'סטטוס Sort column' })).toBeVisible();
  });
 
- test('TC-PERS-002: Search Personnel', async ({ page }) => {
+ test('TC-PERS-002: Search by first name', async ({ page }) => {
   const searchBox = page.getByRole('textbox', { name: 'חפש בכל העמודות' });
 
-  // Verify initial state - all records visible
   await expect(page.getByText(/Showing 1 to \d+ of \d+ entries/)).toBeVisible();
 
-  // Type search query (Hebrew)
   await searchBox.fill('אבנר');
-
-  // Verify table filters in real-time
   await expect(page.getByText('Showing 1 to 1 of 1 entries')).toBeVisible();
   await expect(page.getByText('אבנר דויד')).toBeVisible();
 
-  // Clear search by clicking Clear Filters button
   await page.getByRole('button', { name: 'Clear Filters' }).click();
+  await expect(page.getByText(/Showing 1 to \d+ of \d+ entries/)).toBeVisible();
+ });
 
-  // Verify all records return
+ test('TC-PERS-003: Search by first name + last name combined', async ({ page }) => {
+  const searchBox = page.getByRole('textbox', { name: 'חפש בכל העמודות' });
+
+  await expect(page.getByText(/Showing 1 to \d+ of \d+ entries/)).toBeVisible();
+
+  // Search full name "אבנר דויד רוסלר" — firstName="אבנר דויד", lastName="רוסלר"
+  await searchBox.fill('אבנר דויד רוסלר');
+  await expect(page.getByText('Showing 1 to 1 of 1 entries')).toBeVisible();
+  await expect(page.getByText('אבנר דויד')).toBeVisible();
+  await expect(page.getByText('רוסלר')).toBeVisible();
+
+  // Also verify partial last name search
+  await searchBox.fill('שמיט');
+  await expect(page.getByText(/Showing 1 to \d+ of \d+ entries/)).toBeVisible();
+  await expect(page.locator('tbody').getByText('שמיט').first()).toBeVisible();
+
+  await page.getByRole('button', { name: 'Clear Filters' }).click();
+  await expect(page.getByText(/Showing 1 to \d+ of \d+ entries/)).toBeVisible();
+ });
+
+ test('TC-PERS-004: Search by personal number', async ({ page }) => {
+  const searchBox = page.getByRole('textbox', { name: 'חפש בכל העמודות' });
+
+  await expect(page.getByText(/Showing 1 to \d+ of \d+ entries/)).toBeVisible();
+
+  // Search by exact personal number
+  await searchBox.fill('1233455');
+  await expect(page.getByText('Showing 1 to 1 of 1 entries')).toBeVisible();
+  await expect(page.getByText('1233455')).toBeVisible();
+  await expect(page.getByText('אבנר דויד')).toBeVisible();
+
+  // Search by partial personal number
+  await searchBox.fill('3687412');
+  await expect(page.getByText(/Showing 1 to \d+ of \d+ entries/)).toBeVisible();
+  await expect(page.getByText('3687412')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Clear Filters' }).click();
   await expect(page.getByText(/Showing 1 to \d+ of \d+ entries/)).toBeVisible();
  });
 
@@ -80,7 +113,7 @@ test.describe('Module 1: Personnel Management', () => {
   await expect(page.getByText('Rows per page:')).toBeVisible();
 
   // Verify current page indicator
-  await expect(page.getByRole('button', { name: 'page 1' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'page 1', exact: true })).toBeVisible();
 
   // Verify entry count display
   await expect(page.getByText(/Showing 1 to \d+ of \d+ entries/)).toBeVisible();

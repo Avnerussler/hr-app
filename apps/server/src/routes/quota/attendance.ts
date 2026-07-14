@@ -1,8 +1,9 @@
 import { Request, Response, Router } from 'express'
 import logger from '../../config/logger'
-import { asyncHandler } from '../../middleware'
+import { asyncHandler, validate, schemas } from '../../middleware'
 import { FormSubmissions } from '../../models/FormSubmissions'
 import Quota from '../../models/Quota'
+import { format } from 'date-fns'
 
 const router = Router()
 
@@ -11,13 +12,20 @@ router.put(
     '/attendance/individual',
     asyncHandler(async (req: Request, res: Response) => {
         try {
-            const { employeeId, date, hasAttended } = req.body
+            const { employeeId, date: dateRaw, hasAttended } = req.body
 
-            if (!employeeId || !date || typeof hasAttended !== 'boolean') {
+            if (!employeeId || !dateRaw || typeof hasAttended !== 'boolean') {
                 return res
                     .status(400)
                     .json({ message: 'Invalid attendance data' })
             }
+
+            const { value: dateObj, error: dateError } = schemas.dateParam.params.validate({ date: dateRaw })
+            if (dateError) {
+                return res.status(400).json({ message: 'Invalid date format' })
+            }
+            const date: Date = dateObj.date
+            const dateStr = format(date, 'yyyy-MM-dd')
 
             // Find ALL reservations for this employee covering this date, then update all of them
             const reservations = await FormSubmissions.find({
@@ -37,10 +45,6 @@ router.put(
                                 'formData.startDate': date,
                                 'formData.endDate': { $exists: false },
                             },
-                            {
-                                'formData.startDate': date,
-                                'formData.endDate': '',
-                            },
                         ],
                     },
                 ],
@@ -57,20 +61,20 @@ router.put(
                 if (!reservation.formData.attendance) {
                     reservation.formData.attendance = {}
                 }
-                reservation.formData.attendance[date] = hasAttended
+                reservation.formData.attendance[dateStr] = hasAttended
                 reservation.markModified('formData')
                 await reservation.save()
             }
 
             // Reset manager report status when attendance is changed
-            const quota = await Quota.findOne({ date })
+            const quota = await Quota.findOne({ date: dateStr })
             if (quota && quota.managerReported) {
                 quota.managerReported = false
                 quota.managerReportedAt = undefined
                 quota.managerReportedBy = undefined
                 await quota.save()
                 logger.info(
-                    `Manager report reset for date ${date} due to attendance change`
+                    `Manager report reset for date ${dateStr} due to attendance change`
                 )
             }
 
@@ -78,7 +82,7 @@ router.put(
                 message: 'Individual attendance updated successfully',
                 data: {
                     employeeId,
-                    date,
+                    date: dateStr,
                     hasAttended,
                     status: 'updated',
                 },
@@ -278,9 +282,10 @@ router.post(
 // Get attendance summary for a date range (for calendar indicators)
 router.get(
     '/attendance/range/:startDate/:endDate',
+    validate(schemas.dateRangeParams),
     asyncHandler(async (req: Request, res: Response) => {
         try {
-            const { startDate, endDate } = req.params
+            const { startDate, endDate } = req.params as unknown as { startDate: Date; endDate: Date }
 
             // Find all reservations that overlap with the date range
             // Exclude denied requests
@@ -288,26 +293,13 @@ router.get(
                 isDeleted: false,
                 'formData.requestStatus': { $ne: 'denied' },
                 $or: [
-                    // Case 1: Reservation spans across the requested range
                     {
                         'formData.startDate': { $lte: endDate },
                         'formData.endDate': { $gte: startDate },
                     },
-                    // Case 2: Reservation starts within the range (no end date)
                     {
-                        'formData.startDate': {
-                            $gte: startDate,
-                            $lte: endDate,
-                        },
+                        'formData.startDate': { $gte: startDate, $lte: endDate },
                         'formData.endDate': { $exists: false },
-                    },
-                    // Case 3: Single day reservation within range
-                    {
-                        'formData.startDate': {
-                            $gte: startDate,
-                            $lte: endDate,
-                        },
-                        'formData.endDate': '',
                     },
                 ],
             }).lean()
@@ -453,8 +445,8 @@ router.get(
             // Check for manager reports from Quota collection and update hasData flag
             const managerReports = await Quota.find({
                 date: {
-                    $gte: startDate,
-                    $lte: endDate,
+                    $gte: format(startDate, 'yyyy-MM-dd'),
+                    $lte: format(endDate, 'yyyy-MM-dd'),
                 },
                 managerReported: true,
             })

@@ -62,11 +62,6 @@ export const GenericTable: FC<GenericTableProps> = ({
         return { pageIndex: page, pageSize }
     })
 
-    const trackedSetPagination: typeof setPagination = (value) => {
-        console.log('[setPagination] called from:', new Error().stack?.split('\n')[2]?.trim(), 'value:', typeof value === 'function' ? '(fn)' : value)
-        setPagination(value)
-    }
-
     const {
         globalFilter,
         setGlobalFilter,
@@ -92,10 +87,8 @@ export const GenericTable: FC<GenericTableProps> = ({
 
     // Correct pageIndex only when our current page exceeds the total pages the server reports
     useEffect(() => {
-        console.log('[pagination effect] totalPages:', totalPages, 'pageIndex:', pagination.pageIndex, 'pageSize:', pagination.pageSize)
         if (totalPages !== null && totalPages > 0 && pagination.pageIndex + 1 > totalPages) {
-            console.log('[pagination effect] CORRECTING to page', totalPages)
-            trackedSetPagination((prev) => ({ ...prev, pageIndex: totalPages - 1 }))
+            setPagination((prev) => ({ ...prev, pageIndex: totalPages - 1 }))
         }
     }, [totalPages, pagination.pageIndex])
 
@@ -160,10 +153,8 @@ export const GenericTable: FC<GenericTableProps> = ({
     // Handle filter changes
     const handleFilterChange = useCallback(
         (filterId: string, value: string | string[] | boolean) => {
-            setTableFilters((prev) => ({
-                ...prev,
-                [filterId]: value,
-            }))
+            setTableFilters((prev) => ({ ...prev, [filterId]: value }))
+            setPagination((prev) => ({ ...prev, pageIndex: 0 }))
         },
         [setTableFilters]
     )
@@ -187,7 +178,7 @@ export const GenericTable: FC<GenericTableProps> = ({
         onGlobalFilterChange: setGlobalFilter,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
-        onPaginationChange: trackedSetPagination,
+        onPaginationChange: setPagination,
         globalFilterFn: 'global',
         filterFns,
         sortingFns,
@@ -201,6 +192,7 @@ export const GenericTable: FC<GenericTableProps> = ({
 
     const handleClearFilters = () => {
         clearFilters(table)
+        setPagination((prev) => ({ ...prev, pageIndex: 0 }))
     }
 
     const handleExportToExcel = useCallback(async () => {
@@ -235,6 +227,7 @@ export const GenericTable: FC<GenericTableProps> = ({
                 handleClearFilters={handleClearFilters}
                 sorting={sorting}
                 columnFilters={columnFilters}
+                tableFilters={tableFilters}
                 onExportToExcel={handleExportToExcel}
                 filters={filters}
                 filterValues={tableFilters}
@@ -246,7 +239,7 @@ export const GenericTable: FC<GenericTableProps> = ({
             <TablePagination
                 table={table}
                 onPageSizeChange={(newSize) =>
-                    trackedSetPagination((prev) => ({ pageIndex: prev.pageIndex, pageSize: newSize }))
+                    setPagination((prev) => ({ pageIndex: prev.pageIndex, pageSize: newSize }))
                 }
             />
         </VStack>

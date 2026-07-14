@@ -1,5 +1,4 @@
 import { Field } from '@chakra-ui/react'
-import { Switch } from '../ui/switch'
 import { FieldType } from '@/types/fieldsType'
 import {
     ControlledFileInput,
@@ -11,6 +10,7 @@ import {
     ControlledSelectAutocompleteField,
     ControlledAttendanceField,
     ControlledAttendanceHistoryField,
+    ControlledSwitchField,
 } from '../ControlledFields'
 import { Control, FieldValues } from 'react-hook-form'
 import { RefObject } from 'react'
@@ -60,10 +60,12 @@ export const FormGenerator = ({
                 )
             case 'switch':
                 return (
-                    <Field.Root key={id} orientation="horizontal">
-                        <Field.Label>{props.label}</Field.Label>
-                        <Switch />
-                    </Field.Root>
+                    <ControlledSwitchField
+                        {...props}
+                        control={control}
+                        key={id}
+                        id={id}
+                    />
                 )
             case 'select':
                 return (

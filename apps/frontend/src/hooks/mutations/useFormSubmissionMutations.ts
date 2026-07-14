@@ -134,12 +134,12 @@ export const useUpdateFormSubmission = (
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: async ({ formData, id }: UpdateFormSubmissionParams) => {
+        mutationFn: async ({ formData, id, formId }: UpdateFormSubmissionParams) => {
             const response = await axios({
                 method: 'POST',
                 baseURL: BASE_URL,
                 url: API_ENDPOINTS.UPDATE.toLowerCase(),
-                data: { formData, id },
+                data: { formData, id, formId },
             })
             return response.data
         },

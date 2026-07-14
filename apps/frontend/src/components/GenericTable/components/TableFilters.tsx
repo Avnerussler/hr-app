@@ -29,7 +29,7 @@ export const TableFilters: FC<TableFiltersProps> = ({
     if (!filters || filters.length === 0) return null
 
     const renderFilter = (filter: TableFilter) => {
-        const currentValue = filterValues?.[filter.id] ?? filter.defaultValue
+        const currentValue = filterValues?.[filter.fieldName] ?? filter.defaultValue
 
         switch (filter.type) {
             case 'radio': {
@@ -46,7 +46,7 @@ export const TableFilters: FC<TableFiltersProps> = ({
                         <RadioGroup
                             value={String(currentValue)}
                             onValueChange={(details) =>
-                                onFilterChange(filter.id, details.value || '')
+                                onFilterChange(filter.fieldName, details.value || '')
                             }
                         >
                             <Flex gap={2} flexWrap="wrap">
@@ -79,7 +79,7 @@ export const TableFilters: FC<TableFiltersProps> = ({
                             value={[String(currentValue)]}
                             onValueChange={(details) =>
                                 onFilterChange(
-                                    filter.id,
+                                    filter.fieldName,
                                     details.value[0] || ''
                                 )
                             }
@@ -124,7 +124,7 @@ export const TableFilters: FC<TableFiltersProps> = ({
                                 Array.isArray(currentValue) ? currentValue : []
                             }
                             onValueChange={(details) =>
-                                onFilterChange(filter.id, details.value)
+                                onFilterChange(filter.fieldName, details.value)
                             }
                             multiple
                             size="sm"
@@ -160,7 +160,7 @@ export const TableFilters: FC<TableFiltersProps> = ({
                                 checked={Boolean(currentValue)}
                                 onCheckedChange={(details) =>
                                     onFilterChange(
-                                        filter.id,
+                                        filter.fieldName,
                                         Boolean(details.checked)
                                     )
                                 }

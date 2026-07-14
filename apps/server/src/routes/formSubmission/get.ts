@@ -2,171 +2,7 @@ import { FormSubmissions, FormFields } from '../../models'
 import { Request, Response, Router } from 'express'
 import mongoose from 'mongoose'
 import logger from '../../config/logger'
-
-const transformFormData = async (formData: any, formId: string) => {
-    try {
-        // Get form field definitions to understand foreign relationships
-        const formDefinition = await FormFields.findById(formId)
-        if (!formDefinition) return formData
-
-        const transformedData = { ...formData }
-
-        // Flatten all fields from all sections using flatMap
-        const allFields = formDefinition.sections?.flatMap(section => section.fields) || []
-
-        // Filter only fields with foreign relationships that have values
-        const foreignFields = allFields.filter(field =>
-            (field.foreignFormName && field.foreignField && formData[field.name]) ||
-            (field.foreignFormName && field.foreignFields && formData[field.name])
-        )
-
-        if (foreignFields.length === 0) return formData
-
-        // Process each foreign field
-        for (const field of foreignFields) {
-            const fieldValue = formData[field.name]
-
-            if (field.type === 'select' || field.type === 'selectAutocomplete') {
-                // Single selection
-                if (typeof fieldValue === 'string' && mongoose.Types.ObjectId.isValid(fieldValue)) {
-                    const doc = await FormSubmissions.findOne({
-                        _id: fieldValue,
-                        formName: field.foreignFormName,
-                        isDeleted: false
-                    }).lean()
-
-                    const foreignField = field.foreignField
-                    if (doc?.formData && foreignField && doc.formData[foreignField]) {
-                        transformedData[field.name] = {
-                            _id: fieldValue,
-                            display: doc.formData[foreignField]
-                        }
-                    }
-                }
-            } else if (field.type === 'multipleSelect') {
-                // Multiple selection
-                if (Array.isArray(fieldValue)) {
-                    const validIds = fieldValue.filter(id =>
-                        typeof id === 'string' && mongoose.Types.ObjectId.isValid(id)
-                    )
-
-                    if (validIds.length > 0) {
-                        const docs = await FormSubmissions.find({
-                            _id: { $in: validIds },
-                            formName: field.foreignFormName,
-                            isDeleted: false
-                        }).lean()
-
-                        transformedData[field.name] = validIds.map(id => {
-                            const doc = docs.find(d => d._id.toString() === id)
-                            return {
-                                _id: id,
-                                display: (doc?.formData && field.foreignField && doc.formData[field.foreignField]) || id
-                            }
-                        })
-                    }
-                }
-            } else if (field.type === 'radio') {
-                // Radio selection
-                if (typeof fieldValue === 'string' && mongoose.Types.ObjectId.isValid(fieldValue)) {
-                    const doc = await FormSubmissions.findOne({
-                        _id: fieldValue,
-                        formName: field.foreignFormName,
-                        isDeleted: false
-                    }).lean()
-
-                    const foreignField = field.foreignField
-                    if (doc?.formData && foreignField && doc.formData[foreignField]) {
-                        transformedData[field.name] = {
-                            _id: fieldValue,
-                            display: doc.formData[foreignField]
-                        }
-                    }
-                }
-            } else if (field.type === 'enhancedSelect') {
-                // Enhanced single selection with multiple foreign fields
-                if (typeof fieldValue === 'string' && mongoose.Types.ObjectId.isValid(fieldValue)) {
-                    const doc = await FormSubmissions.findOne({
-                        _id: fieldValue,
-                        formName: field.foreignFormName,
-                        isDeleted: false
-                    }).lean()
-
-                    if (doc?.formData && field.foreignFields) {
-                        // Build metadata object
-                        const metadata: any = {}
-                        field.foreignFields.forEach((fieldName: string) => {
-                            metadata[fieldName] = doc.formData[fieldName]
-                        })
-
-                        // Build display string from all foreign fields, filtering out booleans and empty values
-                        const displayParts = field.foreignFields
-                            .map(fieldName => doc.formData[fieldName])
-                            .filter(value =>
-                                value !== null &&
-                                value !== undefined &&
-                                value !== '' &&
-                                typeof value !== 'boolean'
-                            )
-                            .map(value => String(value))
-
-                        if (displayParts.length > 0) {
-                            transformedData[field.name] = {
-                                _id: fieldValue,
-                                display: displayParts.join(' '),
-                                metadata
-                            }
-                        }
-                    }
-                }
-            } else if (field.type === 'enhancedMultipleSelect') {
-                // Enhanced multiple selection with multiple foreign fields
-                if (Array.isArray(fieldValue)) {
-                    const validIds = fieldValue.filter(id =>
-                        typeof id === 'string' && mongoose.Types.ObjectId.isValid(id)
-                    )
-
-                    if (validIds.length > 0) {
-                        const docs = await FormSubmissions.find({
-                            _id: { $in: validIds },
-                            formName: field.foreignFormName,
-                            isDeleted: false
-                        }).lean()
-
-                        transformedData[field.name] = validIds.map(id => {
-                            const doc = docs.find(d => d._id.toString() === id)
-                            if (doc?.formData && field.foreignFields) {
-                                const displayParts = field.foreignFields
-                                    .map(fieldName => doc.formData[fieldName])
-                                    .filter(value =>
-                                        value !== null &&
-                                        value !== undefined &&
-                                        value !== '' &&
-                                        typeof value !== 'boolean'
-                                    )
-                                    .map(value => String(value))
-
-                                return {
-                                    _id: id,
-                                    display: displayParts.length > 0 ? displayParts.join(' ') : id
-                                }
-                            }
-                            return {
-                                _id: id,
-                                display: id
-                            }
-                        })
-                    }
-                }
-            }
-        }
-
-        return transformedData
-    } catch (error) {
-        logger.error('Error transforming form data:', error)
-        return formData
-    }
-}
+import { buildDateSearchClauses, buildLabelSearchClauses, transformFormData } from '../../utils'
 
 const router = Router()
 router.get('/select', async (req: Request, res: Response) => {
@@ -260,16 +96,29 @@ router.get('/', async (req: Request, res: Response) => {
                             for (const rf of referencedFields) {
                                 addFieldsStage[`__str_${rf}`] = { $toString: `$formData.${rf}` }
                             }
+                            // Concatenate all referenced fields into one string so multi-word
+                            // searches like "לאה גרינברג" (firstName + lastName) match
+                            addFieldsStage['__concat'] = {
+                                $toLower: {
+                                    $trim: {
+                                        input: {
+                                            $reduce: {
+                                                input: referencedFields.map((rf: string) => ({ $toString: `$formData.${rf}` })),
+                                                initialValue: '',
+                                                in: { $concat: ['$$value', ' ', '$$this'] },
+                                            },
+                                        },
+                                    },
+                                },
+                            }
+                            const tokens = (search as string).trim().split(/\s+/).filter(Boolean)
+                            const tokenMatchStage = tokens.length > 1
+                                ? { $and: tokens.map((t: string) => ({ __concat: { $regex: t, $options: 'i' } })) }
+                                : { $or: referencedFields.map((rf: string) => ({ [`__str_${rf}`]: { $regex: search, $options: 'i' } })) }
                             const matchingRefs = await FormSubmissions.aggregate([
                                 { $match: { formName: fieldDef.foreignFormName, isDeleted: false } },
                                 { $addFields: addFieldsStage },
-                                {
-                                    $match: {
-                                        $or: referencedFields.map((rf: string) => ({
-                                            [`__str_${rf}`]: { $regex: search, $options: 'i' },
-                                        })),
-                                    },
-                                },
+                                { $match: tokenMatchStage },
                                 { $project: { _id: 1 } },
                             ])
 
@@ -280,24 +129,69 @@ router.get('/', async (req: Request, res: Response) => {
                             }
                         }
                     } else {
-                        // Plain text/number field — regex on the raw value
-                        orClauses.push({ [`formData.${f}`]: { $regex: search, $options: 'i' } })
+                        if (fieldDef?.type === 'date') {
+                            const dateClauses = buildDateSearchClauses(`formData.${f}`, search as string)
+                            orClauses.push(...dateClauses)
+                        } else if (fieldDef?.type === 'number') {
+                            // Numeric fields are stored as numbers — cast to string for regex match
+                            orClauses.push({
+                                $expr: {
+                                    $regexMatch: {
+                                        input: { $toString: `$formData.${f}` },
+                                        regex: search,
+                                        options: 'i',
+                                    },
+                                },
+                            })
+                        } else {
+                            // Plain text field — regex on the raw value
+                            orClauses.push({ [`formData.${f}`]: { $regex: search, $options: 'i' } })
 
-                        // For select/radio fields with options or items, also match by label:
-                        // find option values whose label contains the search term, then $in those values
-                        const choices: { value: unknown; label?: string }[] = [
-                            ...(fieldDef?.options ?? []),
-                            ...(fieldDef?.items ?? []),
-                        ]
-                        if (choices.length > 0) {
-                            const searchLower = (search as string).toLowerCase()
-                            const matchingValues = choices
-                                .filter((c) => c.label && c.label.toLowerCase().includes(searchLower))
-                                .map((c) => c.value)
-                            if (matchingValues.length > 0) {
-                                orClauses.push({ [`formData.${f}`]: { $in: matchingValues } })
-                            }
+                            // For select/radio fields with options or items, also match by label
+                            const choices: { value: unknown; label?: string }[] = [
+                                ...(fieldDef?.options ?? []),
+                                ...(fieldDef?.items ?? []),
+                            ]
+                            orClauses.push(...buildLabelSearchClauses(`formData.${f}`, search as string, choices))
                         }
+                    }
+                }
+
+                // Multi-token search across plain text fields (e.g. "אבנר דויד רוסלר" spanning firstName + lastName)
+                const tokens = (search as string).trim().split(/\s+/).filter(Boolean)
+                if (tokens.length > 1) {
+                    const plainTextFields = fields.filter((f) => {
+                        const fd = allFormFields.find((fd: any) => fd.name === f)
+                        return !fd?.foreignFormName && fd?.type !== 'date' && fd?.type !== 'number'
+                    })
+                    if (plainTextFields.length > 1) {
+                        // Build a concatenated string of all plain text fields and match each token against it
+                        const concatExpr = {
+                            $toLower: {
+                                $trim: {
+                                    input: {
+                                        $reduce: {
+                                            input: plainTextFields.map((f: string) => ({
+                                                $ifNull: [{ $toString: `$formData.${f}` }, ''],
+                                            })),
+                                            initialValue: '',
+                                            in: { $concat: ['$$value', ' ', '$$this'] },
+                                        },
+                                    },
+                                },
+                            },
+                        }
+                        orClauses.push({
+                            $expr: {
+                                $and: tokens.map((t: string) => ({
+                                    $regexMatch: {
+                                        input: concatExpr,
+                                        regex: t,
+                                        options: 'i',
+                                    },
+                                })),
+                            },
+                        })
                     }
                 }
 
@@ -333,7 +227,6 @@ router.get('/', async (req: Request, res: Response) => {
         }
 
         logger.info('Query filters:', { formName, formId, search, searchFields, filters })
-
         const skip = (Number(page) - 1) * Number(limit)
 
         const [rawForms, totalCount] = await Promise.all([

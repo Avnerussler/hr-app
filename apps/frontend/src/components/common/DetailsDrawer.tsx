@@ -225,15 +225,18 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                     },
                 }
             )
-        } else {
-            // Create new employee
-            createEmployeeMutation.mutate(
-                { formId: formId, formData: data, formName: formName },
-                { onSuccess: () => { onClose(); reset(data) } }
-            )
             return
         }
-        reset(data)
+        // Create new employee
+        createEmployeeMutation.mutate(
+            { formId: formId, formData: data, formName: formName },
+            {
+                onSuccess: () => {
+                    onClose()
+                    reset(data)
+                },
+            }
+        )
     }
 
     const handleFormError = (errors: any) => {
