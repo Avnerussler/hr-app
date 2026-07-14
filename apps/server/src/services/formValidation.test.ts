@@ -283,7 +283,7 @@ describe('dateRange rule', () => {
             businessRules: [makeRule({ startDateField: 'start', endDateField: 'end' })],
         }))
         const result = await formValidationService.validateFormSubmission(
-            { start: '2026-07-01', end: '2026-07-05' }, 'form-id', 'test_form'
+            { start: new Date('2026-07-01'), end: new Date('2026-07-05') }, 'form-id', 'test_form'
         )
         expect(result.isValid).toBe(true)
     })
@@ -293,7 +293,7 @@ describe('dateRange rule', () => {
             businessRules: [makeRule({ startDateField: 'start', endDateField: 'end' })],
         }))
         const result = await formValidationService.validateFormSubmission(
-            { start: '2026-07-10', end: '2026-07-01' }, 'form-id', 'test_form'
+            { start: new Date('2026-07-10'), end: new Date('2026-07-01') }, 'form-id', 'test_form'
         )
         expect(result.isValid).toBe(false)
         expect(result.errors[0].code).toBe('DATERANGE')
@@ -304,7 +304,7 @@ describe('dateRange rule', () => {
             businessRules: [makeRule({ startDateField: 'start', endDateField: 'end', maxDays: 3 })],
         }))
         const result = await formValidationService.validateFormSubmission(
-            { start: '2026-07-01', end: '2026-07-10' }, 'form-id', 'test_form'
+            { start: new Date('2026-07-01'), end: new Date('2026-07-10') }, 'form-id', 'test_form'
         )
         expect(result.isValid).toBe(false)
     })
@@ -314,7 +314,7 @@ describe('dateRange rule', () => {
             businessRules: [makeRule({ startDateField: 'start', endDateField: 'end', minDays: 5 })],
         }))
         const result = await formValidationService.validateFormSubmission(
-            { start: '2026-07-01', end: '2026-07-02' }, 'form-id', 'test_form'
+            { start: new Date('2026-07-01'), end: new Date('2026-07-02') }, 'form-id', 'test_form'
         )
         expect(result.isValid).toBe(false)
     })
@@ -324,7 +324,7 @@ describe('dateRange rule', () => {
             businessRules: [makeRule({ startDateField: 'start', endDateField: 'end' })],
         }))
         const result = await formValidationService.validateFormSubmission(
-            { start: 'not-a-date', end: '2026-07-05' }, 'form-id', 'test_form'
+            { start: 'not-a-date', end: new Date('2026-07-05') }, 'form-id', 'test_form'
         )
         expect(result.isValid).toBe(false)
     })
