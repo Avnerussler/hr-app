@@ -26,7 +26,7 @@ import {
 import { useEffect, useMemo, useState } from 'react'
 import { FormGenerator } from '../FormGenerator/FormGenerator'
 import { FormFields, IForm } from '@/types/fieldsType'
-import { AllFormSubmission } from '@/types/formType'
+import { SubmissionDetail } from '@/types/formType'
 import {
     useCreateFormSubmission,
     useUpdateFormSubmission,
@@ -62,8 +62,9 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
     const createEmployeeMutation = useCreateFormSubmission()
     const updateEmployeeMutation = useUpdateFormSubmission()
     const deleteEmployeeMutation = useDeleteFormSubmission()
-    const { data: submittedData } = useQuery<AllFormSubmission>({
-        queryKey: ['formSubmission', formId],
+    const { data: submissionDetail } = useQuery<SubmissionDetail>({
+        queryKey: ['formSubmission/detail', itemId],
+        enabled: formState === 'edit' && !!itemId,
     })
 
     const { data: formFields, isLoading: formFieldsLoading } = useQuery<IForm>({
@@ -73,10 +74,8 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
 
     // Get employee data for header display
     const employeeData = useMemo(() => {
-        if (formState === 'edit' && itemId && submittedData?.forms) {
-            const formData = submittedData.forms.find(
-                (form) => form._id === itemId
-            )?.formData
+        if (formState === 'edit' && itemId && submissionDetail?.formData) {
+            const formData = submissionDetail.formData
 
             if (formData) {
                 // Helper to extract string from possible object/array values
@@ -137,18 +136,16 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
             }
         }
         return null
-    }, [formState, itemId, submittedData?.forms])
+    }, [formState, itemId, submissionDetail])
 
     useEffect(() => {
         if (
             formState === 'edit' &&
             itemId &&
-            submittedData?.forms &&
+            submissionDetail?.formData &&
             formFields
         ) {
-            const formData = submittedData.forms.find(
-                (form) => form._id === itemId
-            )?.formData
+            const formData = submissionDetail.formData
             if (formData) {
                 // Normalize formData to extract IDs from enhanced select fields
                 const normalizedData = { ...formData }
@@ -196,7 +193,7 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
         } else if (formState === 'new') {
             reset({})
         }
-    }, [formState, reset, itemId, submittedData?.forms, formFields])
+    }, [formState, reset, itemId, submissionDetail, formFields])
 
     // Function to find the first tab containing validation errors
     const findTabWithErrors = (
@@ -228,15 +225,18 @@ export function DetailsDrawer({ isOpen, onClose, title }: DetailsDrawerProps) {
                     },
                 }
             )
-        } else {
-            // Create new employee
-            createEmployeeMutation.mutate(
-                { formId: formId, formData: data, formName: formName },
-                { onSuccess: () => { onClose(); reset(data) } }
-            )
             return
         }
-        reset(data)
+        // Create new employee
+        createEmployeeMutation.mutate(
+            { formId: formId, formData: data, formName: formName },
+            {
+                onSuccess: () => {
+                    onClose()
+                    reset(data)
+                },
+            }
+        )
     }
 
     const handleFormError = (errors: any) => {

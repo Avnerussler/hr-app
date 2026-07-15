@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose'
-import { format, endOfMonth } from 'date-fns'
+import { format, endOfMonth, parseISO } from 'date-fns'
 import { FormSubmissions } from './FormSubmissions'
 
 export interface IQuota extends Document {
@@ -173,8 +173,12 @@ quotaSchema.statics.getCurrentOccupancy = async function (
     date: string
 ): Promise<number> {
     try {
-        // Query Reserve Days Management to count employees assigned to this date
-        // Only count internal funding
+        const dateObj = parseISO(date)
+        // Start of day / end of day to match Date objects stored in MongoDB
+        const startOfDay = new Date(dateObj)
+        startOfDay.setUTCHours(0, 0, 0, 0)
+        const endOfDay = new Date(dateObj)
+        endOfDay.setUTCHours(23, 59, 59, 999)
 
         const occupancy = await FormSubmissions.countDocuments({
             'formData.fundingSource': 'internal',
@@ -183,18 +187,13 @@ quotaSchema.statics.getCurrentOccupancy = async function (
             $or: [
                 // Case 1: Date falls within startDate and endDate range
                 {
-                    'formData.startDate': { $lte: date },
-                    'formData.endDate': { $gte: date },
+                    'formData.startDate': { $lte: endOfDay },
+                    'formData.endDate': { $gte: startOfDay },
                 },
-                // Case 2: Single day reservation (startDate equals the date)
+                // Case 2: Single day reservation (startDate equals the date, no endDate)
                 {
-                    'formData.startDate': date,
+                    'formData.startDate': { $gte: startOfDay, $lte: endOfDay },
                     'formData.endDate': { $exists: false },
-                },
-                // Case 3: startDate equals endDate equals the date
-                {
-                    'formData.startDate': date,
-                    'formData.endDate': date,
                 },
             ],
         })
@@ -234,36 +233,26 @@ quotaSchema.statics.getOccupancyForDateRange = async function (
     endDate: string
 ): Promise<Record<string, number>> {
     try {
-        // Use imported FormSubmissions model
+        const rangeStart = parseISO(startDate)
+        rangeStart.setUTCHours(0, 0, 0, 0)
+        const rangeEnd = parseISO(endDate)
+        rangeEnd.setUTCHours(23, 59, 59, 999)
 
-        // Get all reserve days submissions that overlap with the date range
-        // Only count internal funding and exclude denied requests
         const reservations = await FormSubmissions.find(
             {
                 'formData.fundingSource': 'internal',
                 'formData.requestStatus': { $ne: 'denied' },
                 isDeleted: false,
                 $or: [
-                    // Reservations that start before and end within or after the range
+                    // Reservations that overlap with the range
                     {
-                        'formData.startDate': { $lte: endDate },
-                        'formData.endDate': { $gte: startDate },
+                        'formData.startDate': { $lte: rangeEnd },
+                        'formData.endDate': { $gte: rangeStart },
                     },
-                    // Single day reservations within the range
+                    // Single day reservations within the range (no endDate)
                     {
-                        'formData.startDate': {
-                            $gte: startDate,
-                            $lte: endDate,
-                        },
+                        'formData.startDate': { $gte: rangeStart, $lte: rangeEnd },
                         'formData.endDate': { $exists: false },
-                    },
-                    // Same day start and end within range
-                    {
-                        'formData.startDate': {
-                            $gte: startDate,
-                            $lte: endDate,
-                        },
-                        'formData.endDate': { $eq: '$formData.startDate' },
                     },
                 ],
             },
@@ -325,34 +314,26 @@ quotaSchema.statics.getExternalOccupancyForDateRange = async function (
     endDate: string
 ): Promise<Record<string, number>> {
     try {
-        // Get all reserve days submissions with external funding that overlap with the date range
-        // Exclude denied requests
+        const rangeStart = parseISO(startDate)
+        rangeStart.setUTCHours(0, 0, 0, 0)
+        const rangeEnd = parseISO(endDate)
+        rangeEnd.setUTCHours(23, 59, 59, 999)
+
         const reservations = await FormSubmissions.find(
             {
                 'formData.fundingSource': 'external',
                 'formData.requestStatus': { $ne: 'denied' },
                 isDeleted: false,
                 $or: [
-                    // Reservations that start before and end within or after the range
+                    // Reservations that overlap with the range
                     {
-                        'formData.startDate': { $lte: endDate },
-                        'formData.endDate': { $gte: startDate },
+                        'formData.startDate': { $lte: rangeEnd },
+                        'formData.endDate': { $gte: rangeStart },
                     },
-                    // Single day reservations within the range
+                    // Single day reservations within the range (no endDate)
                     {
-                        'formData.startDate': {
-                            $gte: startDate,
-                            $lte: endDate,
-                        },
+                        'formData.startDate': { $gte: rangeStart, $lte: rangeEnd },
                         'formData.endDate': { $exists: false },
-                    },
-                    // Same day start and end within range
-                    {
-                        'formData.startDate': {
-                            $gte: startDate,
-                            $lte: endDate,
-                        },
-                        'formData.endDate': { $eq: '$formData.startDate' },
                     },
                 ],
             },

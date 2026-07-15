@@ -16,7 +16,6 @@ export const ControlledInputField = ({
         <Controller
             name={name}
             control={control}
-            defaultValue={props.defaultValue}
             rules={{
                 required: props.required ? `${label} הוא שדה חובה` : false,
                 validate: (value) => {
@@ -51,11 +50,31 @@ export const ControlledInputField = ({
                 },
                 ...props.rules,
             }}
-            render={({ field, fieldState: { error } }) => (
+            render={({ field, fieldState: { error } }) => {
+                const isDate = type === 'date'
+                // Display: Date objects and full ISO strings → "YYYY-MM-DD" for the input
+                const displayValue = isDate
+                    ? (field.value instanceof Date
+                        ? field.value.toISOString().slice(0, 10)
+                        : typeof field.value === 'string'
+                            ? field.value.slice(0, 10)
+                            : '')
+                    : field.value
+
+                return (
                 <Field.Root key={id} orientation="vertical" invalid={!!error}>
                     <Field.Label>{label}</Field.Label>
                     <Input
                         {...field}
+                        value={displayValue ?? ''}
+                        onChange={(e) => {
+                            if (isDate) {
+                                const d = e.target.value ? new Date(e.target.value) : ''
+                                field.onChange(d)
+                            } else {
+                                field.onChange(e.target.value)
+                            }
+                        }}
                         type={type}
                         id={id}
                         min={props.min}
@@ -67,7 +86,8 @@ export const ControlledInputField = ({
                         <Field.ErrorText>{error.message}</Field.ErrorText>
                     )}
                 </Field.Root>
-            )}
+                )
+            }}
         />
     )
 }

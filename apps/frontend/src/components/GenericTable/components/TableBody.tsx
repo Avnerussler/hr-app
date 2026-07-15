@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { Table, flexRender } from '@tanstack/react-table'
-import { Box } from '@chakra-ui/react'
+import { Box, Text } from '@chakra-ui/react'
 
 interface TableBodyProps {
     table: Table<Record<string, unknown>>
@@ -8,9 +8,21 @@ interface TableBodyProps {
 }
 
 export const TableBody: FC<TableBodyProps> = ({ table, onRowClick }) => {
+    const rows = table.getRowModel().rows
+    const colCount = table.getVisibleLeafColumns().length
+
     return (
         <Box as="tbody">
-            {table.getRowModel().rows.map((row) => (
+            {rows.length === 0 && (
+                <tr>
+                    <td colSpan={colCount} style={{ height: '300px', textAlign: 'center', verticalAlign: 'middle' }}>
+                        <Text color="muted.foreground" fontSize="sm">
+                            No results found
+                        </Text>
+                    </td>
+                </tr>
+            )}
+            {rows.map((row) => (
                 <Box
                     as="tr"
                     key={row.id}

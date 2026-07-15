@@ -5,14 +5,14 @@ import mongoose from 'mongoose'
 import { bidirectionalSyncService } from '../../services/bidirectionalSync'
 import { transformFormData } from '../../utils'
 import { formValidationService } from '../../services/formValidation'
+import { validate, commonSchemas, asyncHandler, coerceFormData } from '../../middleware'
 
 const router = Router()
-
-import { validate, commonSchemas, asyncHandler } from '../../middleware'
 
 router.post(
     '/',
     validate(commonSchemas.formSubmission),
+    coerceFormData,
     asyncHandler(async (req: Request, res: Response) => {
         const { formData, formId, formName } = req.body
 
@@ -35,11 +35,8 @@ router.post(
             })
         }
 
-        logger.info('Creating form submission with data:', formData)
-
-        // Store formData as-is (raw IDs) - transformation happens only when reading
         const form = (await FormSubmissions.create({
-            formData: formData,
+            formData,
             formId,
             formName,
         })) as mongoose.Document & { _id: mongoose.Types.ObjectId }
@@ -47,31 +44,24 @@ router.post(
         await form.save()
         logger.info('Form submission saved successfully')
 
-        // Handle bidirectional sync after successful creation
         await bidirectionalSyncService.handleBidirectionalSyncOnCreate(
             formId,
             formName,
             form._id.toString(),
-            formData  // Use raw formData
+            formData
         )
 
-        // Transform the data for the response to the frontend
         let transformedFormData = formData
         try {
             transformedFormData = await transformFormData(form.toObject().formData, formId)
-            logger.info('Transformation completed successfully')
         } catch (transformError) {
-            logger.error(
-                'Transformation failed, using original data:',
-                transformError
-            )
-            transformedFormData = formData
+            logger.error('Transformation failed, using original data:', transformError)
         }
 
         res.status(201).json({
             form: {
                 ...form.toObject(),
-                formData: transformedFormData
+                formData: transformedFormData,
             }
         })
     })

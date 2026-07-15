@@ -1,5 +1,5 @@
 // src/components/DebounceInput.tsx
-import React, { useState, ChangeEvent, useEffect, useRef } from 'react'
+import React, { useState, ChangeEvent, useEffect } from 'react'
 import { Input, InputProps, Text, VStack } from '@chakra-ui/react'
 import useDebounce from '@/hooks/useDebounce'
 
@@ -19,33 +19,21 @@ export const DebouncedInput: React.FC<DebouncedInputProps> = ({
     showDebounceIndicator = false,
     ...inputProps
 }) => {
-    // Store internal input value
     const [inputValue, setInputValue] = useState<string>(value || '')
 
-    // Track if we're handling an external value change
-    const isExternalChange = useRef(false)
-
-    // Apply debounce to the internal value
     const debouncedValue = useDebounce(inputValue, debounceTime)
 
-    // Handle external value changes (from parent/column)
+    // Sync inward: parent cleared or reset the value
     useEffect(() => {
-        if (value !== inputValue && !isExternalChange.current) {
-            setInputValue(value || '')
-        }
+        setInputValue(value || '')
     }, [value])
 
-    // Send debounced value to parent only when debounced value changes
+    // Sync outward: notify parent after debounce
     useEffect(() => {
         if (debouncedValue !== value) {
-            isExternalChange.current = true
             onChange(debouncedValue)
-            // Reset the flag after the update
-            setTimeout(() => {
-                isExternalChange.current = false
-            }, 0)
         }
-    }, [debouncedValue, onChange, value])
+    }, [debouncedValue])
 
     // Handle local input changes
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {

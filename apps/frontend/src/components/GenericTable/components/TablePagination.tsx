@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useRef } from 'react'
 import { HStack, Text, createListCollection } from '@chakra-ui/react'
 import { Table } from '@tanstack/react-table'
 import { useSearchParams } from 'react-router-dom'
@@ -18,20 +18,27 @@ import {
 
 interface TablePaginationProps {
     table: Table<any>
+    onPageSizeChange: (newSize: number) => void
 }
 
-export const TablePagination: FC<TablePaginationProps> = ({ table }) => {
+export const TablePagination: FC<TablePaginationProps> = ({ table, onPageSizeChange }) => {
     const pageIndex = table.getState().pagination.pageIndex
     const pageSize = table.getState().pagination.pageSize
     const [searchParams, setSearchParams] = useSearchParams()
+    const pageSizeChanging = useRef(false)
 
-    const updateUrlPage = (newPageIndex: number) => {
-        const pageNumber = newPageIndex + 1 // Convert to 1-based for URL
+    const updateUrl = (newPageIndex: number, newPageSize: number) => {
         const newParams = new URLSearchParams(searchParams)
+        const pageNumber = newPageIndex + 1
         if (pageNumber === 1) {
-            newParams.delete('page') // Remove page param for page 1
+            newParams.delete('page')
         } else {
             newParams.set('page', pageNumber.toString())
+        }
+        if (newPageSize === 10) {
+            newParams.delete('limit')
+        } else {
+            newParams.set('limit', newPageSize.toString())
         }
         setSearchParams(newParams, { replace: true })
     }
@@ -46,28 +53,38 @@ export const TablePagination: FC<TablePaginationProps> = ({ table }) => {
     })
 
     const handlePageChange = (details: { page: number }) => {
-        const newPageIndex = details.page - 1 // Convert from 1-based to 0-based
+        if (pageSizeChanging.current) {
+            pageSizeChanging.current = false
+            return
+        }
+        const newPageIndex = details.page - 1
         table.setPageIndex(newPageIndex)
-        updateUrlPage(newPageIndex)
+        updateUrl(newPageIndex, pageSize)
     }
+
+    const handlePageSizeChange = ({ items }: { items: { value: string }[] }) => {
+        const newSize = Number(items[0]?.value || '10')
+        pageSizeChanging.current = true
+        onPageSizeChange(newSize)
+        updateUrl(pageIndex, newSize)
+    }
+
+    const totalRows = table.getRowCount()
+    const firstRow = totalRows === 0 ? 0 : pageIndex * pageSize + 1
+    const lastRow = Math.min((pageIndex + 1) * pageSize, totalRows)
 
     return (
         <HStack justify="space-between" align="center" w="full" p={4}>
             <HStack>
                 <Text fontSize="sm" color="gray.600">
-                    Showing {pageIndex * pageSize + 1} to{' '}
-                    {Math.min(
-                        (pageIndex + 1) * pageSize,
-                        table.getFilteredRowModel().rows.length
-                    )}{' '}
-                    of {table.getFilteredRowModel().rows.length} entries
+                    Showing {firstRow} to {lastRow} of {totalRows} entries
                 </Text>
             </HStack>
 
             <PaginationRoot
-                count={table.getFilteredRowModel().rows.length}
+                count={totalRows}
                 pageSize={pageSize}
-                page={pageIndex + 1} // Convert to 1-based for Chakra
+                page={pageIndex + 1}
                 onPageChange={handlePageChange}
                 variant="solid"
                 size="sm"
@@ -87,9 +104,7 @@ export const TablePagination: FC<TablePaginationProps> = ({ table }) => {
                     collection={pageSizeOptions}
                     size="sm"
                     value={[pageSize.toString()]}
-                    onValueChange={({ items }) =>
-                        table.setPageSize(Number(items[0]?.value || '10'))
-                    }
+                    onValueChange={handlePageSizeChange}
                 >
                     <SelectTrigger w="20">
                         <SelectValueText />

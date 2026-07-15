@@ -218,9 +218,10 @@ class FormValidationService {
     ): boolean {
         const { startDateField, endDateField, maxDays, minDays } = config
 
-        const startDate = new Date(formData[startDateField] as string)
-        const endDate = new Date(formData[endDateField] as string)
+        const startDate = formData[startDateField] as Date
+        const endDate = formData[endDateField] as Date
 
+        if (!(startDate instanceof Date) || !(endDate instanceof Date)) return false
         if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) return false
         if (startDate > endDate) return false
 
@@ -255,8 +256,8 @@ class FormValidationService {
         const { entityField, startDateField, endDateField } = config
 
         const entityValue = formData[entityField]
-        const startDate = formData[startDateField] as string | undefined
-        const endDate = formData[endDateField] as string | undefined
+        const startDate = formData[startDateField] as Date | undefined
+        const endDate = (formData[endDateField] as Date | undefined) ?? startDate
 
         if (!entityValue || !startDate) return true
 
@@ -267,8 +268,6 @@ class FormValidationService {
 
         if (!entityId) return true
 
-        const resolvedEndDate = endDate ?? startDate
-
         const query: Record<string, unknown> = {
             formName: formDefinition.formName,
             isDeleted: false,
@@ -276,7 +275,7 @@ class FormValidationService {
                 { [`formData.${entityField}._id`]: entityId },
                 { [`formData.${entityField}`]: entityId },
             ],
-            [`formData.${startDateField}`]: { $lte: resolvedEndDate },
+            [`formData.${startDateField}`]: { $lte: endDate },
             [`formData.${endDateField}`]: { $gte: startDate },
         }
 

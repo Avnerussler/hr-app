@@ -106,6 +106,30 @@ export const schemas = {
         }),
     },
 
+    // Single date URL param (:date)
+    dateParam: {
+        params: Joi.object({
+            date: Joi.date().iso().required().messages({
+                'date.format': 'Date must be in YYYY-MM-DD format',
+                'any.required': 'Date is required',
+            }),
+        }),
+    },
+
+    // Date range URL params (:startDate/:endDate)
+    dateRangeParams: {
+        params: Joi.object({
+            startDate: Joi.date().iso().required().messages({
+                'date.format': 'startDate must be in YYYY-MM-DD format',
+                'any.required': 'startDate is required',
+            }),
+            endDate: Joi.date().iso().required().messages({
+                'date.format': 'endDate must be in YYYY-MM-DD format',
+                'any.required': 'endDate is required',
+            }),
+        }),
+    },
+
     // Query parameters for pagination and filtering
     queryPagination: {
         query: Joi.object({
@@ -149,13 +173,15 @@ export const validate = (schema: {
 
         // Validate params
         if (schema.params) {
-            const { error } = schema.params.validate(req.params, {
+            const { error, value } = schema.params.validate(req.params, {
                 abortEarly: false,
             })
             if (error) {
                 validationErrors.push(
                     ...error.details.map((detail) => detail.message)
                 )
+            } else {
+                req.params = value
             }
         }
 

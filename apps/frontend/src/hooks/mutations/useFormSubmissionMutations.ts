@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toaster } from '@/components/ui/toaster'
 import { FieldValues } from 'react-hook-form'
-import { AllFormSubmission } from '@/types/formType'
 import axios from 'axios'
 import { BASE_URL } from '@/config'
 
@@ -50,15 +49,9 @@ export const useCreateFormSubmission = (
             })
             return response.data
         },
-        onSuccess(data, { formId }) {
-            queryClient.setQueryData(
-                ['formSubmission', formId],
-                (oldData: AllFormSubmission | undefined) => {
-                    return oldData
-                        ? { forms: [...oldData.forms, data.form] }
-                        : { forms: [data.form] }
-                }
-            )
+        onSuccess(_, { formId }) {
+            // Invalidate all paginated queries for this form
+            queryClient.invalidateQueries({ queryKey: ['formSubmission', formId] })
 
             // Invalidate quota and attendance queries
             queryClient.invalidateQueries({
@@ -141,32 +134,18 @@ export const useUpdateFormSubmission = (
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: async ({ formData, id }: UpdateFormSubmissionParams) => {
+        mutationFn: async ({ formData, id, formId }: UpdateFormSubmissionParams) => {
             const response = await axios({
                 method: 'POST',
                 baseURL: BASE_URL,
                 url: API_ENDPOINTS.UPDATE.toLowerCase(),
-                data: { formData, id },
+                data: { formData, id, formId },
             })
             return response.data
         },
         onSuccess(data, { formId, id }) {
-            // Update the cache with the updated form submission
-            queryClient.setQueryData(
-                ['formSubmission', formId],
-                (oldData: AllFormSubmission | undefined) => {
-                    if (!oldData) return { forms: [data.form] }
-
-                    const updatedData = oldData.forms.map((form) => {
-                        if (form._id === id) {
-                            return data.form
-                        }
-                        return form
-                    })
-
-                    return { forms: updatedData }
-                }
-            )
+            // Invalidate all paginated queries for this form
+            queryClient.invalidateQueries({ queryKey: ['formSubmission', formId] })
 
             // Also update the detailed view if it exists
             queryClient.setQueryData(['formSubmission/detail', id], data.form)
@@ -267,18 +246,8 @@ export const useDeleteFormSubmission = () => {
             return response.data
         },
         onSuccess(_, { formId, id }) {
-            // Update the cache by removing the deleted form submission
-            queryClient.setQueryData(
-                ['formSubmission', formId],
-                (oldData: AllFormSubmission | undefined) => {
-                    if (!oldData) return { forms: [] }
-
-                    const updatedForms = oldData.forms.filter(
-                        (form) => form._id !== id
-                    )
-                    return { forms: updatedForms }
-                }
-            )
+            // Invalidate all paginated queries for this form
+            queryClient.invalidateQueries({ queryKey: ['formSubmission', formId] })
 
             // Remove the item from the detail cache if it exists
             queryClient.removeQueries({

@@ -17,7 +17,6 @@ export const ControlledTextareaField: FC<ControlledTextareaFieldProps> = ({
         <Controller
             name={name}
             control={control}
-            defaultValue={props.defaultValue}
             rules={{
                 required: props.required ? `${label} הוא שדה חובה` : false,
                 validate: (value) => {
@@ -30,7 +29,13 @@ export const ControlledTextareaField: FC<ControlledTextareaFieldProps> = ({
             render={({ field }) => (
                 <Field.Root key={id} orientation="vertical">
                     <Field.Label>{label}</Field.Label>
-                    <Textarea {...field} autoresize id={id} />
+                    <Textarea
+                        {...field}
+                        autoresize
+                        id={id}
+                        value={field.value ?? ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                    />
                 </Field.Root>
             )}
         />

@@ -41,7 +41,6 @@ export const ControlledSelectAutocompleteField = ({
         <Controller
             name={name}
             control={control}
-            defaultValue={props.defaultValue}
             rules={{ required: props.required }}
             render={({ field, fieldState: { error } }) => {
                 // Handle both plain string values and object values with _id field

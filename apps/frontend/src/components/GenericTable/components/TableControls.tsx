@@ -11,6 +11,7 @@ interface TableControlsProps {
     handleClearFilters: () => void
     sorting: any[]
     columnFilters: any[]
+    tableFilters?: Record<string, string | string[] | boolean>
     onExportToExcel?: () => void
     filters?: TableFilter[]
     filterValues?: Record<string, string | string[] | boolean>
@@ -26,11 +27,17 @@ export const TableControls: FC<TableControlsProps> = ({
     handleClearFilters,
     sorting,
     columnFilters,
+    tableFilters,
     onExportToExcel,
     filters,
     filterValues,
     onFilterChange,
 }) => {
+    const hasActiveTableFilters = tableFilters
+        ? Object.values(tableFilters).some(
+              (v) => v !== '' && v !== 'all' && !(Array.isArray(v) && v.length === 0)
+          )
+        : false
     return (
         <Flex gap={2} direction={{ base: 'column', lg: 'row' }} align="stretch">
             {filters && filters.length > 0 && filterValues && onFilterChange && (
@@ -68,7 +75,7 @@ export const TableControls: FC<TableControlsProps> = ({
                 size="sm"
                 onClick={handleClearFilters}
                 disabled={
-                    !sorting.length && !columnFilters.length && !globalFilter
+                    !sorting.length && !columnFilters.length && !globalFilter && !hasActiveTableFilters
                 }
                 bg="card"
                 borderColor="border"

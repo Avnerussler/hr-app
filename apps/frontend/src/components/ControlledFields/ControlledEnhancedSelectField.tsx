@@ -74,7 +74,7 @@ export const ControlledEnhancedSelectField: FC<
     const { formId } = useRouteContext()
 
     // Extract non-DOM props that shouldn't be passed to SelectRoot
-    const { label, placeholder, defaultValue, ...selectRootProps } = props
+    const { label, placeholder, defaultValue, required, ...selectRootProps } = props
 
     // Watch for the current field value (single value, not array)
     const fieldValue = useWatch({ control, name })
@@ -131,7 +131,8 @@ export const ControlledEnhancedSelectField: FC<
             name={name}
             control={control}
             defaultValue={defaultValue}
-            render={({ field }) => {
+            rules={{ required: required ? `${label} הוא שדה חובה` : false }}
+            render={({ field, fieldState: { error } }) => {
                 const selectedValue = field.value || ''
 
                 // Find the selected option for display
@@ -140,7 +141,7 @@ export const ControlledEnhancedSelectField: FC<
                 )
 
                 return (
-                    <Field.Root orientation="vertical">
+                    <Field.Root orientation="vertical" invalid={!!error}>
                         <SelectRoot
                             value={selectedValue ? [selectedValue] : []}
                             collection={frameworks}
@@ -298,6 +299,7 @@ export const ControlledEnhancedSelectField: FC<
                                 </Box>
                             </SelectContent>
                         </SelectRoot>
+                        {error && <Field.ErrorText>{error.message}</Field.ErrorText>}
                     </Field.Root>
                 )
             }}

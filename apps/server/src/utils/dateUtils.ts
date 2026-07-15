@@ -1,28 +1,27 @@
-import { format, addDays, parseISO } from 'date-fns'
+import { addDays } from 'date-fns'
 import { IFormSubmissions } from '../models/FormSubmissions'
 
-/**
- * Check if an array of date strings contains more than 1 consecutive day
- * @param reserveDays - Array of date strings in ISO format (YYYY-MM-DD)
- * @returns true if there are more than 1 consecutive day, false otherwise
- */
-export const hasMoreThan1ConsecutiveDay = (reserveDays: string[]): boolean => {
+export const isSameDay = (a: Date, b: Date): boolean =>
+    a.getUTCFullYear() === b.getUTCFullYear() &&
+    a.getUTCMonth() === b.getUTCMonth() &&
+    a.getUTCDate() === b.getUTCDate()
+
+const toDate = (val: unknown): Date | null => {
+    if (!val) return null
+    const d = val instanceof Date ? val : new Date(val as string)
+    return isNaN(d.getTime()) ? null : d
+}
+
+export const hasMoreThan1ConsecutiveDay = (reserveDays: Date[]): boolean => {
     if (!reserveDays || reserveDays.length < 2) return false
 
-    // Sort dates and convert to Date objects
-    const sortedDates = reserveDays
-        .map((d) => new Date(d))
-        .sort((a, b) => a.getTime() - b.getTime())
+    const sorted = [...reserveDays].sort((a, b) => a.getTime() - b.getTime())
 
-    // Check for 2 or more consecutive days
     let consecutiveCount = 1
-    for (let i = 1; i < sortedDates.length; i++) {
-        const prevDate = sortedDates[i - 1]
-        const currDate = sortedDates[i]
+    for (let i = 1; i < sorted.length; i++) {
         const diffInDays = Math.round(
-            (currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24)
+            (sorted[i].getTime() - sorted[i - 1].getTime()) / (1000 * 60 * 60 * 24)
         )
-
         if (diffInDays === 1) {
             consecutiveCount++
             if (consecutiveCount > 1) return true
@@ -33,56 +32,26 @@ export const hasMoreThan1ConsecutiveDay = (reserveDays: string[]): boolean => {
     return false
 }
 
-/**
- * Check if an employee has a consecutive reserve order starting the next day
- * Used to determine if today is truly an "ending" day or if the reservation continues
- *
- * @param currentReservation - The current reservation being checked
- * @param allEmployeeReservations - All reservations for this employee
- * @param date - The date being checked (YYYY-MM-DD)
- * @param hasConsecutiveDays - Whether the current reservation has consecutive days
- * @returns true if this is an ending day (no consecutive order), false if reservation continues
- */
 export const isEmployeeEndingToday = (
     currentReservation: IFormSubmissions,
     allEmployeeReservations: IFormSubmissions[],
-    date: string,
+    date: Date,
     hasConsecutiveDays: boolean
 ): boolean => {
-    // Single-day reservations never count as "ending today"
-    if (!hasConsecutiveDays) {
-        return false
-    }
+    if (!hasConsecutiveDays) return false
 
-    const formData = currentReservation.formData
+    const endDate = toDate(currentReservation.formData.endDate)
+    if (!endDate || !isSameDay(endDate, date)) return false
 
-    // First check: is today the end date?
-    if (formData.endDate !== date) {
-        return false
-    }
+    const nextDay = addDays(date, 1)
 
-    // Calculate the next day
-    const nextDay = format(addDays(parseISO(date), 1), 'yyyy-MM-dd')
-
-    // Check if any other reservation for this employee starts on the next day
-    const hasConsecutiveOrder = allEmployeeReservations.some(
-        (otherRes: any) => {
-            const isCurrentRes =
-                otherRes._id.toString() === (currentReservation._id as unknown as { toString(): string }).toString()
-
-            // Skip the current reservation
-            if (isCurrentRes) {
-                return false
-            }
-
-            const otherFormData = otherRes.formData
-            const startsNextDay = otherFormData.startDate === nextDay
-            // Check if the other reservation starts on the next day
-            return startsNextDay
+    const hasConsecutiveOrder = allEmployeeReservations.some((otherRes: any) => {
+        if (otherRes._id.toString() === (currentReservation._id as unknown as { toString(): string }).toString()) {
+            return false
         }
-    )
+        const startDate = toDate(otherRes.formData.startDate)
+        return startDate !== null && isSameDay(startDate, nextDay)
+    })
 
-    // If there's a consecutive order, this is NOT ending today (continuation)
-    // If there's NO consecutive order, this IS ending today
     return !hasConsecutiveOrder
 }

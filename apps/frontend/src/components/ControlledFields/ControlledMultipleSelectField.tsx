@@ -19,7 +19,7 @@ interface ControlledMultipleSelectFieldProps extends FieldValues {
 
 export const ControlledMultipleSelectField: FC<
     ControlledMultipleSelectFieldProps
-> = ({ control, name, options, ...props }) => {
+> = ({ control, name, options, required, label, ...props }) => {
     const frameworks = (options: { label: string; value: string }[]) =>
         createListCollection({
             items: options,
@@ -30,10 +30,10 @@ export const ControlledMultipleSelectField: FC<
         <Controller
             name={name}
             control={control}
-            defaultValue={props.defaultValue}
-            render={({ field }) => {
+            rules={{ required: required ? `${label} הוא שדה חובה` : false }}
+            render={({ field, fieldState: { error } }) => {
                 return (
-                    <Field.Root orientation="vertical">
+                    <Field.Root orientation="vertical" invalid={!!error}>
                         <SelectRoot
                             multiple
                             value={field.value ? field.value : []}
@@ -45,7 +45,7 @@ export const ControlledMultipleSelectField: FC<
                             }
                             onInteractOutside={() => field.onBlur()}
                         >
-                            <SelectLabel>{props.label}</SelectLabel>
+                            <SelectLabel>{label}</SelectLabel>
                             <SelectTrigger>
                                 <SelectValueText
                                     placeholder={props.placeholder}
@@ -67,6 +67,7 @@ export const ControlledMultipleSelectField: FC<
                                 ))}
                             </SelectContent>
                         </SelectRoot>
+                        {error && <Field.ErrorText>{error.message}</Field.ErrorText>}
                     </Field.Root>
                 )
             }}

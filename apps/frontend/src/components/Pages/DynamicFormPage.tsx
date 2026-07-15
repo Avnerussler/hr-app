@@ -16,12 +16,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { PageHeader } from '../common/PageHeader'
 import { MetricCard } from '../common/MetricCard'
 import { DetailsDrawer } from '../common/DetailsDrawer'
-import { AllFormSubmission } from '@/types/formType'
-// import { SearchAndFilters } from '../common/SearchAndFilters'
+import { CalculatedMetric } from '@/types/formType'
 import { GenericTable } from '../GenericTable'
 import { useRouteContext, useDrawerState } from '@/hooks/useRouteContext'
 import { generateEditPath, generateNewPath } from '@/types/routeTypes'
-import { useMetrics } from '@/hooks/useMetrics'
 import { IForm } from '@/types/fieldsType'
 
 interface DynamicFormPageProps {
@@ -35,36 +33,25 @@ export function DynamicFormPage({
     formName,
     displayName,
 }: DynamicFormPageProps) {
-    // const [searchTerm, setSearchTerm] = useState('')
     const [searchParams] = useSearchParams()
     const navigate = useNavigate()
 
-    // Query for form fields (including metrics config)
     const { data: formFields } = useQuery<IForm>({
         queryKey: ['formFields/get', formId],
         staleTime: 1000 * 60 * 5,
     })
 
-    // Query for submitted data (table rows)
-    const { data: submittedData } = useQuery<AllFormSubmission>({
-        queryKey: ['formSubmission', formId],
+    const { data: calculatedMetrics = [] } = useQuery<CalculatedMetric[]>({
+        queryKey: ['formSubmission/metrics', formId],
+        enabled: !!formFields?.metrics?.length,
     })
-
-    // Calculate metrics using the generic hook
-    const metricsConfig = formFields?.metrics
-    const calculatedMetrics = useMetrics(
-        submittedData?.forms?.map((form) => form.formData),
-        metricsConfig
-    )
 
     const { formState, itemId } = useRouteContext()
     const IS_DRAWER_OPEN = useDrawerState()
 
-    // Handle selectedRecord query parameter for foreign table navigation
     useEffect(() => {
         const selectedRecord = searchParams.get('selectedRecord')
         if (selectedRecord) {
-            // Navigate to edit route for the selected record
             navigate(generateEditPath(formName, formId, selectedRecord), {
                 replace: true,
             })
@@ -81,7 +68,6 @@ export function DynamicFormPage({
                 formId,
                 rowData._id as string
             )
-            // Preserve current search parameters (like page number)
             const searchParamsString = searchParams.toString()
             const fullPath = searchParamsString
                 ? `${editPath}?${searchParamsString}`
@@ -98,65 +84,52 @@ export function DynamicFormPage({
         navigate(-1)
     }
 
-    // Icon mapping for metrics
-    const iconMap: Record<string, any> = {
-        FaUsers: FaUsers,
-        FaUserCheck: FaUserCheck,
-        FaUserTimes: FaUserTimes,
-        FaPlus: FaPlus,
-        FaList: FaList,
-        FaCheck: FaCheck,
-        FaTimes: FaTimes,
-        FaCalendar: FaCalendar,
-        FaProjectDiagram: FaProjectDiagram,
+    const iconMap: Record<string, React.ElementType> = {
+        FaUsers,
+        FaUserCheck,
+        FaUserTimes,
+        FaPlus,
+        FaList,
+        FaCheck,
+        FaTimes,
+        FaCalendar,
+        FaProjectDiagram,
     }
 
-    // Transform calculated metrics for MetricCard component
-    const metrics = calculatedMetrics.map((metric) => ({
-        title: metric.title,
-        value: metric.value,
-        icon: iconMap[metric.icon || 'FaList'] || FaUsers,
-        color: metric.color || 'blue.500',
-    }))
-
     return (
-        <Box p={6}>
+        <Box display="flex" flexDirection="column" h="full">
             <PageHeader
                 title={displayName}
                 description={` ${displayName} `}
                 action={{
-                    label: `Add ${formName}`,
+                    label: `${displayName}`,
                     onClick: handleAddNew,
                     icon: FaPlus,
                 }}
             />
 
-            <Grid
-                templateColumns={{
-                    base: 'repeat(1, 1fr)',
-                    md: 'repeat(2, 1fr)',
-                    lg: 'repeat(3, 1fr)',
-                    xl: 'repeat(4, 1fr)',
-                }}
-                gap={6}
-                mb={6}
-            >
-                {metrics.map((metric, index) => (
-                    <MetricCard
-                        key={index}
-                        icon={metric.icon}
-                        label={metric.title}
-                        value={metric.value}
-                        color={metric.color}
-                    />
-                ))}
-            </Grid>
-            {/* 
-            <SearchAndFilters
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-                filters={filters}
-            /> */}
+            {calculatedMetrics.length > 0 && (
+                <Grid
+                    templateColumns={{
+                        base: 'repeat(1, 1fr)',
+                        md: 'repeat(2, 1fr)',
+                        lg: 'repeat(3, 1fr)',
+                        xl: 'repeat(4, 1fr)',
+                    }}
+                    gap={6}
+                    mb={6}
+                >
+                    {calculatedMetrics.map((metric, index) => (
+                        <MetricCard
+                            key={index}
+                            icon={iconMap[metric.icon ?? 'FaList'] ?? FaUsers}
+                            label={metric.title}
+                            value={metric.value}
+                            color={metric.color ?? 'blue.500'}
+                        />
+                    ))}
+                </Grid>
+            )}
 
             <GenericTable
                 key={formId}
