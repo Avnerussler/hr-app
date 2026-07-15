@@ -101,7 +101,7 @@ router.get(
         )
 
         res.status(200).json({
-            data: report,
+            report,
             metadata: {
                 date: today,
                 generatedAt: new Date().toISOString(),
@@ -132,7 +132,7 @@ router.get(
             )
 
         res.status(200).json({
-            data: report,
+            report,
             metadata: {
                 startDate,
                 endDate,
@@ -163,7 +163,7 @@ router.get(
         )
 
         res.status(200).json({
-            data: report,
+            report,
             metadata: {
                 startDate,
                 endDate,
@@ -194,7 +194,7 @@ router.get(
         )
 
         res.status(200).json({
-            data: report,
+            report,
             metadata: {
                 startDate,
                 endDate,
@@ -226,7 +226,7 @@ router.get(
         )
 
         res.status(200).json({
-            data: report,
+            report,
             metadata: {
                 date,
                 projectId,

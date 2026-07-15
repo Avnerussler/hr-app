@@ -27,6 +27,14 @@ const API_ENDPOINTS = {
     DELETE: 'formSubmission/delete',
 }
 
+const invalidateStatistics = (queryClient: ReturnType<typeof useQueryClient>) => {
+    queryClient.invalidateQueries({
+        predicate: (query) =>
+            typeof query.queryKey[0] === 'string' &&
+            query.queryKey[0].startsWith('statistics'),
+    })
+}
+
 /**
  * Hook for creating new form submissions
  */
@@ -52,6 +60,14 @@ export const useCreateFormSubmission = (
         onSuccess(_, { formId }) {
             // Invalidate all paginated queries for this form
             queryClient.invalidateQueries({ queryKey: ['formSubmission', formId] })
+
+            // Invalidate calculated metrics for this form
+            queryClient.invalidateQueries({
+                queryKey: ['formSubmission/metrics', formId],
+            })
+
+            // Invalidate statistics reports (dashboard, etc.)
+            invalidateStatistics(queryClient)
 
             // Invalidate quota and attendance queries
             queryClient.invalidateQueries({
@@ -156,6 +172,14 @@ export const useUpdateFormSubmission = (
                 queryKey: ['formSubmission'],
             })
 
+            // Invalidate calculated metrics for this form
+            queryClient.invalidateQueries({
+                queryKey: ['formSubmission/metrics', formId],
+            })
+
+            // Invalidate statistics reports (dashboard, etc.)
+            invalidateStatistics(queryClient)
+
             // Invalidate quota and attendance queries if this is a Reserve Days form
             // Check if formName contains Reserve or מילואים
             queryClient.invalidateQueries({
@@ -256,6 +280,14 @@ export const useDeleteFormSubmission = () => {
 
             // Invalidate related queries
             queryClient.invalidateQueries({ queryKey: ['formSubmission/list'] })
+
+            // Invalidate calculated metrics for this form
+            queryClient.invalidateQueries({
+                queryKey: ['formSubmission/metrics', formId],
+            })
+
+            // Invalidate statistics reports (dashboard, etc.)
+            invalidateStatistics(queryClient)
 
             // Invalidate quota and attendance queries if this was a Reserve Days form
             // Check from the response data
