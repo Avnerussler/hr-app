@@ -175,47 +175,58 @@ const parseDateColumns = (
 /**
  * Check if personnel already has a reserve day for any of the given dates
  */
-const checkExistingReserveDays = async (
+export const computeOrderType = (sortedDates: string[]): string => {
+    if (sortedDates.length < 4) return '8daily'
+    const dateObjs = sortedDates.map((d) => new Date(d))
+    for (let i = 1; i < dateObjs.length; i++) {
+        const daysDiff =
+            Math.abs(dateObjs[i].getTime() - dateObjs[i - 1].getTime()) /
+            (1000 * 60 * 60 * 24)
+        if (daysDiff > 1) return '8daily'
+    }
+    return '8open'
+}
+
+/**
+ * Find existing reserve day record for this personnel that already contains any of the given dates.
+ * Returns the first matching record, or null if none found.
+ */
+export const findOverlappingReserveRecord = async (
     personnelId: string,
     dates: string[]
-): Promise<{ hasConflict: boolean; conflictingDates: string[] }> => {
+): Promise<{ id: string; formData: any } | null> => {
     try {
-        // Find all reserve days for this personnel
         const existingReserves = await FormSubmissions.find({
             formName: 'reserve_days_management',
             'formData.employeeName': personnelId,
             isDeleted: false,
         }).lean()
 
-        const conflictingDates: Set<string> = new Set()
-
-        // Check each date against existing reserves
-        for (const date of dates) {
-            for (const reserve of existingReserves) {
-                const attendance = reserve.formData.attendance || {}
-                // Check if this date exists in the attendance object
-                if (attendance[date] === true) {
-                    conflictingDates.add(date)
-                    break
+        for (const reserve of existingReserves) {
+            const attendance = reserve.formData.attendance || {}
+            const hasOverlap = dates.some((date) => attendance[date] === true)
+            if (hasOverlap) {
+                return {
+                    id: (reserve._id as any).toString(),
+                    formData: reserve.formData,
                 }
             }
         }
 
-        return {
-            hasConflict: conflictingDates.size > 0,
-            conflictingDates: Array.from(conflictingDates),
-        }
+        return null
     } catch (error) {
-        logger.error('Error checking existing reserve days:', error)
-        return { hasConflict: false, conflictingDates: [] }
+        logger.error('Error finding overlapping reserve record:', error)
+        return null
     }
 }
 
 /**
- * Process a single date range for a person
- * Creates one reserve day record with attendance data
+ * Process a single date range for a person.
+ * If an existing record already covers any of these dates, merge the new dates into it.
+ * Otherwise create a new record.
+ * Returns { action: 'created' | 'updated' | 'skipped', formData }
  */
-const createReserveDayRecord = async (
+export const createOrUpdateReserveDayRecord = async (
     personnelId: string,
     personnelData: any,
     fundingName: string | null,
@@ -223,76 +234,84 @@ const createReserveDayRecord = async (
         dates: string[]
         fundingSource: 'internal' | 'external'
     }
-) => {
+): Promise<{ action: 'created' | 'updated' | 'skipped'; formData: any | null }> => {
     const { dates, fundingSource } = dateRangeData
 
-    if (dates.length === 0) return null
+    if (dates.length === 0) return { action: 'skipped', formData: null }
 
-    // Check for existing reserve days on these dates
-    const { hasConflict, conflictingDates } = await checkExistingReserveDays(
-        personnelId,
-        dates
-    )
+    const overlapping = await findOverlappingReserveRecord(personnelId, dates)
 
-    if (hasConflict) {
-        logger.warn(
-            `⚠️  Personnel ${personnelData.firstName} ${
-                personnelData.lastName
-            } already has reserve days on: ${conflictingDates.join(', ')}`
+    if (overlapping) {
+        // Merge new dates into the existing record
+        const existingAttendance: Record<string, boolean> =
+            overlapping.formData.attendance || {}
+        const newDates = dates.filter((d) => !existingAttendance[d])
+
+        if (newDates.length === 0) {
+            logger.info(
+                `ℹ️  All dates already present in existing record for ${personnelData.firstName} ${personnelData.lastName}, skipping`
+            )
+            return { action: 'skipped', formData: null }
+        }
+
+        // Merge attendance
+        const mergedAttendance = { ...existingAttendance }
+        newDates.forEach((d) => {
+            mergedAttendance[d] = true
+        })
+
+        const sortedDates = Object.keys(mergedAttendance).sort()
+        const orderType = computeOrderType(sortedDates)
+
+        const updatedFormData = {
+            ...overlapping.formData,
+            startDate: new Date(sortedDates[0]),
+            endDate: new Date(sortedDates[sortedDates.length - 1]),
+            isActive: true,
+            orderType,
+            attendance: mergedAttendance,
+        }
+
+        await FormSubmissions.updateOne(
+            { _id: overlapping.id },
+            { $set: { formData: updatedFormData } }
         )
-        logger.warn(`   Skipping this date range to avoid duplicates.`)
-        return null
+
+        logger.info(
+            `🔄 Merged ${newDates.length} new date(s) into existing record for ${personnelData.firstName} ${personnelData.lastName} (added: ${newDates.join(', ')})`
+        )
+
+        return { action: 'updated', formData: updatedFormData }
     }
 
-    // Sort dates to get start and end
+    // No overlap — create a new record
     const sortedDates = dates.sort()
-    const startDate = sortedDates[0]
-    const endDate = sortedDates[sortedDates.length - 1]
 
-    // Create attendance object for all dates in range
     const attendance: Record<string, boolean> = {}
     sortedDates.forEach((date) => {
         attendance[date] = true
     })
 
-    // Determine order type based on date range
-    // If less than 4 consecutive days, it's "daily", otherwise "open"
-    let orderType = '8daily'
-    if (dates.length >= 4) {
-        // Check if dates are consecutive
-        const dateObjs = sortedDates.map((d) => new Date(d))
-        let isConsecutive = true
-        for (let i = 1; i < dateObjs.length; i++) {
-            const diff = Math.abs(
-                dateObjs[i].getTime() - dateObjs[i - 1].getTime()
-            )
-            const daysDiff = diff / (1000 * 60 * 60 * 24)
-            if (daysDiff > 1) {
-                isConsecutive = false
-                break
-            }
-        }
-        orderType = isConsecutive ? '8open' : '8daily'
-    }
+    const orderType = computeOrderType(sortedDates)
 
     const formData = {
         employeeName: personnelId,
         firstName: personnelData.firstName,
         lastName: personnelData.lastName,
         personalNumber: personnelData.personalNumber,
-        startDate,
-        endDate,
+        startDate: new Date(sortedDates[0]),
+        endDate: new Date(sortedDates[sortedDates.length - 1]),
         fundingSource,
-        fundingName: fundingName || undefined, // Store funding unit if it exists, regardless of current funding source
+        fundingName: fundingName || undefined,
         orderType,
-        requestStatus: 'approved', // Data from Excel is already approved
+        requestStatus: 'approved',
         baseAccessApproval: 'approved',
         vehicleEntry: false,
-        isActive: 'true',
+        isActive: true,
         attendance,
     }
 
-    return formData
+    return { action: 'created', formData }
 }
 
 /**
@@ -358,33 +377,24 @@ const processReserveDaysForRow = async (
         dateGroups.push(currentGroup)
     }
 
-    // Create reserve day records for each group
+    // Create or update reserve day records for each group
     const records = []
-    const allConflictingDates: Set<string> = new Set()
 
     for (const group of dateGroups) {
-        // Check for conflicts before creating record
-        const { hasConflict, conflictingDates } =
-            await checkExistingReserveDays(personnelId, group.dates)
-
-        if (hasConflict) {
-            conflictingDates.forEach((date) => allConflictingDates.add(date))
-        }
-
-        const record = await createReserveDayRecord(
+        const { action, formData } = await createOrUpdateReserveDayRecord(
             personnelId,
             personnelData,
             fundingName,
             group
         )
-        if (record) {
-            records.push(record)
+        if (formData && (action === 'created' || action === 'updated')) {
+            records.push({ ...formData, _action: action })
         }
     }
 
     return {
         records,
-        allConflictingDates: Array.from(allConflictingDates).sort(),
+        allConflictingDates: [],
     }
 }
 
@@ -515,7 +525,7 @@ export const importReserveDaysFromExcel = async () => {
                 })
 
                 // Process reserve days for this person
-                const { records: reserveDayRecords, allConflictingDates } =
+                const { records: reserveDayRecords } =
                     await processReserveDaysForRow(
                         personnelId,
                         personnelData,
@@ -524,37 +534,37 @@ export const importReserveDaysFromExcel = async () => {
                         dateColumns
                     )
 
-                // Create form submissions for each record
+                // Create new records; updated ones were already saved in createOrUpdateReserveDayRecord
                 let createdCount = 0
+                let updatedCount = 0
                 for (const recordData of reserveDayRecords) {
-                    if (recordData) {
-                        // recordData can be null if there was a conflict
+                    if (!recordData) continue
+
+                    if (recordData._action === 'created') {
+                        const { _action, ...formData } = recordData
                         await FormSubmissions.create({
                             formId: reserveDaysForm._id.toString(),
                             formName: 'reserve_days_management',
-                            formData: recordData,
+                            formData,
                             isDeleted: false,
                         })
                         imported++
                         createdCount++
+                    } else if (recordData._action === 'updated') {
+                        updatedCount++
                     }
                 }
 
-                // Track conflicts for reporting
-                if (allConflictingDates.length > 0) {
-                    conflictPersonnel.push({
-                        name: employeeName,
-                        conflictingDates: allConflictingDates,
-                    })
-                }
-
-                if (createdCount > 0) {
+                if (createdCount > 0 || updatedCount > 0) {
+                    const parts = []
+                    if (createdCount > 0) parts.push(`${createdCount} created`)
+                    if (updatedCount > 0) parts.push(`${updatedCount} updated`)
                     logger.info(
-                        `Created ${createdCount} reserve day record(s) for ${employeeName}`
+                        `${parts.join(', ')} reserve day record(s) for ${employeeName}`
                     )
                     importedPersonnel.push({
                         name: employeeName,
-                        recordsCreated: createdCount,
+                        recordsCreated: createdCount + updatedCount,
                         fundingUnit,
                         records: reserveDayRecords
                             .filter((record: any) => record !== null)
@@ -564,10 +574,9 @@ export const importReserveDaysFromExcel = async () => {
                                 fundingSource: record.fundingSource,
                             })),
                     })
-                } else if (reserveDayRecords.length > 0) {
-                    // All records were skipped due to conflicts
+                } else if (reserveDayRecords.length === 0) {
                     logger.warn(
-                        `⏭️  All reserve day records for ${employeeName} were skipped due to existing reserves`
+                        `⏭️  No new dates to import for ${employeeName}`
                     )
                 }
             } catch (error) {
