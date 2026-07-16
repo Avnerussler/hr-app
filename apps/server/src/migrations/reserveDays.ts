@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.0.17'
+const CURRENT_VERSION = '1.0.21'
 
 export const createReserveDaysForm = async () => {
     try {
@@ -120,6 +120,11 @@ export const createReserveDaysForm = async () => {
                                     name: 'approved',
                                 },
                                 {
+                                    value: 'cancelled',
+                                    label: 'בוטל',
+                                    name: 'cancelled',
+                                },
+                                {
                                     value: 'denied',
                                     label: 'נדחה',
                                     name: 'denied',
@@ -157,26 +162,16 @@ export const createReserveDaysForm = async () => {
                             ],
                         },
                         {
-                            name: 'vehicleEntry',
-                            type: 'radio',
-                            label: 'כניסה עם רכב',
-                            placeholder: 'האם נכנס עם רכב',
-                            required: false,
-                            defaultValue: false,
-                            items: [
-                                { value: true, label: 'כן' },
-                                { value: false, label: 'לא' },
-                            ],
-                        },
-                        {
-                            name: 'vehicleNumber',
-                            type: 'text',
-                            label: 'מספר רכב',
-                            placeholder: 'הזן מספר רכב',
+                            name: 'vehicleStatus',
+                            type: 'display',
+                            label: 'סטטוס רכב',
+                            placeholder: '',
                             required: false,
                             defaultValue: '',
+                            foreignFormName: 'personnel',
+                            foreignFields: ['vehicleEntry', 'vehicleNumber'],
+                            sourceField: 'employeeName',
                         },
-
                         {
                             name: 'notes',
                             type: 'textarea',
@@ -184,18 +179,6 @@ export const createReserveDaysForm = async () => {
                             placeholder: 'הזן הערות נוספות',
                             required: false,
                             defaultValue: '',
-                        },
-                        {
-                            name: 'isActive',
-                            type: 'radio',
-                            label: 'סטטוס',
-                            placeholder: 'סטטוס',
-                            required: false,
-                            defaultValue: true,
-                            items: [
-                                { value: true, label: 'פעיל' },
-                                { value: false, label: 'לא פעיל' },
-                            ],
                         },
                     ],
                 },
@@ -208,23 +191,9 @@ export const createReserveDaysForm = async () => {
                 'requestStatus',
                 'startDate',
                 'endDate',
-                'isActive',
                 'createdAt',
             ],
             filters: [
-                {
-                    id: 'isActiveFilter',
-                    label: 'סטטוס',
-                    fieldName: 'isActive',
-                    type: 'select',
-                    placeholder: 'בחר סטטוס',
-                    options: [
-                        { value: 'all', label: 'כל הצווים' },
-                        { value: 'true', label: 'צווים פעילים' },
-                        { value: 'false', label: 'צווים לא פעילים' },
-                    ],
-                    defaultValue: 'all',
-                },
                 {
                     id: 'requestStatus',
                     label: 'סטטוס בקשה',
@@ -249,10 +218,30 @@ export const createReserveDaysForm = async () => {
                             name: 'approved',
                         },
                         {
+                            value: 'cancelled',
+                            label: 'בוטל',
+                            name: 'cancelled',
+                        },
+                        {
                             value: 'denied',
                             label: 'נדחה',
                             name: 'denied',
                         },
+                    ],
+                },
+                {
+                    id: 'orderTypeFilter',
+                    label: 'סוג צו',
+                    fieldName: 'orderType',
+                    type: 'select',
+                    placeholder: 'בחר סוג צו',
+                    defaultValue: 'all',
+                    options: [
+                        { value: 'all', label: 'כל הסוגים' },
+                        { value: '8open', label: 'צו 8 פתוח' },
+                        { value: '8daily', label: 'צו 8 חד יומי' },
+                        { value: 'routineOpen', label: 'יממ שיגרה פתוח' },
+                        { value: 'routineDaily', label: 'יממ שיגרה חד יומי' },
                     ],
                 },
             ],
@@ -260,7 +249,8 @@ export const createReserveDaysForm = async () => {
                 {
                     id: 'reserveDaysOverlap',
                     name: 'Prevent Overlapping Reserve Days',
-                    description: 'Prevents the same employee from being reserved for overlapping date periods',
+                    description:
+                        'Prevents the same employee from being reserved for overlapping date periods',
                     ruleType: 'noOverlap',
                     enabled: true,
                     statusCode: 409,

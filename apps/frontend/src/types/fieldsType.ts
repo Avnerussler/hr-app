@@ -22,6 +22,7 @@ export type FieldType =
     | 'enhancedMultipleSelect'
     | 'attendance'
     | 'attendanceHistory'
+    | 'display'
 
 export interface Option {
     value: string
@@ -49,6 +50,7 @@ export interface FormFields {
     foreignFormName?: string
     foreignField?: string
     foreignFields?: string[]
+    sourceField?: string
 }
 
 export interface FormSection {

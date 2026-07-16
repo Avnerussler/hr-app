@@ -18,6 +18,7 @@ export type FieldType =
     | 'enhancedMultipleSelect'
     | 'enhancedSelect'
     | 'selectAutocomplete'
+    | 'display'
 
 export interface Option {
     value: string
@@ -59,6 +60,7 @@ export interface FormFields {
     foreignFormName?: string
     foreignField?: string
     foreignFields?: string[]
+    sourceField?: string
     bidirectionalSync?: BidirectionalSync
     validation?: FieldValidation
 }

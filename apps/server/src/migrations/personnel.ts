@@ -1,7 +1,7 @@
 import { FormFields } from '../models'
 import logger from '../config/logger'
 
-const CURRENT_VERSION = '1.1.35'
+const CURRENT_VERSION = '1.1.36'
 
 export const createPersonalForm = async () => {
     try {
@@ -403,6 +403,18 @@ export const createPersonalForm = async () => {
                                 targetFormName: 'project_management',
                                 targetFieldName: 'projectPersonnel',
                             },
+                        },
+                        {
+                            name: 'vehicleEntry',
+                            type: 'radio',
+                            label: 'כניסה עם רכב',
+                            placeholder: 'האם נכנס עם רכב',
+                            required: false,
+                            defaultValue: false,
+                            items: [
+                                { value: true, label: 'כן' },
+                                { value: false, label: 'לא' },
+                            ],
                         },
                     ],
                 },

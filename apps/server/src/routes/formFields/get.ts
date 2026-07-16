@@ -84,7 +84,8 @@ router.post(
             const options = results.map((doc: any) => {
                 if (
                     (fieldConfig.type === 'enhancedMultipleSelect' ||
-                        fieldConfig.type === 'enhancedSelect') &&
+                        fieldConfig.type === 'enhancedSelect' ||
+                        fieldConfig.type === 'display') &&
                     fieldConfig.foreignFields
                 ) {
                     // Build label from multiple fields
@@ -536,6 +537,7 @@ router.get('/:id', async (req: Request, res: Response) => {
                             foreignFormName: '$sections.fields.foreignFormName',
                             foreignField: '$sections.fields.foreignField',
                             foreignFields: '$sections.fields.foreignFields',
+                            sourceField: '$sections.fields.sourceField',
                             foreignData: '$foreignData',
                             foreignDataCount: '$foreignDataCount',
                         },
