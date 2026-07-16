@@ -78,6 +78,11 @@ async function fillReserveDayDrawer(
 }
 
 test.describe('Module 3: Reserve Days Management', () => {
+ // Tests create/edit/delete real records and some click the first/last table
+ // row by position, so they must not run concurrently with each other —
+ // parallel workers mutate shared data mid-test and destabilize row order.
+ test.describe.configure({ mode: 'serial' });
+
  test.beforeEach(async ({ page }) => {
   await page.goto('http://localhost:5173');
   await page.waitForLoadState('networkidle');
@@ -137,6 +142,13 @@ test.describe('Module 3: Reserve Days Management', () => {
   // Select order type radio — click the visible label, not the input; Chakra
   // renders a visually-hidden control span that can intercept a direct click.
   await drawer.getByText('צו 8 פתוח', { exact: true }).click();
+
+  // requestStatus is required; select it explicitly.
+  const statusCombo = drawer
+   .getByRole('combobox')
+   .filter({ hasText: /בחר סטטוס בקשה|ממתין לטיפול|אושר|נדחה/ });
+  await statusCombo.first().click();
+  await page.getByRole('option', { name: 'ממתין לטיפול', exact: true }).first().click();
 
   // Click Create — navigates back to list
   await drawer.getByRole('button', { name: /✨ Create/i }).click();

@@ -12,7 +12,12 @@ interface ExportReportsToExcelProps {
 
 interface ReportData {
     headers: string[]
-    rows: any[][]
+    rows: unknown[][]
+}
+
+interface StatisticsReportResponse {
+    report: ReportData
+    metadata: Record<string, unknown>
 }
 
 /**
@@ -45,7 +50,7 @@ const fetchReportData = async (
         const queryKey = [url, undefined, queryParams]
 
         // Define queryFn that matches the default pattern
-        const queryFn = async () => {
+        const queryFn = async (): Promise<StatisticsReportResponse> => {
             const { data } = await axios({
                 method: 'get',
                 baseURL: BASE_URL,
@@ -62,8 +67,9 @@ const fetchReportData = async (
             staleTime: 1000 * 60 * 5,
         })
 
-        // Extract data from response
-        return (response as any).data
+        // Each statistics endpoint wraps its payload under `report`, not `data`
+        // (see apps/server/src/routes/statistics/get.ts)
+        return response.report
     } catch (error) {
         console.error(`Error fetching report ${reportType}:`, error)
         // Return error data
