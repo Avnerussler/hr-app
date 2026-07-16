@@ -64,7 +64,7 @@ export function Dashboard() {
             externalByUnit.refetch()
             employeesOnReserve.refetch()
             setLastRefreshed(new Date())
-        }, 60 * 1000) // 5 minutes
+        }, 60 * 1000) // 1 minute
 
         return () => clearInterval(interval)
     }, [
@@ -88,11 +88,11 @@ export function Dashboard() {
 
     // Calculate key metrics from the data
     const getDailyMetrics = () => {
-        if (!dailySummary.data?.data) {
+        if (!dailySummary.data?.report) {
             return { totalOrders: 0, studioOrders: 0, externalOrders: 0 }
         }
 
-        const rows = dailySummary.data.data.rows
+        const rows = dailySummary.data.report.rows
         const totalsRow = rows[rows.length - 1]
 
         if (!totalsRow) {
@@ -106,13 +106,8 @@ export function Dashboard() {
         }
     }
 
-    const getProjectCount = () => {
-        if (!projectAnalytics.data?.data) return 0
-        // Subtract 1 for the totals row
-        return Math.max(0, projectAnalytics.data.data.rows.length - 1)
-    }
-
     const metrics = getDailyMetrics()
+    const activeProjectCount = projectAnalytics.data?.report.activeProjectCount ?? 0
 
     return (
         <Box p={6} w="full">
@@ -170,7 +165,7 @@ export function Dashboard() {
                     <MetricCard
                         icon={HiFolderOpen}
                         label="פרויקטים פעילים"
-                        value={getProjectCount()}
+                        value={activeProjectCount}
                         color="green.600"
                     />
                     <MetricCard
@@ -186,8 +181,8 @@ export function Dashboard() {
                     title="דוח יומי - סיכום צווים לפי פרויקטים"
                     description="סיכום צווי מילואים להיום לפי פרויקטים"
                     icon={<FiCalendar size={20} />}
-                    headers={dailySummary.data?.data.headers || []}
-                    rows={dailySummary.data?.data.rows || []}
+                    headers={dailySummary.data?.report.headers || []}
+                    rows={dailySummary.data?.report.rows || []}
                     isLoading={dailySummary.isLoading}
                 />
 
@@ -280,8 +275,8 @@ export function Dashboard() {
                         title="סיכום לפי טווח תאריכים"
                         description={`${dateRange.startDate} עד ${dateRange.endDate}`}
                         icon={<FiBarChart2 size={20} />}
-                        headers={dateRangeSummary.data?.data.headers || []}
-                        rows={dateRangeSummary.data?.data.rows || []}
+                        headers={dateRangeSummary.data?.report.headers || []}
+                        rows={dateRangeSummary.data?.report.rows || []}
                         isLoading={dateRangeSummary.isLoading}
                         minHeight="400px"
                     />
@@ -291,8 +286,8 @@ export function Dashboard() {
                         title="ניתוח פרויקטים"
                         description="סטטיסטיקות מפורטות לכל פרויקט"
                         icon={<HiFolderOpen size={20} />}
-                        headers={projectAnalytics.data?.data.headers || []}
-                        rows={projectAnalytics.data?.data.rows || []}
+                        headers={projectAnalytics.data?.report.headers || []}
+                        rows={projectAnalytics.data?.report.rows || []}
                         isLoading={projectAnalytics.isLoading}
                         minHeight="400px"
                     />
@@ -303,8 +298,8 @@ export function Dashboard() {
                     title="מימון חיצוני לפי יחידות"
                     description="ימי מילואים ממומנים חיצונית מקובצים לפי יחידת מימון"
                     icon={<FiTrendingUp size={20} />}
-                    headers={externalByUnit.data?.data.headers || []}
-                    rows={externalByUnit.data?.data.rows || []}
+                    headers={externalByUnit.data?.report.headers || []}
+                    rows={externalByUnit.data?.report.rows || []}
                     isLoading={externalByUnit.isLoading}
                     minHeight="400px"
                 />
@@ -330,8 +325,8 @@ export function Dashboard() {
                         title="עובדים על צו בתאריך מוגדר"
                         description={`רשימת כל העובדים על צו ביום ${selectedDate}`}
                         icon={<FiUsers size={20} />}
-                        headers={employeesOnReserve.data?.data.headers || []}
-                        rows={employeesOnReserve.data?.data.rows || []}
+                        headers={employeesOnReserve.data?.report.headers || []}
+                        rows={employeesOnReserve.data?.report.rows || []}
                         isLoading={employeesOnReserve.isLoading}
                         minHeight="400px"
                     />

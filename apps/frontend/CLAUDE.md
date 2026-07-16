@@ -75,6 +75,12 @@ All data is stored as `FormSubmissions` documents keyed by `formName`:
 - Drawers use `@/components/ui/drawer.tsx`
 - Pagination uses `@/components/ui/pagination.tsx`
 
+### Gotcha: schema `defaultValue` is not persisted on create
+
+`GenericForm` initializes React Hook Form with `{}` in create mode and does **not** wire each field's schema `defaultValue` into the form's `defaultValues`. The backend `formSubmission/create` route also saves `formData` verbatim without injecting defaults. So an untouched `select`/`radio` field is submitted as null/absent even though the schema declares a `defaultValue` (e.g. `projectStatus` → `'active'`, `fundingSource` → `'internal'`, `requestStatus` → `'pending'`).
+
+Consequences: a project created without picking a status is **not** counted in the "active projects" metric; a reserve order created without a funding source is invisible to the daily-summary statistics report. When creating records (in the UI or in e2e tests), select these fields explicitly rather than relying on the default.
+
 ---
 
 ## Data Fetching

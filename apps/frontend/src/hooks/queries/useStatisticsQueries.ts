@@ -12,11 +12,31 @@ export interface ReportData {
  * API response structure
  */
 interface StatisticsResponse {
-    data: ReportData
+    report: ReportData
     metadata: {
         startDate?: string
         endDate?: string
         date?: string
+        generatedAt: string
+    }
+}
+
+/**
+ * Project analytics report, with the count of active (non-empty) projects
+ * excluding the "no project" bucket
+ */
+export interface ProjectAnalyticsReport extends ReportData {
+    activeProjectCount: number
+}
+
+/**
+ * Project analytics API response structure
+ */
+interface ProjectAnalyticsResponse {
+    report: ProjectAnalyticsReport
+    metadata: {
+        startDate: string
+        endDate: string
         generatedAt: string
     }
 }
@@ -96,7 +116,7 @@ export const useProjectAnalyticsQuery = (
     startDate: string,
     endDate: string
 ) => {
-    return useQuery<StatisticsResponse, Error>({
+    return useQuery<ProjectAnalyticsResponse, Error>({
         queryKey: [
             'statistics/project-analytics',
             undefined,

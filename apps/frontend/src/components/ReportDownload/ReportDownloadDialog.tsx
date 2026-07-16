@@ -14,6 +14,7 @@ import { ControlledSelectField } from '../ControlledFields/ControlledSelectField
 import { ControlledInputField } from '../ControlledFields/ControlledInputField'
 import { useState, useEffect } from 'react'
 import { FiDownload } from 'react-icons/fi'
+import { format } from 'date-fns'
 import { exportReportsToExcel } from './utils/exportReportsToExcel'
 import { useQueryClient } from '@tanstack/react-query'
 import { toaster } from '../ui/toaster'
@@ -104,6 +105,13 @@ export function ReportDownloadDialog({
         }
     }, [watchedTimeFrame, setValue])
 
+    // ControlledInputField emits a Date object for type="date" fields once the
+    // user interacts with them (its default values are plain "YYYY-MM-DD"
+    // strings), so normalize back to a string here to match ReportFormData's
+    // declared type and what exportReportsToExcel expects.
+    const toDateString = (value: string | Date): string =>
+        value instanceof Date ? format(value, 'yyyy-MM-dd') : value
+
     const onSubmit: SubmitHandler<ReportFormData> = async (data) => {
         if (data.selectedReports.length === 0) {
             toaster.create({
@@ -119,8 +127,8 @@ export function ReportDownloadDialog({
         try {
             await exportReportsToExcel({
                 selectedReports: data.selectedReports,
-                startDate: data.startDate,
-                endDate: data.endDate,
+                startDate: toDateString(data.startDate),
+                endDate: toDateString(data.endDate),
                 queryClient,
             })
 
