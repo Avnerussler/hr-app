@@ -1,4 +1,4 @@
-import { FormSubmissions } from '../models'
+import { FormSubmissions, FormFields } from '../models'
 import logger from '../config/logger'
 import { eachDayOfInterval, parseISO, format } from 'date-fns'
 import mongoose from 'mongoose'
@@ -648,6 +648,37 @@ class StatisticsService {
     }
 
     /**
+     * Build a value→label map for a field in a form, so reports display the
+     * human-readable option label instead of the stored raw value. Reads the
+     * field's `options` (select) or `items` (radio) from the form definition.
+     */
+    private async getFieldLabelMap(
+        formName: string,
+        fieldName: string
+    ): Promise<Record<string, string>> {
+        const form = await FormFields.findOne({ formName }).lean()
+        const map: Record<string, string> = {}
+        if (!form) return map
+
+        for (const section of form.sections ?? []) {
+            for (const field of section.fields ?? []) {
+                if (field.name !== fieldName) continue
+                // A field uses either `options` (select) or `items` (radio);
+                // the other may be present but empty, so pick the non-empty one.
+                const choices =
+                    field.options?.length ? field.options : field.items ?? []
+                for (const choice of choices) {
+                    if (choice?.value !== undefined) {
+                        map[String(choice.value)] = choice.label ?? String(choice.value)
+                    }
+                }
+                return map
+            }
+        }
+        return map
+    }
+
+    /**
      * Report 5: Employees on Reserve by Date and Project
      * Shows all employees who should be on reserve on a specific date, grouped by project
      */
@@ -662,6 +693,12 @@ class StatisticsService {
             })
 
             const targetDate = toUtcMidnight(date)
+
+            // Map orderType raw values → Hebrew labels from the form schema.
+            const orderTypeLabels = await this.getFieldLabelMap(
+                'reserve_days_management',
+                'orderType'
+            )
 
             // Get all active reserve days for the specified date
             const reserveDays = await FormSubmissions.find({
@@ -748,7 +785,10 @@ class StatisticsService {
                         reserve.formData.fundingSource === 'internal'
                             ? 'סטודיו'
                             : 'חיצוני',
-                    orderType: reserve.formData.orderType || '',
+                    orderType:
+                        orderTypeLabels[reserve.formData.orderType] ??
+                        reserve.formData.orderType ??
+                        '',
                     startDate: format(
                         asDate(reserve.formData.startDate),
                         'dd/MM/yyyy'

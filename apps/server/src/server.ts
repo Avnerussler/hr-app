@@ -54,8 +54,19 @@ app.use(requestLogger)
 // Performance monitoring middleware
 app.use(performanceLogger)
 
-// Rate limiting middleware (100 requests per minute per IP)
-app.use(rateLimitLogger(60 * 1000, 100))
+// Rate limiting middleware (100 requests per minute per IP).
+// Disabled for local/test environments so e2e suites aren't throttled (429s).
+// Set DISABLE_RATE_LIMIT=true, or NODE_ENV to 'test'/'local', to skip it.
+const rateLimitDisabled =
+    process.env.DISABLE_RATE_LIMIT === 'true' ||
+    process.env.NODE_ENV === 'test' ||
+    process.env.NODE_ENV === 'development'
+
+if (!rateLimitDisabled) {
+    app.use(rateLimitLogger(60 * 1000, 100))
+} else {
+    logger.info('Rate limiting disabled for this environment')
+}
 
 // Parse JSON requests with size limit
 app.use(express.json({ limit: '10mb' }))
@@ -105,7 +116,7 @@ app.listen(PORT, () => {
         security: '✅',
         requestLogging: '✅',
         performanceMonitoring: '✅',
-        rateLimiting: '✅',
+        rateLimiting: rateLimitDisabled ? '⛔ (disabled)' : '✅',
         errorHandling: '✅',
     })
 })
