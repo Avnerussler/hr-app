@@ -17,7 +17,7 @@
   "services:start": "bash scripts/start-all-services.sh",
   "services:stop": "bash scripts/stop-all-services.sh",
   "services:check": "bash scripts/check-services.sh",
-  "docker:ship": "docker pull --platform linux/amd64 node:20-alpine && docker pull --platform linux/amd64 nginx:stable-alpine && docker build --platform linux/amd64 -t hr-frontend-app apps/frontend & docker build --platform linux/amd64 -t hr-server-app apps/server & wait && docker save node:20-alpine -o 4airport/node-20-alpine.tar && docker save nginx:stable-alpine -o 4airport/nginx-stable-alpine.tar && docker save hr-frontend-app -o 4airport/hr-frontend-app.tar && docker save hr-server-app -o 4airport/hr-server-app.tar"
+  "docker:ship": "docker build --platform linux/amd64 -t hr-frontend-app apps/frontend && docker build --platform linux/amd64 -t hr-server-app apps/server && docker save hr-frontend-app -o 4airport/hr-frontend-app.tar && docker save hr-server-app -o 4airport/hr-server-app.tar"
  },
  "devDependencies": {
   "@faker-js/faker": "^10.1.0",
