@@ -1,15 +1,15 @@
 import {
     getCoreRowModel,
-    getSortedRowModel,
     useReactTable,
     getFacetedRowModel,
     getFacetedUniqueValues,
     getFacetedMinMaxValues,
 } from '@tanstack/react-table'
-import { FC, useEffect, useCallback, useState, useRef } from 'react'
+import { FC, useEffect, useCallback, useState } from 'react'
 import { VStack, Box } from '@chakra-ui/react'
-import { FilterFn, SortingFn } from '@tanstack/react-table'
+import { FilterFn } from '@tanstack/react-table'
 import { useSearchParams } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 
 import { useTableState } from './hooks/useTableState'
 import { useTableData } from './hooks/useTableData'
@@ -17,12 +17,11 @@ import { useTableColumns } from './hooks/useTableColumns'
 import { useFormsQuery } from '@/hooks/queries/useFormQueries'
 import { fuzzyFilter } from './utils/fuzzyFilter'
 import { globalFilter as customGlobalFilter } from './utils/globalFilter'
-import { rankSort } from './utils/rankSort'
 import { exportToExcel } from './utils/exportToExcel'
 import { TableControls } from './components/TableControls'
 import { TableContainer } from './components/TableContainer'
 import { TablePagination } from './components/TablePagination'
-import { TableFilter } from '@/types/fieldsType'
+import { IForm, TableFilter } from '@/types/fieldsType'
 import { useMemo } from 'react'
 import useDebounce from '@/hooks/useDebounce'
 
@@ -31,10 +30,6 @@ declare module '@tanstack/react-table' {
     interface FilterFns {
         fuzzy: FilterFn<unknown>
         global: FilterFn<unknown>
-    }
-    //add rank sort to the sortingFns
-    interface SortingFns {
-        rank: SortingFn<unknown>
     }
 }
 
@@ -77,12 +72,35 @@ export const GenericTable: FC<GenericTableProps> = ({
 
     const debouncedSearch = useDebounce(globalFilter, 300)
 
+    // Same query key as inside useTableData — React Query dedupes this, no extra request.
+    // Needed here so we can resolve the sorted column's backend field name (column `id`
+    // is the field's Mongo `_id`, not its `name`) before building useTableData's params.
+    const { data: formSchema } = useQuery<IForm>({
+        queryKey: ['formFields/get', id],
+        staleTime: 1000 * 60 * 5,
+    })
+
+    const activeSort = sorting[0]
+    const sortField = useMemo(() => {
+        if (!activeSort) return undefined
+        if (activeSort.id === 'createdAt') return 'createdAt'
+        const allFields = formSchema?.sections?.flatMap((section) => section.fields ?? []) ?? []
+        return allFields.find((f) => f._id === activeSort.id)?.name ?? activeSort.id
+    }, [activeSort, formSchema])
+    const sortOrder: 'asc' | 'desc' | undefined = activeSort
+        ? activeSort.desc
+            ? 'desc'
+            : 'asc'
+        : undefined
+
     const { formFields, data, isSuccess, totalCount, totalPages } = useTableData({
         id,
         page: pagination.pageIndex + 1,
         pageSize: pagination.pageSize,
         search: debouncedSearch,
         tableFilters,
+        sortField,
+        sortOrder,
     })
 
     // Correct pageIndex only when our current page exceeds the total pages the server reports
@@ -117,39 +135,6 @@ export const GenericTable: FC<GenericTableProps> = ({
         []
     )
 
-    const sortingFns = useMemo(
-        () => ({
-            rank: rankSort as SortingFn<unknown>,
-        }),
-        []
-    )
-
-    // Track if we auto-enabled sorting
-    const autoSortEnabledRef = useRef(false)
-    const previousGlobalFilterRef = useRef('')
-
-    // Auto-sort by rank when global filter becomes active
-    useEffect(() => {
-        const wasFiltering = !!previousGlobalFilterRef.current
-        const isFiltering = !!globalFilter
-        previousGlobalFilterRef.current = globalFilter
-
-        if (
-            !wasFiltering &&
-            isFiltering &&
-            sorting.length === 0 &&
-            columns.length > 0
-        ) {
-            autoSortEnabledRef.current = true
-            setSorting([{ id: columns[0].id as string, desc: false }])
-        }
-
-        if (wasFiltering && !isFiltering && autoSortEnabledRef.current) {
-            autoSortEnabledRef.current = false
-            setSorting([])
-        }
-    }, [globalFilter, sorting.length, columns, setSorting])
-
     // Handle filter changes
     const handleFilterChange = useCallback(
         (filterId: string, value: string | string[] | boolean) => {
@@ -159,13 +144,22 @@ export const GenericTable: FC<GenericTableProps> = ({
         [setTableFilters]
     )
 
+    // Sorting is server-side (see sortField/sortOrder above) — reset to page 1
+    // whenever the sort changes, since the rows on "page 1" change with sort order.
+    const handleSortingChange: typeof setSorting = useCallback(
+        (updater) => {
+            setSorting(updater)
+            setPagination((prev) => ({ ...prev, pageIndex: 0 }))
+        },
+        [setSorting]
+    )
+
     const table = useReactTable<Record<string, unknown>>({
         defaultColumn,
         columnResizeDirection: 'rtl',
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
         getFacetedMinMaxValues: getFacetedMinMaxValues(),
@@ -176,17 +170,17 @@ export const GenericTable: FC<GenericTableProps> = ({
             pagination,
         },
         onGlobalFilterChange: setGlobalFilter,
-        onSortingChange: setSorting,
+        onSortingChange: handleSortingChange,
         onColumnFiltersChange: setColumnFilters,
         onPaginationChange: setPagination,
         globalFilterFn: 'global',
         filterFns,
-        sortingFns,
         enableSorting: true,
         enableColumnFilters: true,
         enableGlobalFilter: true,
         manualPagination: true,
         manualFiltering: true,
+        manualSorting: true,
         rowCount: totalCount,
     })
 

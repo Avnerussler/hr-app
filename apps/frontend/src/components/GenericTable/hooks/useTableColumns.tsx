@@ -65,8 +65,8 @@ export const useTableColumns = ({
                         id: field._id,
                         enableSorting: true,
                         enableColumnFilter: true,
-                        sortingFn: 'rank',
                         meta: {
+                            fieldName: field.name,
                             filterVariant:
                                 field.type === 'number'
                                     ? 'range'
@@ -109,6 +109,9 @@ export const useTableColumns = ({
                     id: 'createdAt',
                     enableSorting: true,
                     enableColumnFilter: false,
+                    meta: {
+                        fieldName: 'createdAt',
+                    },
                     cell: (info: any) => {
                         const val = info.getValue() as string | undefined
                         if (!val) return ''

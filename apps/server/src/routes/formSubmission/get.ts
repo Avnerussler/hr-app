@@ -2,7 +2,7 @@ import { FormSubmissions, FormFields } from '../../models'
 import { Request, Response, Router } from 'express'
 import mongoose from 'mongoose'
 import logger from '../../config/logger'
-import { buildDateSearchClauses, buildLabelSearchClauses, transformFormData } from '../../utils'
+import { buildDateSearchClauses, buildLabelSearchClauses, buildSortSpec, transformFormData } from '../../utils'
 
 const router = Router()
 router.get('/select', async (req: Request, res: Response) => {
@@ -40,7 +40,7 @@ router.get('/select', async (req: Request, res: Response) => {
 router.get('/', async (req: Request, res: Response) => {
     logger.info('GET /formSubmission - Request received')
     try {
-        const { formName, formId, limit = 10, page = 1, search, searchFields, filters } = req.query
+        const { formName, formId, limit = 10, page = 1, search, searchFields, filters, sortField, sortOrder } = req.query
 
         const query: Record<string, unknown> = { isDeleted: false }
 
@@ -229,9 +229,11 @@ router.get('/', async (req: Request, res: Response) => {
         logger.info('Query filters:', { formName, formId, search, searchFields, filters })
         const skip = (Number(page) - 1) * Number(limit)
 
+        const sortSpec = buildSortSpec(sortField as string | undefined, sortOrder as string | undefined)
+
         const [rawForms, totalCount] = await Promise.all([
             FormSubmissions.find(query)
-                .sort({ createdAt: -1 })
+                .sort(sortSpec)
                 .skip(skip)
                 .limit(Number(limit))
                 .lean(),

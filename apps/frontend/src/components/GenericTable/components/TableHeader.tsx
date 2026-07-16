@@ -1,7 +1,7 @@
-import { FC } from 'react'
+import { FC, KeyboardEvent } from 'react'
 import { Column } from '@tanstack/react-table'
-import { VStack, HStack, Text, IconButton } from '@chakra-ui/react'
-import { FiChevronUp, FiChevronDown } from 'react-icons/fi'
+import { VStack, HStack, Text, Box } from '@chakra-ui/react'
+import { LuChevronUp, LuChevronDown, LuChevronsUpDown } from 'react-icons/lu'
 import { FormFields } from '@/types/fieldsType'
 // import { Filter } from '../Filter'
 
@@ -11,32 +11,55 @@ interface TableHeaderProps {
 }
 
 export const TableHeader: FC<TableHeaderProps> = ({ column, field }) => {
+    const canSort = column.getCanSort()
+    const sortState = column.getIsSorted()
+
+    const sortLabel =
+        sortState === 'asc'
+            ? 'ascending'
+            : sortState === 'desc'
+              ? 'descending'
+              : 'not sorted'
+
     return (
         <VStack align="start" gap={2} w="full">
-            <HStack justify="space-between" w="full">
+            <HStack
+                justify="flex-start"
+                gap={1}
+                w="full"
+                {...(canSort && {
+                    role: 'button',
+                    tabIndex: 0,
+                    cursor: 'pointer',
+                    'aria-label': `Sort by ${field.label}, currently ${sortLabel}`,
+                    onClick: () => column.toggleSorting(),
+                    onKeyDown: (e: KeyboardEvent) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            column.toggleSorting()
+                        }
+                    },
+                })}
+            >
                 <Text fontWeight="medium" color="foreground" fontSize="sm">
                     {field.label}
                 </Text>
-                <IconButton
-                    variant="ghost"
-                    size="xs"
-                    onClick={() => column.toggleSorting()}
-                    aria-label="Sort column"
-                    bg="transparent"
-                    color="muted.foreground"
-                    _hover={{
-                        bg: 'muted',
-                        color: 'foreground',
-                    }}
-                    minW="6"
-                    h="6"
-                >
-                    {column.getIsSorted() === 'asc' ? (
-                        <FiChevronUp size="12px" />
-                    ) : (
-                        <FiChevronDown size="12px" />
-                    )}
-                </IconButton>
+                {canSort && (
+                    <Box
+                        color={sortState ? 'foreground' : 'muted.foreground'}
+                        opacity={sortState ? 1 : 0.5}
+                        display="flex"
+                        alignItems="center"
+                    >
+                        {sortState === 'asc' ? (
+                            <LuChevronUp size="14px" />
+                        ) : sortState === 'desc' ? (
+                            <LuChevronDown size="14px" />
+                        ) : (
+                            <LuChevronsUpDown size="14px" />
+                        )}
+                    </Box>
+                )}
             </HStack>
             {/* {column.getCanFilter() && (
                 <Box onClick={(e) => e.stopPropagation()}>

@@ -9,6 +9,8 @@ interface UseTableDataProps {
     pageSize: number
     search: string
     tableFilters: Record<string, string | string[] | boolean>
+    sortField?: string
+    sortOrder?: 'asc' | 'desc'
 }
 
 const stripInactiveFilters = (
@@ -29,6 +31,8 @@ export const useTableData = ({
     pageSize,
     search,
     tableFilters,
+    sortField,
+    sortOrder,
 }: UseTableDataProps) => {
     const { data: formFields, isSuccess } = useQuery<IForm>({
         queryKey: ['formFields/get', id],
@@ -53,6 +57,8 @@ export const useTableData = ({
                     ? overviewFields.join(',')
                     : undefined,
             filters: activeFilters ? JSON.stringify(activeFilters) : undefined,
+            sortField,
+            sortOrder,
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [
@@ -63,6 +69,8 @@ export const useTableData = ({
             overviewFields.join(','),
             isSuccess,
             activeFilters,
+            sortField,
+            sortOrder,
         ]
     )
 

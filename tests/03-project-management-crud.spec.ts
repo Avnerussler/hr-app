@@ -5,6 +5,11 @@ import { test, expect } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 
 test.describe('Module 2: Project Management', () => {
+ // These tests share the same project_management data (create/edit/delete the same
+ // rows), so running them across parallel workers races: one worker's mutation can
+ // reorder/remove the row another worker just targeted via "first/last row" locators.
+ test.describe.configure({ mode: 'serial' });
+
  test.beforeEach(async ({ page }) => {
   await page.goto('http://localhost:5173');
   await page.waitForLoadState('networkidle');
@@ -119,10 +124,12 @@ test.describe('Module 2: Project Management', () => {
   const drawer = page.getByRole('dialog');
   await expect(drawer).toBeVisible();
 
-  // Submit without filling required projectName
-  await drawer.getByRole('button', { name: /✨ Create/i }).click();
-
-  // Form stays on /new page (validation failed)
+  // The Create button is disabled until the form has unsaved changes
+  // (DetailsDrawer gates submit on RHF's `isDirty`, not on field-level
+  // required validation), so with no fields touched it must stay disabled
+  // and the drawer stays open on /new.
+  const createButton = drawer.getByRole('button', { name: /✨ Create/i });
+  await expect(createButton).toBeDisabled();
   await expect(page).toHaveURL(/\/new$/);
 
   // projectName field is still present
@@ -154,12 +161,11 @@ test.describe('Module 2: Project Management', () => {
  });
 
  test('TC-PROJ-008: Table Sorting', async ({ page }) => {
-  const sortBtn = page
-   .getByRole('columnheader', { name: /שם הפרויקט/ })
-   .getByLabel('Sort column');
+  const sortBtn = page.getByRole('button', { name: /Sort by שם הפרויקט/ });
   await sortBtn.click();
-  await page.waitForTimeout(500);
+  await expect(page.getByRole('button', { name: /Sort by שם הפרויקט, currently ascending/ })).toBeVisible();
   await sortBtn.click();
+  await expect(page.getByRole('button', { name: /Sort by שם הפרויקט, currently descending/ })).toBeVisible();
   await expect(page.getByText(/Showing \d+ to \d+ of \d+ entries/)).toBeVisible();
  });
 
