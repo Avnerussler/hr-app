@@ -62,6 +62,7 @@ const FieldSchema = new Schema(
         foreignFormName: { type: String },
         foreignField: { type: String },
         foreignFields: { type: [String] },
+        sourceField: { type: String },
         bidirectionalSync: { type: BidirectionalSyncSchema },
         options: [OptionSchema],
         items: {

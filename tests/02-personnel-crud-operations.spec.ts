@@ -1,8 +1,23 @@
 // spec: tests/hr-app-comprehensive-test-plan.md
 // seed: seed.spec.ts
 
-import { test, expect } from '@playwright/test';
+import { test, expect, Page, Locator } from '@playwright/test';
 import { faker } from '@faker-js/faker';
+
+// The personnel row-click navigation (list -> /personnel/<formId>/edit/<itemId>)
+// occasionally races with the table's initial data/query hydration right after
+// the beforeEach lands on the page: a click that fires before the row's onClick
+// handler is wired up is silently swallowed (no navigation happens at all).
+// Retry the row click until the drawer dialog actually appears instead of
+// relying on a single click + a single assertion.
+async function openRowDrawer(page: Page, row: Locator): Promise<Locator> {
+ const drawer = page.getByRole('dialog');
+ await expect(async () => {
+  await row.click();
+  await expect(drawer).toBeVisible({ timeout: 2000 });
+ }).toPass({ timeout: 15000 });
+ return drawer;
+}
 
 test.describe('Module 1: Personnel Management - CRUD Operations', () => {
  test.beforeEach(async ({ page }) => {
@@ -11,21 +26,22 @@ test.describe('Module 1: Personnel Management - CRUD Operations', () => {
   await expect(page.getByRole('heading')).toBeVisible();
   await page.getByRole('group').filter({ hasText: 'משאבי אנושEmployee Management' }).click();
   await expect(page.getByRole('heading', { name: 'משאבי אנוש' })).toBeVisible();
+
+  // Wait for the table to finish its initial data load before any test
+  // interacts with rows/buttons - otherwise the first click in a test can
+  // land before row click handlers / row data are attached.
+  await expect(page.getByRole('table').locator('tbody tr').first()).toBeVisible();
  });
 
  test('TC-PERS-004: View Personnel Details', async ({ page }) => {
-  // Click on first personnel row in table (any row)
+  // Click on first personnel row in table (any row) - retry the click until
+  // the details drawer (dialog) actually opens (see openRowDrawer above).
   const firstDataRow = page.getByRole('table').locator('tbody tr').first();
-  await firstDataRow.click();
+  const drawer = await openRowDrawer(page, firstDataRow);
 
-  // Verify details drawer/modal opens
-  // Note: Actual implementation may use drawer/modal/navigation - adjust selector as needed
-  await expect(
-   page.locator('[role="dialog"], [data-testid="personnel-details"]').or(page.getByRole('main'))
-  ).toBeVisible();
-
-  // Verify some personnel data is displayed in the detail view
-  await expect(page.getByRole('table').or(page.locator('form'))).toBeVisible();
+  // Verify details drawer opens with the record's data/form inside it
+  await expect(drawer).toBeVisible();
+  await expect(drawer.locator('form')).toBeVisible();
  });
 
  test('TC-PERS-005: Create New Personnel', async ({ page }) => {
@@ -38,8 +54,10 @@ test.describe('Module 1: Personnel Management - CRUD Operations', () => {
    phone: '050' + faker.string.numeric(7), // Israeli mobile format
   };
 
-  // Click "Add personnel" button
-  await page.getByRole('button', { name: 'Add personnel' }).click();
+  // Click the "משאבי אנוש" add button - the PageHeader action button uses the
+  // form's displayName as its label (there is no literal "Add personnel"
+  // button in this app), same pattern used by TC-PERS-009 below.
+  await page.getByRole('button', { name: 'משאבי אנוש' }).click();
 
   // Wait for drawer to open
   const drawer = page.getByRole('dialog');
@@ -68,31 +86,93 @@ test.describe('Module 1: Personnel Management - CRUD Operations', () => {
   await expect(page.getByRole('table')).toBeVisible();
  });
 
- test('TC-PERS-006: Edit Personnel Record', async ({ page }) => {
-  // Generate new test data with Faker
-  const updatedPhone = '050' + faker.string.numeric(7); // Israeli mobile format
+ test('TC-PERS-009: Create Personnel With Vehicle Info', async ({ page }) => {
+  // Generate test data with Faker
+  const testData = {
+   firstName: faker.person.firstName(),
+   lastName: faker.person.lastName(),
+   personalNumber: faker.string.numeric(9),
+   email: faker.internet.email(),
+   phone: '050' + faker.string.numeric(7), // Israeli mobile format
+   vehicleNumber: faker.string.numeric(2) + '-' + faker.string.numeric(3) + '-' + faker.string.numeric(2),
+  };
 
-  // Click on first personnel row to open drawer
-  const testRow = page.getByRole('table').locator('tbody tr').first();
-  await testRow.click();
+  // Click the "משאבי אנוש" add button (form display name, same pattern used
+  // by the reserve-days "צווי מילואים" add button in file 04).
+  await page.getByRole('button', { name: 'משאבי אנוש' }).click();
 
   // Wait for drawer to open
   const drawer = page.getByRole('dialog');
   await expect(drawer).toBeVisible();
 
+  // "מידע אישי" (Personal Information) tab holds firstName/lastName/.../vehicleNumber
+  const personalInfoTab = page.getByRole('tab', { name: 'מידע אישי' });
+  if (await personalInfoTab.isVisible({ timeout: 2000 }).catch(() => false)) {
+   await personalInfoTab.click();
+   await page.waitForTimeout(500);
+  }
+
+  await page.locator('input[name="firstName"]').fill(testData.firstName);
+  await page.locator('input[name="lastName"]').fill(testData.lastName);
+  await page.locator('input[name="personalNumber"]').fill(testData.personalNumber);
+  await page.locator('input[name="email"]').fill(testData.email);
+  await page.locator('input[name="phone"]').fill(testData.phone);
+  await page.locator('input[name="vehicleNumber"]').fill(testData.vehicleNumber);
+
+  // "מידע צבאי" (Military Information) tab holds the vehicleEntry radio
+  await page.getByRole('tab', { name: 'מידע צבאי' }).click();
+  await page.waitForTimeout(500);
+
+  // Scope to the vehicleEntry radio group specifically — the tab also has
+  // another כן/לא radio (canBeRecited, "האם ניתן לזמן למילואים"), and both
+  // radios' visible labels share the same text, so a plain
+  // drawer.getByText('כן') would be ambiguous. Chakra renders each radio
+  // field as role=group with the field label as its accessible name, and
+  // the underlying <input> carries a real name="vehicleEntry" attribute —
+  // click the visible label text within that scoped group (not the
+  // visually-hidden input directly, which Chakra's overlay can intercept).
+  const vehicleEntryGroup = drawer.getByRole('group', { name: 'כניסה עם רכב' });
+  await vehicleEntryGroup.getByText('כן', { exact: true }).click();
+  await expect(vehicleEntryGroup.getByRole('radio', { name: 'כן' })).toBeChecked();
+
+  // Click Save/Create button
+  const saveButton = page.getByRole('button', { name: /Create|שמור/i });
+  await saveButton.click();
+
+  // Verify drawer closes and we're back on list page
+  await expect(drawer).not.toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole('table')).toBeVisible();
+ });
+
+ test('TC-PERS-006: Edit Personnel Record', async ({ page }) => {
+  // Generate new test data with Faker
+  const updatedPhone = '050' + faker.string.numeric(7); // Israeli mobile format
+
+  // Click on first personnel row to open the drawer. Retry the click until the
+  // dialog actually appears (see openRowDrawer) - a single click can silently
+  // no-op if it lands before the row's click handler / row data are ready.
+  const testRow = page.getByRole('table').locator('tbody tr').first();
+  const drawer = await openRowDrawer(page, testRow);
+
+  // Confirm the drawer is in an editable state (an actual form with a save
+  // action) before interacting with any field - not a read-only view.
+  await expect(drawer.locator('form')).toBeVisible();
+  const updateButton = page.getByRole('button', { name: /Update|עדכן/i });
+  await expect(updateButton).toBeVisible();
+
   // Click on "מידע אישי" (Personal Information) tab to access phone field
   await page.getByRole('tab', { name: 'מידע אישי' }).click();
 
-  // Wait for tab content to load
-  await page.waitForTimeout(500);
-
-  // Modify phone number field (now visible after clicking the correct tab)
+  // Wait for the phone field to be visible/editable on the new tab
   const phoneField = page.locator('input[name="phone"]');
+  await expect(phoneField).toBeVisible();
+  await expect(phoneField).toBeEditable();
+
+  // Modify phone number field
   await phoneField.clear();
   await phoneField.fill(updatedPhone);
 
   // Click Update button
-  const updateButton = page.getByRole('button', { name: /Update|עדכן/i });
   await updateButton.click();
 
   // Wait for drawer to close and verify we're back on list page
@@ -104,13 +184,9 @@ test.describe('Module 1: Personnel Management - CRUD Operations', () => {
   // Get initial count
   const initialCount = await page.getByText(/Showing \d+ to \d+ of (\d+) entries/).textContent();
 
-  // Click on last personnel row to open drawer
+  // Click on last personnel row to open drawer (retry until dialog appears)
   const testRow = page.getByRole('table').locator('tbody tr').last();
-  await testRow.click();
-
-  // Wait for drawer to open
-  const drawer = page.getByRole('dialog');
-  await expect(drawer).toBeVisible();
+  const drawer = await openRowDrawer(page, testRow);
 
   // Look for delete button in the drawer
   const deleteButton = page.getByRole('button', { name: /מחק|Delete/i });
@@ -139,8 +215,10 @@ test.describe('Module 1: Personnel Management - CRUD Operations', () => {
    phone: '050' + faker.string.numeric(7),
   };
 
-  // Click "Add personnel" button
-  await page.getByRole('button', { name: 'Add personnel' }).click();
+  // Click the "משאבי אנוש" add button - the PageHeader action button uses the
+  // form's displayName as its label (there is no literal "Add personnel"
+  // button in this app).
+  await page.getByRole('button', { name: 'משאבי אנוש' }).click();
 
   // Wait for drawer to open
   const drawer = page.getByRole('dialog');

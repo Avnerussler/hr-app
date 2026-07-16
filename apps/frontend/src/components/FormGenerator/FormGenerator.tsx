@@ -11,6 +11,7 @@ import {
     ControlledAttendanceField,
     ControlledAttendanceHistoryField,
     ControlledSwitchField,
+    ControlledDisplayField,
 } from '../ControlledFields'
 import { Control, FieldValues } from 'react-hook-form'
 import { RefObject } from 'react'
@@ -136,6 +137,15 @@ export const FormGenerator = ({
                         control={control}
                         key={id}
                         items={items}
+                        id={id}
+                    />
+                )
+            case 'display':
+                return (
+                    <ControlledDisplayField
+                        {...props}
+                        control={control}
+                        key={id}
                         id={id}
                     />
                 )

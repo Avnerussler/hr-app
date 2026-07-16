@@ -84,16 +84,25 @@ export const transformFormData = async (formData: any, formId: string) => {
         logger.info(`Found ${allFields.length} total fields`)
 
         // Filter only fields with foreign relationships that have values
-        const foreignFields = allFields.filter(
-            (field) =>
-                field &&
-                field.foreignFormName &&
-                (field.foreignField || field.foreignFields) &&
-                field.name &&
-                formData[field.name] !== undefined &&
-                formData[field.name] !== null &&
-                formData[field.name] !== ''
-        )
+        const foreignFields = allFields.filter((field) => {
+            if (
+                !field ||
+                !field.foreignFormName ||
+                !(field.foreignField || field.foreignFields) ||
+                !field.name
+            ) {
+                return false
+            }
+            const lookupKey =
+                field.type === 'display' && field.sourceField
+                    ? field.sourceField
+                    : field.name
+            return (
+                formData[lookupKey] !== undefined &&
+                formData[lookupKey] !== null &&
+                formData[lookupKey] !== ''
+            )
+        })
 
         logger.info(`Found ${foreignFields.length} foreign fields with values`)
 
@@ -106,9 +115,58 @@ export const transformFormData = async (formData: any, formId: string) => {
         for (const field of foreignFields) {
             try {
                 logger.info(`Processing field: ${field.name} (${field.type})`)
-                const fieldValue = formData[field.name]
+                const fieldValue =
+                    field.type === 'display' && field.sourceField
+                        ? formData[field.sourceField]
+                        : formData[field.name]
 
-                if (
+                if (field.type === 'display') {
+                    // Read-only lookup sourced from another field's foreign id
+                    if (
+                        typeof fieldValue === 'string' &&
+                        mongoose.Types.ObjectId.isValid(fieldValue)
+                    ) {
+                        logger.info(
+                            `Looking up display value for ${field.name} via ${field.sourceField}: ${fieldValue}`
+                        )
+                        const doc = await FormSubmissions.findOne({
+                            _id: fieldValue,
+                            formName: field.foreignFormName,
+                        }).lean()
+
+                        if (doc?.formData) {
+                            const foreignFieldNames =
+                                field.foreignFields ??
+                                (field.foreignField
+                                    ? [field.foreignField]
+                                    : [])
+
+                            const displayParts = foreignFieldNames
+                                .map((fieldName) => doc.formData[fieldName])
+                                .filter(
+                                    (value) =>
+                                        value !== null &&
+                                        value !== undefined &&
+                                        value !== ''
+                                )
+                                .map((value) => String(value))
+
+                            transformedData[field.name] =
+                                displayParts.length > 0
+                                    ? displayParts.join(' ')
+                                    : ''
+                            logger.info(
+                                `Transformed ${field.name}: ${displayParts.join(
+                                    ' '
+                                )}`
+                            )
+                        } else {
+                            logger.warn(
+                                `No data found for display ${field.name} with id ${fieldValue}`
+                            )
+                        }
+                    }
+                } else if (
                     field.type === 'select' ||
                     field.type === 'selectAutocomplete'
                 ) {

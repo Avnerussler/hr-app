@@ -46,6 +46,45 @@ async function findConflictFreeEmployee(
  return { personalNumber: free!.formData.personalNumber };
 }
 
+/** formId of the `personnel` form definition. */
+async function personnelFormId(request: APIRequestContext): Promise<string> {
+ const res = await request.get(`${API_ORIGIN}/api/formFields/get/partialData`);
+ expect(res.ok()).toBe(true);
+ const body = await res.json();
+ const forms = body.forms ?? body;
+ const personnel = forms.find((f: { formName?: string }) => f.formName === 'personnel');
+ expect(personnel, 'personnel form definition not found').toBeTruthy();
+ return personnel._id;
+}
+
+/** Create a personnel record directly via the API with known vehicle info. */
+async function createPersonnelWithVehicle(
+ request: APIRequestContext,
+ overrides: Record<string, any> = {},
+): Promise<{ _id: string; personalNumber: string; vehicleNumber: string }> {
+ const formId = await personnelFormId(request);
+ const personalNumber = `9${Date.now().toString().slice(-8)}`;
+ const vehicleNumber = `12-${Date.now().toString().slice(-3)}-67`;
+ const res = await request.post(`${API_ORIGIN}/api/formSubmission/create`, {
+  data: {
+   formId,
+   formName: 'personnel',
+   formData: {
+    firstName: 'בדיקה',
+    lastName: 'רכבטסט',
+    personalNumber,
+    vehicleEntry: true,
+    vehicleNumber,
+    isActive: true,
+    ...overrides,
+   },
+  },
+ });
+ expect(res.ok(), `personnel create failed: ${res.status()}`).toBe(true);
+ const body = await res.json();
+ return { _id: body.form._id, personalNumber, vehicleNumber };
+}
+
 /**
  * Fill the reserve-days create drawer for a given employee/date range (does not
  * submit). Selects employee via the enhancedSelect search by personalNumber.
@@ -104,8 +143,8 @@ test.describe('Module 3: Reserve Days Management', () => {
   await expect(page.getByRole('columnheader', { name: /סטטוס בקשה/ })).toBeVisible();
 
   // Verify filter dropdowns
-  await expect(page.getByRole('combobox').filter({ hasText: 'כל הצווים' })).toBeVisible();
   await expect(page.getByRole('combobox').filter({ hasText: 'כל הבקשות' })).toBeVisible();
+  await expect(page.getByRole('combobox').filter({ hasText: 'כל הסוגים' })).toBeVisible();
  });
 
  test('TC-RES-002: Create New Reserve Days Order', async ({ page, request }) => {
@@ -264,21 +303,6 @@ test.describe('Module 3: Reserve Days Management', () => {
   await expect(page.getByText(/Showing \d+ to \d+ of \d+ entries/)).toBeVisible();
  });
 
- test('TC-RES-008: Filter by Active Status', async ({ page }) => {
-  await expect(page.getByText(/Showing \d+ to \d+ of \d+ entries/)).toBeVisible();
-
-  const activeFilter = page.getByRole('combobox').filter({ hasText: 'כל הצווים' });
-  await activeFilter.click();
-  await page.waitForTimeout(300);
-  await page.getByRole('option', { name: 'צווים פעילים' }).click();
-  await page.waitForTimeout(500);
-
-  await expect(page.getByRole('table')).toBeVisible();
-
-  await page.getByRole('button', { name: 'Clear Filters' }).click();
-  await expect(page.getByText(/Showing \d+ to \d+ of \d+ entries/)).toBeVisible();
- });
-
  test('TC-RES-009: Search Reserve Days', async ({ page }) => {
   await expect(page.getByText(/Showing \d+ to \d+ of \d+ entries/)).toBeVisible();
 
@@ -398,5 +422,59 @@ test.describe('Module 3: Reserve Days Management', () => {
 
   // A conflict error toast (Hebrew "צו חופף") is shown to the user.
   await expect(page.getByText(/צו חופף/).first()).toBeVisible({ timeout: 5000 });
+ });
+
+ test('TC-RES-014: Filter by Order Type', async ({ page }) => {
+  await expect(page.getByText(/Showing \d+ to \d+ of \d+ entries/)).toBeVisible();
+
+  const orderTypeFilter = page.getByRole('combobox').filter({ hasText: 'כל הסוגים' });
+  await orderTypeFilter.click();
+  await page.waitForTimeout(300);
+  await page.getByRole('option', { name: 'צו 8 פתוח' }).click();
+  await page.waitForTimeout(500);
+
+  await expect(page.getByRole('table')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Clear Filters' }).click();
+  await expect(page.getByText(/Showing \d+ to \d+ of \d+ entries/)).toBeVisible();
+ });
+
+ test('TC-RES-015: Vehicle Status Display Field Updates Live On Employee Selection', async ({
+  page,
+  request,
+ }) => {
+  // Seed a personnel record via the API (not the UI) with known vehicle info,
+  // so this assertion is deterministic and doesn't depend on file 02's test
+  // having run first.
+  const { personalNumber, vehicleNumber } = await createPersonnelWithVehicle(request);
+
+  await page.getByRole('button', { name: 'צווי מילואים' }).click();
+  await page.waitForURL('**/new');
+
+  const drawer = page.getByRole('dialog');
+  await expect(drawer).toBeVisible();
+
+  // vehicleStatus is read-only and shows "—" until an employee is selected.
+  const vehicleStatusGroup = drawer.getByText('סטטוס רכב').locator('..');
+  await expect(vehicleStatusGroup).toContainText('—');
+
+  // Select the seeded employee via the enhancedSelect search-by-personalNumber.
+  await drawer.getByRole('combobox').filter({ hasText: 'חפש ובחר עובד' }).click();
+  const search = page.getByPlaceholder('Search...');
+  await expect(search).toBeVisible();
+  await search.fill(personalNumber);
+  await page.waitForTimeout(400);
+  await page.getByRole('option').filter({ hasText: personalNumber }).first().click();
+
+  // The vehicleStatus field live-looks-up the selected employee's personnel
+  // record with no save required: vehicleEntry renders as a green-check
+  // "img" (aria-label "כן") when true, plus the vehicleNumber text.
+  await expect(vehicleStatusGroup.getByRole('img', { name: 'Yes' })).toBeVisible({
+   timeout: 5000,
+  });
+  await expect(vehicleStatusGroup).toContainText(vehicleNumber);
+
+  await drawer.getByRole('button', { name: /Cancel/i }).click();
+  await page.waitForURL(/\/reserve_days_management\/[^/]+$/);
  });
 });
