@@ -65,6 +65,11 @@ export const useTableColumns = ({
                         id: field._id,
                         enableSorting: true,
                         enableColumnFilter: true,
+                        // Sorting is server-side and the sampled row tanstack-table uses to
+                        // auto-guess a column's first sort direction can vary between fetches
+                        // (different page/sort results), making the default asc/desc-first
+                        // heuristic unreliable. Force every column to always start ascending.
+                        sortDescFirst: false,
                         meta: {
                             fieldName: field.name,
                             filterVariant:
@@ -109,6 +114,7 @@ export const useTableColumns = ({
                     id: 'createdAt',
                     enableSorting: true,
                     enableColumnFilter: false,
+                    sortDescFirst: false,
                     meta: {
                         fieldName: 'createdAt',
                     },
