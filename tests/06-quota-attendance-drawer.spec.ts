@@ -16,54 +16,50 @@ interface PersonnelRecord {
  personalNumber: string;
 }
 
-async function getFormId(request: any, formName: string): Promise<string> {
- const res = await request.get(`${API}/formSubmission?formName=${formName}&page=1&limit=1`);
- const body = await res.json();
- return body.forms[0].formId;
-}
-
-async function createPersonnel(request: any, formId: string, overrides: Record<string, any> = {}): Promise<PersonnelRecord> {
+// Personnel and reserve-days live in explicit REST resources (/api/personnel,
+// /api/reserve-days) backed by dedicated Mongoose models — the legacy generic
+// /api/formSubmission endpoint this file used to hit no longer exists on the
+// server (see apps/server/src/routes/index.ts). All helpers below go through
+// the current REST endpoints, matching the pattern in
+// 04-reserve-days-management-crud.spec.ts / 05-quota-management-calendar.spec.ts.
+async function createPersonnel(request: any, overrides: Record<string, any> = {}): Promise<PersonnelRecord> {
  const firstName = overrides.firstName ?? `בדיקה${Date.now()}`;
  const lastName = overrides.lastName ?? `אוטומטי${Date.now()}`;
  const personalNumber = overrides.personalNumber ?? `DR${Date.now()}`;
- const res = await request.post(`${API}/formSubmission/create`, {
-  data: {
-   formId,
-   formName: 'personnel',
-   formData: { firstName, lastName, personalNumber, status: 'active', employmentType: 'reserves', ...overrides },
-  },
+ const res = await request.post(`${API}/personnel`, {
+  data: { firstName, lastName, personalNumber, isActive: true, ...overrides },
  });
+ expect(res.ok(), `personnel create failed: ${res.status()}`).toBe(true);
  const body = await res.json();
- return { id: body.form._id as string, firstName, lastName, personalNumber };
+ return { id: body._id, firstName, lastName, personalNumber };
 }
 
-async function createReserveDay(request: any, formId: string, personnel: PersonnelRecord, overrides: Record<string, any> = {}): Promise<string> {
- const res = await request.post(`${API}/formSubmission/create`, {
+async function createReserveDay(
+ request: any,
+ personnel: PersonnelRecord,
+ overrides: Record<string, any> = {},
+): Promise<string> {
+ const res = await request.post(`${API}/reserve-days`, {
   data: {
-   formId,
-   formName: 'reserve_days_management',
-   formData: {
-    employeeName: {
-     _id: personnel.id,
-     display: `${personnel.firstName} ${personnel.lastName} ${personnel.personalNumber}`,
-     metadata: { firstName: personnel.firstName, lastName: personnel.lastName, personalNumber: personnel.personalNumber },
-    },
-    startDate: TODAY,
-    endDate: TODAY,
-    fundingSource: 'internal',
-    orderType: '8open',
-    requestStatus: 'pending',
-    isActive: true,
-    vehicleEntry: false,
-    ...overrides,
-   },
+   employeeName: personnel.id,
+   startDate: TODAY,
+   endDate: TODAY,
+   fundingSource: 'internal',
+   orderType: '8open',
+   requestStatus: 'pending',
+   ...overrides,
   },
  });
- return (await res.json()).form._id as string;
+ expect(res.ok(), `reserve-day create failed: ${res.status()}`).toBe(true);
+ return (await res.json())._id;
 }
 
-async function deleteSubmission(request: any, id: string) {
- await request.post(`${API}/formSubmission/delete`, { data: { id } });
+async function deletePersonnel(request: any, id: string) {
+ await request.delete(`${API}/personnel/${id}`);
+}
+
+async function deleteReserveDay(request: any, id: string) {
+ await request.delete(`${API}/reserve-days/${id}`);
 }
 
 async function navigateToQuotaPage(page: any) {
@@ -81,21 +77,25 @@ async function clickTodayCell(page: any) {
 }
 
 test.describe('Module 5: Daily Attendance Drawer', () => {
- let personnelFormId: string;
- let reserveDaysFormId: string;
+ // All tests read the drawer for TODAY and several create/delete their own
+ // personnel+reserve-day records while a shared personnel/reserveDayId (see
+ // beforeAll/afterAll) is alive for the whole file — running these
+ // concurrently (this repo's default fullyParallel: true, 4 workers) causes
+ // both personalNumber unique-index collisions (Date.now()-only suffixes can
+ // collide across workers within the same millisecond) and cross-test
+ // interference on the same day cell. Match file 04's mode: 'serial' fix.
+ test.describe.configure({ mode: 'serial' });
+
  let sharedPersonnel: PersonnelRecord;
  let reserveDayId: string;
 
  test.beforeAll(async ({ request }) => {
-  personnelFormId = await getFormId(request, 'personnel');
-  reserveDaysFormId = await getFormId(request, 'reserve_days_management');
-
-  sharedPersonnel = await createPersonnel(request, personnelFormId, {
+  sharedPersonnel = await createPersonnel(request, {
    firstName: 'דרור',
    lastName: `ציוני${Date.now()}`,
    personalNumber: `DRAWER${Date.now()}`,
   });
-  reserveDayId = await createReserveDay(request, reserveDaysFormId, sharedPersonnel, {
+  reserveDayId = await createReserveDay(request, sharedPersonnel, {
    startDate: TODAY,
    endDate: TODAY,
    fundingSource: 'internal',
@@ -104,8 +104,8 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
  });
 
  test.afterAll(async ({ request }) => {
-  if (reserveDayId) await deleteSubmission(request, reserveDayId);
-  if (sharedPersonnel) await deleteSubmission(request, sharedPersonnel.id);
+  if (reserveDayId) await deleteReserveDay(request, reserveDayId);
+  if (sharedPersonnel) await deletePersonnel(request, sharedPersonnel.id);
  });
 
  test('TC-DR-001: Clicking a day cell opens the drawer', async ({ page }) => {
@@ -130,12 +130,12 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
   let personnel: PersonnelRecord | null = null;
   let rid: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'מתחיל',
     lastName: `היום${Date.now()}`,
     personalNumber: `START${Date.now()}`,
    });
-   rid = await createReserveDay(request, reserveDaysFormId, personnel, {
+   rid = await createReserveDay(request, personnel, {
     startDate: TODAY,
     endDate: new Date(Date.now() + 5 * 86400000).toISOString().split('T')[0],
     requestStatus: 'approved',
@@ -148,8 +148,8 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
    await expect(drawer).toBeVisible({ timeout: 5000 });
    await expect(drawer.getByText('מתחיל').first()).toBeVisible({ timeout: 8000 });
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -158,12 +158,12 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
   let personnel: PersonnelRecord | null = null;
   let rid: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'מסיים',
     lastName: `היום${Date.now()}`,
     personalNumber: `END${Date.now()}`,
    });
-   rid = await createReserveDay(request, reserveDaysFormId, personnel, {
+   rid = await createReserveDay(request, personnel, {
     startDate: yesterday,
     endDate: TODAY,
     requestStatus: 'approved',
@@ -176,8 +176,8 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
    await expect(drawer).toBeVisible({ timeout: 5000 });
    await expect(drawer.getByText('מסיים').first()).toBeVisible({ timeout: 8000 });
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -185,12 +185,12 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
   let personnel: PersonnelRecord | null = null;
   let rid: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'חיצוני',
     lastName: `מימון${Date.now()}`,
     personalNumber: `EXT${Date.now()}`,
    });
-   rid = await createReserveDay(request, reserveDaysFormId, personnel, {
+   rid = await createReserveDay(request, personnel, {
     fundingSource: 'external',
     requestStatus: 'approved',
    });
@@ -202,8 +202,8 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
    await expect(drawer).toBeVisible({ timeout: 5000 });
    await expect(drawer.getByText('חיצוני').first()).toBeVisible({ timeout: 8000 });
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -238,12 +238,12 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
   let rid: string | null = null;
   const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'מסנן',
     lastName: `סטטיסטיקה${Date.now()}`,
     personalNumber: `STAT${Date.now()}`,
    });
-   rid = await createReserveDay(request, reserveDaysFormId, personnel, {
+   rid = await createReserveDay(request, personnel, {
     startDate: TODAY,
     endDate: tomorrow,
     requestStatus: 'approved',
@@ -271,8 +271,8 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
    await page.waitForTimeout(300);
    await expect(drawer.getByRole('button', { name: 'נקה סינון' })).not.toBeVisible();
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -327,12 +327,12 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
   let personnel: PersonnelRecord | null = null;
   let rid: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'חיצוני',
     lastName: `סינון${Date.now()}`,
     personalNumber: `EXTF${Date.now()}`,
    });
-   rid = await createReserveDay(request, reserveDaysFormId, personnel, {
+   rid = await createReserveDay(request, personnel, {
     fundingSource: 'external',
     requestStatus: 'approved',
    });
@@ -352,8 +352,8 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
 
    await drawer.getByRole('button', { name: 'נקה סינון' }).click();
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -361,12 +361,12 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
   let personnel: PersonnelRecord | null = null;
   let rid: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'חיצוני',
     lastName: `סינון2${Date.now()}`,
     personalNumber: `EXTF2${Date.now()}`,
    });
-   rid = await createReserveDay(request, reserveDaysFormId, personnel, {
+   rid = await createReserveDay(request, personnel, {
     fundingSource: 'external',
     requestStatus: 'approved',
    });
@@ -385,8 +385,8 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
 
    await drawer.getByRole('button', { name: 'נקה סינון' }).click();
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -424,12 +424,12 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
   let personnel: PersonnelRecord | null = null;
   let rid: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'ימי',
     lastName: `מילואים${Date.now()}`,
     personalNumber: `DAYS${Date.now()}`,
    });
-   rid = await createReserveDay(request, reserveDaysFormId, personnel, {
+   rid = await createReserveDay(request, personnel, {
     startDate: startDate.toISOString().split('T')[0],
     endDate: endDate.toISOString().split('T')[0],
     requestStatus: 'approved',
@@ -451,8 +451,74 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
 
    await reportModal.getByRole('button', { name: /סגור|Close/i }).click();
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
+ });
+
+ test('TC-DR-016: Employee card shows expired-vehicle-approval warning when the approval ended before today', async ({
+  page,
+  request,
+ }) => {
+  // Personnel whose vehicle-entry approval range ended 5 days ago — today's
+  // reserve day therefore falls after the approval expired. This must surface
+  // the UnapprovedVehicleWarning badge on the card (see
+  // EmployeeAttendanceCard.tsx / routes/quota/get.ts hasExpiredVehicleApproval).
+  const tenDaysAgo = new Date(Date.now() - 10 * 86400000).toISOString().split('T')[0];
+  const fiveDaysAgo = new Date(Date.now() - 5 * 86400000).toISOString().split('T')[0];
+  let personnel: PersonnelRecord | null = null;
+  let rid: string | null = null;
+  try {
+   personnel = await createPersonnel(request, {
+    firstName: 'פגתוקף',
+    lastName: `רכב${Date.now()}`,
+    personalNumber: `VEXP${Date.now()}`,
+    vehicleEntryStartDate: tenDaysAgo,
+    vehicleEntryEndDate: fiveDaysAgo,
+   });
+   rid = await createReserveDay(request, personnel, {
+    startDate: TODAY,
+    endDate: TODAY,
+    requestStatus: 'approved',
+   });
+
+   await navigateToQuotaPage(page);
+   await clickTodayCell(page);
+
+   const drawer = page.getByRole('dialog');
+   await expect(drawer).toBeVisible({ timeout: 5000 });
+   await expect(drawer.getByText('פגתוקף')).toBeVisible({ timeout: 8000 });
+
+   // UnapprovedVehicleWarning renders react-icons' FaCarCrash in orange, with no
+   // other orange svg on the card — target it by fill color rather than a bare
+   // svg selector (the compact details row below also renders several svgs:
+   // FaIdBadge/FaPhone/FaUsers/etc., so a plain `.locator('svg').first()` is
+   // not reliably the warning icon).
+   const employeeCard = drawer.locator('div').filter({ hasText: 'פגתוקף' }).last();
+   const warningIcon = employeeCard.locator('svg[fill="orange"]').first();
+   await expect(warningIcon).toBeVisible({ timeout: 5000 });
+   await warningIcon.hover();
+   await expect(page.getByText('אישור כניסה עם רכב פג תוקף')).toBeVisible({ timeout: 5000 });
+  } finally {
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
+  }
+ });
+
+ test('TC-DR-017: Employee card has NO expired-vehicle warning when no vehicle-approval range is set', async ({
+  page,
+ }) => {
+  // sharedPersonnel (created in beforeAll) has no vehicleEntryStartDate/EndDate
+  // at all — per the "only flag EXPIRED approvals" rule, no range configured
+  // must never trigger the warning.
+  await navigateToQuotaPage(page);
+  await clickTodayCell(page);
+
+  const drawer = page.getByRole('dialog');
+  await expect(drawer).toBeVisible({ timeout: 5000 });
+  await expect(drawer.getByText('דרור')).toBeVisible({ timeout: 8000 });
+
+  const employeeCard = drawer.locator('div').filter({ hasText: 'דרור' }).last();
+  await expect(employeeCard.getByText('אישור כניסה עם רכב פג תוקף')).not.toBeVisible();
  });
 });

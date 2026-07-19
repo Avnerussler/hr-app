@@ -3,6 +3,7 @@ import { VStack } from '@chakra-ui/react'
 import { ControlledInputField } from '@/components/ControlledFields/ControlledInputField'
 import { ControlledSelectField } from '@/components/ControlledFields/ControlledSelectField'
 import { ControlledRadioField } from '@/components/ControlledFields/ControlledRadioField'
+import { ControlledDateRangeField } from '@/components/ControlledFields/ControlledDateRangeField'
 import { ControlledTextareaField } from '@/components/ControlledFields/ControlledTextareaField'
 import { ControlledFileInput } from '@/components/ControlledFields/ControlledFileField'
 import { ControlledAttendanceHistoryField } from '@/components/ControlledFields/ControlledAttendanceHistoryField'
@@ -53,6 +54,12 @@ export function PersonalInformationSection({ control: typedControl }: PersonnelF
             <ControlledInputField control={control} name="city" id="city" type="text" label="עיר" placeholder="הזן את שם עיר המגורים" />
             <ControlledInputField control={control} name="linkedin" id="linkedin" type="text" label="לינקדאין" placeholder="הזן את שם המשתמש לינקדאין" />
             <ControlledInputField control={control} name="vehicleNumber" id="vehicleNumber" type="text" label="מספר רכב" placeholder="הזן מספר רכב" />
+            <ControlledDateRangeField
+                control={control}
+                startName="vehicleEntryStartDate"
+                endName="vehicleEntryEndDate"
+                label="תוקף אישור כניסה עם רכב"
+            />
             <ControlledTextareaField control={control} name="note" id="note" label="כללי" placeholder="הזן הערה כללית" />
             <ControlledRadioField control={control} name="isActive" id="isActive" label="סטטוס" items={ACTIVE_STATUS_ITEMS} />
         </VStack>
@@ -72,7 +79,6 @@ export function MilitaryInformationSection({ control: typedControl }: PersonnelF
             <ControlledInputField control={control} name="rank" id="rank" type="text" label="דרגה" placeholder="דרגה" />
             <ControlledRadioField control={control} name="canBeRecited" id="canBeRecited" label="האם ניתן לזמן למילואים" items={YES_NO_ITEMS} />
             <ControlledSelectField control={control} name="reserveCategory" label="סוג העסקה" placeholder="בחר סוג העסקה" options={RESERVE_CATEGORY_OPTIONS} />
-            <ControlledRadioField control={control} name="vehicleEntry" id="vehicleEntry" label="כניסה עם רכב" items={YES_NO_ITEMS} />
         </VStack>
     )
 }

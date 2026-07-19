@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react'
 import { ProgressRoot, ProgressBar } from '../ui/progress'
 import { UnapprovedReserveDaysWarning } from '../common/UnapprovedReserveDaysWarning'
+import { UnapprovedVehicleWarning } from '../common/UnapprovedVehicleWarning'
 import {
     FaCalendarAlt,
     FaChevronLeft,
@@ -209,7 +210,6 @@ export default function QuotaManagement() {
             for (let i = 0; i < allDays.length; i += 7) {
                 const weekDays = allDays
                     .slice(i, i + 7)
-                    .reverse() // Reverse to match RTL layout ['ז׳', 'ו׳', 'ה׳', 'ד׳', 'ג׳', 'ב׳', 'א׳']
                     .map((date): CalendarDay => {
                         const dateStr = format(date, 'yyyy-MM-dd')
                         return {
@@ -242,19 +242,17 @@ export default function QuotaManagement() {
             const days = eachDayOfInterval({
                 start: weekStart,
                 end: weekEnd,
+            }).map((date): CalendarDay => {
+                const dateStr = format(date, 'yyyy-MM-dd')
+                return {
+                    date: dateStr,
+                    isToday: isToday(date),
+                    isCurrentMonth: true,
+                    quota: quotas[dateStr],
+                    currentOccupancy: currentOccupancy[dateStr] || 0,
+                    isWeekend: isIsraeliWeekend(date),
+                }
             })
-                .reverse() // Reverse to match RTL layout ['ז׳', 'ו׳', 'ה׳', 'ד׳', 'ג׳', 'ב׳', 'א׳']
-                .map((date): CalendarDay => {
-                    const dateStr = format(date, 'yyyy-MM-dd')
-                    return {
-                        date: dateStr,
-                        isToday: isToday(date),
-                        isCurrentMonth: true,
-                        quota: quotas[dateStr],
-                        currentOccupancy: currentOccupancy[dateStr] || 0,
-                        isWeekend: isIsraeliWeekend(date),
-                    }
-                })
 
             return [
                 {
@@ -519,7 +517,7 @@ export default function QuotaManagement() {
     }
 
     return (
-        <VStack gap={6} align="stretch">
+        <VStack gap={6} align="stretch" h="full" overflow="auto">
             <PageHeader
                 title="נוכחות ומעקב יומי"
                 description="מעקב נוכחות עובדים ומידע יומי על כמויות"
@@ -617,11 +615,11 @@ export default function QuotaManagement() {
                 borderColor="border"
             >
                 <HStack gap={2}>
-                    <Button variant="ghost" size="sm" onClick={handleNext}>
-                        <FaChevronLeft />
-                    </Button>
                     <Button variant="ghost" size="sm" onClick={handlePrevious}>
                         <FaChevronRight />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={handleNext}>
+                        <FaChevronLeft />
                     </Button>
                 </HStack>
 
@@ -666,7 +664,7 @@ export default function QuotaManagement() {
             >
                 {/* Day Headers */}
                 <Grid templateColumns="repeat(7, 1fr)" gap={1} mb={2}>
-                    {['ז׳', 'ו׳', 'ה׳', 'ד׳', 'ג׳', 'ב׳', 'א׳'].map((day) => (
+                    {['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'שבת'].map((day) => (
                         <Box key={day} textAlign="center" py={2}>
                             <Text fontSize="sm" fontWeight="bold">
                                 {day}
@@ -750,6 +748,19 @@ export default function QuotaManagement() {
                                                         attendanceSummary[
                                                             day.date
                                                         ].unapprovedEmployees
+                                                    }
+                                                    iconSize={10}
+                                                />
+                                            )}
+                                            {/* Expired Vehicle Approval Warning */}
+                                            {attendanceSummary?.[day.date]
+                                                ?.hasExpiredVehicleApproval && (
+                                                <UnapprovedVehicleWarning
+                                                    expiredVehicleApprovalEmployees={
+                                                        attendanceSummary[
+                                                            day.date
+                                                        ]
+                                                            .expiredVehicleApprovalEmployees
                                                     }
                                                     iconSize={10}
                                                 />
@@ -949,6 +960,21 @@ export default function QuotaManagement() {
                                                                         day.date
                                                                     ]
                                                                         .unapprovedEmployees
+                                                                }
+                                                                iconSize={8}
+                                                            />
+                                                        )}
+                                                        {/* Expired Vehicle Approval Warning */}
+                                                        {attendanceSummary?.[
+                                                            day.date
+                                                        ]
+                                                            ?.hasExpiredVehicleApproval && (
+                                                            <UnapprovedVehicleWarning
+                                                                expiredVehicleApprovalEmployees={
+                                                                    attendanceSummary[
+                                                                        day.date
+                                                                    ]
+                                                                        .expiredVehicleApprovalEmployees
                                                                 }
                                                                 iconSize={8}
                                                             />

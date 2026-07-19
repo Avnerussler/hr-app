@@ -62,8 +62,11 @@ export const ControlledInputField = ({
                     : field.value
 
                 return (
-                <Field.Root key={id} data-field-name={name} orientation="vertical" invalid={!!error}>
-                    <Field.Label>{label}</Field.Label>
+                <Field.Root key={id} data-field-name={name} orientation="vertical" invalid={!!error} required={props.required}>
+                    <Field.Label>
+                        {label}
+                        <Field.RequiredIndicator />
+                    </Field.Label>
                     <Input
                         {...field}
                         value={displayValue ?? ''}
@@ -84,7 +87,6 @@ export const ControlledInputField = ({
                         min={props.min}
                         max={props.max}
                         borderColor={error ? 'red.500' : undefined}
-                        dir={type === 'text' ? 'rtl' : undefined}
                     />
                     {error && (
                         <Field.ErrorText>{error.message}</Field.ErrorText>

@@ -36,7 +36,8 @@ const PersonnelSchema = new Schema<PersonnelDocument>(
         canBeRecited: { type: Boolean },
         reserveCategory: { type: String, enum: ReserveCategory.options },
         assignedProjects: { type: Schema.Types.ObjectId, ref: 'projects', default: null },
-        vehicleEntry: { type: Boolean, default: false },
+        vehicleEntryStartDate: { type: Date },
+        vehicleEntryEndDate: { type: Date },
 
         degree: { type: String },
         university: { type: String },

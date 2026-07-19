@@ -301,6 +301,10 @@ router.get(
 
             // Create a map of employee data by ID
             const employeeDataMap = new Map()
+            const employeeVehicleRangeMap = new Map<
+                string,
+                { start: Date; end: Date } | null
+            >()
             personnelRecords.forEach((record: any) => {
                 const fullName = `${record.firstName || ''} ${
                     record.lastName || ''
@@ -308,6 +312,15 @@ router.get(
                 employeeDataMap.set(
                     record._id.toString(),
                     fullName || 'עובד לא ידוע'
+                )
+                employeeVehicleRangeMap.set(
+                    record._id.toString(),
+                    record.vehicleEntryStartDate && record.vehicleEntryEndDate
+                        ? {
+                              start: new Date(record.vehicleEntryStartDate),
+                              end: new Date(record.vehicleEntryEndDate),
+                          }
+                        : null
                 )
             })
 
@@ -321,6 +334,11 @@ router.get(
                     managerReported: boolean
                     hasUnapprovedReserveDays: boolean
                     unapprovedEmployees: Array<{
+                        name: string
+                        status: string
+                    }>
+                    hasExpiredVehicleApproval: boolean
+                    expiredVehicleApprovalEmployees: Array<{
                         name: string
                         status: string
                     }>
@@ -344,6 +362,8 @@ router.get(
                     managerReported: false,
                     hasUnapprovedReserveDays: false,
                     unapprovedEmployees: [],
+                    hasExpiredVehicleApproval: false,
+                    expiredVehicleApprovalEmployees: [],
                 }
             }
 
@@ -364,6 +384,9 @@ router.get(
                 // Check if request status is not approved
                 const requestStatus = reservation.requestStatus || 'pending'
                 const isNotApproved = requestStatus !== 'approved'
+                const vehicleRange = employeeId
+                    ? employeeVehicleRangeMap.get(employeeId)
+                    : null
 
                 // Check each date this employee should work
                 for (
@@ -395,6 +418,31 @@ router.get(
                                 attendanceSummary[
                                     dateStr
                                 ].unapprovedEmployees.push({
+                                    name: employeeName,
+                                    status: requestStatus,
+                                })
+                            }
+                        }
+
+                        // Only flag when an approval range IS set but has already passed by this
+                        // date — no range set, or the date still within/before the range, is not a warning case.
+                        const hasExpiredVehicleApproval = !!(
+                            vehicleRange && vehicleRange.end < date
+                        )
+                        if (hasExpiredVehicleApproval) {
+                            attendanceSummary[
+                                dateStr
+                            ].hasExpiredVehicleApproval = true
+                            if (
+                                !attendanceSummary[
+                                    dateStr
+                                ].expiredVehicleApprovalEmployees.some(
+                                    (emp) => emp.name === employeeName
+                                )
+                            ) {
+                                attendanceSummary[
+                                    dateStr
+                                ].expiredVehicleApprovalEmployees.push({
                                     name: employeeName,
                                     status: requestStatus,
                                 })

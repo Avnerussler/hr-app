@@ -7,26 +7,35 @@ const API_ORIGIN = 'http://localhost:3001';
 
 const today = () => new Date().toISOString().split('T')[0];
 
-/** Convert a "YYYY-MM-DD" date string to the "MM/DD/YYYY" format the DatePicker range input expects. */
+/** Convert a "YYYY-MM-DD" date string to the "DD/MM/YYYY" format the DatePicker range input expects. */
 function toPickerDate(isoDate: string): string {
  const [year, month, day] = isoDate.split('-');
- return `${month}/${day}/${year}`;
+ return `${day}/${month}/${year}`;
 }
 
 /**
- * Fill the date-range picker's two "mm/dd/yyyy" inputs within `scope`. Uses
- * pressSequentially (not .fill()) — the ark-ui date-input parses keystrokes as
- * they're typed, and a bulk .fill() on the second (end) input is silently
- * dropped, leaving only the start date registered.
+ * Fill the date-range picker's two "dd/mm/yyyy" inputs within `scope` (the
+ * shared ControlledDateRangeField — components/ControlledFields/ControlledDateRangeField.tsx —
+ * always renders dd/mm/yyyy, regardless of which entity's form embeds it).
+ * Uses pressSequentially (not .fill()) — the ark-ui date-input parses
+ * keystrokes as they're typed, and a bulk .fill() on the second (end) input
+ * is silently dropped, leaving only the start date registered.
  */
 async function fillDateRangeInputs(
  scope: import('@playwright/test').Locator,
  startDate: string,
  endDate: string,
 ): Promise<void> {
- const dateInputs = scope.getByPlaceholder('mm/dd/yyyy');
+ const dateInputs = scope.getByPlaceholder('dd/mm/yyyy');
  await dateInputs.nth(0).click();
  await dateInputs.nth(0).pressSequentially(toPickerDate(startDate));
+ // Blur+re-focus between the two inputs — typing into the end input
+ // immediately after the start input can race ark-ui's own commit of the
+ // just-typed start value, silently dropping a leading digit from it
+ // (observed: "10" committed as "02"). Tabbing off the start input first
+ // forces its value to commit before the end input's keystrokes begin.
+ await dateInputs.nth(0).press('Tab');
+ await dateInputs.nth(1).click();
  await dateInputs.nth(1).pressSequentially(toPickerDate(endDate));
  // Blur the end input — ark-ui's date-input commits/parses the typed value on
  // blur (fixOnBlur), which is also what triggers the field's onChange into RHF.
@@ -85,19 +94,30 @@ async function findConflictFreeEmployee(
  return { personalNumber: free!.personalNumber };
 }
 
-/** Create a personnel record directly via the API with known vehicle info. */
+/**
+ * Create a personnel record directly via the API with a known vehicle-entry
+ * approval date range (vehicleEntryStartDate/vehicleEntryEndDate — replaces the
+ * old boolean vehicleEntry field). Defaults to a range covering today, so the
+ * reserve-days vehicleStatus indicator (computed by full coverage of the
+ * reserve day's own startDate/endDate, see reserveDay.service.ts:withVehicleStatus —
+ * the approval range must fully contain the reserve day, not merely overlap it)
+ * reads as approved unless overridden.
+ */
 async function createPersonnelWithVehicle(
  request: APIRequestContext,
  overrides: Record<string, any> = {},
 ): Promise<{ _id: string; personalNumber: string; vehicleNumber: string }> {
  const personalNumber = `9${Date.now().toString().slice(-8)}`;
  const vehicleNumber = `12-${Date.now().toString().slice(-3)}-67`;
+ const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+ const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
  const res = await request.post(`${API_ORIGIN}/api/personnel`, {
   data: {
    firstName: 'בדיקה',
    lastName: 'רכבטסט',
    personalNumber,
-   vehicleEntry: true,
+   vehicleEntryStartDate: yesterday,
+   vehicleEntryEndDate: nextWeek,
    vehicleNumber,
    isActive: true,
    ...overrides,
@@ -255,7 +275,7 @@ test.describe('Module 3: Reserve Days Management', () => {
   await page.waitForTimeout(400);
   await page.getByRole('option').filter({ hasText: personalNumber }).first().click();
 
-  // Fill the date-range picker (single field, two mm/dd/yyyy inputs)
+  // Fill the date-range picker (single field, two dd/mm/yyyy inputs)
   await fillDateRangeInputs(drawer, startDate, endDate);
 
   // Select order type radio — click the visible label, not the input; Chakra
@@ -290,8 +310,8 @@ test.describe('Module 3: Reserve Days Management', () => {
   await expect(page.getByRole('button', { name: /💾 Update/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /Delete/i })).toBeVisible();
 
-  // Key fields are present — the date-range picker's two mm/dd/yyyy inputs
-  const dateInputs = page.getByPlaceholder('mm/dd/yyyy');
+  // Key fields are present — the date-range picker's two dd/mm/yyyy inputs
+  const dateInputs = page.getByPlaceholder('dd/mm/yyyy');
   await expect(dateInputs.nth(0)).toBeVisible();
   await expect(dateInputs.nth(1)).toBeVisible();
 
@@ -361,8 +381,8 @@ test.describe('Module 3: Reserve Days Management', () => {
   // Form stays on /new page (validation failed)
   await expect(page).toHaveURL(/\/new$/);
 
-  // Required fields still present — the date-range picker's two mm/dd/yyyy inputs
-  await expect(drawer.getByPlaceholder('mm/dd/yyyy').first()).toBeVisible();
+  // Required fields still present — the date-range picker's two dd/mm/yyyy inputs
+  await expect(drawer.getByPlaceholder('dd/mm/yyyy').first()).toBeVisible();
 
   // Cancel back to list
   await drawer.getByRole('button', { name: /Cancel/i }).click();
@@ -609,13 +629,14 @@ test.describe('Module 3: Reserve Days Management', () => {
   await expect(page.getByText(/Showing \d+ to \d+ of \d+ entries/)).toBeVisible();
  });
 
- test('TC-RES-015: Vehicle Status Display Field Updates Live On Employee Selection', async ({
+ test('TC-RES-015: Vehicle Status Display Field Updates Live On Employee Selection And Date Range', async ({
   page,
   request,
  }) => {
-  // Seed a personnel record via the API (not the UI) with known vehicle info,
-  // so this assertion is deterministic and doesn't depend on file 02's test
-  // having run first.
+  // Seed a personnel record via the API (not the UI) with a known vehicle-entry
+  // approval date range (yesterday..+7 days, see createPersonnelWithVehicle), so
+  // this assertion is deterministic and doesn't depend on file 02's test having
+  // run first.
   const { personalNumber, vehicleNumber } = await createPersonnelWithVehicle(request);
 
   await page.getByRole('button', { name: 'צווי מילואים' }).click();
@@ -624,7 +645,8 @@ test.describe('Module 3: Reserve Days Management', () => {
   const drawer = page.getByRole('dialog');
   await expect(drawer).toBeVisible();
 
-  // vehicleStatus is read-only and shows "—" until an employee is selected.
+  // vehicleStatus is read-only and shows "—" until BOTH an employee AND a date
+  // range are selected (the overlap check needs the reserve day's own dates).
   const vehicleStatusGroup = drawer.getByText('סטטוס רכב').locator('..');
   await expect(vehicleStatusGroup).toContainText('—');
 
@@ -636,13 +658,123 @@ test.describe('Module 3: Reserve Days Management', () => {
   await page.waitForTimeout(400);
   await page.getByRole('option').filter({ hasText: personalNumber }).first().click();
 
+  // Still "—" — no date range chosen yet.
+  await expect(vehicleStatusGroup).toContainText('—');
+
+  // Choose a reserve-day date range that falls INSIDE the personnel's approved
+  // vehicle-entry range (today..tomorrow, well within yesterday..+7 days).
+  // NOTE: use two DIFFERENT dates, not the same start/end day — the range
+  // date-picker's ark-ui internals mis-commit the start input when start and
+  // end are identical (observed: typing the same day into both inputs back
+  // to back silently corrupts the first one).
+  const today = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  await fillDateRangeInputs(drawer, today, tomorrow);
+
   // The vehicleStatus field live-looks-up the selected employee's personnel
-  // record with no save required: vehicleEntry renders as a green-check
-  // "img" (aria-label "Yes") when true, plus the vehicleNumber text.
+  // record + reserve day's own dates with no save required: approval renders
+  // as a green-check "img" (aria-label "Yes") when the approval range fully
+  // covers the reserve day's dates, plus the vehicleNumber text.
   await expect(vehicleStatusGroup.getByRole('img', { name: 'Yes' })).toBeVisible({
    timeout: 5000,
   });
   await expect(vehicleStatusGroup).toContainText(vehicleNumber);
+
+  await drawer.getByRole('button', { name: /Cancel/i }).click();
+  await page.waitForURL(/\/reserve_days_management\/default$/);
+ });
+
+ test('TC-RES-018: Vehicle Status Shows Not Approved When Reserve Day Falls Outside The Approval Range', async ({
+  page,
+  request,
+ }) => {
+  // Seed a personnel record whose vehicle-entry approval window has already
+  // expired (ended 10 days ago), so a reserve day for TODAY falls outside it.
+  const tenDaysAgo = new Date(Date.now() - 10 * 86400000).toISOString().split('T')[0];
+  const fiveDaysAgo = new Date(Date.now() - 5 * 86400000).toISOString().split('T')[0];
+  const { personalNumber, vehicleNumber } = await createPersonnelWithVehicle(request, {
+   vehicleEntryStartDate: tenDaysAgo,
+   vehicleEntryEndDate: fiveDaysAgo,
+  });
+
+  await page.getByRole('button', { name: 'צווי מילואים' }).click();
+  await page.waitForURL('**/new');
+
+  const drawer = page.getByRole('dialog');
+  await expect(drawer).toBeVisible();
+
+  const vehicleStatusGroup = drawer.getByText('סטטוס רכב').locator('..');
+
+  await drawer.getByRole('combobox').filter({ hasText: 'חפש ובחר עובד' }).click();
+  const search = page.getByPlaceholder('Search...');
+  await expect(search).toBeVisible();
+  await search.fill(personalNumber);
+  await page.waitForTimeout(400);
+  await page.getByRole('option').filter({ hasText: personalNumber }).first().click();
+
+  // Reserve day for today/tomorrow — outside the (already-expired) approval
+  // window. Uses two different dates rather than today..today — see the note
+  // in TC-RES-015 on why an identical start/end day mis-commits the picker.
+  const today = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  await fillDateRangeInputs(drawer, today, tomorrow);
+
+  // Approval is expired for this range: red "X" icon (aria-label "No"), not
+  // the green check, even though the vehicleNumber is still shown.
+  await expect(vehicleStatusGroup.getByRole('img', { name: 'No' })).toBeVisible({
+   timeout: 5000,
+  });
+  await expect(vehicleStatusGroup.getByRole('img', { name: 'Yes' })).not.toBeVisible();
+  await expect(vehicleStatusGroup).toContainText(vehicleNumber);
+
+  await drawer.getByRole('button', { name: /Cancel/i }).click();
+  await page.waitForURL(/\/reserve_days_management\/default$/);
+ });
+
+ test('TC-RES-019: Vehicle Status Flags Partial Approval When Reserve Day Only Partially Overlaps The Approval Range', async ({
+  page,
+  request,
+ }) => {
+  // Seed a personnel record whose vehicle-entry approval window covers only
+  // the FIRST part of the reserve day's window (approval ends before the
+  // reserve day does), so the ranges overlap but approval doesn't fully cover
+  // the reserve day — this must render as NOT approved, with the partial-
+  // approval warning message shown instead of the plain "No" state.
+  const toIso = (d: Date) => d.toISOString().slice(0, 10);
+  const approvalStart = toIso(new Date(Date.now() - 7 * 86400000));
+  const approvalEnd = toIso(new Date(Date.now() + 1 * 86400000));
+  const reserveStart = toIso(new Date(Date.now())); // overlaps the tail of the approval window
+  const reserveEnd = toIso(new Date(Date.now() + 3 * 86400000)); // extends past approvalEnd
+  const { personalNumber, vehicleNumber } = await createPersonnelWithVehicle(request, {
+   vehicleEntryStartDate: approvalStart,
+   vehicleEntryEndDate: approvalEnd,
+  });
+
+  await page.getByRole('button', { name: 'צווי מילואים' }).click();
+  await page.waitForURL('**/new');
+
+  const drawer = page.getByRole('dialog');
+  await expect(drawer).toBeVisible();
+
+  const vehicleStatusGroup = drawer.getByText('סטטוס רכב').locator('..');
+
+  await drawer.getByRole('combobox').filter({ hasText: 'חפש ובחר עובד' }).click();
+  const search = page.getByPlaceholder('Search...');
+  await expect(search).toBeVisible();
+  await search.fill(personalNumber);
+  await page.waitForTimeout(400);
+  await page.getByRole('option').filter({ hasText: personalNumber }).first().click();
+
+  await fillDateRangeInputs(drawer, reserveStart, reserveEnd);
+
+  // Ranges overlap but the approval doesn't fully cover the reserve day —
+  // renders as NOT approved (red "X"), plus the partial-approval warning text.
+  await expect(vehicleStatusGroup.getByRole('img', { name: 'No' })).toBeVisible({
+   timeout: 5000,
+  });
+  await expect(vehicleStatusGroup.getByRole('img', { name: 'Yes' })).not.toBeVisible();
+  await expect(vehicleStatusGroup).toContainText(vehicleNumber);
+  await expect(vehicleStatusGroup.getByText('על חלק מהימים לא יהיה אישור כניסה לרכב')).toBeVisible();
 
   await drawer.getByRole('button', { name: /Cancel/i }).click();
   await page.waitForURL(/\/reserve_days_management\/default$/);

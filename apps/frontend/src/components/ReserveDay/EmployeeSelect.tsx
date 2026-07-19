@@ -38,7 +38,7 @@ export function EmployeeSelect({ control, name, label, placeholder, required }: 
             control={control}
             rules={{ required: required ? `${label} הוא שדה חובה` : false }}
             render={({ field, fieldState: { error } }) => (
-                <Field.Root orientation="vertical" invalid={!!error}>
+                <Field.Root orientation="vertical" invalid={!!error} required={required}>
                     <SelectRoot
                         value={selectedValue ? [selectedValue] : []}
                         collection={collection}
@@ -52,7 +52,10 @@ export function EmployeeSelect({ control, name, label, placeholder, required }: 
                         onValueChange={({ items }) => field.onChange(items[0]?.value || '')}
                         onInteractOutside={() => field.onBlur()}
                     >
-                        <SelectLabel>{label}</SelectLabel>
+                        <SelectLabel>
+                            {label}
+                            <Field.RequiredIndicator />
+                        </SelectLabel>
                         <Box position="relative">
                             <SelectTrigger onClick={() => setIsOpen(!isOpen)}>
                                 {selectedOption ? (

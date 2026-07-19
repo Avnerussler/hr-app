@@ -1,6 +1,7 @@
 import { Box, HStack, VStack, Text, Badge, Flex } from '@chakra-ui/react'
 import { Checkbox } from '../ui/checkbox'
 import { UnapprovedReserveDaysWarning } from '../common/UnapprovedReserveDaysWarning'
+import { UnapprovedVehicleWarning } from '../common/UnapprovedVehicleWarning'
 import {
     FaIdBadge,
     FaUsers,
@@ -93,6 +94,12 @@ export function EmployeeAttendanceCard({
                                         iconSize={12}
                                     />
                                 )}
+                            {employee.hasExpiredVehicleApproval && (
+                                <UnapprovedVehicleWarning
+                                    employeeName={employee.name}
+                                    iconSize={12}
+                                />
+                            )}
                         </HStack>
 
                         {/* Compact Details Row */}

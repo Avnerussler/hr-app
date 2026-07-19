@@ -16,7 +16,6 @@ export const TableContainer: FC<TableContainerProps> = ({
         <Box
             position="relative"
             w="full"
-            overflowX="auto"
             bg="card"
             borderRadius="lg"
             border="1px solid"
@@ -44,6 +43,10 @@ export const TableContainer: FC<TableContainerProps> = ({
                                     verticalAlign="middle"
                                     fontWeight="medium"
                                     whiteSpace="nowrap"
+                                    position="sticky"
+                                    top={0}
+                                    bg="card"
+                                    zIndex={1}
                                 >
                                     {header.isPlaceholder
                                         ? null

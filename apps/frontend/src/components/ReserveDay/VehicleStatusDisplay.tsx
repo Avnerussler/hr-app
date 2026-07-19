@@ -9,26 +9,35 @@ interface VehicleStatusDisplayProps {
     label: string
 }
 
-/** Read-only, live-looked-up display of the selected employee's vehicle info — never stored on the record itself. */
+/** Read-only, live-looked-up display of whether the selected employee's vehicle approval covers the selected date range — never stored on the record itself. */
 export function VehicleStatusDisplay({ control, sourceField, label }: VehicleStatusDisplayProps) {
     const employeeId: string | null | undefined = useWatch({ control, name: sourceField })
-    const { data: vehicleStatus } = useEmployeeVehicleStatusQuery(employeeId || undefined)
+    const startDate: string | null | undefined = useWatch({ control, name: 'startDate' })
+    const endDate: string | null | undefined = useWatch({ control, name: 'endDate' })
+    const { data: vehicleStatus } = useEmployeeVehicleStatusQuery(employeeId || undefined, startDate, endDate)
 
     return (
         <Field.Root orientation="vertical">
             <Field.Label>{label}</Field.Label>
             {vehicleStatus ? (
-                <Flex gap="3" alignItems="center">
-                    {vehicleStatus.vehicleEntry ? (
-                        <Box color="green.500" role="img" aria-label="Yes">
-                            <FiCheckCircle size={18} />
-                        </Box>
-                    ) : (
-                        <Box color="red.500" role="img" aria-label="No">
-                            <FiXCircle size={18} />
-                        </Box>
+                <Flex direction="column" gap="1">
+                    <Flex gap="3" alignItems="center">
+                        {vehicleStatus.hasVehicleApproval ? (
+                            <Box color="green.500" role="img" aria-label="Yes">
+                                <FiCheckCircle size={18} />
+                            </Box>
+                        ) : (
+                            <Box color="red.500" role="img" aria-label="No">
+                                <FiXCircle size={18} />
+                            </Box>
+                        )}
+                        <Text fontSize="medium">{vehicleStatus.vehicleNumber || '—'}</Text>
+                    </Flex>
+                    {vehicleStatus.hasPartialVehicleApproval && (
+                        <Text fontSize="small" color="orange.500">
+                            על חלק מהימים לא יהיה אישור כניסה לרכב
+                        </Text>
                     )}
-                    <Text fontSize="medium">{vehicleStatus.vehicleNumber || '—'}</Text>
                 </Flex>
             ) : (
                 <Text fontSize="medium">—</Text>

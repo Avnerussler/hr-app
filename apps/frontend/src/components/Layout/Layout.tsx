@@ -351,7 +351,7 @@ export function Layout() {
                 }}
             >
                 <TopBar />
-                <Box flex="1" overflow="auto" p={6}>
+                <Box flex="1" overflow="hidden" p={6}>
                     <Outlet />
                 </Box>
             </Box>

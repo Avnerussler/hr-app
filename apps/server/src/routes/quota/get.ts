@@ -219,6 +219,7 @@ interface EmployeeAttendanceRecord {
     reserveDays: Date[]
     requestStatus: string
     fundingSource: string
+    hasExpiredVehicleApproval: boolean
 }
 
 // Get employees scheduled for a specific date
@@ -321,6 +322,7 @@ router.get(
                     let phone = ''
                     let reserveUnit = ''
                     let workPlace = ''
+                    let hasExpiredVehicleApproval = false
 
                     const fullEmployeeData = employeeDataMap.get(employeeId)
                     if (fullEmployeeData) {
@@ -333,6 +335,13 @@ router.get(
                         phone = fullEmployeeData.phone || ''
                         reserveUnit = fullEmployeeData.reserveUnit || ''
                         workPlace = fullEmployeeData.workPlace || ''
+                        // Only flag when an approval range IS set but has already passed by this date.
+                        // No range set, or date still within/before the range, is not a warning case.
+                        hasExpiredVehicleApproval = !!(
+                            fullEmployeeData.vehicleEntryStartDate &&
+                            fullEmployeeData.vehicleEntryEndDate &&
+                            new Date(fullEmployeeData.vehicleEntryEndDate) < date
+                        )
                     }
 
                     const reserveDaysArray: Date[] = []
@@ -391,6 +400,7 @@ router.get(
                         reserveDays: reserveDaysArray,
                         requestStatus: reservation.requestStatus || '',
                         fundingSource: reservation.fundingSource || '',
+                        hasExpiredVehicleApproval,
                     }
                 })
                 .filter((emp): emp is EmployeeAttendanceRecord => emp !== null) as EmployeeAttendanceRecord[]

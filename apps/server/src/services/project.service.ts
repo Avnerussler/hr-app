@@ -19,11 +19,21 @@ export interface ListProjectsParams {
 }
 
 function choicesForProjectStatus(): { value: unknown; label?: string }[] {
-    return Object.entries(PROJECT_STATUS_LABELS).map(([value, label]) => ({ value, label }))
+    return Object.entries(PROJECT_STATUS_LABELS).map(([value, label]) => ({
+        value,
+        label,
+    }))
 }
 
 export async function listProjects(params: ListProjectsParams) {
-    const { page, limit, search, filters, sortField, sortOrder = 'asc' } = params
+    const {
+        page,
+        limit,
+        search,
+        filters,
+        sortField,
+        sortOrder = 'asc',
+    } = params
     const query: Record<string, unknown> = {}
     const andClauses: Record<string, unknown>[] = []
 
@@ -48,7 +58,9 @@ export async function listProjects(params: ListProjectsParams) {
     const skip = (page - 1) * limit
     const sortKeyDir = sortOrder === 'desc' ? -1 : 1
     const labelSortKeyExpr =
-        sortField === 'projectStatus' ? buildLabelSortKeyExpr(sortField, choicesForProjectStatus()) : undefined
+        sortField === 'projectStatus'
+            ? buildLabelSortKeyExpr(sortField, choicesForProjectStatus())
+            : undefined
 
     let items: ProjectDocument[]
     let total: number
@@ -70,8 +82,28 @@ export async function listProjects(params: ListProjectsParams) {
                     $addFields: {
                         __sortKey: {
                             $concat: [
-                                { $ifNull: [{ $arrayElemAt: ['$__manager.lastName', 0] }, ''] },
-                                { $ifNull: [{ $arrayElemAt: ['$__manager.firstName', 0] }, ''] },
+                                {
+                                    $ifNull: [
+                                        {
+                                            $arrayElemAt: [
+                                                '$__manager.lastName',
+                                                0,
+                                            ],
+                                        },
+                                        '',
+                                    ],
+                                },
+                                {
+                                    $ifNull: [
+                                        {
+                                            $arrayElemAt: [
+                                                '$__manager.firstName',
+                                                0,
+                                            ],
+                                        },
+                                        '',
+                                    ],
+                                },
                             ],
                         },
                     },
@@ -84,15 +116,27 @@ export async function listProjects(params: ListProjectsParams) {
             ProjectModel.countDocuments(query),
         ])
         items = await ProjectModel.populate(items, [
-            { path: 'projectManager', select: 'firstName lastName personalNumber' },
-            { path: 'projectPersonnel', select: 'firstName lastName personalNumber' },
+            {
+                path: 'projectManager',
+                select: 'firstName lastName personalNumber',
+            },
+            {
+                path: 'projectPersonnel',
+                select: 'firstName lastName personalNumber',
+            },
         ])
     } else if (sortField === 'projectPersonnel') {
         // No meaningful per-name order for a multi-value field — sort by team size instead
         ;[items, total] = await Promise.all([
             ProjectModel.aggregate([
                 { $match: query },
-                { $addFields: { __sortKey: { $size: { $ifNull: ['$projectPersonnel', []] } } } },
+                {
+                    $addFields: {
+                        __sortKey: {
+                            $size: { $ifNull: ['$projectPersonnel', []] },
+                        },
+                    },
+                },
                 { $sort: { __sortKey: sortKeyDir } },
                 { $skip: skip },
                 { $limit: limit },
@@ -101,8 +145,14 @@ export async function listProjects(params: ListProjectsParams) {
             ProjectModel.countDocuments(query),
         ])
         items = await ProjectModel.populate(items, [
-            { path: 'projectManager', select: 'firstName lastName personalNumber' },
-            { path: 'projectPersonnel', select: 'firstName lastName personalNumber' },
+            {
+                path: 'projectManager',
+                select: 'firstName lastName personalNumber',
+            },
+            {
+                path: 'projectPersonnel',
+                select: 'firstName lastName personalNumber',
+            },
         ])
     } else if (labelSortKeyExpr) {
         ;[items, total] = await Promise.all([
@@ -117,7 +167,9 @@ export async function listProjects(params: ListProjectsParams) {
             ProjectModel.countDocuments(query),
         ])
     } else {
-        const sortSpec: Record<string, 1 | -1> = sortField ? { [sortField]: sortKeyDir } : { createdAt: -1 }
+        const sortSpec: Record<string, 1 | -1> = sortField
+            ? { [sortField]: sortKeyDir }
+            : { createdAt: -1 }
         ;[items, total] = await Promise.all([
             ProjectModel.find(query)
                 .collation({ locale: 'he', numericOrdering: true })
@@ -125,7 +177,10 @@ export async function listProjects(params: ListProjectsParams) {
                 .skip(skip)
                 .limit(limit)
                 .populate('projectManager', 'firstName lastName personalNumber')
-                .populate('projectPersonnel', 'firstName lastName personalNumber')
+                .populate(
+                    'projectPersonnel',
+                    'firstName lastName personalNumber'
+                )
                 .lean() as unknown as Promise<ProjectDocument[]>,
             ProjectModel.countDocuments(query),
         ])
@@ -147,7 +202,11 @@ export async function createProject(body: unknown) {
     const validated = ProjectSchema.parse(body)
     const created = await ProjectModel.create(validated)
     if (created.projectPersonnel.length > 0) {
-        await syncPersonnelOnProjectUpdate(String(created._id), [], created.projectPersonnel.map(String))
+        await syncPersonnelOnProjectUpdate(
+            String(created._id),
+            [],
+            created.projectPersonnel.map(String)
+        )
     }
     return created.toObject()
 }
@@ -163,7 +222,11 @@ export async function updateProject(id: string, body: unknown) {
     await existing.save()
 
     const nextPersonnelIds = existing.projectPersonnel.map(String)
-    await syncPersonnelOnProjectUpdate(id, previousPersonnelIds, nextPersonnelIds)
+    await syncPersonnelOnProjectUpdate(
+        id,
+        previousPersonnelIds,
+        nextPersonnelIds
+    )
 
     return existing.toObject()
 }
@@ -184,14 +247,42 @@ export async function getProjectMetrics() {
     ])
 
     return [
-        { id: 'total', title: 'Total Projects', icon: 'FaProjectDiagram', color: 'blue.500', value: total },
-        { id: 'active', title: 'Active Projects', icon: 'FaCheck', color: 'green.500', value: active },
-        { id: 'inactive', title: 'Inactive Projects', icon: 'FaUserTimes', color: 'red.500', value: inactive },
-        { id: 'pending', title: 'Pending Records', icon: 'FaHourglassHalf', color: 'orange.500', value: pending },
+        {
+            id: 'total',
+            title: 'סה"כ פרויקטים',
+            icon: 'FaProjectDiagram',
+            color: 'blue.500',
+            value: total,
+        },
+        {
+            id: 'active',
+            title: 'פרויקטים פעילים',
+            icon: 'FaCheck',
+            color: 'green.500',
+            value: active,
+        },
+        {
+            id: 'inactive',
+            title: 'פרויקטים לא פעילים',
+            icon: 'FaUserTimes',
+            color: 'red.500',
+            value: inactive,
+        },
+        {
+            id: 'pending',
+            title: 'בהשהיה',
+            icon: 'FaHourglassHalf',
+            color: 'orange.500',
+            value: pending,
+        },
     ]
 }
 
-export async function searchProjectOptions(search: string | undefined, page: number, limit: number) {
+export async function searchProjectOptions(
+    search: string | undefined,
+    page: number,
+    limit: number
+) {
     const query: Record<string, unknown> = {}
     if (search) {
         query.projectName = { $regex: search, $options: 'i' }
@@ -201,7 +292,10 @@ export async function searchProjectOptions(search: string | undefined, page: num
         ProjectModel.find(query).skip(skip).limit(limit).lean(),
         ProjectModel.countDocuments(query),
     ])
-    const options = docs.map((d) => ({ value: String(d._id), label: d.projectName }))
+    const options = docs.map((d) => ({
+        value: String(d._id),
+        label: d.projectName,
+    }))
     return {
         options,
         pagination: { page, limit, total, hasMore: skip + docs.length < total },

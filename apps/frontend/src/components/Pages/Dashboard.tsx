@@ -119,7 +119,7 @@ export function Dashboard() {
     const activeProjectCount = projectAnalytics.data?.report.activeProjectCount ?? 0
 
     return (
-        <Box p={6} w="full">
+        <Box p={6} w="full" h="full" overflow="auto">
             <Stack gap={6} w="full">
                 {/* Header with Refresh Controls */}
                 <Flex

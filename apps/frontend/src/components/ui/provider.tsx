@@ -1,13 +1,15 @@
 'use client'
 
-import { ChakraProvider } from '@chakra-ui/react'
+import { ChakraProvider, LocaleProvider } from '@chakra-ui/react'
 import { ColorModeProvider, type ColorModeProviderProps } from './color-mode'
 import { system } from '@/theme'
 
 export function Provider(props: ColorModeProviderProps) {
     return (
         <ChakraProvider value={system}>
-            <ColorModeProvider {...props} />
+            <LocaleProvider locale="he-IL" dir="rtl">
+                <ColorModeProvider {...props} />
+            </LocaleProvider>
         </ChakraProvider>
     )
 }

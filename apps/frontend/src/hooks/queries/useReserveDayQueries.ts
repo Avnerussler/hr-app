@@ -11,7 +11,8 @@ export interface EmployeeSummary {
 }
 
 export interface VehicleStatus {
-    vehicleEntry: boolean
+    hasVehicleApproval: boolean
+    hasPartialVehicleApproval: boolean
     vehicleNumber: string | null
 }
 
@@ -80,15 +81,37 @@ export function useReserveDayMetricsQuery() {
     })
 }
 
-/** Live vehicle-status lookup for the currently-selected employee in the form — no save required. */
-export function useEmployeeVehicleStatusQuery(employeeId: string | null | undefined) {
+/**
+ * Live vehicle-approval lookup for the currently-selected employee and date range in the form — no save required.
+ * Approval holds when the personnel's vehicle-entry range covers the reserve day's start/end dates.
+ */
+export function useEmployeeVehicleStatusQuery(
+    employeeId: string | null | undefined,
+    startDate: string | null | undefined,
+    endDate: string | null | undefined
+) {
     return useQuery<VehicleStatus | null>({
-        queryKey: ['personnel', 'detail', employeeId, 'vehicleStatus'],
+        queryKey: ['personnel', 'detail', employeeId, 'vehicleStatus', startDate, endDate],
         queryFn: async () => {
             const { data } = await axios.get(`${BASE_URL}/personnel/${employeeId}`)
-            return { vehicleEntry: data.vehicleEntry ?? false, vehicleNumber: data.vehicleNumber ?? null }
+            const approvalStart = data.vehicleEntryStartDate ? new Date(data.vehicleEntryStartDate) : null
+            const approvalEnd = data.vehicleEntryEndDate ? new Date(data.vehicleEntryEndDate) : null
+            const rangeStart = startDate ? new Date(startDate) : null
+            const rangeEnd = endDate ? new Date(endDate) : null
+            const hasVehicleApproval = !!(
+                approvalStart &&
+                approvalEnd &&
+                rangeStart &&
+                rangeEnd &&
+                approvalStart <= rangeStart &&
+                approvalEnd >= rangeEnd
+            )
+            const hasPartialVehicleApproval =
+                !hasVehicleApproval &&
+                !!(approvalStart && approvalEnd && rangeStart && rangeEnd && approvalStart <= rangeEnd && approvalEnd >= rangeStart)
+            return { hasVehicleApproval, hasPartialVehicleApproval, vehicleNumber: data.vehicleNumber ?? null }
         },
-        enabled: !!employeeId,
+        enabled: !!employeeId && !!startDate && !!endDate,
     })
 }
 

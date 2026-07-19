@@ -18,7 +18,7 @@ import { fuzzyFilter } from '@/components/common/Table/utils/fuzzyFilter'
 import { globalFilter as customGlobalFilter } from '@/components/common/Table/utils/globalFilter'
 import useDebounce from '@/hooks/useDebounce'
 import { useRouteContext, useDrawerState } from '@/hooks/useRouteContext'
-import { generateEditPath, generateNewPath } from '@/types/routeTypes'
+import { generateEditPath, generateFormPath, generateNewPath } from '@/types/routeTypes'
 import { TableFilter } from '@/types/fieldsType'
 import { PROJECT_STATUS_LABELS } from '@hr-app/shared-types'
 import { FaProjectDiagram, FaCheck, FaUserTimes, FaHourglassHalf } from 'react-icons/fa'
@@ -154,7 +154,7 @@ export function ProjectListPage() {
     }
 
     const onDrawerClose = () => {
-        navigate(-1)
+        navigate(generateFormPath(PROJECT_FORM_NAME, PROJECT_ROUTE_ID))
     }
 
     return (

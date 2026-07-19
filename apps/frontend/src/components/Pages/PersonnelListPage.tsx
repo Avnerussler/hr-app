@@ -18,7 +18,7 @@ import { fuzzyFilter } from '@/components/common/Table/utils/fuzzyFilter'
 import { globalFilter as customGlobalFilter } from '@/components/common/Table/utils/globalFilter'
 import useDebounce from '@/hooks/useDebounce'
 import { useRouteContext, useDrawerState } from '@/hooks/useRouteContext'
-import { generateEditPath, generateNewPath } from '@/types/routeTypes'
+import { generateEditPath, generateFormPath, generateNewPath } from '@/types/routeTypes'
 import { TableFilter } from '@/types/fieldsType'
 import { STUDIO_ROLE_LABELS, RESERVE_CATEGORY_LABELS } from '@hr-app/shared-types'
 import { FaUserCheck, FaUserTimes, FaUsers } from 'react-icons/fa'
@@ -195,7 +195,7 @@ export function PersonnelListPage() {
     }
 
     const onDrawerClose = () => {
-        navigate(-1)
+        navigate(generateFormPath(PERSONNEL_FORM_NAME, PERSONNEL_ROUTE_ID))
     }
 
     const handleExportToExcel = useCallback(async () => {

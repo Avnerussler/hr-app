@@ -24,9 +24,12 @@ export const ControlledRadioField: FC<ControlledRadioFieldProps> = ({
                 required: required ? `${label} הוא שדה חובה` : false,
             }}
             render={({ field, fieldState: { error } }) => (
-                <Field.Root data-field-name={name} invalid={!!error}>
+                <Field.Root data-field-name={name} invalid={!!error} required={required}>
                     <Fieldset.Root>
-                        <Fieldset.Legend>{label}</Fieldset.Legend>
+                        <Fieldset.Legend>
+                            {label}
+                            <Field.RequiredIndicator />
+                        </Fieldset.Legend>
                         <RadioGroup.Root
                             id={id}
                             name={field.name}

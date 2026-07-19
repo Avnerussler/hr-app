@@ -10,5 +10,4 @@ export const PERSONNEL_DEFAULT_VALUES: PersonnelFormValues = {
     personalNumber: '',
     isActive: true,
     assignedProjects: null,
-    vehicleEntry: false,
 }

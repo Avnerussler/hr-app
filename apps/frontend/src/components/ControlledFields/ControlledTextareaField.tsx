@@ -27,8 +27,11 @@ export const ControlledTextareaField: FC<ControlledTextareaFieldProps> = ({
                 },
             }}
             render={({ field }) => (
-                <Field.Root key={id} data-field-name={name} orientation="vertical">
-                    <Field.Label>{label}</Field.Label>
+                <Field.Root key={id} data-field-name={name} orientation="vertical" required={props.required}>
+                    <Field.Label>
+                        {label}
+                        <Field.RequiredIndicator />
+                    </Field.Label>
                     <Textarea
                         {...field}
                         autoresize

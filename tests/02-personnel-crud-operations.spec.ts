@@ -105,7 +105,8 @@ test.describe('Module 1: Personnel Management - CRUD Operations', () => {
   const drawer = page.getByRole('dialog');
   await expect(drawer).toBeVisible();
 
-  // "מידע אישי" (Personal Information) tab holds firstName/lastName/.../vehicleNumber
+  // "מידע אישי" (Personal Information) tab holds firstName/lastName/.../
+  // vehicleNumber AND, directly below it, the vehicle-entry-approval date range.
   const personalInfoTab = page.getByRole('tab', { name: 'מידע אישי' });
   if (await personalInfoTab.isVisible({ timeout: 2000 }).catch(() => false)) {
    await personalInfoTab.click();
@@ -119,21 +120,23 @@ test.describe('Module 1: Personnel Management - CRUD Operations', () => {
   await page.locator('input[name="phone"]').fill(testData.phone);
   await page.locator('input[name="vehicleNumber"]').fill(testData.vehicleNumber);
 
-  // "מידע צבאי" (Military Information) tab holds the vehicleEntry radio
-  await page.getByRole('tab', { name: 'מידע צבאי' }).click();
-  await page.waitForTimeout(500);
-
-  // Scope to the vehicleEntry radio group specifically — the tab also has
-  // another כן/לא radio (canBeRecited, "האם ניתן לזמן למילואים"), and both
-  // radios' visible labels share the same text, so a plain
-  // drawer.getByText('כן') would be ambiguous. Chakra renders each radio
-  // field as role=group with the field label as its accessible name, and
-  // the underlying <input> carries a real name="vehicleEntry" attribute —
-  // click the visible label text within that scoped group (not the
-  // visually-hidden input directly, which Chakra's overlay can intercept).
-  const vehicleEntryGroup = drawer.getByRole('group', { name: 'כניסה עם רכב' });
-  await vehicleEntryGroup.getByText('כן', { exact: true }).click();
-  await expect(vehicleEntryGroup.getByRole('radio', { name: 'כן' })).toBeChecked();
+  // Vehicle-entry-approval date range ("תוקף אישור כניסה עם רכב") — a
+  // ControlledDateRangeField (components/ControlledFields/ControlledDateRangeField.tsx)
+  // with two dd/mm/yyyy inputs. NOTE: this is a DIFFERENT date format than the
+  // reserve-days date-range field (ReserveDayDateRangeField), which renders
+  // mm/dd/yyyy placeholders — don't reuse that format here. Uses
+  // pressSequentially (not .fill()), matching fillDateRangeInputs in file 04:
+  // the ark-ui date-input parses keystrokes as typed, and a bulk .fill() on
+  // the second (end) input is silently dropped.
+  const vehicleApprovalDates = drawer.getByPlaceholder('dd/mm/yyyy');
+  const startDate = new Date();
+  const endDate = new Date(Date.now() + 30 * 86400000);
+  const toPickerDate = (d: Date) =>
+   `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+  await vehicleApprovalDates.nth(0).click();
+  await vehicleApprovalDates.nth(0).pressSequentially(toPickerDate(startDate));
+  await vehicleApprovalDates.nth(1).pressSequentially(toPickerDate(endDate));
+  await vehicleApprovalDates.nth(1).press('Tab');
 
   // Click Save/Create button
   const saveButton = page.getByRole('button', { name: /Create|שמור/i });

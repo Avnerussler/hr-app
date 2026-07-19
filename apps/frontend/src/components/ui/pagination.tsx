@@ -121,7 +121,7 @@ export const PaginationPrevTrigger = React.forwardRef<
         variant={variantMap.default}
         size={size}
       >
-        <HiChevronLeft />
+        <HiChevronRight />
       </LinkButton>
     )
   }
@@ -129,7 +129,7 @@ export const PaginationPrevTrigger = React.forwardRef<
   return (
     <ChakraPagination.PrevTrigger ref={ref} asChild {...props}>
       <IconButton variant={variantMap.default} size={size}>
-        <HiChevronLeft />
+        <HiChevronRight />
       </IconButton>
     </ChakraPagination.PrevTrigger>
   )
@@ -149,7 +149,7 @@ export const PaginationNextTrigger = React.forwardRef<
         variant={variantMap.default}
         size={size}
       >
-        <HiChevronRight />
+        <HiChevronLeft />
       </LinkButton>
     )
   }
@@ -157,7 +157,7 @@ export const PaginationNextTrigger = React.forwardRef<
   return (
     <ChakraPagination.NextTrigger ref={ref} asChild {...props}>
       <IconButton variant={variantMap.default} size={size}>
-        <HiChevronRight />
+        <HiChevronLeft />
       </IconButton>
     </ChakraPagination.NextTrigger>
   )

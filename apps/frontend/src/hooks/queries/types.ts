@@ -28,6 +28,9 @@ export interface EmployeeAttendance {
     reserveDays?: string[] // Array of reserve duty dates
     requestStatus?: string // Status of the reserve days request (pending, approved, denied)
     fundingSource?: 'internal' | 'external' // Funding source (internal, external)
+    // Only true when the employee HAS a vehicle-approval range configured and it has already
+    // ended by this date. No range set, or the date still within/before the range, is false.
+    hasExpiredVehicleApproval: boolean
 }
 
 export interface DailyAttendanceData {
@@ -55,6 +58,11 @@ export interface AttendanceSummaryDay {
     managerReported: boolean
     hasUnapprovedReserveDays: boolean
     unapprovedEmployees: Array<{
+        name: string
+        status: string
+    }>
+    hasExpiredVehicleApproval: boolean
+    expiredVehicleApprovalEmployees: Array<{
         name: string
         status: string
     }>

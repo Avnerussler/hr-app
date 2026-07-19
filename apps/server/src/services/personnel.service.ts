@@ -221,9 +221,9 @@ export async function getPersonnelMetrics() {
     ])
 
     return [
-        { id: 'active', title: 'Active Personnel', icon: 'FaUserCheck', color: 'green.500', value: active },
-        { id: 'notActive', title: 'Inactive Personnel', icon: 'FaUserCheck', color: 'red.500', value: notActive },
-        { id: 'TotalPersonnel', title: 'Total Personnel', icon: 'FaUserCheck', color: 'blue.500', value: total },
+        { id: 'active', title: 'משאבי אנוש פעילים', icon: 'FaUserCheck', color: 'green.500', value: active },
+        { id: 'notActive', title: 'משאבי אנוש לא פעילים', icon: 'FaUserCheck', color: 'red.500', value: notActive },
+        { id: 'TotalPersonnel', title: 'סה"כ משאבי אנוש', icon: 'FaUserCheck', color: 'blue.500', value: total },
     ]
 }
 

@@ -18,7 +18,7 @@ import { fuzzyFilter } from '@/components/common/Table/utils/fuzzyFilter'
 import { globalFilter as customGlobalFilter } from '@/components/common/Table/utils/globalFilter'
 import useDebounce from '@/hooks/useDebounce'
 import { useRouteContext, useDrawerState } from '@/hooks/useRouteContext'
-import { generateEditPath, generateNewPath } from '@/types/routeTypes'
+import { generateEditPath, generateFormPath, generateNewPath } from '@/types/routeTypes'
 import { TableFilter } from '@/types/fieldsType'
 import { REQUEST_STATUS_LABELS, ORDER_TYPE_LABELS } from '@hr-app/shared-types'
 import { FaList, FaHourglassHalf, FaCheck, FaTimes } from 'react-icons/fa'
@@ -166,7 +166,7 @@ export function ReserveDayListPage() {
     }
 
     const onDrawerClose = () => {
-        navigate(-1)
+        navigate(generateFormPath(RESERVE_DAY_FORM_NAME, RESERVE_DAY_ROUTE_ID))
     }
 
     return (
