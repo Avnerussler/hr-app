@@ -6,9 +6,11 @@
 //
 // Three concerns, all regressions we care about:
 //  1. Every MetricCard rendered on a form page (personnel / project /
-//     reserve-days) must equal the value returned by the metrics endpoint
-//     (GET /api/formSubmission/metrics/:formId) — covers count-total,
-//     count-filtered, and sum metric configs.
+//     reserve-days) must equal the value returned by its metrics endpoint —
+//     personnel still reads GET /api/formSubmission/metrics/:formId (not yet
+//     cut over), while project_management and reserve_days_management read
+//     the new GET /api/projects/metrics and GET /api/reserve-days/metrics —
+//     covers count-total, count-filtered, and sum metric configs.
 //  2. Every Dashboard statistics report renders and its UI values agree with
 //     the corresponding /api/statistics/* endpoint — covers all 5 reports.
 //  3. Creating / editing a record updates the relevant MetricCards and the
@@ -53,25 +55,46 @@ async function fetchForms(
  return body.forms ?? body;
 }
 
-/** Fetch every submission of a form, following pagination. */
-async function fetchAllSubmissions(
- request: APIRequestContext,
- formName: string
-): Promise<Array<Record<string, unknown>>> {
- const all: Array<Record<string, unknown>> = [];
- let page = 1;
- for (; page <= 20; page++) {
+/** Fetch every reserve-day order via the new /api/reserve-days REST endpoint. */
+async function fetchAllReserveDays(
+ request: APIRequestContext
+): Promise<Array<Record<string, any>>> {
+ const all: Array<Record<string, any>> = [];
+ for (let page = 1; page <= 20; page++) {
   const res = await request.get(
-   `${API_ORIGIN}/api/formSubmission?formName=${formName}&limit=500&page=${page}`
+   `${API_ORIGIN}/api/reserve-days?limit=500&page=${page}`
   );
-  expect(res.ok(), `formSubmission list failed: ${res.status()}`).toBe(true);
+  expect(res.ok(), `reserve-days list failed: ${res.status()}`).toBe(true);
   const body = await res.json();
-  const forms = (body.forms ?? []).filter(
-   (f: { formName?: string }) => f.formName === formName
-  );
-  all.push(...forms);
+  const items = body.items ?? [];
+  all.push(...items);
   const total = body.pagination?.total ?? all.length;
-  if (all.length >= total || forms.length === 0) break;
+  if (all.length >= total || items.length === 0) break;
+ }
+ return all;
+}
+
+/**
+ * Fetch every personnel record via the new /api/personnel REST endpoint.
+ * reserve_days_management is fully cut over — its employeeName field (and the
+ * EmployeeSelect UI search) resolve against this NEW Personnel collection, not
+ * the frozen formSubmission snapshot, so employee selection in reserve-day
+ * flows must pick ids from here.
+ */
+async function fetchAllPersonnelNew(
+ request: APIRequestContext
+): Promise<Array<Record<string, any>>> {
+ const all: Array<Record<string, any>> = [];
+ for (let page = 1; page <= 20; page++) {
+  const res = await request.get(
+   `${API_ORIGIN}/api/personnel?limit=500&page=${page}`
+  );
+  expect(res.ok(), `personnel list failed: ${res.status()}`).toBe(true);
+  const body = await res.json();
+  const items = body.items ?? [];
+  all.push(...items);
+  const total = body.pagination?.total ?? all.length;
+  if (all.length >= total || items.length === 0) break;
  }
  return all;
 }
@@ -94,27 +117,31 @@ async function findConflictFreeEmployee(
  skipIds: Set<string> = new Set()
 ): Promise<FreeEmployee> {
  const target = new Date(`${date}T00:00:00.000Z`).getTime();
- const orders = await fetchAllSubmissions(request, 'reserve_days_management');
+ // reserve_days_management is fully cut over to /api/reserve-days — read
+ // ground truth from there, not the frozen formSubmission snapshot.
+ const orders = await fetchAllReserveDays(request);
 
  const busy = new Set<string>();
  for (const o of orders) {
-  const fd = o.formData as Record<string, any>;
-  const empId = fd.employeeName?._id ?? fd.employeeName;
-  const s = new Date(fd.startDate).getTime();
-  const e = new Date(fd.endDate).getTime();
+  const empId = o.employeeName?._id ?? o.employeeName;
+  const s = new Date(o.startDate).getTime();
+  const e = new Date(o.endDate).getTime();
   if (empId && !Number.isNaN(s) && !Number.isNaN(e) && s <= target && target <= e) {
    busy.add(String(empId));
   }
  }
 
- const personnel = await fetchAllSubmissions(request, 'personnel');
+ // Pick the employee from the NEW /api/personnel collection — reserve-days'
+ // EmployeeSelect UI searches against this collection (not the old
+ // formSubmission personnel snapshot), so ids must come from here to be
+ // selectable in the create-reserve-day drawer.
+ const personnel = await fetchAllPersonnelNew(request);
  const free = personnel.find((p) => {
   const id = String(p._id);
-  const pn = (p.formData as Record<string, unknown>).personalNumber;
-  return !busy.has(id) && !skipIds.has(id) && !!pn;
+  return !busy.has(id) && !skipIds.has(id) && !!p.personalNumber;
  });
  expect(free, `no conflict-free employee for ${date}`).toBeTruthy();
- const fd = free!.formData as Record<string, string>;
+ const fd = free!;
  return {
   id: String(free!._id),
   personalNumber: fd.personalNumber,
@@ -139,6 +166,29 @@ async function fetchMetrics(
  formId: string
 ): Promise<CalculatedMetric[]> {
  const res = await request.get(`${API_ORIGIN}/api/formSubmission/metrics/${formId}`);
+ expect(res.ok(), `metrics request failed: ${res.status()}`).toBe(true);
+ return (await res.json()) as CalculatedMetric[];
+}
+
+/**
+ * Ground-truth metric values from the NEW, fully-cut-over REST endpoints.
+ * project_management and reserve_days_management no longer write to the
+ * frozen FormSubmissions collection, so their metrics must be read from
+ * GET /api/projects/metrics and GET /api/reserve-days/metrics respectively.
+ * personnel is NOT cut over yet — keep using `fetchMetrics`/`formIdFor` for it.
+ */
+async function fetchMetricsForEntity(
+ request: APIRequestContext,
+ formName: string
+): Promise<CalculatedMetric[]> {
+ const path =
+  formName === 'project_management'
+   ? '/api/projects/metrics'
+   : formName === 'reserve_days_management'
+   ? '/api/reserve-days/metrics'
+   : undefined;
+ expect(path, `no new metrics endpoint mapped for "${formName}"`).toBeTruthy();
+ const res = await request.get(`${API_ORIGIN}${path}`);
  expect(res.ok(), `metrics request failed: ${res.status()}`).toBe(true);
  return (await res.json()) as CalculatedMetric[];
 }
@@ -263,10 +313,12 @@ async function fillReserveDayDrawer(
  // click; click the radio's visible label to avoid flakiness.
  await drawer.getByText('צו 8 פתוח', { exact: true }).click();
 
- // fundingSource: untouched select defaults are NOT persisted, so set it
- // explicitly to 'פנימי' (internal) — the daily-summary report counts orders by
- // fundingSource, so a null value would make the new order invisible there.
- await selectOption(page, 'בחר מקור מימון', 'פנימי');
+ // fundingSource: the app now defaults this select to 'פנימי' (internal), but
+ // to stay robust regardless of default behavior, select it explicitly — the
+ // daily-summary report counts orders by fundingSource, so a null value would
+ // make the new order invisible there. Match either the placeholder or an
+ // already-selected value so this works whether or not a default is applied.
+ await selectOption(page, /בחר מקור מימון|פנימי|חיצוני/, 'פנימי');
 
  // requestStatus is required; select it explicitly.
  await selectOption(page, /בחר סטטוס בקשה|ממתין לטיפול|אושר|נדחה/, requestStatusLabel);
@@ -297,7 +349,9 @@ async function createReserveDay(
   // Watch the create response so we can detect a 409 (noOverlap) and retry.
   const createResp = page
    .waitForResponse(
-    (r) => r.url().toLowerCase().includes('/formsubmission/create'),
+    (r) =>
+     r.url().toLowerCase().includes('/reserve-days') &&
+     r.request().method() === 'POST',
     { timeout: 15_000 }
    )
    .catch(() => undefined);
@@ -311,11 +365,11 @@ async function createReserveDay(
   if (resp && resp.status() === 409) {
    // Overlap for this employee/date — close the drawer and try another.
    await page.getByRole('button', { name: /Cancel/i }).click();
-   await page.waitForURL(/\/reserve_days_management\/[^/]+$/);
+   await page.waitForURL(/\/reserve_days_management\/default$/);
    continue;
   }
 
-  await page.waitForURL(/\/reserve_days_management\/[^/]+$/);
+  await page.waitForURL(/\/reserve_days_management\/default$/);
   await expect(page.getByRole('table')).toBeVisible();
   return employee;
  }
@@ -344,11 +398,13 @@ async function createProject(page: Page, statusLabel = 'פעיל'): Promise<stri
  await expect(drawer).toBeVisible();
  await drawer.locator('input[name="projectName"]').fill(projectName);
 
- // projectStatus is a select with placeholder 'בחר סטטוס'; pick it explicitly.
- await selectOption(page, 'בחר סטטוס', statusLabel);
+ // projectStatus is a select that may render its placeholder 'בחר סטטוס' or an
+ // already-selected default value ('פעיל'/'לא פעיל'/'מושהה'); match either so
+ // this is robust regardless of whether a default is applied.
+ await selectOption(page, /בחר סטטוס|פעיל|לא פעיל|מושהה/, statusLabel);
 
  await drawer.getByRole('button', { name: /✨ Create/i }).click();
- await page.waitForURL(/\/project_management\/[^/]+$/);
+ await page.waitForURL(/\/project_management\/default$/);
  await expect(page.getByRole('table')).toBeVisible();
 
  return projectName;
@@ -382,8 +438,10 @@ test.describe('Module 9A: MetricCard reliability (all metric types)', () => {
    page,
    request,
   }) => {
-   const formId = await formIdFor(request, form.formName);
-   const metrics = await fetchMetrics(request, formId);
+   const metrics =
+    form.formName === 'personnel'
+     ? await fetchMetrics(request, await formIdFor(request, form.formName))
+     : await fetchMetricsForEntity(request, form.formName);
 
    // Forms without metrics configured render no cards — skip cleanly.
    test.skip(metrics.length === 0, `${form.formName} has no metrics configured`);
@@ -408,8 +466,7 @@ test.describe('Module 9A: MetricCard reliability (all metric types)', () => {
   // The project form defines total + active/inactive/pending filtered counts.
   // The three status buckets need not sum to total (records may have no/other
   // status), but each must be <= total and non-negative — a sanity invariant.
-  const formId = await formIdFor(request, 'project_management');
-  const metrics = await fetchMetrics(request, formId);
+  const metrics = await fetchMetricsForEntity(request, 'project_management');
   const byId = Object.fromEntries(metrics.map((m) => [m.id, m.value]));
 
   const total = byId['total'];
@@ -547,14 +604,12 @@ test.describe('Module 9B: Dashboard statistics reports', () => {
  }) => {
   const date = today();
 
-  await gotoDashboard(page);
-  const card = page
-   .getByText('עובדים על צו בתאריך מוגדר', { exact: true })
-   .locator('xpath=ancestor::div[.//table][1]');
-
   // Compare the rendered row count against a freshly-fetched API count inside
-  // the poll, so a concurrent create (which changes both) still converges
-  // rather than comparing a UI read against a stale API snapshot.
+  // the poll, so a concurrent create (which changes both) still converges.
+  // The employeesOnReserve query has a 5-minute staleTime, so the UI table
+  // from a single navigation is a fixed snapshot and can never converge with
+  // a live-changing API count (e.g. other tests creating reserve days for
+  // today concurrently) — reload the dashboard on every poll iteration.
   await expect(async () => {
    const res = await request.get(
     `${API_ORIGIN}/api/statistics/employees-on-reserve?date=${date}`
@@ -562,6 +617,11 @@ test.describe('Module 9B: Dashboard statistics reports', () => {
    expect(res.ok()).toBe(true);
    const { report } = await res.json();
    const apiRowCount = report.rows.length as number;
+
+   await gotoDashboard(page);
+   const card = page
+    .getByText('עובדים על צו בתאריך מוגדר', { exact: true })
+    .locator('xpath=ancestor::div[.//table][1]');
 
    if (apiRowCount === 0) {
     await expect(card.getByText('אין נתונים להצגה')).toBeVisible();

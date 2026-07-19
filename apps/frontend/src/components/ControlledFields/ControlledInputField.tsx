@@ -62,15 +62,19 @@ export const ControlledInputField = ({
                     : field.value
 
                 return (
-                <Field.Root key={id} orientation="vertical" invalid={!!error}>
+                <Field.Root key={id} data-field-name={name} orientation="vertical" invalid={!!error}>
                     <Field.Label>{label}</Field.Label>
                     <Input
                         {...field}
                         value={displayValue ?? ''}
                         onChange={(e) => {
                             if (isDate) {
-                                const d = e.target.value ? new Date(e.target.value) : ''
-                                field.onChange(d)
+                                // Keep the raw "YYYY-MM-DD" string in form state (matching what
+                                // the display logic above and API payloads expect). Storing a
+                                // Date object here gets serialized by axios/JSON.stringify as a
+                                // full ISO datetime (e.g. "2026-08-08T00:00:00.000Z"), which
+                                // fails server-side YYYY-MM-DD validation (e.g. POST /quotas/range).
+                                field.onChange(e.target.value)
                             } else {
                                 field.onChange(e.target.value)
                             }

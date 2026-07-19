@@ -1,16 +1,16 @@
-import { FormSubmissions, FormFields } from '../models'
+import { ReserveDayModel } from '../models/ReserveDay'
+import { PersonnelModel, PersonnelDocument } from '../models/Personnel'
+import { ProjectModel } from '../models/Project'
+import { ORDER_TYPE_LABELS } from '@hr-app/shared-types'
 import logger from '../config/logger'
 import { eachDayOfInterval, parseISO, format } from 'date-fns'
-import mongoose from 'mongoose'
 
-// formData.startDate/endDate are stored as UTC-midnight Date objects in Mongo,
-// so query bounds and any date read from formData must be normalized to Date
-// before comparison instead of compared as 'dd/MM/yyyy' strings.
-const toUtcMidnight = (dateStr: string): Date =>
-    parseISO(`${dateStr}T00:00:00.000Z`)
+// startDate/endDate are stored as UTC-midnight Date objects in Mongo, so query
+// bounds and any date read from a record must be normalized to Date before
+// comparison instead of compared as 'dd/MM/yyyy' strings.
+const toUtcMidnight = (dateStr: string): Date => parseISO(`${dateStr}T00:00:00.000Z`)
 
-const asDate = (val: unknown): Date =>
-    val instanceof Date ? val : parseISO(val as string)
+const asDate = (val: unknown): Date => (val instanceof Date ? val : parseISO(val as string))
 
 const NO_PROJECT_LABEL = 'ללא פרויקט'
 const TOTALS_LABEL = 'סה"כ'
@@ -33,9 +33,39 @@ interface ProjectStats {
 interface UnitStats {
     [unit: string]: number
 }
+
+/** Resolve each reserve day's assigned project name via its populated employee, once per unique employee. */
+async function buildProjectNameResolver(
+    reserveDays: { employeeName: unknown }[]
+): Promise<(employeeId: string | null | undefined) => string> {
+    const employeeIds = [...new Set(reserveDays.map((r) => String(r.employeeName)).filter(Boolean))]
+    const personnel = await PersonnelModel.find({ _id: { $in: employeeIds } })
+        .select('assignedProjects')
+        .lean()
+    const projectIds = [
+        ...new Set(personnel.map((p) => p.assignedProjects).filter(Boolean).map((id) => String(id))),
+    ]
+    const projects = await ProjectModel.find({ _id: { $in: projectIds } })
+        .select('projectName')
+        .lean()
+
+    const projectNameById = new Map(projects.map((p) => [String(p._id), p.projectName]))
+    const projectIdByPersonnel = new Map(
+        personnel.map((p) => [String(p._id), p.assignedProjects ? String(p.assignedProjects) : null])
+    )
+
+    return (employeeId: string | null | undefined) => {
+        if (!employeeId) return NO_PROJECT_LABEL
+        const projectId = projectIdByPersonnel.get(String(employeeId))
+        if (!projectId) return NO_PROJECT_LABEL
+        return projectNameById.get(projectId) ?? NO_PROJECT_LABEL
+    }
+}
+
 /**
  * Statistics Service for Reserve Days Reports
- * Generates various reports for reserve_days_management
+ * Generates various reports for reserve days, reading live data from the
+ * typed Personnel/Project/ReserveDay collections.
  */
 class StatisticsService {
     /**
@@ -46,67 +76,36 @@ class StatisticsService {
         try {
             logger.info('Generating daily summary report', { date })
 
-            // Get all active reserve days for the specified date
             const targetDate = toUtcMidnight(date)
-            const reserveDays = await FormSubmissions.find({
+            const reserveDays = await ReserveDayModel.find({
                 isDeleted: false,
-                'formData.startDate': { $lte: targetDate },
-                'formData.endDate': { $gte: targetDate },
+                startDate: { $lte: targetDate },
+                endDate: { $gte: targetDate },
             }).lean()
 
-            // Group by project
+            const resolveProjectName = await buildProjectNameResolver(reserveDays)
+
             const projectStats = new Map<
                 string,
-                {
-                    studioOrders: Set<string>
-                    externalOrders: Set<string>
-                    openOrders: Set<string>
-                }
+                { studioOrders: Set<string>; externalOrders: Set<string>; openOrders: Set<string> }
             >()
 
-            // Process each reserve day
             for (const reserve of reserveDays) {
-                const fundingSource = reserve.formData.fundingSource // 'internal' | 'external'
-                const orderType = reserve.formData.orderType // '8open' | 'routineOpen'
-                const employeeId = reserve.formData.employeeName
+                const fundingSource = reserve.fundingSource
+                const orderType = reserve.orderType
+                const employeeId = reserve.employeeName
 
                 if (!employeeId) {
                     logger.warn('missing employee ID', {
                         reserveId: reserve._id.toString(),
-                        startDate: reserve.formData.startDate,
-                        endDate: reserve.formData.endDate,
+                        startDate: reserve.startDate,
+                        endDate: reserve.endDate,
                         fundingSource,
                     })
-
                     continue
                 }
 
-                // Get the personnel record to find their assigned project
-                const personnel = await FormSubmissions.findOne({
-                    _id: employeeId,
-
-                    isDeleted: false,
-                }).lean()
-
-                if (!personnel) continue
-
-                const assignedProjectId = personnel.formData.assignedProjects
-
-                let projectName = NO_PROJECT_LABEL
-
-                // Get the project details if assigned
-                if (assignedProjectId) {
-                    const project = await FormSubmissions.findOne({
-                        _id: assignedProjectId,
-                        formName: 'project_management',
-                        isDeleted: false,
-                    }).lean()
-
-                    if (project) {
-                        projectName =
-                            project.formData.projectName || NO_PROJECT_LABEL
-                    }
-                }
+                const projectName = resolveProjectName(String(employeeId))
 
                 if (!projectStats.has(projectName)) {
                     projectStats.set(projectName, {
@@ -117,24 +116,19 @@ class StatisticsService {
                 }
 
                 const stats = projectStats.get(projectName)!
+                const empIdStr = String(employeeId)
 
-                // Count studio orders (internal funding)
                 if (fundingSource === 'internal') {
-                    stats.studioOrders.add(employeeId)
+                    stats.studioOrders.add(empIdStr)
                 }
-
-                // Count external orders
                 if (fundingSource === 'external') {
-                    stats.externalOrders.add(employeeId)
+                    stats.externalOrders.add(empIdStr)
                 }
-
-                // Count open orders (pending approval)
                 if (orderType === '8open' || orderType === 'routineOpen') {
-                    stats.openOrders.add(employeeId)
+                    stats.openOrders.add(empIdStr)
                 }
             }
 
-            // Build report rows
             const rows: any[][] = []
             let totalStudio = 0
             let totalExternal = 0
@@ -147,13 +141,7 @@ class StatisticsService {
                 const openCount = stats.openOrders.size
                 const total = studioCount + externalCount
 
-                rows.push([
-                    projectName,
-                    studioCount,
-                    externalCount,
-                    openCount,
-                    total,
-                ])
+                rows.push([projectName, studioCount, externalCount, openCount, total])
 
                 totalStudio += studioCount
                 totalExternal += externalCount
@@ -161,18 +149,10 @@ class StatisticsService {
                 grandTotal += total
             }
 
-            // Add totals row
-            rows.push([
-                TOTALS_LABEL,
-                totalStudio,
-                totalExternal,
-                totalOpen,
-                grandTotal,
-            ])
+            rows.push([TOTALS_LABEL, totalStudio, totalExternal, totalOpen, grandTotal])
 
             return {
                 headers: [
-                    // `תאריך דוח: ${format(parseISO(date), 'dd/MM/yyyy')}`,
                     'שם פרויקט',
                     'צווים סטודיו היום',
                     'צווים חיצוניים',
@@ -191,48 +171,35 @@ class StatisticsService {
      * Report 2: Reserve Days Summary by Date Range
      * Shows daily totals across a date range
      */
-    async generateDateRangeSummaryReport(
-        startDate: string,
-        endDate: string
-    ): Promise<ReportData> {
+    async generateDateRangeSummaryReport(startDate: string, endDate: string): Promise<ReportData> {
         try {
-            logger.info('Generating date range summary report', {
-                startDate,
-                endDate,
-            })
+            logger.info('Generating date range summary report', { startDate, endDate })
 
-            // Get all dates in range
-            const dates = eachDayOfInterval({
-                start: parseISO(startDate),
-                end: parseISO(endDate),
-            })
+            const dates = eachDayOfInterval({ start: parseISO(startDate), end: parseISO(endDate) })
 
             const headers = ['תאריך', ...dates.map((d) => format(d, 'd.M'))]
             const studioRow: (string | number)[] = ['צווים סטודיו']
             const externalRow: (string | number)[] = ['צווים חיצוניים']
-            const totalRow: (string | number)[] = [
-                'סה"כ צווים (סטודיו + חיצוניים)',
-            ]
+            const totalRow: (string | number)[] = ['סה"כ צווים (סטודיו + חיצוניים)']
 
             for (const date of dates) {
-                // Get active reserve days for this date
-                const reserveDays = await FormSubmissions.find({
+                const reserveDays = await ReserveDayModel.find({
                     isDeleted: false,
-                    'formData.startDate': { $lte: date },
-                    'formData.endDate': { $gte: date },
+                    startDate: { $lte: date },
+                    endDate: { $gte: date },
                 }).lean()
 
                 const studioPersonnel = new Set<string>()
                 const externalPersonnel = new Set<string>()
 
                 for (const record of reserveDays) {
-                    const fundingSource = record.formData.fundingSource
-                    const employeeId = record.formData.employeeName
+                    const fundingSource = record.fundingSource
+                    const employeeId = record.employeeName
 
                     if (fundingSource === 'internal') {
-                        studioPersonnel.add(employeeId)
+                        studioPersonnel.add(String(employeeId))
                     } else if (fundingSource === 'external') {
-                        externalPersonnel.add(employeeId)
+                        externalPersonnel.add(String(employeeId))
                     }
                 }
 
@@ -263,97 +230,43 @@ class StatisticsService {
         endDate: string
     ): Promise<ProjectAnalyticsReport> {
         try {
-            logger.info('Generating project analytics report', {
-                startDate,
-                endDate,
-            })
+            logger.info('Generating project analytics report', { startDate, endDate })
 
             const rangeStartDate = toUtcMidnight(startDate)
             const rangeEndDate = toUtcMidnight(endDate)
 
-            // Get all reserve days in the range
-            const reserveDays = await FormSubmissions.find({
+            const reserveDays = await ReserveDayModel.find({
                 isDeleted: false,
                 $or: [
-                    {
-                        'formData.startDate': {
-                            $gte: rangeStartDate,
-                            $lte: rangeEndDate,
-                        },
-                    },
-                    {
-                        'formData.endDate': {
-                            $gte: rangeStartDate,
-                            $lte: rangeEndDate,
-                        },
-                    },
-                    {
-                        $and: [
-                            { 'formData.startDate': { $lte: rangeStartDate } },
-                            { 'formData.endDate': { $gte: rangeEndDate } },
-                        ],
-                    },
+                    { startDate: { $gte: rangeStartDate, $lte: rangeEndDate } },
+                    { endDate: { $gte: rangeStartDate, $lte: rangeEndDate } },
+                    { $and: [{ startDate: { $lte: rangeStartDate } }, { endDate: { $gte: rangeEndDate } }] },
                 ],
             }).lean()
 
-            // Calculate number of days in range
-            const dates = eachDayOfInterval({
-                start: parseISO(startDate),
-                end: parseISO(endDate),
-            })
+            const dates = eachDayOfInterval({ start: parseISO(startDate), end: parseISO(endDate) })
             const totalDays = dates.length
 
-            // Group by project
+            const resolveProjectName = await buildProjectNameResolver(reserveDays)
 
             const projectStats = new Map<string, ProjectStats>()
 
             for (const record of reserveDays) {
-                const fundingSource = record.formData.fundingSource
-                const orderType = record.formData.orderType
-                const employeeId = record.formData.employeeName
+                const fundingSource = record.fundingSource
+                const orderType = record.orderType
+                const employeeId = record.employeeName
 
                 if (!employeeId) {
                     logger.warn('missing employee ID in project analytics', {
                         reserveId: record._id.toString(),
-                        startDate: record.formData.startDate,
-                        endDate: record.formData.endDate,
+                        startDate: record.startDate,
+                        endDate: record.endDate,
                         fundingSource,
                     })
                     continue
                 }
 
-                // Get the personnel record to find their assigned project
-                const personnel = await FormSubmissions.findOne({
-                    _id: employeeId,
-
-                    isDeleted: false,
-                }).lean()
-
-                if (!personnel) {
-                    logger.warn('Personnel record not found for employee', {
-                        employeeId,
-                        reserveId: record._id.toString(),
-                    })
-                    continue
-                }
-
-                const assignedProjectId = personnel.formData.assignedProjects
-
-                let projectName = NO_PROJECT_LABEL
-
-                // Get the project details if assigned
-                if (assignedProjectId) {
-                    const project = await FormSubmissions.findOne({
-                        _id: assignedProjectId,
-                        formName: 'project_management',
-                        isDeleted: false,
-                    }).lean()
-
-                    if (project) {
-                        projectName =
-                            project.formData.projectName || NO_PROJECT_LABEL
-                    }
-                }
+                const projectName = resolveProjectName(String(employeeId))
 
                 if (!projectStats.has(projectName)) {
                     projectStats.set(projectName, {
@@ -366,58 +279,42 @@ class StatisticsService {
 
                 const stats = projectStats.get(projectName)!
 
-                // Calculate overlapping days
-                const recordStart = asDate(record.formData.startDate)
-                const recordEnd = asDate(record.formData.endDate)
+                const recordStart = asDate(record.startDate)
+                const recordEnd = asDate(record.endDate)
                 const rangeStart = parseISO(startDate)
                 const rangeEnd = parseISO(endDate)
 
-                const overlapStart =
-                    recordStart > rangeStart ? recordStart : rangeStart
+                const overlapStart = recordStart > rangeStart ? recordStart : rangeStart
                 const overlapEnd = recordEnd < rangeEnd ? recordEnd : rangeEnd
 
-                const overlapDays = eachDayOfInterval({
-                    start: overlapStart,
-                    end: overlapEnd,
-                }).length
+                const overlapDays = eachDayOfInterval({ start: overlapStart, end: overlapEnd }).length
 
-                // Add days based on funding source
                 if (fundingSource === 'internal') {
                     stats.studioDays += overlapDays
                 } else if (fundingSource === 'external') {
                     stats.externalDays += overlapDays
                 }
 
-                // Count open orders (8open or routineOpen)
                 if (orderType === '8open' || orderType === 'routineOpen') {
                     stats.openOrders += 1
                 }
 
-                // Track unique personnel
-                stats.uniquePersonnel.add(employeeId)
+                stats.uniquePersonnel.add(String(employeeId))
             }
 
-            // Build report rows
             const rows: any[][] = []
             let totalStudioDays = 0
             let totalExternalDays = 0
             let totalOpenOrders = 0
             let totalPersonnel = 0
 
-            // Active projects = project_management records with projectStatus 'active',
-            // regardless of whether they had reservations in this date range
-            const activeProjectCount = await FormSubmissions.countDocuments({
-                formName: 'project_management',
-                isDeleted: false,
-                'formData.projectStatus': 'active',
-            })
+            // Active projects = projects with projectStatus 'active', regardless
+            // of whether they had reservations in this date range.
+            const activeProjectCount = await ProjectModel.countDocuments({ projectStatus: 'active' })
 
             for (const [projectName, stats] of projectStats.entries()) {
                 const totalProjectDays = stats.studioDays + stats.externalDays
-                const avgOrdersPerDay =
-                    totalDays > 0
-                        ? (totalProjectDays / totalDays).toFixed(2)
-                        : '0'
+                const avgOrdersPerDay = totalDays > 0 ? (totalProjectDays / totalDays).toFixed(2) : '0'
                 const personnelCount = stats.uniquePersonnel.size
 
                 rows.push([
@@ -436,10 +333,8 @@ class StatisticsService {
                 totalPersonnel += personnelCount
             }
 
-            // Add totals row
             const totalAllDays = totalStudioDays + totalExternalDays
-            const avgTotalPerDay =
-                totalDays > 0 ? (totalAllDays / totalDays).toFixed(2) : '0'
+            const avgTotalPerDay = totalDays > 0 ? (totalAllDays / totalDays).toFixed(2) : '0'
 
             rows.push([
                 TOTALS_LABEL,
@@ -474,104 +369,46 @@ class StatisticsService {
      * Report 4: External Reserve Days by Funding Unit
      * Shows external orders grouped by funding unit and project
      */
-    async generateExternalByUnitReport(
-        startDate: string,
-        endDate: string
-    ): Promise<ReportData> {
+    async generateExternalByUnitReport(startDate: string, endDate: string): Promise<ReportData> {
         try {
-            logger.info('Generating external by unit report', {
-                startDate,
-                endDate,
-            })
+            logger.info('Generating external by unit report', { startDate, endDate })
 
             const rangeStartDate = toUtcMidnight(startDate)
             const rangeEndDate = toUtcMidnight(endDate)
 
-            // Get all external reserve days in the range
-            const reserveDays = await FormSubmissions.find({
+            const reserveDays = await ReserveDayModel.find({
                 isDeleted: false,
-                'formData.fundingSource': 'external',
+                fundingSource: 'external',
                 $or: [
-                    {
-                        'formData.startDate': {
-                            $gte: rangeStartDate,
-                            $lte: rangeEndDate,
-                        },
-                    },
-                    {
-                        'formData.endDate': {
-                            $gte: rangeStartDate,
-                            $lte: rangeEndDate,
-                        },
-                    },
-                    {
-                        $and: [
-                            { 'formData.startDate': { $lte: rangeStartDate } },
-                            { 'formData.endDate': { $gte: rangeEndDate } },
-                        ],
-                    },
+                    { startDate: { $gte: rangeStartDate, $lte: rangeEndDate } },
+                    { endDate: { $gte: rangeStartDate, $lte: rangeEndDate } },
+                    { $and: [{ startDate: { $lte: rangeStartDate } }, { endDate: { $gte: rangeEndDate } }] },
                 ],
             }).lean()
 
-            // Get unique funding units
+            const resolveProjectName = await buildProjectNameResolver(reserveDays)
+
             const fundingUnits = new Set<string>()
             for (const record of reserveDays) {
-                const unit = record.formData.fundingName || 'ללא יחידה'
-                fundingUnits.add(unit)
+                fundingUnits.add(record.fundingName || 'ללא יחידה')
             }
 
             const projectStats = new Map<string, UnitStats>()
 
             for (const record of reserveDays) {
-                const employeeId = record.formData.employeeName
-                const fundingUnit = record.formData.fundingName || 'ללא יחידה'
+                const employeeId = record.employeeName
+                const fundingUnit = record.fundingName || 'ללא יחידה'
 
                 if (!employeeId) {
-                    logger.warn(
-                        'missing employee ID in external by unit report',
-                        {
-                            reserveId: record._id.toString(),
-                            startDate: record.formData.startDate,
-                            endDate: record.formData.endDate,
-                        }
-                    )
+                    logger.warn('missing employee ID in external by unit report', {
+                        reserveId: record._id.toString(),
+                        startDate: record.startDate,
+                        endDate: record.endDate,
+                    })
                     continue
                 }
 
-                // Get the personnel record to find their assigned project
-                const personnel = await FormSubmissions.findOne({
-                    _id: employeeId,
-
-                    isDeleted: false,
-                }).lean()
-
-                if (!personnel) {
-                    logger.warn(
-                        'Personnel record not found for employee in external report',
-                        {
-                            employeeId,
-                            reserveId: record._id.toString(),
-                        }
-                    )
-                    continue
-                }
-
-                const assignedProjectId = personnel.formData.assignedProjects
-
-                let projectName = NO_PROJECT_LABEL
-
-                if (assignedProjectId) {
-                    const project = await FormSubmissions.findOne({
-                        _id: assignedProjectId,
-                        formName: 'project_management',
-                        isDeleted: false,
-                    }).lean()
-
-                    if (project) {
-                        projectName =
-                            project.formData.projectName || NO_PROJECT_LABEL
-                    }
-                }
+                const projectName = resolveProjectName(String(employeeId))
 
                 if (!projectStats.has(projectName)) {
                     projectStats.set(projectName, {})
@@ -579,33 +416,22 @@ class StatisticsService {
 
                 const stats = projectStats.get(projectName)!
 
-                // Calculate overlapping days
-                const recordStart = asDate(record.formData.startDate)
-                const recordEnd = asDate(record.formData.endDate)
+                const recordStart = asDate(record.startDate)
+                const recordEnd = asDate(record.endDate)
                 const rangeStart = parseISO(startDate)
                 const rangeEnd = parseISO(endDate)
 
-                const overlapStart =
-                    recordStart > rangeStart ? recordStart : rangeStart
+                const overlapStart = recordStart > rangeStart ? recordStart : rangeStart
                 const overlapEnd = recordEnd < rangeEnd ? recordEnd : rangeEnd
 
-                const overlapDays = eachDayOfInterval({
-                    start: overlapStart,
-                    end: overlapEnd,
-                }).length
+                const overlapDays = eachDayOfInterval({ start: overlapStart, end: overlapEnd }).length
 
                 stats[fundingUnit] = (stats[fundingUnit] || 0) + overlapDays
             }
 
-            // Build headers
             const unitHeaders = Array.from(fundingUnits).sort()
-            const headers = [
-                'שם פרויקט',
-                ...unitHeaders,
-                'סה"כ ימי מיל\' חיצוניים',
-            ]
+            const headers = ['שם פרויקט', ...unitHeaders, 'סה"כ ימי מיל\' חיצוניים']
 
-            // Build rows
             const rows: any[][] = []
             const unitTotals: { [unit: string]: number } = {}
 
@@ -624,7 +450,6 @@ class StatisticsService {
                 rows.push(row)
             }
 
-            // Add totals row
             const totalRow: any[] = [TOTALS_LABEL]
             let grandTotal = 0
 
@@ -637,10 +462,7 @@ class StatisticsService {
             totalRow.push(grandTotal)
             rows.push(totalRow)
 
-            return {
-                headers,
-                rows,
-            }
+            return { headers, rows }
         } catch (error) {
             logger.error('Failed to generate external by unit report', error)
             throw error
@@ -648,67 +470,21 @@ class StatisticsService {
     }
 
     /**
-     * Build a value→label map for a field in a form, so reports display the
-     * human-readable option label instead of the stored raw value. Reads the
-     * field's `options` (select) or `items` (radio) from the form definition.
-     */
-    private async getFieldLabelMap(
-        formName: string,
-        fieldName: string
-    ): Promise<Record<string, string>> {
-        const form = await FormFields.findOne({ formName }).lean()
-        const map: Record<string, string> = {}
-        if (!form) return map
-
-        for (const section of form.sections ?? []) {
-            for (const field of section.fields ?? []) {
-                if (field.name !== fieldName) continue
-                // A field uses either `options` (select) or `items` (radio);
-                // the other may be present but empty, so pick the non-empty one.
-                const choices =
-                    field.options?.length ? field.options : field.items ?? []
-                for (const choice of choices) {
-                    if (choice?.value !== undefined) {
-                        map[String(choice.value)] = choice.label ?? String(choice.value)
-                    }
-                }
-                return map
-            }
-        }
-        return map
-    }
-
-    /**
      * Report 5: Employees on Reserve by Date and Project
      * Shows all employees who should be on reserve on a specific date, grouped by project
      */
-    async generateEmployeesOnReserveReport(
-        date: string,
-        projectId?: string
-    ): Promise<ReportData> {
+    async generateEmployeesOnReserveReport(date: string, projectId?: string): Promise<ReportData> {
         try {
-            logger.info('Generating employees on reserve report', {
-                date,
-                projectId,
-            })
+            logger.info('Generating employees on reserve report', { date, projectId })
 
             const targetDate = toUtcMidnight(date)
 
-            // Map orderType raw values → Hebrew labels from the form schema.
-            const orderTypeLabels = await this.getFieldLabelMap(
-                'reserve_days_management',
-                'orderType'
-            )
-
-            // Get all active reserve days for the specified date
-            const reserveDays = await FormSubmissions.find({
-                formName: 'reserve_days_management',
+            const reserveDays = await ReserveDayModel.find({
                 isDeleted: false,
-                'formData.startDate': { $lte: targetDate },
-                'formData.endDate': { $gte: targetDate },
+                startDate: { $lte: targetDate },
+                endDate: { $gte: targetDate },
             }).lean()
 
-            // Group by project
             const projectEmployees = new Map<
                 string,
                 Array<{
@@ -723,50 +499,34 @@ class StatisticsService {
                 }>
             >()
 
-            // Process each reserve day
             for (const reserve of reserveDays) {
-                const employeeId = reserve.formData.employeeName
+                const employeeId = reserve.employeeName
 
                 if (!employeeId) {
-                    logger.warn('Missing employee ID in reserve record', {
-                        reserveId: reserve._id.toString(),
-                    })
+                    logger.warn('Missing employee ID in reserve record', { reserveId: reserve._id.toString() })
                     continue
                 }
 
-                // Get the personnel record
-                const personnel = await FormSubmissions.findOne({
-                    _id: employeeId,
-                    isDeleted: false,
-                }).lean()
+                const personnel = await PersonnelModel.findById(employeeId).lean()
 
                 if (!personnel) {
-                    logger.warn('Personnel record not found', {
-                        employeeId,
-                    })
+                    logger.warn('Personnel record not found', { employeeId })
                     continue
                 }
 
-                const assignedProjectId = personnel.formData.assignedProjects
+                const assignedProjectId = personnel.assignedProjects
                 let projectName = NO_PROJECT_LABEL
                 let actualProjectId = ''
 
-                // Get the project details if assigned
                 if (assignedProjectId) {
-                    const project = await FormSubmissions.findOne({
-                        _id: assignedProjectId,
-                        formName: 'project_management',
-                        isDeleted: false,
-                    }).lean()
+                    const project = await ProjectModel.findById(assignedProjectId).lean()
 
                     if (project) {
-                        projectName =
-                            project.formData.projectName || NO_PROJECT_LABEL
+                        projectName = project.projectName || NO_PROJECT_LABEL
                         actualProjectId = project._id.toString()
                     }
                 }
 
-                // Filter by project if specified
                 if (projectId && actualProjectId !== projectId) {
                     continue
                 }
@@ -776,41 +536,23 @@ class StatisticsService {
                 }
 
                 const employeeData = {
-                    employeeName: `${personnel.formData.firstName || ''} ${
-                        personnel.formData.lastName || ''
-                    }`.trim(),
-                    personalNumber: personnel.formData.personalNumber || '',
-                    unitName: personnel.formData.unitName || '',
-                    fundingSource:
-                        reserve.formData.fundingSource === 'internal'
-                            ? 'סטודיו'
-                            : 'חיצוני',
-                    orderType:
-                        orderTypeLabels[reserve.formData.orderType] ??
-                        reserve.formData.orderType ??
-                        '',
-                    startDate: format(
-                        asDate(reserve.formData.startDate),
-                        'dd/MM/yyyy'
-                    ),
-                    endDate: format(
-                        asDate(reserve.formData.endDate),
-                        'dd/MM/yyyy'
-                    ),
+                    employeeName: `${personnel.firstName || ''} ${personnel.lastName || ''}`.trim(),
+                    personalNumber: personnel.personalNumber || '',
+                    unitName: personnel.reserveUnit || '',
+                    fundingSource: reserve.fundingSource === 'internal' ? 'סטודיו' : 'חיצוני',
+                    orderType: ORDER_TYPE_LABELS[reserve.orderType] ?? reserve.orderType ?? '',
+                    startDate: format(asDate(reserve.startDate), 'dd/MM/yyyy'),
+                    endDate: format(asDate(reserve.endDate), 'dd/MM/yyyy'),
                     projectId: actualProjectId,
                 }
 
                 projectEmployees.get(projectName)!.push(employeeData)
             }
 
-            // Build report rows
             const rows: any[][] = []
 
             for (const [projectName, employees] of projectEmployees.entries()) {
-                // Sort employees by name
-                employees.sort((a, b) =>
-                    a.employeeName.localeCompare(b.employeeName)
-                )
+                employees.sort((a, b) => a.employeeName.localeCompare(b.employeeName))
 
                 for (const employee of employees) {
                     rows.push([
@@ -840,10 +582,7 @@ class StatisticsService {
                 rows,
             }
         } catch (error) {
-            logger.error(
-                'Failed to generate employees on reserve report',
-                error
-            )
+            logger.error('Failed to generate employees on reserve report', error)
             throw error
         }
     }
@@ -858,40 +597,37 @@ class StatisticsService {
         fundingSource?: 'internal' | 'external'
     ): Promise<any[]> {
         try {
-            logger.info('Getting personnel list', {
-                date,
-                projectName,
-                fundingSource,
-            })
+            logger.info('Getting personnel list', { date, projectName, fundingSource })
 
             const targetDate = toUtcMidnight(date)
-            const query: any = {
+            const query: Record<string, unknown> = {
                 isDeleted: false,
-                'formData.startDate': { $lte: targetDate },
-                'formData.endDate': { $gte: targetDate },
-            }
-
-            if (projectName) {
-                query['formData.projectName'] = projectName
+                startDate: { $lte: targetDate },
+                endDate: { $gte: targetDate },
             }
 
             if (fundingSource) {
-                query['formData.fundingSource'] = fundingSource
+                query.fundingSource = fundingSource
             }
 
-            const reserveDays = await FormSubmissions.find(query)
+            const reserveDays = await ReserveDayModel.find(query).lean()
+            const resolveProjectName = await buildProjectNameResolver(reserveDays)
 
-            return reserveDays.map((record) => ({
-                name: `${record.formData.firstName} ${record.formData.lastName}`,
-                personalNumber: record.formData.personalNumber,
-                projectName: record.formData.projectName,
-                fundingSource: record.formData.fundingSource,
-                startDate: format(
-                    asDate(record.formData.startDate),
-                    'dd/MM/yyyy'
-                ),
-                endDate: format(asDate(record.formData.endDate), 'dd/MM/yyyy'),
-            }))
+            const results = await Promise.all(
+                reserveDays.map(async (record) => {
+                    const personnel = (await PersonnelModel.findById(record.employeeName).lean()) as PersonnelDocument | null
+                    return {
+                        name: personnel ? `${personnel.firstName} ${personnel.lastName}` : '',
+                        personalNumber: personnel?.personalNumber ?? '',
+                        projectName: resolveProjectName(String(record.employeeName)),
+                        fundingSource: record.fundingSource,
+                        startDate: format(asDate(record.startDate), 'dd/MM/yyyy'),
+                        endDate: format(asDate(record.endDate), 'dd/MM/yyyy'),
+                    }
+                })
+            )
+
+            return projectName ? results.filter((r) => r.projectName === projectName) : results
         } catch (error) {
             logger.error('Failed to get personnel list', error)
             throw error

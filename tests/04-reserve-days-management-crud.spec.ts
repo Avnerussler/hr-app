@@ -1,26 +1,66 @@
 // spec: tests/hr-app-comprehensive-test-plan.md
 // seed: seed.spec.ts
 
-import { test, expect, APIRequestContext } from '@playwright/test';
+import { test, expect, APIRequestContext, Page } from '@playwright/test';
 
 const API_ORIGIN = 'http://localhost:3001';
 
-/** Fetch every submission of a form, following pagination. */
-async function fetchAllSubmissions(
+const today = () => new Date().toISOString().split('T')[0];
+
+/** Convert a "YYYY-MM-DD" date string to the "MM/DD/YYYY" format the DatePicker range input expects. */
+function toPickerDate(isoDate: string): string {
+ const [year, month, day] = isoDate.split('-');
+ return `${month}/${day}/${year}`;
+}
+
+/**
+ * Fill the date-range picker's two "mm/dd/yyyy" inputs within `scope`. Uses
+ * pressSequentially (not .fill()) — the ark-ui date-input parses keystrokes as
+ * they're typed, and a bulk .fill() on the second (end) input is silently
+ * dropped, leaving only the start date registered.
+ */
+async function fillDateRangeInputs(
+ scope: import('@playwright/test').Locator,
+ startDate: string,
+ endDate: string,
+): Promise<void> {
+ const dateInputs = scope.getByPlaceholder('mm/dd/yyyy');
+ await dateInputs.nth(0).click();
+ await dateInputs.nth(0).pressSequentially(toPickerDate(startDate));
+ await dateInputs.nth(1).pressSequentially(toPickerDate(endDate));
+ // Blur the end input — ark-ui's date-input commits/parses the typed value on
+ // blur (fixOnBlur), which is also what triggers the field's onChange into RHF.
+ await dateInputs.nth(1).press('Tab');
+}
+
+/** Fetch every reserve-day order via the new /api/reserve-days REST endpoint, following pagination. */
+async function fetchAllReserveDays(
  request: APIRequestContext,
- formName: string,
 ): Promise<Array<Record<string, any>>> {
  const all: Array<Record<string, any>> = [];
  for (let page = 1; page <= 20; page++) {
-  const res = await request.get(
-   `${API_ORIGIN}/api/formSubmission?formName=${formName}&limit=500&page=${page}`,
-  );
+  const res = await request.get(`${API_ORIGIN}/api/reserve-days?limit=500&page=${page}`);
   expect(res.ok()).toBe(true);
   const body = await res.json();
-  const forms = (body.forms ?? []).filter((f: { formName?: string }) => f.formName === formName);
-  all.push(...forms);
+  const items = body.items ?? [];
+  all.push(...items);
   const total = body.pagination?.total ?? all.length;
-  if (all.length >= total || forms.length === 0) break;
+  if (all.length >= total || items.length === 0) break;
+ }
+ return all;
+}
+
+/** Fetch every personnel record via the new /api/personnel REST endpoint, following pagination. */
+async function fetchAllPersonnel(request: APIRequestContext): Promise<Array<Record<string, any>>> {
+ const all: Array<Record<string, any>> = [];
+ for (let page = 1; page <= 20; page++) {
+  const res = await request.get(`${API_ORIGIN}/api/personnel?limit=500&page=${page}`);
+  expect(res.ok()).toBe(true);
+  const body = await res.json();
+  const items = body.items ?? [];
+  all.push(...items);
+  const total = body.pagination?.total ?? all.length;
+  if (all.length >= total || items.length === 0) break;
  }
  return all;
 }
@@ -31,30 +71,18 @@ async function findConflictFreeEmployee(
  date: string,
 ): Promise<{ personalNumber: string }> {
  const target = new Date(`${date}T00:00:00.000Z`).getTime();
- const orders = await fetchAllSubmissions(request, 'reserve_days_management');
+ const orders = await fetchAllReserveDays(request);
  const busy = new Set<string>();
  for (const o of orders) {
-  const fd = o.formData;
-  const empId = fd.employeeName?._id ?? fd.employeeName;
-  const s = new Date(fd.startDate).getTime();
-  const e = new Date(fd.endDate).getTime();
+  const empId = o.employeeName?._id ?? o.employeeName;
+  const s = new Date(o.startDate).getTime();
+  const e = new Date(o.endDate).getTime();
   if (empId && s <= target && target <= e) busy.add(String(empId));
  }
- const personnel = await fetchAllSubmissions(request, 'personnel');
- const free = personnel.find(p => !busy.has(String(p._id)) && p.formData.personalNumber);
+ const personnel = await fetchAllPersonnel(request);
+ const free = personnel.find(p => !busy.has(String(p._id)) && p.personalNumber);
  expect(free, `no conflict-free employee for ${date}`).toBeTruthy();
- return { personalNumber: free!.formData.personalNumber };
-}
-
-/** formId of the `personnel` form definition. */
-async function personnelFormId(request: APIRequestContext): Promise<string> {
- const res = await request.get(`${API_ORIGIN}/api/formFields/get/partialData`);
- expect(res.ok()).toBe(true);
- const body = await res.json();
- const forms = body.forms ?? body;
- const personnel = forms.find((f: { formName?: string }) => f.formName === 'personnel');
- expect(personnel, 'personnel form definition not found').toBeTruthy();
- return personnel._id;
+ return { personalNumber: free!.personalNumber };
 }
 
 /** Create a personnel record directly via the API with known vehicle info. */
@@ -62,32 +90,27 @@ async function createPersonnelWithVehicle(
  request: APIRequestContext,
  overrides: Record<string, any> = {},
 ): Promise<{ _id: string; personalNumber: string; vehicleNumber: string }> {
- const formId = await personnelFormId(request);
  const personalNumber = `9${Date.now().toString().slice(-8)}`;
  const vehicleNumber = `12-${Date.now().toString().slice(-3)}-67`;
- const res = await request.post(`${API_ORIGIN}/api/formSubmission/create`, {
+ const res = await request.post(`${API_ORIGIN}/api/personnel`, {
   data: {
-   formId,
-   formName: 'personnel',
-   formData: {
-    firstName: 'בדיקה',
-    lastName: 'רכבטסט',
-    personalNumber,
-    vehicleEntry: true,
-    vehicleNumber,
-    isActive: true,
-    ...overrides,
-   },
+   firstName: 'בדיקה',
+   lastName: 'רכבטסט',
+   personalNumber,
+   vehicleEntry: true,
+   vehicleNumber,
+   isActive: true,
+   ...overrides,
   },
  });
  expect(res.ok(), `personnel create failed: ${res.status()}`).toBe(true);
  const body = await res.json();
- return { _id: body.form._id, personalNumber, vehicleNumber };
+ return { _id: body._id, personalNumber, vehicleNumber };
 }
 
 /**
  * Fill the reserve-days create drawer for a given employee/date range (does not
- * submit). Selects employee via the enhancedSelect search by personalNumber.
+ * submit). Selects employee via the EmployeeSelect async search by personalNumber.
  */
 async function fillReserveDayDrawer(
  page: import('@playwright/test').Page,
@@ -105,8 +128,7 @@ async function fillReserveDayDrawer(
  await page.waitForTimeout(400);
  await page.getByRole('option').filter({ hasText: personalNumber }).first().click();
 
- await drawer.locator('input[name="startDate"]').fill(startDate);
- await drawer.locator('input[name="endDate"]').fill(endDate);
+ await fillDateRangeInputs(drawer, startDate, endDate);
  await drawer.getByText('צו 8 פתוח', { exact: true }).click();
  // requestStatus (required)
  const statusCombo = drawer
@@ -114,6 +136,67 @@ async function fillReserveDayDrawer(
   .filter({ hasText: /בחר סטטוס בקשה|ממתין לטיפול|אושר|נדחה/ });
  await statusCombo.first().click();
  await page.getByRole('option', { name: 'ממתין לטיפול', exact: true }).first().click();
+}
+
+/**
+ * Read the numeric value shown on a MetricCard given its label text.
+ * MetricCard renders <Text>{label}</Text> and <Text>{value}</Text> as direct
+ * siblings inside a common Box (components/common/MetricCard.tsx). We locate the
+ * label and read the immediately-following sibling element.
+ */
+async function readMetricValue(scope: Page, label: string): Promise<number> {
+ const labelNode = scope.getByText(label, { exact: true }).first();
+ await expect(labelNode).toBeVisible();
+ const valueText = await labelNode.locator('xpath=following-sibling::*[1]').innerText();
+ const parsed = Number(valueText.trim());
+ expect(Number.isNaN(parsed), `metric "${label}" value "${valueText}" is not numeric`).toBe(false);
+ return parsed;
+}
+
+/** Poll a MetricCard value until it satisfies `predicate` (async refetch). */
+async function expectMetricToReach(
+ page: Page,
+ label: string,
+ predicate: (value: number) => boolean,
+ timeout: number,
+): Promise<void> {
+ await expect(async () => {
+  const value = await readMetricValue(page, label);
+  expect(predicate(value)).toBe(true);
+ }).toPass({ timeout });
+}
+
+/**
+ * Create a reserve-days record via the UI from the list page, using a
+ * conflict-free employee for `date` so the noOverlap rule doesn't reject it.
+ */
+async function createReserveDay(
+ page: Page,
+ request: APIRequestContext,
+ date: string,
+ requestStatusLabel = 'ממתין לטיפול',
+): Promise<void> {
+ const { personalNumber } = await findConflictFreeEmployee(request, date);
+
+ await page.getByRole('button', { name: 'צווי מילואים' }).click();
+ await page.waitForURL('**/new');
+ await fillReserveDayDrawer(page, personalNumber, date, date);
+
+ if (requestStatusLabel !== 'ממתין לטיפול') {
+  const statusCombo = page
+   .getByRole('dialog')
+   .getByRole('combobox')
+   .filter({ hasText: /בחר סטטוס בקשה|ממתין לטיפול|אושר|נדחה/ });
+  await statusCombo.first().click();
+  await page.getByRole('option', { name: requestStatusLabel, exact: true }).first().click();
+ }
+
+ await page
+  .getByRole('dialog')
+  .getByRole('button', { name: /✨ Create/i })
+  .click();
+ await page.waitForURL(/\/reserve_days_management\/default$/);
+ await expect(page.getByRole('table')).toBeVisible();
 }
 
 test.describe('Module 3: Reserve Days Management', () => {
@@ -150,7 +233,7 @@ test.describe('Module 3: Reserve Days Management', () => {
  test('TC-RES-002: Create New Reserve Days Order', async ({ page, request }) => {
   const startDate = '2025-03-01';
   const endDate = '2025-03-05';
-  // Picking the first enhancedSelect option accumulates conflicts across test
+  // Picking the first EmployeeSelect option accumulates conflicts across test
   // runs (each run adds a new order at this fixed date), eventually 409ing.
   // Use a conflict-free employee instead, selected by unique personalNumber.
   const { personalNumber } = await findConflictFreeEmployee(request, startDate);
@@ -163,7 +246,7 @@ test.describe('Module 3: Reserve Days Management', () => {
   await expect(drawer).toBeVisible();
   await expect(drawer.getByText('NEW')).toBeVisible();
 
-  // Select employee from the enhancedSelect combobox by searching personalNumber.
+  // Select employee from the EmployeeSelect combobox by searching personalNumber.
   const employeeCombobox = drawer.getByRole('combobox').filter({ hasText: 'חפש ובחר עובד' });
   await employeeCombobox.click();
   const search = page.getByPlaceholder('Search...');
@@ -172,11 +255,8 @@ test.describe('Module 3: Reserve Days Management', () => {
   await page.waitForTimeout(400);
   await page.getByRole('option').filter({ hasText: personalNumber }).first().click();
 
-  // Fill start date
-  await drawer.locator('input[name="startDate"]').fill(startDate);
-
-  // Fill end date
-  await drawer.locator('input[name="endDate"]').fill(endDate);
+  // Fill the date-range picker (single field, two mm/dd/yyyy inputs)
+  await fillDateRangeInputs(drawer, startDate, endDate);
 
   // Select order type radio — click the visible label, not the input; Chakra
   // renders a visually-hidden control span that can intercept a direct click.
@@ -191,7 +271,7 @@ test.describe('Module 3: Reserve Days Management', () => {
 
   // Click Create — navigates back to list
   await drawer.getByRole('button', { name: /✨ Create/i }).click();
-  await page.waitForURL(/\/reserve_days_management\/[^/]+$/);
+  await page.waitForURL(/\/reserve_days_management\/default$/);
 
   await expect(page.getByRole('table')).toBeVisible();
  });
@@ -210,13 +290,14 @@ test.describe('Module 3: Reserve Days Management', () => {
   await expect(page.getByRole('button', { name: /💾 Update/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /Delete/i })).toBeVisible();
 
-  // Key fields are present
-  await expect(page.locator('input[name="startDate"]')).toBeVisible();
-  await expect(page.locator('input[name="endDate"]')).toBeVisible();
+  // Key fields are present — the date-range picker's two mm/dd/yyyy inputs
+  const dateInputs = page.getByPlaceholder('mm/dd/yyyy');
+  await expect(dateInputs.nth(0)).toBeVisible();
+  await expect(dateInputs.nth(1)).toBeVisible();
 
   // Cancel navigates back to list
   await page.getByRole('button', { name: /Cancel/i }).click();
-  await page.waitForURL(/\/reserve_days_management\/[^/]+$/);
+  await page.waitForURL(/\/reserve_days_management\/default$/);
   await expect(page.getByRole('table')).toBeVisible();
  });
 
@@ -239,7 +320,7 @@ test.describe('Module 3: Reserve Days Management', () => {
 
   // Update — navigates back to list
   await page.getByRole('button', { name: /💾 Update/i }).click();
-  await page.waitForURL(/\/reserve_days_management\/[^/]+$/);
+  await page.waitForURL(/\/reserve_days_management\/default$/);
 
   await expect(page.getByRole('table')).toBeVisible();
  });
@@ -258,7 +339,7 @@ test.describe('Module 3: Reserve Days Management', () => {
   });
 
   // After delete, navigates back to list
-  await page.waitForURL(/\/reserve_days_management\/[^/]+$/);
+  await page.waitForURL(/\/reserve_days_management\/default$/);
   await expect(page.getByRole('table')).toBeVisible();
  });
 
@@ -280,12 +361,12 @@ test.describe('Module 3: Reserve Days Management', () => {
   // Form stays on /new page (validation failed)
   await expect(page).toHaveURL(/\/new$/);
 
-  // Required fields still present
-  await expect(drawer.locator('input[name="startDate"]')).toBeVisible();
+  // Required fields still present — the date-range picker's two mm/dd/yyyy inputs
+  await expect(drawer.getByPlaceholder('mm/dd/yyyy').first()).toBeVisible();
 
   // Cancel back to list
   await drawer.getByRole('button', { name: /Cancel/i }).click();
-  await page.waitForURL(/\/reserve_days_management\/[^/]+$/);
+  await page.waitForURL(/\/reserve_days_management\/default$/);
  });
 
  test('TC-RES-007: Filter by Request Status', async ({ page }) => {
@@ -350,10 +431,10 @@ test.describe('Module 3: Reserve Days Management', () => {
 
   // Specific required field errors are shown
   await expect(drawer.getByText('שם העובד הוא שדה חובה')).toBeVisible();
-  await expect(drawer.getByText('תאריך התחלה הוא שדה חובה')).toBeVisible();
+  await expect(drawer.getByText('תקופת שירות הינו שדה חובה')).toBeVisible();
 
   await drawer.getByRole('button', { name: /Cancel/i }).click();
-  await page.waitForURL(/\/reserve_days_management\/[^/]+$/);
+  await page.waitForURL(/\/reserve_days_management\/default$/);
  });
 
  test('TC-RES-011: Order Type Radio Selection', async ({ page }) => {
@@ -375,7 +456,7 @@ test.describe('Module 3: Reserve Days Management', () => {
   await expect(drawer.getByRole('radio', { name: 'צו 8 חד יומי' })).toBeChecked();
 
   await drawer.getByRole('button', { name: /Cancel/i }).click();
-  await page.waitForURL(/\/reserve_days_management\/[^/]+$/);
+  await page.waitForURL(/\/reserve_days_management\/default$/);
  });
 
  test('TC-RES-013: Overlapping order for same employee is rejected (409 noOverlap)', async ({
@@ -396,7 +477,7 @@ test.describe('Module 3: Reserve Days Management', () => {
    .getByRole('dialog')
    .getByRole('button', { name: /✨ Create/i })
    .click();
-  await page.waitForURL(/\/reserve_days_management\/[^/]+$/);
+  await page.waitForURL(/\/reserve_days_management\/default$/);
   await expect(page.getByRole('table')).toBeVisible();
 
   // 2) Second order for the SAME employee with an overlapping window — the
@@ -407,7 +488,10 @@ test.describe('Module 3: Reserve Days Management', () => {
   await fillReserveDayDrawer(page, personalNumber, '2027-03-05', '2027-03-15');
 
   const conflictResponse = page.waitForResponse(
-   r => r.url().toLowerCase().includes('/formsubmission/create') && r.status() === 409,
+   r =>
+    r.url().toLowerCase().includes('/reserve-days') &&
+    r.request().method() === 'POST' &&
+    r.status() === 409,
    { timeout: 15_000 },
   );
   await page
@@ -422,6 +506,92 @@ test.describe('Module 3: Reserve Days Management', () => {
 
   // A conflict error toast (Hebrew "צו חופף") is shown to the user.
   await expect(page.getByText(/צו חופף/).first()).toBeVisible({ timeout: 5000 });
+ });
+
+ test('TC-RES-017: Date-range picker blocks already-reserved days and flags a conflicting selection', async ({
+  page,
+  request,
+ }) => {
+  // Seed a known reserve-day window for a conflict-free employee via the API,
+  // then reproduce the same window through the UI's date-range picker. Anchored
+  // to day 10-12 of *next* month, so the test also exercises the calendar's
+  // "next month" navigation (the picker always opens on today's month).
+  const toIso = (d: Date) => d.toISOString().slice(0, 10);
+  const now = new Date();
+  const base = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 10));
+  const startDate = toIso(base);
+  const endDateObj = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 12));
+  const endDate = toIso(endDateObj);
+  const { personalNumber } = await findConflictFreeEmployee(request, startDate);
+
+  const personnelRes = await request.get(
+   `${API_ORIGIN}/api/personnel?limit=500&page=1&search=${personalNumber}`,
+  );
+  expect(personnelRes.ok()).toBe(true);
+  const { items: personnelItems } = await personnelRes.json();
+  const employeeId = personnelItems.find((p: any) => p.personalNumber === personalNumber)?._id;
+  expect(employeeId, `employee id for ${personalNumber} not found`).toBeTruthy();
+
+  const seedRes = await request.post(`${API_ORIGIN}/api/reserve-days`, {
+   data: {
+    employeeName: employeeId,
+    startDate,
+    endDate,
+    orderType: '8open',
+    requestStatus: 'pending',
+    fundingSource: 'internal',
+   },
+  });
+  expect(seedRes.ok(), `seed reserve-day create failed: ${seedRes.status()}`).toBe(true);
+
+  await page.getByRole('button', { name: 'צווי מילואים' }).click();
+  await page.waitForURL('**/new');
+  const drawer = page.getByRole('dialog');
+  await expect(drawer).toBeVisible();
+
+  // No conflict indicator before an employee/range is chosen.
+  await expect(drawer.getByText(/חופף/)).not.toBeVisible();
+
+  await drawer.getByRole('combobox').filter({ hasText: 'חפש ובחר עובד' }).click();
+  const search = page.getByPlaceholder('Search...');
+  await expect(search).toBeVisible();
+  await search.fill(personalNumber);
+  await page.waitForTimeout(400);
+  // Match the option containing this exact personalNumber in parentheses — a
+  // plain substring filter can land on the wrong option if the number is a
+  // substring of another employee's number/id in the (debounced) result list.
+  await page
+   .getByRole('option', { name: new RegExp(`\\(${personalNumber}\\)`) })
+   .first()
+   .click();
+  // Give the employee-reserved-ranges query (fired on employee selection) time
+  // to resolve before opening the calendar, so the disabled-dates set is populated.
+  await page.waitForLoadState('networkidle');
+
+  // Open the calendar (opens on today's month) and navigate to next month,
+  // where the seeded window lives, then confirm a reserved day is disabled.
+  await drawer.getByRole('button', { name: 'Open calendar' }).click();
+  const calendar = page.locator('[role="application"]');
+  await expect(calendar).toBeVisible();
+  // The day/month/year views each render their own (CSS-hidden) prev/next
+  // triggers simultaneously, so "Switch to next month" matches 3 elements —
+  // scope to the one that's actually visible.
+  await calendar.getByLabel('Switch to next month').locator('visible=true').click();
+
+  // Target the day-view cell by its zag-js data-value (the exact ISO date) —
+  // the day/month/year views all coexist in the DOM simultaneously, so a plain
+  // day-number match (e.g. "10") is ambiguous with month/year view cells.
+  const reservedDayCell = calendar.locator(`[data-view="day"][data-value="${startDate}"]`);
+  await expect(reservedDayCell).toHaveAttribute('aria-disabled', 'true');
+  await drawer.getByRole('button', { name: 'Close calendar' }).click();
+
+  // Selecting the exact reserved window for this employee surfaces a controlled
+  // RHF error instead of silently allowing an invalid overlapping submission.
+  await fillDateRangeInputs(drawer, startDate, endDate);
+  await expect(drawer.getByText(/חופף/)).toBeVisible({ timeout: 5000 });
+
+  await drawer.getByRole('button', { name: /Cancel/i }).click();
+  await page.waitForURL(/\/reserve_days_management\/default$/);
  });
 
  test('TC-RES-014: Filter by Order Type', async ({ page }) => {
@@ -458,7 +628,7 @@ test.describe('Module 3: Reserve Days Management', () => {
   const vehicleStatusGroup = drawer.getByText('סטטוס רכב').locator('..');
   await expect(vehicleStatusGroup).toContainText('—');
 
-  // Select the seeded employee via the enhancedSelect search-by-personalNumber.
+  // Select the seeded employee via the EmployeeSelect search-by-personalNumber.
   await drawer.getByRole('combobox').filter({ hasText: 'חפש ובחר עובד' }).click();
   const search = page.getByPlaceholder('Search...');
   await expect(search).toBeVisible();
@@ -468,13 +638,30 @@ test.describe('Module 3: Reserve Days Management', () => {
 
   // The vehicleStatus field live-looks-up the selected employee's personnel
   // record with no save required: vehicleEntry renders as a green-check
-  // "img" (aria-label "כן") when true, plus the vehicleNumber text.
+  // "img" (aria-label "Yes") when true, plus the vehicleNumber text.
   await expect(vehicleStatusGroup.getByRole('img', { name: 'Yes' })).toBeVisible({
    timeout: 5000,
   });
   await expect(vehicleStatusGroup).toContainText(vehicleNumber);
 
   await drawer.getByRole('button', { name: /Cancel/i }).click();
-  await page.waitForURL(/\/reserve_days_management\/[^/]+$/);
+  await page.waitForURL(/\/reserve_days_management\/default$/);
+ });
+
+ test('TC-RES-016: Creating a reserve day updates its page MetricCards immediately', async ({
+  page,
+  request,
+ }) => {
+  test.setTimeout(90_000);
+
+  const totalBefore = await readMetricValue(page, 'סה"כ צווים');
+  const pendingBefore = await readMetricValue(page, 'ממתינים לאישור');
+
+  // Create mutation invalidates the reserve-days metrics query, so both cards
+  // must bump without a page reload.
+  await createReserveDay(page, request, today(), 'ממתין לטיפול');
+
+  await expectMetricToReach(page, 'סה"כ צווים', v => v === totalBefore + 1, 15_000);
+  await expectMetricToReach(page, 'ממתינים לאישור', v => v === pendingBefore + 1, 15_000);
  });
 });

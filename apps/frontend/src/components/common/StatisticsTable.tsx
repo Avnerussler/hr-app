@@ -8,7 +8,7 @@ import {
     FilterFn,
 } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
-import { rankSort } from '@/components/GenericTable/utils/rankSort'
+import { rankSort } from '@/components/common/Table/utils/rankSort'
 
 // Simple fuzzy filter for statistics
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

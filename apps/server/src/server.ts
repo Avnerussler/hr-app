@@ -5,15 +5,6 @@ import router from './routes'
 import connectDB from './config/db'
 import logger from './config/logger'
 import {
-    createPersonalForm,
-    createStudioForm,
-    addMetricsToAllForms,
-    createReserveDaysForm,
-    seedPersonnelData,
-    seedProjectManagement,
-    seedReserveDaysData,
-} from './migrations'
-import {
     globalErrorHandler,
     handleNotFound,
     handleUncaughtException,
@@ -74,20 +65,6 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
 // Connect to MongoDB
 connectDB()
-const runMigrations = process.env.RUN_MIGRATIONS
-
-;(async () => {
-    if (runMigrations === 'true') {
-        await createPersonalForm()
-        await createStudioForm()
-        await createReserveDaysForm()
-        await addMetricsToAllForms()
-        // await seedPersonnelData()
-        // await seedProjectManagement()
-        // await seedReserveDaysData()
-        logger.info('Running migrations')
-    }
-})()
 
 // Health check route
 app.get('/health', (req: Request, res: Response) => {

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import logger from '../config/logger'
 import mongoose from 'mongoose'
+import { ZodError } from 'zod'
 
 export interface ApiError extends Error {
     statusCode: number
@@ -83,6 +84,12 @@ const handleDuplicateFieldsDB = (err: any): AppError => {
 const handleValidationErrorDB = (err: mongoose.Error.ValidationError): AppError => {
     const errors = Object.values(err.errors).map(el => el.message)
     const message = `Invalid input data: ${errors.join('. ')}`
+    return new ValidationError(message)
+}
+
+const handleZodError = (err: ZodError): AppError => {
+    const errors = err.errors.map((e) => `${e.path.join('.')}: ${e.message}`)
+    const message = errors.join('. ') || 'Invalid input data'
     return new ValidationError(message)
 }
 
@@ -173,6 +180,8 @@ export const globalErrorHandler = (
         error = handleDuplicateFieldsDB(err)
     } else if (err.name === 'ValidationError') {
         error = handleValidationErrorDB(err)
+    } else if (err instanceof ZodError) {
+        error = handleZodError(err)
     } else if (err.name === 'JsonWebTokenError') {
         error = handleJWTError()
     } else if (err.name === 'TokenExpiredError') {

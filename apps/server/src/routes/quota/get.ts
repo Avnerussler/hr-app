@@ -1,5 +1,6 @@
 import Quota from '../../models/Quota'
-import { FormSubmissions } from '../../models/FormSubmissions'
+import { ReserveDayModel } from '../../models/ReserveDay'
+import { PersonnelModel } from '../../models/Personnel'
 import { Request, Response, Router } from 'express'
 import logger from '../../config/logger'
 import { asyncHandler, validate, schemas } from '../../middleware'
@@ -81,7 +82,7 @@ router.get(
     '/date/:date',
     asyncHandler(async (req: Request, res: Response) => {
         try {
-            const { date } = req.params
+            const date = String(req.params.date)
 
             const result = await Quota.getQuotaWithOccupancy(date)
 
@@ -106,7 +107,8 @@ router.get(
     '/range/:startDate/:endDate',
     asyncHandler(async (req: Request, res: Response) => {
         try {
-            const { startDate, endDate } = req.params
+            const startDate = String(req.params.startDate)
+            const endDate = String(req.params.endDate)
 
             const quotas = await Quota.findByDateRange(startDate, endDate)
 
@@ -128,7 +130,8 @@ router.get(
     '/occupancy/range/:startDate/:endDate',
     asyncHandler(async (req: Request, res: Response) => {
         try {
-            const { startDate, endDate } = req.params
+            const startDate = String(req.params.startDate)
+            const endDate = String(req.params.endDate)
             const { occupancyOnly } = req.query
 
             if (occupancyOnly === 'true') {
@@ -240,17 +243,17 @@ router.get(
             const limitNum = Math.max(1, Math.min(10000, parseInt(limit, 10) || 30))
 
             // First, find all reservations that include this specific date to get the employee IDs
-            const reservationsForDate = await FormSubmissions.find({
+            const reservationsForDate = await ReserveDayModel.find({
                 isDeleted: false,
-                'formData.requestStatus': { $ne: 'denied' },
+                requestStatus: { $ne: 'denied' },
                 $or: [
                     {
-                        'formData.startDate': { $lte: date },
-                        'formData.endDate': { $gte: date },
+                        startDate: { $lte: date },
+                        endDate: { $gte: date },
                     },
                     {
-                        'formData.startDate': date,
-                        'formData.endDate': { $exists: false },
+                        startDate: date,
+                        endDate: { $exists: false },
                     },
                 ],
             }).lean()
@@ -259,16 +262,7 @@ router.get(
             const employeeDocIds = Array.from(
                 new Set(
                     reservationsForDate
-                        .map((r: any) => {
-                            const empName = r.formData.employeeName
-                            // Handle both object with _id and direct ID string
-                            if (typeof empName === 'object' && empName?._id) {
-                                return empName._id.toString()
-                            } else if (typeof empName === 'string') {
-                                return empName
-                            }
-                            return null
-                        })
+                        .map((r: any) => r.employeeName?.toString() ?? null)
                         .filter((id: any) => id)
                 )
             )
@@ -276,36 +270,26 @@ router.get(
             // Fetch full employee data AND all their reservations in parallel
             const [employeeRecords, allEmployeeReservations] =
                 await Promise.all([
-                    FormSubmissions.find({
+                    PersonnelModel.find({
                         _id: { $in: employeeDocIds },
-                        isDeleted: false,
                     }).lean(),
-                    FormSubmissions.find({
+                    ReserveDayModel.find({
                         isDeleted: false,
-                        'formData.requestStatus': { $ne: 'denied' },
-                        'formData.employeeName': { $in: employeeDocIds },
+                        requestStatus: { $ne: 'denied' },
+                        employeeName: { $in: employeeDocIds },
                     }).lean(),
                 ])
 
             // Create a map of employee data by document ID
             const employeeDataMap = new Map()
             employeeRecords.forEach((record: any) => {
-                employeeDataMap.set(record._id.toString(), record.formData)
+                employeeDataMap.set(record._id.toString(), record)
             })
 
             // Create a map of reservations by employee ID for checking consecutive orders
             const reservationsByEmployee = new Map<string, any[]>()
             allEmployeeReservations.forEach((reservation: any) => {
-                const formData = reservation.formData
-                let employeeId = null
-                if (
-                    typeof formData.employeeName === 'object' &&
-                    formData.employeeName?._id
-                ) {
-                    employeeId = formData.employeeName._id.toString()
-                } else if (typeof formData.employeeName === 'string') {
-                    employeeId = formData.employeeName
-                }
+                const employeeId = reservation.employeeName?.toString() ?? null
 
                 if (employeeId) {
                     if (!reservationsByEmployee.has(employeeId)) {
@@ -320,18 +304,7 @@ router.get(
             // Map reservations to employee attendance data
             const employees = reservationsForDate
                 .map((reservation: any): EmployeeAttendanceRecord | null => {
-                    const formData = reservation.formData
-
-                    // Get employee ID
-                    let employeeId = null
-                    if (
-                        typeof formData.employeeName === 'object' &&
-                        formData.employeeName?._id
-                    ) {
-                        employeeId = formData.employeeName._id.toString()
-                    } else if (typeof formData.employeeName === 'string') {
-                        employeeId = formData.employeeName
-                    }
+                    const employeeId = reservation.employeeName?.toString() ?? null
 
                     // Skip this reservation if no valid employee ID
                     if (!employeeId) {
@@ -346,41 +319,38 @@ router.get(
                     let lastName = ''
                     let personalNumber = ''
                     let phone = ''
+                    let reserveUnit = ''
+                    let workPlace = ''
 
-                    // Try to get full employee data from personnel
                     const fullEmployeeData = employeeDataMap.get(employeeId)
                     if (fullEmployeeData) {
-                        employeeName =
-                            fullEmployeeData.firstName || 'Unknown Employee'
+                        employeeName = fullEmployeeData.firstName || 'Unknown Employee'
                         lastName = fullEmployeeData.lastName || ''
                         personalNumber =
                             fullEmployeeData.personalNumber?.toString() ||
                             fullEmployeeData.userId?.toString() ||
                             ''
                         phone = fullEmployeeData.phone || ''
-                    } else if (
-                        typeof formData.employeeName === 'object' &&
-                        formData.employeeName?.display
-                    ) {
-                        employeeName = formData.employeeName.display
+                        reserveUnit = fullEmployeeData.reserveUnit || ''
+                        workPlace = fullEmployeeData.workPlace || ''
                     }
 
                     const reserveDaysArray: Date[] = []
-                    if (formData.startDate && formData.endDate) {
+                    if (reservation.startDate && reservation.endDate) {
                         try {
                             reserveDaysArray.push(
                                 ...eachDayOfInterval({
-                                    start: new Date(formData.startDate),
-                                    end: new Date(formData.endDate),
+                                    start: new Date(reservation.startDate),
+                                    end: new Date(reservation.endDate),
                                 })
                             )
                         } catch (dateError) {
                             logger.warn(
-                                `Invalid date range for reservation ${reservation._id}: startDate=${formData.startDate}, endDate=${formData.endDate}`,
+                                `Invalid date range for reservation ${reservation._id}: startDate=${reservation.startDate}, endDate=${reservation.endDate}`,
                                 dateError
                             )
-                            if (formData.startDate) {
-                                reserveDaysArray.push(new Date(formData.startDate))
+                            if (reservation.startDate) {
+                                reserveDaysArray.push(new Date(reservation.startDate))
                             }
                         }
                     }
@@ -396,7 +366,7 @@ router.get(
                         hasConsecutiveDays
                     )
 
-                    const startDate = formData.startDate ? new Date(formData.startDate) : null
+                    const startDate = reservation.startDate ? new Date(reservation.startDate) : null
 
                     return {
                         _id: employeeId,
@@ -405,24 +375,22 @@ router.get(
                         lastName: lastName,
                         personalNumber: personalNumber,
                         phone: phone,
-                        reserveUnit: formData.reserveUnit || '',
-                        workPlace: formData.workPlace || '',
-                        orderNumber: formData.orderNumber || '',
-                        orderType: formData.orderType || '',
+                        reserveUnit,
+                        workPlace,
+                        orderNumber: '',
+                        orderType: reservation.orderType || '',
                         isActive: true,
-                        startDate: formData.startDate,
-                        endDate: formData.endDate,
+                        startDate: reservation.startDate,
+                        endDate: reservation.endDate,
                         isStartingToday: startDate !== null && isSameDay(startDate, date),
                         isEndingToday: isEndingToday,
                         isAttendanceRequired: true,
-                        hasAttended:
-                            formData.attendance &&
-                            typeof formData.attendance === 'object' &&
-                            formData.attendance[dateStr] === true,
+                        hasAttended: reservation.attendance?.get?.(dateStr) === true ||
+                            reservation.attendance?.[dateStr] === true,
                         workDays: [], // Could be calculated from the date range
                         reserveDays: reserveDaysArray,
-                        requestStatus: formData.requestStatus || '',
-                        fundingSource: formData.fundingSource || '',
+                        requestStatus: reservation.requestStatus || '',
+                        fundingSource: reservation.fundingSource || '',
                     }
                 })
                 .filter((emp): emp is EmployeeAttendanceRecord => emp !== null) as EmployeeAttendanceRecord[]

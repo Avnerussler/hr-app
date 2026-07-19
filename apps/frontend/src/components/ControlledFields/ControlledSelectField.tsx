@@ -35,7 +35,7 @@ export const ControlledSelectField = ({
             rules={{ required: required ? `${label} הוא שדה חובה` : false }}
             render={({ field, fieldState: { error } }) => {
                 return (
-                    <Field.Root orientation="vertical" invalid={!!error}>
+                    <Field.Root data-field-name={name} orientation="vertical" invalid={!!error}>
                         <SelectRoot
                             collection={frameworks(options)}
                             size="sm"

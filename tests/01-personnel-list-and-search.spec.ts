@@ -95,7 +95,9 @@ test.describe('Module 1: Personnel Management', () => {
   const firstColumnCells = () => page.locator('tbody tr td:first-child');
 
   await sortButton.click();
-  await expect(page.getByRole('button', { name: /Sort by שם פרטי, currently ascending/ })).toBeVisible();
+  await expect(
+   page.getByRole('button', { name: /Sort by שם פרטי, currently ascending/ }),
+  ).toBeVisible();
 
   await expect(page.getByText(/Showing 1 to \d+ of \d+ entries/)).toBeVisible();
 
@@ -106,7 +108,9 @@ test.describe('Module 1: Personnel Management', () => {
 
   // Click again to reverse sort
   await sortButton.click();
-  await expect(page.getByRole('button', { name: /Sort by שם פרטי, currently descending/ })).toBeVisible();
+  await expect(
+   page.getByRole('button', { name: /Sort by שם פרטי, currently descending/ }),
+  ).toBeVisible();
 
   const descValues = await firstColumnCells().allTextContents();
   const sortedDesc = [...descValues].sort((a, b) => b.localeCompare(a, 'he'));
@@ -114,35 +118,6 @@ test.describe('Module 1: Personnel Management', () => {
 
   // Verify data persists through sort
   await expect(page.getByText(/Showing 1 to \d+ of \d+ entries/)).toBeVisible();
- });
-
- test('TC-PERS-015: Table Sorting spans across pages, not just the current page', async ({ page }) => {
-  // Regression test: sorting must be server-side and apply to the full dataset, not
-  // just re-order whatever rows happen to be loaded for the current page.
-  const sortButton = page.getByRole('button', { name: /Sort by שם פרטי/ });
-
-  const sortRequest = page.waitForRequest((req) =>
-   req.url().includes('/formsubmission') && req.url().includes('sortField=')
-  );
-  await sortButton.click();
-  await sortRequest;
-
-  const pagination = page.getByRole('navigation', { name: 'pagination' });
-  await expect(pagination).toBeVisible();
-
-  const firstColumnCells = () => page.locator('tbody tr td:first-child');
-  const lastOnPage1 = (await firstColumnCells().allTextContents()).at(-1);
-
-  const page2Request = page.waitForRequest((req) =>
-   req.url().includes('/formsubmission') && req.url().includes('page=2')
-  );
-  await page.getByRole('button', { name: 'page 2', exact: true }).click();
-  await page2Request;
-  await expect(page.getByText(/Showing 11 to \d+ of \d+ entries/)).toBeVisible();
-
-  const firstOnPage2 = (await firstColumnCells().allTextContents()).at(0);
-
-  expect(lastOnPage1!.localeCompare(firstOnPage2!, 'he')).toBeLessThanOrEqual(0);
  });
 
  test('TC-PERS-012: Table Pagination', async ({ page }) => {
@@ -185,5 +160,38 @@ test.describe('Module 1: Personnel Management', () => {
   await searchBox.fill(hebrewSearchTerm);
   // Verify search works (results should be filtered)
   await expect(page.getByRole('table')).toBeVisible();
+ });
+
+ test('TC-PERS-015: Table Sorting spans across pages, not just the current page', async ({
+  page,
+ }) => {
+  // Regression test: sorting must be server-side and apply to the full dataset, not
+  // just re-order whatever rows happen to be loaded for the current page.
+  const sortButton = page.getByRole('button', { name: /Sort by שם פרטי/ });
+
+  const sortResponse = page.waitForResponse(
+   res => res.url().includes('/api/personnel') && res.url().includes('sortField='),
+  );
+  await sortButton.click();
+  await sortResponse;
+
+  const pagination = page.getByRole('navigation', { name: 'pagination' });
+  await expect(pagination).toBeVisible();
+
+  const firstColumnCells = () => page.locator('tbody tr td:first-child');
+  await expect(firstColumnCells().first()).toBeVisible();
+  const lastOnPage1 = (await firstColumnCells().allTextContents()).at(-1);
+
+  const page2Response = page.waitForResponse(
+   res => res.url().includes('/api/personnel') && res.url().includes('page=2'),
+  );
+  await page.getByRole('button', { name: 'page 2', exact: true }).click();
+  await page2Response;
+  await expect(page.getByText(/Showing 11 to \d+ of \d+ entries/)).toBeVisible();
+  await expect(firstColumnCells().first()).toBeVisible();
+
+  const firstOnPage2 = (await firstColumnCells().allTextContents()).at(0);
+
+  expect(lastOnPage1!.localeCompare(firstOnPage2!, 'he')).toBeLessThanOrEqual(0);
  });
 });

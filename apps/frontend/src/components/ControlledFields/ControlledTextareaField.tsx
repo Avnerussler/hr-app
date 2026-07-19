@@ -27,7 +27,7 @@ export const ControlledTextareaField: FC<ControlledTextareaFieldProps> = ({
                 },
             }}
             render={({ field }) => (
-                <Field.Root key={id} orientation="vertical">
+                <Field.Root key={id} data-field-name={name} orientation="vertical">
                     <Field.Label>{label}</Field.Label>
                     <Textarea
                         {...field}

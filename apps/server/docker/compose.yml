@@ -28,7 +28,9 @@ services:
             - app-network
 
     app:
-        build: ..
+        build:
+            context: ../../..
+            dockerfile: apps/server/Dockerfile
         container_name: hr-server-app
         ports:
             - '3001:3001'
@@ -40,7 +42,6 @@ services:
             - MINIO_ACCESS_KEY=admin
             - MINIO_SECRET_KEY=password123
             - FRONTEND_URL=http://localhost:3000
-            - RUN_MIGRATIONS=true
         depends_on:
             - mongo
             - minio
@@ -48,7 +49,9 @@ services:
             - app-network
 
     frontend:
-        build: ../../frontend
+        build:
+            context: ../../..
+            dockerfile: apps/frontend/Dockerfile
         container_name: hr-frontend-app
         ports:
             - '3000:80'

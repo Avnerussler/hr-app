@@ -19,34 +19,19 @@ jobs:
      with:
       node-version: '20.x'
       cache: 'npm'
-      cache-dependency-path: |
-       apps/frontend/package-lock.json
-       apps/server/package-lock.json
+      cache-dependency-path: package-lock.json
 
-   - name: Install frontend dependencies
-     run: |
-      cd apps/frontend
-      npm ci
-
-   - name: Install server dependencies
-     run: |
-      cd apps/server
-      npm ci
+   - name: Install dependencies
+     run: npm ci
 
    - name: Run frontend lint
-     run: |
-      cd apps/frontend
-      npm run lint
+     run: npm run lint --workspace=apps/frontend
 
    - name: Run frontend build
-     run: |
-      cd apps/frontend
-      npm run build
+     run: npm run build --workspace=apps/frontend
 
    - name: Run server build
-     run: |
-      cd apps/server
-      npm run build
+     run: npm run build --workspace=apps/server
 
    - name: Upload frontend build artifacts
      uses: actions/upload-artifact@v4
@@ -72,17 +57,13 @@ jobs:
      with:
       node-version: '20.x'
       cache: 'npm'
-      cache-dependency-path: apps/server/package-lock.json
+      cache-dependency-path: package-lock.json
 
-   - name: Install server dependencies
-     run: |
-      cd apps/server
-      npm ci
+   - name: Install dependencies
+     run: npm ci
 
    - name: Run server tests
-     run: |
-      cd apps/server
-      npm test
+     run: npm test --workspace=apps/server
 
  docker-build:
   runs-on: ubuntu-latest
@@ -98,7 +79,7 @@ jobs:
    - name: Build frontend Docker image
      uses: docker/build-push-action@v5
      with:
-      context: ./apps/frontend
+      context: .
       file: ./apps/frontend/Dockerfile
       push: false
       tags: hr-frontend:${{ github.sha }}
@@ -108,7 +89,7 @@ jobs:
    - name: Build server Docker image
      uses: docker/build-push-action@v5
      with:
-      context: ./apps/server
+      context: .
       file: ./apps/server/Dockerfile
       push: false
       tags: hr-server:${{ github.sha }}

@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Model } from 'mongoose'
 import { format, endOfMonth, parseISO } from 'date-fns'
-import { FormSubmissions } from './FormSubmissions'
+import { ReserveDayModel } from './ReserveDay'
 
 export interface IQuota extends Document {
     date: string
@@ -180,20 +180,20 @@ quotaSchema.statics.getCurrentOccupancy = async function (
         const endOfDay = new Date(dateObj)
         endOfDay.setUTCHours(23, 59, 59, 999)
 
-        const occupancy = await FormSubmissions.countDocuments({
-            'formData.fundingSource': 'internal',
-            'formData.requestStatus': { $ne: 'denied' },
+        const occupancy = await ReserveDayModel.countDocuments({
+            fundingSource: 'internal',
+            requestStatus: { $ne: 'denied' },
             isDeleted: false,
             $or: [
                 // Case 1: Date falls within startDate and endDate range
                 {
-                    'formData.startDate': { $lte: endOfDay },
-                    'formData.endDate': { $gte: startOfDay },
+                    startDate: { $lte: endOfDay },
+                    endDate: { $gte: startOfDay },
                 },
                 // Case 2: Single day reservation (startDate equals the date, no endDate)
                 {
-                    'formData.startDate': { $gte: startOfDay, $lte: endOfDay },
-                    'formData.endDate': { $exists: false },
+                    startDate: { $gte: startOfDay, $lte: endOfDay },
+                    endDate: { $exists: false },
                 },
             ],
         })
@@ -238,28 +238,28 @@ quotaSchema.statics.getOccupancyForDateRange = async function (
         const rangeEnd = parseISO(endDate)
         rangeEnd.setUTCHours(23, 59, 59, 999)
 
-        const reservations = await FormSubmissions.find(
+        const reservations = await ReserveDayModel.find(
             {
-                'formData.fundingSource': 'internal',
-                'formData.requestStatus': { $ne: 'denied' },
+                fundingSource: 'internal',
+                requestStatus: { $ne: 'denied' },
                 isDeleted: false,
                 $or: [
                     // Reservations that overlap with the range
                     {
-                        'formData.startDate': { $lte: rangeEnd },
-                        'formData.endDate': { $gte: rangeStart },
+                        startDate: { $lte: rangeEnd },
+                        endDate: { $gte: rangeStart },
                     },
                     // Single day reservations within the range (no endDate)
                     {
-                        'formData.startDate': { $gte: rangeStart, $lte: rangeEnd },
-                        'formData.endDate': { $exists: false },
+                        startDate: { $gte: rangeStart, $lte: rangeEnd },
+                        endDate: { $exists: false },
                     },
                 ],
             },
             {
-                'formData.startDate': 1,
-                'formData.endDate': 1,
-                'formData.employeeName': 1,
+                startDate: 1,
+                endDate: 1,
+                employeeName: 1,
             }
         )
 
@@ -280,9 +280,9 @@ quotaSchema.statics.getOccupancyForDateRange = async function (
 
         // Count employees for each date
         reservations.forEach((reservation: any) => {
-            const resStartDate = new Date(reservation.formData.startDate)
-            const resEndDate = reservation.formData.endDate
-                ? new Date(reservation.formData.endDate)
+            const resStartDate = new Date(reservation.startDate)
+            const resEndDate = reservation.endDate
+                ? new Date(reservation.endDate)
                 : resStartDate // Single day if no end date
 
             // Count this employee for each day they're reserved
@@ -319,28 +319,28 @@ quotaSchema.statics.getExternalOccupancyForDateRange = async function (
         const rangeEnd = parseISO(endDate)
         rangeEnd.setUTCHours(23, 59, 59, 999)
 
-        const reservations = await FormSubmissions.find(
+        const reservations = await ReserveDayModel.find(
             {
-                'formData.fundingSource': 'external',
-                'formData.requestStatus': { $ne: 'denied' },
+                fundingSource: 'external',
+                requestStatus: { $ne: 'denied' },
                 isDeleted: false,
                 $or: [
                     // Reservations that overlap with the range
                     {
-                        'formData.startDate': { $lte: rangeEnd },
-                        'formData.endDate': { $gte: rangeStart },
+                        startDate: { $lte: rangeEnd },
+                        endDate: { $gte: rangeStart },
                     },
                     // Single day reservations within the range (no endDate)
                     {
-                        'formData.startDate': { $gte: rangeStart, $lte: rangeEnd },
-                        'formData.endDate': { $exists: false },
+                        startDate: { $gte: rangeStart, $lte: rangeEnd },
+                        endDate: { $exists: false },
                     },
                 ],
             },
             {
-                'formData.startDate': 1,
-                'formData.endDate': 1,
-                'formData.employeeName': 1,
+                startDate: 1,
+                endDate: 1,
+                employeeName: 1,
             }
         )
 
@@ -361,9 +361,9 @@ quotaSchema.statics.getExternalOccupancyForDateRange = async function (
 
         // Count employees for each date
         reservations.forEach((reservation: any) => {
-            const resStartDate = new Date(reservation.formData.startDate)
-            const resEndDate = reservation.formData.endDate
-                ? new Date(reservation.formData.endDate)
+            const resStartDate = new Date(reservation.startDate)
+            const resEndDate = reservation.endDate
+                ? new Date(reservation.endDate)
                 : resStartDate // Single day if no end date
 
             // Count this employee for each day they're reserved

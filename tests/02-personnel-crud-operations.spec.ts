@@ -206,13 +206,14 @@ test.describe('Module 1: Personnel Management - CRUD Operations', () => {
  });
 
  test('TC-PERS-008: Personnel Form Validation', async ({ page }) => {
-  // Generate test data with Faker
+  // Generate test data with Faker - only the 3 truly-required fields
+  // (firstName, lastName, personalNumber). All other personnel fields
+  // (email, phone, city, etc.) are optional, so submitting with just these
+  // three filled in must succeed without any validation error.
   const validData = {
    firstName: faker.person.firstName(),
    lastName: faker.person.lastName(),
    personalNumber: faker.string.numeric(9),
-   email: faker.internet.email(),
-   phone: '050' + faker.string.numeric(7),
   };
 
   // Click the "משאבי אנוש" add button - the PageHeader action button uses the
@@ -231,20 +232,55 @@ test.describe('Module 1: Personnel Management - CRUD Operations', () => {
    await page.waitForTimeout(500);
   }
 
-  // Fill in valid data to test form submission
+  // Fill only the required fields - email/phone/etc. are intentionally left blank
   await page.locator('input[name="firstName"]').fill(validData.firstName);
   await page.locator('input[name="lastName"]').fill(validData.lastName);
   await page.locator('input[name="personalNumber"]').fill(validData.personalNumber);
-  await page.locator('input[name="email"]').fill(validData.email);
-  await page.locator('input[name="phone"]').fill(validData.phone);
 
   // Click Create/Save button
   const saveButton = page.getByRole('button', { name: /Create|שמור/i });
   await saveButton.click();
 
-  // Verify drawer closes and we're back on list page
+  // Verify drawer closes and we're back on list page - no validation error
+  // should block submission since only the 3 required fields matter.
   await expect(drawer).not.toBeVisible({ timeout: 10000 });
   await expect(page.getByRole('table')).toBeVisible();
+ });
+
+ test('TC-PERS-010: Missing Required Field Jumps To Its Section And Scrolls Into View', async ({ page }) => {
+  // Click the "משאבי אנוש" add button to open the create drawer.
+  await page.getByRole('button', { name: 'משאבי אנוש' }).click();
+
+  const drawer = page.getByRole('dialog');
+  await expect(drawer).toBeVisible();
+
+  // The Create/Update button stays disabled until the form is dirty. Fill
+  // one optional field (on the Personal Information tab, which is open by
+  // default) so the Save button becomes enabled without satisfying the
+  // required-field validation.
+  await page.locator('input[name="city"]').fill('תל אביב');
+
+  // Start from a tab other than "מידע אישי" (Personal Information) - the
+  // missing required fields (firstName/lastName/personalNumber) live on that
+  // tab, so submitting from elsewhere must switch back to it automatically.
+  const militaryInfoTab = page.getByRole('tab', { name: 'מידע צבאי' });
+  await militaryInfoTab.click();
+  await expect(militaryInfoTab).toHaveAttribute('aria-selected', 'true');
+
+  // Submit with all required fields empty.
+  const saveButton = page.getByRole('button', { name: /Create|שמור/i });
+  await expect(saveButton).toBeEnabled();
+  await saveButton.click();
+
+  // Drawer must stay open (validation blocked submission) and the form must
+  // switch back to the "מידע אישי" tab where the invalid fields live.
+  await expect(drawer).toBeVisible();
+  const personalInfoTab = page.getByRole('tab', { name: 'מידע אישי' });
+  await expect(personalInfoTab).toHaveAttribute('aria-selected', 'true', { timeout: 5000 });
+
+  // The first invalid field (firstName) must be scrolled into view.
+  const firstNameField = page.locator('[data-field-name="firstName"]');
+  await expect(firstNameField).toBeInViewport({ timeout: 5000 });
  });
 
  test('TC-PERS-003: Filter Personnel', async ({ page }) => {

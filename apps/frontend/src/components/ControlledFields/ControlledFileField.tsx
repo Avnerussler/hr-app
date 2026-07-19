@@ -82,7 +82,7 @@ export const ControlledFileInput: FC<ControlledFileInputProps> = ({
             }
             render={({ field: { onChange, value } }) => {
                 return (
-                    <Field.Root orientation="vertical" w="100%">
+                    <Field.Root data-field-name={name} orientation="vertical" w="100%">
                         <FileUploadRoot
                             accept={'.png, .jpeg, .jpg, .pdf'}
                             gap="1"

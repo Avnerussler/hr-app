@@ -1,6 +1,6 @@
 import { Box, Grid, Stack, Flex, Button, Text } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
-import { format, subDays } from 'date-fns'
+import { format } from 'date-fns'
 import {
     FiCalendar,
     FiClock,
@@ -21,17 +21,26 @@ import {
     useEmployeesOnReserveQuery,
 } from '../../hooks/queries/useStatisticsQueries'
 
+// Reserve-day dates are stored as UTC-midnight and reports query by UTC date
+// boundaries, so "today"/date-range defaults must use the UTC calendar date —
+// not the browser's local timezone, which can be a day ahead/behind UTC near
+// midnight (e.g. Israel is UTC+3).
+const todayUtc = () => new Date().toISOString().split('T')[0]
+const daysAgoUtc = (n: number) => {
+    const d = new Date()
+    d.setUTCDate(d.getUTCDate() - n)
+    return d.toISOString().split('T')[0]
+}
+
 export function Dashboard() {
     // Date range state - default to last 30 days
     const [dateRange, setDateRange] = useState({
-        startDate: format(subDays(new Date(), 30), 'yyyy-MM-dd'),
-        endDate: format(new Date(), 'yyyy-MM-dd'),
+        startDate: daysAgoUtc(30),
+        endDate: todayUtc(),
     })
 
     // Selected date for employees on reserve report - default to today
-    const [selectedDate, setSelectedDate] = useState(
-        format(new Date(), 'yyyy-MM-dd')
-    )
+    const [selectedDate, setSelectedDate] = useState(todayUtc())
 
     // Auto-refresh interval (5 minutes)
     const [lastRefreshed, setLastRefreshed] = useState(new Date())
@@ -236,11 +245,8 @@ export function Dashboard() {
                             variant="outline"
                             onClick={() =>
                                 setDateRange({
-                                    startDate: format(
-                                        subDays(new Date(), 7),
-                                        'yyyy-MM-dd'
-                                    ),
-                                    endDate: format(new Date(), 'yyyy-MM-dd'),
+                                    startDate: daysAgoUtc(7),
+                                    endDate: todayUtc(),
                                 })
                             }
                         >
@@ -251,11 +257,8 @@ export function Dashboard() {
                             variant="outline"
                             onClick={() =>
                                 setDateRange({
-                                    startDate: format(
-                                        subDays(new Date(), 30),
-                                        'yyyy-MM-dd'
-                                    ),
-                                    endDate: format(new Date(), 'yyyy-MM-dd'),
+                                    startDate: daysAgoUtc(30),
+                                    endDate: todayUtc(),
                                 })
                             }
                         >
