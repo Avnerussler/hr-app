@@ -7,7 +7,7 @@ import { system } from '@/theme'
 export function Provider(props: ColorModeProviderProps) {
     return (
         <ChakraProvider value={system}>
-            <LocaleProvider locale="he-IL" dir="rtl">
+            <LocaleProvider locale="he-IL">
                 <ColorModeProvider {...props} />
             </LocaleProvider>
         </ChakraProvider>
