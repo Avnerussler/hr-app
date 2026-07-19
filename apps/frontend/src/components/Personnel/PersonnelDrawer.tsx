@@ -3,7 +3,13 @@ import { FieldErrors, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Box, Button, Flex, Heading, Badge, Tabs } from '@chakra-ui/react'
 import { IoClose } from 'react-icons/io5'
-import { DrawerRoot, DrawerContent, DrawerHeader, DrawerBody, DrawerFooter } from '@/components/ui/drawer'
+import {
+    DrawerRoot,
+    DrawerContent,
+    DrawerHeader,
+    DrawerBody,
+    DrawerFooter,
+} from '@/components/ui/drawer'
 import { IconButton } from '@chakra-ui/react'
 import { useRouteContext } from '@/hooks/useRouteContext'
 import {
@@ -12,15 +18,39 @@ import {
     AttendanceHistorySection,
     ProfessionalInformationSection,
 } from './PersonnelForm'
-import { PersonnelFormSchema, PersonnelFormValues, PERSONNEL_DEFAULT_VALUES } from './personnelSchema'
+import {
+    PersonnelFormSchema,
+    PersonnelFormValues,
+    PERSONNEL_DEFAULT_VALUES,
+} from './personnelSchema'
 import { usePersonnelDetailQuery } from '@/hooks/queries/usePersonnelQueries'
-import { useCreatePersonnel, useUpdatePersonnel, useDeletePersonnel } from '@/hooks/mutations/usePersonnelMutations'
+import {
+    useCreatePersonnel,
+    useUpdatePersonnel,
+    useDeletePersonnel,
+} from '@/hooks/mutations/usePersonnelMutations'
 
 const SECTIONS = [
-    { id: 'personalInformation', name: 'מידע אישי', Component: PersonalInformationSection },
-    { id: 'militaryInformation', name: 'מידע צבאי', Component: MilitaryInformationSection },
-    { id: 'attendanceHistory', name: 'היסטוריית נוכחות', Component: AttendanceHistorySection },
-    { id: 'professionalInformation', name: 'מידע מקצועי', Component: ProfessionalInformationSection },
+    {
+        id: 'personalInformation',
+        name: 'מידע אישי',
+        Component: PersonalInformationSection,
+    },
+    {
+        id: 'militaryInformation',
+        name: 'מידע צבאי',
+        Component: MilitaryInformationSection,
+    },
+    {
+        id: 'professionalInformation',
+        name: 'מידע מקצועי',
+        Component: ProfessionalInformationSection,
+    },
+    {
+        id: 'attendanceHistory',
+        name: 'היסטוריית נוכחות',
+        Component: AttendanceHistorySection,
+    },
 ]
 
 const FIELD_TO_SECTION: Record<string, string> = {
@@ -34,6 +64,8 @@ const FIELD_TO_SECTION: Record<string, string> = {
     linkedin: 'personalInformation',
     vehicleNumber: 'personalInformation',
     note: 'personalInformation',
+    details: 'personalInformation',
+    layer: 'personalInformation',
     isActive: 'personalInformation',
 
     reserveUnit: 'militaryInformation',
@@ -70,7 +102,9 @@ interface PersonnelDrawerProps {
 
 export function PersonnelDrawer({ isOpen, onClose }: PersonnelDrawerProps) {
     const { formState, itemId } = useRouteContext()
-    const { data: personnel } = usePersonnelDetailQuery(formState === 'edit' ? itemId : undefined)
+    const { data: personnel } = usePersonnelDetailQuery(
+        formState === 'edit' ? itemId : undefined
+    )
     const [activeTab, setActiveTab] = useState<string>(SECTIONS[0].id)
 
     const {
@@ -85,10 +119,16 @@ export function PersonnelDrawer({ isOpen, onClose }: PersonnelDrawerProps) {
     })
 
     const createMutation = useCreatePersonnel((field, message) =>
-        setError(field as keyof PersonnelFormValues, { type: 'server', message })
+        setError(field as keyof PersonnelFormValues, {
+            type: 'server',
+            message,
+        })
     )
     const updateMutation = useUpdatePersonnel((field, message) =>
-        setError(field as keyof PersonnelFormValues, { type: 'server', message })
+        setError(field as keyof PersonnelFormValues, {
+            type: 'server',
+            message,
+        })
     )
     const deleteMutation = useDeletePersonnel()
 
@@ -105,7 +145,10 @@ export function PersonnelDrawer({ isOpen, onClose }: PersonnelDrawerProps) {
 
     const onSubmit = (data: PersonnelFormValues) => {
         if (itemId) {
-            updateMutation.mutate({ id: itemId, body: data }, { onSuccess: onClose })
+            updateMutation.mutate(
+                { id: itemId, body: data },
+                { onSuccess: onClose }
+            )
             return
         }
         createMutation.mutate(data, { onSuccess: onClose })
@@ -118,7 +161,9 @@ export function PersonnelDrawer({ isOpen, onClose }: PersonnelDrawerProps) {
 
         setActiveTab(section)
         setTimeout(() => {
-            const target = document.querySelector(`[data-field-name="${firstErrorField}"]`)
+            const target = document.querySelector(
+                `[data-field-name="${firstErrorField}"]`
+            )
             target?.scrollIntoView({ behavior: 'smooth', block: 'center' })
         }, 50)
     }
@@ -131,7 +176,13 @@ export function PersonnelDrawer({ isOpen, onClose }: PersonnelDrawerProps) {
 
     return (
         <DrawerRoot size="lg" open={isOpen} onOpenChange={onClose}>
-            <DrawerContent display="flex" flexDirection="column" h="100%" bg="gray.50" _dark={{ bg: 'gray.900' }}>
+            <DrawerContent
+                display="flex"
+                flexDirection="column"
+                h="100%"
+                bg="gray.50"
+                _dark={{ bg: 'gray.900' }}
+            >
                 <DrawerHeader
                     flexShrink={0}
                     py={5}
@@ -141,28 +192,75 @@ export function PersonnelDrawer({ isOpen, onClose }: PersonnelDrawerProps) {
                     borderBottom="1px"
                     borderColor="gray.200"
                 >
-                    <Flex width="100%" justify="space-between" align="center" gap={4}>
+                    <Flex
+                        width="100%"
+                        justify="space-between"
+                        align="center"
+                        gap={4}
+                    >
                         <Flex align="center" gap={2}>
-                            <Heading size="lg" fontWeight="bold" color="gray.900" _dark={{ color: 'white' }}>
-                                {formState === 'new' ? 'משאבי אנוש' : personnel ? `${personnel.firstName} ${personnel.lastName}` : ''}
+                            <Heading
+                                size="lg"
+                                fontWeight="bold"
+                                color="gray.900"
+                                _dark={{ color: 'white' }}
+                            >
+                                {formState === 'new'
+                                    ? 'משאבי אנוש'
+                                    : personnel
+                                      ? `${personnel.firstName} ${personnel.lastName}`
+                                      : ''}
                             </Heading>
                             {formState === 'new' && (
-                                <Badge colorScheme="green" variant="solid" px={2} py={0.5} borderRadius="md" fontSize="xs">
+                                <Badge
+                                    colorScheme="green"
+                                    variant="solid"
+                                    px={2}
+                                    py={0.5}
+                                    borderRadius="md"
+                                    fontSize="xs"
+                                >
                                     NEW
                                 </Badge>
                             )}
                         </Flex>
-                        <IconButton aria-label="Close drawer" onClick={onClose} variant="ghost" size="sm">
+                        <IconButton
+                            aria-label="Close drawer"
+                            onClick={onClose}
+                            variant="ghost"
+                            size="sm"
+                        >
                             <IoClose />
                         </IconButton>
                     </Flex>
                 </DrawerHeader>
-                <Box as="form" onSubmit={handleSubmit(onSubmit, onError)} display="flex" flexDirection="column" flex="1" overflow="hidden">
-                    <DrawerBody bg="white" _dark={{ bg: 'gray.800' }} p={0} flex="1" overflow="hidden">
-                        <Tabs.Root value={activeTab} onValueChange={(e) => setActiveTab(e.value)}>
+                <Box
+                    as="form"
+                    onSubmit={handleSubmit(onSubmit, onError)}
+                    display="flex"
+                    flexDirection="column"
+                    flex="1"
+                    overflow="hidden"
+                >
+                    <DrawerBody
+                        bg="white"
+                        _dark={{ bg: 'gray.800' }}
+                        p={0}
+                        flex="1"
+                        overflow="hidden"
+                    >
+                        <Tabs.Root
+                            value={activeTab}
+                            onValueChange={(e) => setActiveTab(e.value)}
+                        >
                             <Tabs.List position="sticky">
                                 {SECTIONS.map((section) => (
-                                    <Tabs.Trigger key={section.id} value={section.id} px={5} py={3}>
+                                    <Tabs.Trigger
+                                        key={section.id}
+                                        value={section.id}
+                                        px={5}
+                                        py={3}
+                                    >
                                         {section.name}
                                     </Tabs.Trigger>
                                 ))}
@@ -194,17 +292,39 @@ export function PersonnelDrawer({ isOpen, onClose }: PersonnelDrawerProps) {
                     >
                         <Flex justify="space-between" width="100%" gap={3}>
                             <Flex gap={3}>
-                                <Button variant="outline" onClick={onClose} size="lg" px={6} fontWeight="semibold">
+                                <Button
+                                    variant="outline"
+                                    onClick={onClose}
+                                    size="lg"
+                                    px={6}
+                                    fontWeight="semibold"
+                                >
                                     Cancel
                                 </Button>
                                 {formState === 'edit' && itemId && (
-                                    <Button variant="outline" colorScheme="red" onClick={handleDelete} size="lg" px={6} fontWeight="semibold">
+                                    <Button
+                                        variant="outline"
+                                        colorScheme="red"
+                                        onClick={handleDelete}
+                                        size="lg"
+                                        px={6}
+                                        fontWeight="semibold"
+                                    >
                                         Delete
                                     </Button>
                                 )}
                             </Flex>
-                            <Button type="submit" colorScheme="blue" disabled={!hasChanges} size="lg" px={8} fontWeight="bold">
-                                {formState === 'new' ? '✨ Create' : '💾 Update'}
+                            <Button
+                                type="submit"
+                                colorScheme="blue"
+                                disabled={!hasChanges}
+                                size="lg"
+                                px={8}
+                                fontWeight="bold"
+                            >
+                                {formState === 'new'
+                                    ? '✨ Create'
+                                    : '💾 Update'}
                             </Button>
                         </Flex>
                     </DrawerFooter>

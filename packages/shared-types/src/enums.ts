@@ -71,6 +71,15 @@ export const CLASSIFICATION_CLASS_LABELS: Record<ClassificationClass, string> = 
     no: 'לא מסווג',
 }
 
+export const Layer = z.enum(['1', '2', '3'])
+export type Layer = z.infer<typeof Layer>
+
+export const LAYER_LABELS: Record<Layer, string> = {
+    '1': '1',
+    '2': '2',
+    '3': '3',
+}
+
 export const ReserveCategory = z.enum([
     'reserves',
     'consultant',

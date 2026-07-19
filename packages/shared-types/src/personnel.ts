@@ -3,6 +3,7 @@ import {
     ClassificationClass,
     Experience,
     FieldOfExpertise,
+    Layer,
     ReserveCategory,
     StudioRole,
 } from './enums'
@@ -20,6 +21,8 @@ export const PersonnelSchema = z
         linkedin: z.string().optional(),
         vehicleNumber: z.string().optional(),
         note: z.string().optional(),
+        details: z.string().optional(),
+        layer: Layer.optional(),
         isActive: z.boolean().default(true),
 
         reserveUnit: z.string().optional(),

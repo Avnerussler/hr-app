@@ -3,6 +3,7 @@ import {
     ClassificationClass,
     Experience,
     FieldOfExpertise,
+    Layer,
     Personnel,
     ReserveCategory,
     StudioRole,
@@ -25,6 +26,8 @@ const PersonnelSchema = new Schema<PersonnelDocument>(
         linkedin: { type: String },
         vehicleNumber: { type: String },
         note: { type: String },
+        details: { type: String },
+        layer: { type: String, enum: Layer.options },
         isActive: { type: Boolean, default: true },
 
         reserveUnit: { type: String },
