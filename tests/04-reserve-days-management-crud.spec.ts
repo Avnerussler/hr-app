@@ -42,58 +42,6 @@ async function fillDateRangeInputs(
  await dateInputs.nth(1).press('Tab');
 }
 
-/** Fetch every reserve-day order via the new /api/reserve-days REST endpoint, following pagination. */
-async function fetchAllReserveDays(
- request: APIRequestContext,
-): Promise<Array<Record<string, any>>> {
- const all: Array<Record<string, any>> = [];
- for (let page = 1; page <= 20; page++) {
-  const res = await request.get(`${API_ORIGIN}/api/reserve-days?limit=500&page=${page}`);
-  expect(res.ok()).toBe(true);
-  const body = await res.json();
-  const items = body.items ?? [];
-  all.push(...items);
-  const total = body.pagination?.total ?? all.length;
-  if (all.length >= total || items.length === 0) break;
- }
- return all;
-}
-
-/** Fetch every personnel record via the new /api/personnel REST endpoint, following pagination. */
-async function fetchAllPersonnel(request: APIRequestContext): Promise<Array<Record<string, any>>> {
- const all: Array<Record<string, any>> = [];
- for (let page = 1; page <= 20; page++) {
-  const res = await request.get(`${API_ORIGIN}/api/personnel?limit=500&page=${page}`);
-  expect(res.ok()).toBe(true);
-  const body = await res.json();
-  const items = body.items ?? [];
-  all.push(...items);
-  const total = body.pagination?.total ?? all.length;
-  if (all.length >= total || items.length === 0) break;
- }
- return all;
-}
-
-/** Find a personnel record with NO reserve order overlapping `date`. */
-async function findConflictFreeEmployee(
- request: APIRequestContext,
- date: string,
-): Promise<{ personalNumber: string }> {
- const target = new Date(`${date}T00:00:00.000Z`).getTime();
- const orders = await fetchAllReserveDays(request);
- const busy = new Set<string>();
- for (const o of orders) {
-  const empId = o.employeeName?._id ?? o.employeeName;
-  const s = new Date(o.startDate).getTime();
-  const e = new Date(o.endDate).getTime();
-  if (empId && s <= target && target <= e) busy.add(String(empId));
- }
- const personnel = await fetchAllPersonnel(request);
- const free = personnel.find(p => !busy.has(String(p._id)) && p.personalNumber);
- expect(free, `no conflict-free employee for ${date}`).toBeTruthy();
- return { personalNumber: free!.personalNumber };
-}
-
 /**
  * Create a personnel record directly via the API with a known vehicle-entry
  * approval date range (vehicleEntryStartDate/vehicleEntryEndDate — replaces the
@@ -126,6 +74,34 @@ async function createPersonnelWithVehicle(
  expect(res.ok(), `personnel create failed: ${res.status()}`).toBe(true);
  const body = await res.json();
  return { _id: body._id, personalNumber, vehicleNumber };
+}
+
+/**
+ * Create a personnel record and a reserve-day order for it directly via the
+ * API, returning both ids. Used so tests can navigate straight to their own
+ * record's edit page (by id) instead of clicking a table row by position —
+ * "first"/"last" row is unsafe once tests run in parallel, since concurrent
+ * tests are creating/deleting/reordering rows in the same shared table.
+ */
+async function createOwnReserveDay(
+ request: APIRequestContext,
+ overrides: Record<string, any> = {},
+): Promise<{ reserveDayId: string; personnelId: string }> {
+ const personnel = await createPersonnelWithVehicle(request);
+ const res = await request.post(`${API_ORIGIN}/api/reserve-days`, {
+  data: {
+   employeeName: personnel._id,
+   startDate: today(),
+   endDate: today(),
+   fundingSource: 'internal',
+   orderType: '8open',
+   requestStatus: 'pending',
+   ...overrides,
+  },
+ });
+ expect(res.ok(), `reserve-day create failed: ${res.status()}`).toBe(true);
+ const { _id: reserveDayId } = await res.json();
+ return { reserveDayId, personnelId: personnel._id };
 }
 
 /**
@@ -188,7 +164,10 @@ async function expectMetricToReach(
 
 /**
  * Create a reserve-days record via the UI from the list page, using a
- * conflict-free employee for `date` so the noOverlap rule doesn't reject it.
+ * brand-new personnel record for `date` — a fresh record can't have any
+ * pre-existing reserve-day orders, so the noOverlap rule can't reject it
+ * (unlike a shared-data lookup via findConflictFreeEmployee, which is racy
+ * once multiple tests/workers run concurrently — see TC-RES-002).
  */
 async function createReserveDay(
  page: Page,
@@ -196,7 +175,7 @@ async function createReserveDay(
  date: string,
  requestStatusLabel = 'ממתין לטיפול',
 ): Promise<void> {
- const { personalNumber } = await findConflictFreeEmployee(request, date);
+ const { personalNumber } = await createPersonnelWithVehicle(request);
 
  await page.getByRole('button', { name: 'צווי מילואים' }).click();
  await page.waitForURL('**/new');
@@ -220,10 +199,10 @@ async function createReserveDay(
 }
 
 test.describe('Module 3: Reserve Days Management', () => {
- // Tests create/edit/delete real records and some click the first/last table
- // row by position, so they must not run concurrently with each other —
- // parallel workers mutate shared data mid-test and destabilize row order.
- test.describe.configure({ mode: 'serial' });
+ // Runs in parallel: every test creates its own personnel/reserve-day record
+ // (via createPersonnelWithVehicle/createOwnReserveDay) and navigates to it
+ // directly by id rather than depending on shared table/list position — see
+ // TC-RES-002/003/004/005/013/016/017 for the specific fixes.
 
  test.beforeEach(async ({ page }) => {
   await page.goto('http://localhost:5173');
@@ -253,10 +232,13 @@ test.describe('Module 3: Reserve Days Management', () => {
  test('TC-RES-002: Create New Reserve Days Order', async ({ page, request }) => {
   const startDate = '2025-03-01';
   const endDate = '2025-03-05';
-  // Picking the first EmployeeSelect option accumulates conflicts across test
-  // runs (each run adds a new order at this fixed date), eventually 409ing.
-  // Use a conflict-free employee instead, selected by unique personalNumber.
-  const { personalNumber } = await findConflictFreeEmployee(request, startDate);
+  // Searching for a conflict-free employee among shared/existing personnel
+  // is inherently racy: other tests/runs can create overlapping orders for
+  // this fixed date range between the search and this test's own create
+  // call, causing an intermittent 409. Instead, create a brand-new
+  // personnel record via the API — it cannot have any pre-existing
+  // reserve-day orders, so there's no possible conflict.
+  const { personalNumber } = await createPersonnelWithVehicle(request);
 
   // Click Add button — navigates to /new page with dialog
   await page.getByRole('button', { name: 'צווי מילואים' }).click();
@@ -296,15 +278,12 @@ test.describe('Module 3: Reserve Days Management', () => {
   await expect(page.getByRole('table')).toBeVisible();
  });
 
- test('TC-RES-003: View Reserve Days Details', async ({ page }) => {
-  // Click first row — navigates to /edit/:id page. Wait for the table to settle
-  // (large dataset re-renders after the initial paint) so the click lands on a
-  // stable row instead of one about to be replaced.
-  await expect(page.getByRole('table')).toBeVisible();
-  await page.waitForTimeout(300);
-  const firstRow = page.getByRole('table').locator('tbody tr').first();
-  await firstRow.click();
-  await page.waitForURL('**/edit/**');
+ test('TC-RES-003: View Reserve Days Details', async ({ page, request }) => {
+  // Create our own record and navigate straight to its edit page by id —
+  // clicking "first row" of the shared table is unsafe under parallel
+  // execution, since concurrent tests mutate/reorder that same table.
+  const { reserveDayId, personnelId } = await createOwnReserveDay(request);
+  await page.goto(`http://localhost:5173/reserve_days_management/default/edit/${reserveDayId}`);
 
   // Edit page should show Update/Delete/Cancel buttons
   await expect(page.getByRole('button', { name: /💾 Update/i })).toBeVisible();
@@ -319,14 +298,15 @@ test.describe('Module 3: Reserve Days Management', () => {
   await page.getByRole('button', { name: /Cancel/i }).click();
   await page.waitForURL(/\/reserve_days_management\/default$/);
   await expect(page.getByRole('table')).toBeVisible();
+
+  await request.delete(`${API_ORIGIN}/api/reserve-days/${reserveDayId}`);
+  await request.delete(`${API_ORIGIN}/api/personnel/${personnelId}`);
  });
 
- test('TC-RES-004: Edit Reserve Days Order - Change Request Status', async ({ page }) => {
-  await expect(page.getByRole('table')).toBeVisible();
-  await page.waitForTimeout(300);
-  const firstRow = page.getByRole('table').locator('tbody tr').first();
-  await firstRow.click();
-  await page.waitForURL('**/edit/**');
+ test('TC-RES-004: Edit Reserve Days Order - Change Request Status', async ({ page, request }) => {
+  const { reserveDayId, personnelId } = await createOwnReserveDay(request);
+  await page.goto(`http://localhost:5173/reserve_days_management/default/edit/${reserveDayId}`);
+  await expect(page.getByRole('button', { name: /💾 Update/i })).toBeVisible();
 
   // Change request status combobox
   const requestStatusCombo = page
@@ -343,12 +323,17 @@ test.describe('Module 3: Reserve Days Management', () => {
   await page.waitForURL(/\/reserve_days_management\/default$/);
 
   await expect(page.getByRole('table')).toBeVisible();
+
+  await request.delete(`${API_ORIGIN}/api/reserve-days/${reserveDayId}`);
+  await request.delete(`${API_ORIGIN}/api/personnel/${personnelId}`);
  });
 
- test('TC-RES-005: Delete Reserve Days Order', async ({ page }) => {
-  const lastRow = page.getByRole('table').locator('tbody tr').last();
-  await lastRow.click();
-  await page.waitForURL('**/edit/**');
+ test('TC-RES-005: Delete Reserve Days Order', async ({ page, request }) => {
+  // Create our own record and delete it by navigating straight to its edit
+  // page — deleting the shared table's "last row" is unsafe under parallel
+  // execution, since it could delete another concurrently-running test's data.
+  const { reserveDayId, personnelId } = await createOwnReserveDay(request);
+  await page.goto(`http://localhost:5173/reserve_days_management/default/edit/${reserveDayId}`);
 
   const deleteButton = page.getByRole('button', { name: /Delete/i });
   await expect(deleteButton).toBeVisible();
@@ -361,6 +346,8 @@ test.describe('Module 3: Reserve Days Management', () => {
   // After delete, navigates back to list
   await page.waitForURL(/\/reserve_days_management\/default$/);
   await expect(page.getByRole('table')).toBeVisible();
+
+  await request.delete(`${API_ORIGIN}/api/personnel/${personnelId}`);
  });
 
  test('TC-RES-006: Form Validation - Required Fields', async ({ page }) => {
@@ -483,11 +470,14 @@ test.describe('Module 3: Reserve Days Management', () => {
   page,
   request,
  }) => {
-  // Use a far-future window so the first create itself never conflicts with
-  // existing seed data; the second create must then conflict with the first.
+  // Create a brand-new personnel record instead of searching shared data for
+  // a conflict-free employee (findConflictFreeEmployee is racy — see TC-RES-002)
+  // — a fresh record can't have any pre-existing reserve-day orders, so the
+  // first create below is guaranteed to succeed, and the test can then apply
+  // its own second, overlapping create for a real 409 conflict.
   const startDate = '2027-03-01';
   const endDate = '2027-03-10';
-  const { personalNumber } = await findConflictFreeEmployee(request, startDate);
+  const { personalNumber } = await createPersonnelWithVehicle(request);
 
   // 1) First order for this employee/window — should succeed (201) and return.
   await page.getByRole('button', { name: 'צווי מילואים' }).click();
@@ -542,15 +532,11 @@ test.describe('Module 3: Reserve Days Management', () => {
   const startDate = toIso(base);
   const endDateObj = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 12));
   const endDate = toIso(endDateObj);
-  const { personalNumber } = await findConflictFreeEmployee(request, startDate);
-
-  const personnelRes = await request.get(
-   `${API_ORIGIN}/api/personnel?limit=500&page=1&search=${personalNumber}`,
-  );
-  expect(personnelRes.ok()).toBe(true);
-  const { items: personnelItems } = await personnelRes.json();
-  const employeeId = personnelItems.find((p: any) => p.personalNumber === personalNumber)?._id;
-  expect(employeeId, `employee id for ${personalNumber} not found`).toBeTruthy();
+  // Create a brand-new personnel record instead of searching shared data for
+  // a conflict-free employee (findConflictFreeEmployee is racy under parallel
+  // execution — see TC-RES-002) — a fresh record can't have any pre-existing
+  // reserve-day orders, so the seed below can't collide with anything.
+  const { personalNumber, _id: employeeId } = await createPersonnelWithVehicle(request);
 
   const seedRes = await request.post(`${API_ORIGIN}/api/reserve-days`, {
    data: {
@@ -744,7 +730,7 @@ test.describe('Module 3: Reserve Days Management', () => {
   const approvalStart = toIso(new Date(Date.now() - 7 * 86400000));
   const approvalEnd = toIso(new Date(Date.now() + 1 * 86400000));
   const reserveStart = toIso(new Date(Date.now())); // overlaps the tail of the approval window
-  const reserveEnd = toIso(new Date(Date.now() + 3 * 86400000)); // extends past approvalEnd
+  const reserveEnd = toIso(new Date(Date.now() + 5 * 86400000)); // extends past approvalEnd
   const { personalNumber, vehicleNumber } = await createPersonnelWithVehicle(request, {
    vehicleEntryStartDate: approvalStart,
    vehicleEntryEndDate: approvalEnd,
@@ -774,7 +760,9 @@ test.describe('Module 3: Reserve Days Management', () => {
   });
   await expect(vehicleStatusGroup.getByRole('img', { name: 'Yes' })).not.toBeVisible();
   await expect(vehicleStatusGroup).toContainText(vehicleNumber);
-  await expect(vehicleStatusGroup.getByText('על חלק מהימים לא יהיה אישור כניסה לרכב')).toBeVisible();
+  await expect(
+   vehicleStatusGroup.getByText('על חלק מהימים לא יהיה אישור כניסה לרכב'),
+  ).toBeVisible();
 
   await drawer.getByRole('button', { name: /Cancel/i }).click();
   await page.waitForURL(/\/reserve_days_management\/default$/);
@@ -790,11 +778,13 @@ test.describe('Module 3: Reserve Days Management', () => {
   const pendingBefore = await readMetricValue(page, 'ממתינים לאישור');
 
   // Create mutation invalidates the reserve-days metrics query, so both cards
-  // must bump without a page reload.
+  // must bump without a page reload. Assert "increased" rather than "+1 exactly"
+  // — these are global counts, and other tests/workers may create or delete
+  // reserve-days concurrently while this test is running.
   await createReserveDay(page, request, today(), 'ממתין לטיפול');
 
-  await expectMetricToReach(page, 'סה"כ צווים', v => v === totalBefore + 1, 15_000);
-  await expectMetricToReach(page, 'ממתינים לאישור', v => v === pendingBefore + 1, 15_000);
+  await expectMetricToReach(page, 'סה"כ צווים', v => v > totalBefore, 15_000);
+  await expectMetricToReach(page, 'ממתינים לאישור', v => v > pendingBefore, 15_000);
  });
 
  test('TC-RES-020: Changing status from the status chip in the table updates requestStatus via PATCH', async ({

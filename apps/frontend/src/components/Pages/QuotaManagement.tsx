@@ -53,6 +53,7 @@ import {
     QuotaModal,
     DailyAttendanceDrawer,
     HolidayManagementModal,
+    QuickReserveDayModal,
 } from '../QuotaManagement'
 import {
     useQuotasWithOccupancyRangeQuery,
@@ -70,6 +71,7 @@ export default function QuotaManagement() {
     const [currentDate, setCurrentDate] = useState(new Date())
     const [calendarView, setCalendarView] = useState<CalendarView>('monthly')
     const quotaModal = useDisclosure()
+    const quickReserveModal = useDisclosure()
     const [isAttendanceDrawerOpen, setIsAttendanceDrawerOpen] = useState(false)
     const [isHolidayModalOpen, setIsHolidayModalOpen] = useState(false)
     const [selectedDate, setSelectedDate] = useState<string>('')
@@ -389,6 +391,11 @@ export default function QuotaManagement() {
                 onClick: handleContextAddHoliday,
             })
             items.push({
+                label: `צור צו מילואים (${selectedRange.start} - ${selectedRange.end})`,
+                icon: <FaCalendarAlt />,
+                onClick: handleContextCreateReserveDay,
+            })
+            items.push({
                 label: 'נקה בחירה',
                 icon: <FaTimes />,
                 onClick: handleClearSelection,
@@ -403,6 +410,11 @@ export default function QuotaManagement() {
                 label: 'נהל חגים',
                 icon: <FaPlus />,
                 onClick: handleContextAddHoliday,
+            })
+            items.push({
+                label: 'צור צו מילואים',
+                icon: <FaCalendarAlt />,
+                onClick: handleContextCreateReserveDay,
             })
         }
 
@@ -435,6 +447,16 @@ export default function QuotaManagement() {
         }
         // selectedDate is already set by handleRightClick for single date
         setIsHolidayModalOpen(true)
+        handleContextMenuClose()
+    }
+
+    const handleContextCreateReserveDay = () => {
+        if (selectedRange.start && selectedRange.end) {
+            // Handle range reserve-day creation
+            setSelectedDate(`${selectedRange.start}:${selectedRange.end}`)
+        }
+        // selectedDate is already set by handleRightClick for single date
+        quickReserveModal.onOpen()
         handleContextMenuClose()
     }
 
@@ -1163,6 +1185,36 @@ export default function QuotaManagement() {
                         : selectedDate
                 }
                 dateRange={
+                    selectedDate.includes(':')
+                        ? {
+                              start: selectedDate.split(':')[0],
+                              end: selectedDate.split(':')[1],
+                          }
+                        : selectedRange.start && selectedRange.end
+                          ? {
+                                start: selectedRange.start,
+                                end: selectedRange.end,
+                            }
+                          : undefined
+                }
+            />
+
+            <QuickReserveDayModal
+                isOpen={quickReserveModal.open}
+                onClose={() => {
+                    quickReserveModal.onClose()
+                    setSelectedRange({
+                        start: null,
+                        end: null,
+                        isSelecting: false,
+                    })
+                }}
+                selectedDate={
+                    selectedDate.includes(':')
+                        ? selectedDate.split(':')[0]
+                        : selectedDate
+                }
+                selectedRange={
                     selectedDate.includes(':')
                         ? {
                               start: selectedDate.split(':')[0],

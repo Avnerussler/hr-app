@@ -70,8 +70,12 @@ export function ReserveDayDateRangeField({
     // Also enforces "required" with the field's own label (the Zod resolver used for schema
     // validation only knows the generic startDate/endDate error copy, not this label).
     useEffect(() => {
-        const start = startField.value ? parseDate(String(startField.value).slice(0, 10)) : null
-        const end = endField.value ? parseDate(String(endField.value).slice(0, 10)) : null
+        const start = startField.value
+            ? parseDate(String(startField.value).slice(0, 10))
+            : null
+        const end = endField.value
+            ? parseDate(String(endField.value).slice(0, 10))
+            : null
         const hasRange = start !== null && end !== null
         const missing = required && isSubmitted && !hasRange
 
@@ -91,10 +95,16 @@ export function ReserveDayDateRangeField({
             // Set on both fields — overrides the Zod resolver's generic startDate message
             // (attached during the same submit cycle) with this field's own label.
             if (startError?.type !== 'required') {
-                setError(startName, { type: 'required', message: `${label} הינו שדה חובה` })
+                setError(startName, {
+                    type: 'required',
+                    message: `${label} הינו שדה חובה`,
+                })
             }
             if (endError?.type !== 'required') {
-                setError(endName, { type: 'required', message: `${label} הינו שדה חובה` })
+                setError(endName, {
+                    type: 'required',
+                    message: `${label} הינו שדה חובה`,
+                })
             }
         } else if (conflict) {
             if (endError?.type !== 'reservedConflict') {
@@ -105,10 +115,23 @@ export function ReserveDayDateRangeField({
             }
         } else {
             if (startError?.type === 'required') clearErrors(startName)
-            if (endError?.type === 'reservedConflict' || endError?.type === 'required') clearErrors(endName)
+            if (
+                endError?.type === 'reservedConflict' ||
+                endError?.type === 'required'
+            )
+                clearErrors(endName)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [startField.value, endField.value, reservedDates, startName, endName, required, label, isSubmitted])
+    }, [
+        startField.value,
+        endField.value,
+        reservedDates,
+        startName,
+        endName,
+        required,
+        label,
+        isSubmitted,
+    ])
 
     return (
         <ControlledDateRangeField
@@ -117,7 +140,9 @@ export function ReserveDayDateRangeField({
             endName={endName}
             label={label}
             required={required}
-            isDateUnavailable={(date: DateValue) => reservedDates.has(date.toString())}
+            isDateUnavailable={(date: DateValue) =>
+                reservedDates.has(date.toString())
+            }
         />
     )
 }

@@ -92,6 +92,11 @@ export function ControlledDateRangeField({
                 value={value}
                 format={formatDate}
                 parse={parseDateInput}
+                // The ambient app locale (he-IL) formats dates with a "." separator, which
+                // makes the picker's input mask reject "/" keystrokes even though the
+                // placeholder/format/parse above all use dd/mm/yyyy. Pin the picker's own
+                // locale to one that separates with "/" so typed input matches what's shown.
+                locale="en-GB"
                 isDateUnavailable={isDateUnavailable}
                 onValueChange={(details: DatePicker.ValueChangeDetails) => {
                     const [start, end] = details.value
