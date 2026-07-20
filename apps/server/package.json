@@ -11,6 +11,8 @@
         "test:coverage": "jest --coverage",
         "migrate:to-explicit-models": "ts-node src/migrations/toExplicitModels/index.ts",
         "migrate:to-explicit-models:dry-run": "ts-node src/migrations/toExplicitModels/index.ts --dry-run",
+        "migrate:cleanup-null-personnel-fields": "ts-node src/migrations/cleanupNullPersonnelFields/index.ts",
+        "migrate:cleanup-null-personnel-fields:dry-run": "ts-node src/migrations/cleanupNullPersonnelFields/index.ts --dry-run",
         "docker:build": "docker build -f Dockerfile -t hr-server-app ../..",
         "docker:build:linux": "docker build --platform linux/amd64 -f Dockerfile -t hr-server-app ../..",
         "docker:run": "docker run -p 3002:3002 hr-server-app",
