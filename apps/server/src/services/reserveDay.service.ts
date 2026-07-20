@@ -196,6 +196,10 @@ export async function createReserveDay(body: unknown) {
     const validated = ReserveDaySchema.parse(body)
     await assertNoOverlap(validated.employeeName, validated.startDate, validated.endDate)
     const created = await ReserveDayModel.create(validated)
+    await PersonnelModel.updateOne(
+        { _id: validated.employeeName, isActive: false },
+        { $set: { isActive: true } }
+    )
     return created.toObject()
 }
 
