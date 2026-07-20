@@ -23,6 +23,7 @@ ARG VITE_BASE_URL
 ENV VITE_BASE_URL=$VITE_BASE_URL
 
 # Build the application
+RUN npm run build --workspace=packages/shared-types
 RUN npm run build --workspace=apps/frontend
 
 # Production stage with nginx
