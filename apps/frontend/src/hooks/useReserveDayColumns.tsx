@@ -3,8 +3,9 @@ import { createColumnHelper } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { VStack, HStack, Text, Box } from '@chakra-ui/react'
 import { LuChevronUp, LuChevronDown, LuChevronsUpDown } from 'react-icons/lu'
-import { ORDER_TYPE_LABELS, FUNDING_SOURCE_LABELS, REQUEST_STATUS_LABELS } from '@hr-app/shared-types'
+import { ORDER_TYPE_LABELS, FUNDING_SOURCE_LABELS } from '@hr-app/shared-types'
 import { EntityLink } from '@/components/common/EntityLink'
+import { ReserveDayStatusCell } from '@/components/ReserveDay/ReserveDayStatusCell'
 import { ReserveDayRecord } from './queries/useReserveDayQueries'
 import type { Column } from '@tanstack/react-table'
 import type { KeyboardEvent } from 'react'
@@ -98,10 +99,7 @@ export function useReserveDayColumns() {
                 header: ({ column }) => <SortableHeader label="סטטוס בקשה" column={column} />,
                 enableSorting: true,
                 sortDescFirst: false,
-                cell: (info) => {
-                    const val = info.getValue()
-                    return <Text color="foreground">{val ? REQUEST_STATUS_LABELS[val] : '—'}</Text>
-                },
+                cell: (info) => <ReserveDayStatusCell id={info.row.original._id} status={info.getValue()} />,
             }),
             columnHelper.accessor('startDate', {
                 id: 'startDate',

@@ -796,4 +796,115 @@ test.describe('Module 3: Reserve Days Management', () => {
   await expectMetricToReach(page, 'סה"כ צווים', v => v === totalBefore + 1, 15_000);
   await expectMetricToReach(page, 'ממתינים לאישור', v => v === pendingBefore + 1, 15_000);
  });
+
+ test('TC-RES-020: Changing status from the status chip in the table updates requestStatus via PATCH', async ({
+  page,
+  request,
+ }) => {
+  const lastName = `סטטוסטסט${Date.now()}`;
+  const personnel = await createPersonnelWithVehicle(request, { lastName });
+  const reserveDayRes = await request.post(`${API_ORIGIN}/api/reserve-days`, {
+   data: {
+    employeeName: personnel._id,
+    startDate: today(),
+    endDate: today(),
+    fundingSource: 'internal',
+    orderType: '8open',
+    requestStatus: 'pending',
+   },
+  });
+  expect(reserveDayRes.ok(), `reserve-day create failed: ${reserveDayRes.status()}`).toBe(true);
+  const reserveDayId = (await reserveDayRes.json())._id;
+
+  // The employeeName column shows firstName+lastName via EntityLink, not the
+  // personalNumber — search by the unique lastName to isolate this row.
+  const searchBox = page.getByRole('textbox', { name: 'חפש בכל העמודות' });
+  await searchBox.fill(lastName);
+
+  const row = page.getByRole('row').filter({ hasText: lastName });
+  await expect(row).toBeVisible();
+
+  // The status chip renders the current status label as a colored Badge
+  // (components/ReserveDay/ReserveDayStatusCell.tsx) that opens a menu on
+  // click; both the trigger and menu content stopPropagation, so clicking it
+  // must not also fire the row's onRowClick (navigate-to-edit-drawer).
+  await row.getByText('ממתין לטיפול', { exact: true }).click();
+  await page.getByRole('menuitem', { name: 'אושר', exact: true }).click();
+
+  await expect(row.getByText('אושר', { exact: true })).toBeVisible({ timeout: 8_000 });
+  await expect(page).toHaveURL(/\/reserve_days_management\/default$/);
+
+  const updatedRes = await request.get(`${API_ORIGIN}/api/reserve-days/${reserveDayId}`);
+  expect(updatedRes.ok()).toBe(true);
+  expect((await updatedRes.json()).requestStatus).toBe('approved');
+
+  await request.delete(`${API_ORIGIN}/api/reserve-days/${reserveDayId}`);
+  await request.delete(`${API_ORIGIN}/api/personnel/${personnel._id}`);
+ });
+
+ test('TC-RES-021: Denied/cancelled reserve days are excluded from quota occupancy and statistics', async ({
+  page,
+  request,
+ }) => {
+  test.setTimeout(60_000);
+  const date = today();
+
+  const employeesOnReserve = async () => {
+   const res = await request.get(`${API_ORIGIN}/api/statistics/employees-on-reserve?date=${date}`);
+   expect(res.ok()).toBe(true);
+   const { report } = await res.json();
+   return report.rows as any[][];
+  };
+
+  const firstName = 'בדיקה';
+  const lastName = `תפוסטסט${Date.now()}`;
+  const personnel = await createPersonnelWithVehicle(request, { firstName, lastName });
+  const fullName = `${firstName} ${lastName}`;
+
+  const reserveDayRes = await request.post(`${API_ORIGIN}/api/reserve-days`, {
+   data: {
+    employeeName: personnel._id,
+    startDate: date,
+    endDate: date,
+    fundingSource: 'internal',
+    orderType: '8open',
+    requestStatus: 'approved',
+   },
+  });
+  expect(reserveDayRes.ok(), `reserve-day create failed: ${reserveDayRes.status()}`).toBe(true);
+  const reserveDayId = (await reserveDayRes.json())._id;
+
+  try {
+   // Approved: counted in the employees-on-reserve statistics report.
+   await expect(async () => {
+    expect((await employeesOnReserve()).some(row => row.includes(fullName))).toBe(true);
+   }).toPass({ timeout: 8_000 });
+
+   // Denied via the status chip in the table: excluded from the report.
+   const searchBox = page.getByRole('textbox', { name: 'חפש בכל העמודות' });
+   await searchBox.fill(lastName);
+   const row = page.getByRole('row').filter({ hasText: lastName });
+   await expect(row).toBeVisible();
+   await row.getByText('אושר', { exact: true }).click();
+   await page.getByRole('menuitem', { name: 'נדחה', exact: true }).click();
+   await expect(row.getByText('נדחה', { exact: true })).toBeVisible({ timeout: 8_000 });
+
+   await expect(async () => {
+    expect((await employeesOnReserve()).some(row => row.includes(fullName))).toBe(false);
+   }).toPass({ timeout: 8_000 });
+
+   // Cancelled via direct PATCH (the UI path is already proven above): still excluded.
+   const patchRes = await request.patch(`${API_ORIGIN}/api/reserve-days/${reserveDayId}`, {
+    data: { requestStatus: 'cancelled' },
+   });
+   expect(patchRes.ok()).toBe(true);
+
+   await expect(async () => {
+    expect((await employeesOnReserve()).some(row => row.includes(fullName))).toBe(false);
+   }).toPass({ timeout: 8_000 });
+  } finally {
+   await request.delete(`${API_ORIGIN}/api/reserve-days/${reserveDayId}`);
+   await request.delete(`${API_ORIGIN}/api/personnel/${personnel._id}`);
+  }
+ });
 });

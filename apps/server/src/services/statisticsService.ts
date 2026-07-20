@@ -1,7 +1,7 @@
 import { ReserveDayModel } from '../models/ReserveDay'
 import { PersonnelModel, PersonnelDocument } from '../models/Personnel'
 import { ProjectModel } from '../models/Project'
-import { ORDER_TYPE_LABELS } from '@hr-app/shared-types'
+import { ORDER_TYPE_LABELS, INACTIVE_REQUEST_STATUSES } from '@hr-app/shared-types'
 import logger from '../config/logger'
 import { eachDayOfInterval, parseISO, format } from 'date-fns'
 
@@ -79,6 +79,7 @@ class StatisticsService {
             const targetDate = toUtcMidnight(date)
             const reserveDays = await ReserveDayModel.find({
                 isDeleted: false,
+                requestStatus: { $nin: INACTIVE_REQUEST_STATUSES },
                 startDate: { $lte: targetDate },
                 endDate: { $gte: targetDate },
             }).lean()
@@ -185,6 +186,7 @@ class StatisticsService {
             for (const date of dates) {
                 const reserveDays = await ReserveDayModel.find({
                     isDeleted: false,
+                    requestStatus: { $nin: INACTIVE_REQUEST_STATUSES },
                     startDate: { $lte: date },
                     endDate: { $gte: date },
                 }).lean()
@@ -237,6 +239,7 @@ class StatisticsService {
 
             const reserveDays = await ReserveDayModel.find({
                 isDeleted: false,
+                requestStatus: { $nin: INACTIVE_REQUEST_STATUSES },
                 $or: [
                     { startDate: { $gte: rangeStartDate, $lte: rangeEndDate } },
                     { endDate: { $gte: rangeStartDate, $lte: rangeEndDate } },
@@ -378,6 +381,7 @@ class StatisticsService {
 
             const reserveDays = await ReserveDayModel.find({
                 isDeleted: false,
+                requestStatus: { $nin: INACTIVE_REQUEST_STATUSES },
                 fundingSource: 'external',
                 $or: [
                     { startDate: { $gte: rangeStartDate, $lte: rangeEndDate } },
@@ -481,6 +485,7 @@ class StatisticsService {
 
             const reserveDays = await ReserveDayModel.find({
                 isDeleted: false,
+                requestStatus: { $nin: INACTIVE_REQUEST_STATUSES },
                 startDate: { $lte: targetDate },
                 endDate: { $gte: targetDate },
             }).lean()
@@ -602,6 +607,7 @@ class StatisticsService {
             const targetDate = toUtcMidnight(date)
             const query: Record<string, unknown> = {
                 isDeleted: false,
+                requestStatus: { $nin: INACTIVE_REQUEST_STATUSES },
                 startDate: { $lte: targetDate },
                 endDate: { $gte: targetDate },
             }

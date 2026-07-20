@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document, Model } from 'mongoose'
 import { format, endOfMonth, parseISO } from 'date-fns'
+import { INACTIVE_REQUEST_STATUSES } from '@hr-app/shared-types'
 import { ReserveDayModel } from './ReserveDay'
 
 export interface IQuota extends Document {
@@ -182,7 +183,7 @@ quotaSchema.statics.getCurrentOccupancy = async function (
 
         const occupancy = await ReserveDayModel.countDocuments({
             fundingSource: 'internal',
-            requestStatus: { $ne: 'denied' },
+            requestStatus: { $nin: INACTIVE_REQUEST_STATUSES },
             isDeleted: false,
             $or: [
                 // Case 1: Date falls within startDate and endDate range
@@ -241,7 +242,7 @@ quotaSchema.statics.getOccupancyForDateRange = async function (
         const reservations = await ReserveDayModel.find(
             {
                 fundingSource: 'internal',
-                requestStatus: { $ne: 'denied' },
+                requestStatus: { $nin: INACTIVE_REQUEST_STATUSES },
                 isDeleted: false,
                 $or: [
                     // Reservations that overlap with the range
@@ -322,7 +323,7 @@ quotaSchema.statics.getExternalOccupancyForDateRange = async function (
         const reservations = await ReserveDayModel.find(
             {
                 fundingSource: 'external',
-                requestStatus: { $ne: 'denied' },
+                requestStatus: { $nin: INACTIVE_REQUEST_STATUSES },
                 isDeleted: false,
                 $or: [
                     // Reservations that overlap with the range

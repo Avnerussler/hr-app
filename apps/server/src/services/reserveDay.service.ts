@@ -1,6 +1,6 @@
 import { ReserveDayModel, ReserveDayDocument } from '../models/ReserveDay'
 import { PersonnelModel } from '../models/Personnel'
-import { ReserveDaySchema } from '@hr-app/shared-types'
+import { ReserveDaySchema, ReserveDayUpdateSchema } from '@hr-app/shared-types'
 import {
     BASE_ACCESS_APPROVAL_LABELS,
     FUNDING_SOURCE_LABELS,
@@ -203,8 +203,12 @@ export async function updateReserveDay(id: string, body: unknown) {
     const existing = await ReserveDayModel.findOne({ _id: id, isDeleted: false })
     if (!existing) throw new NotFoundError('Reserve day')
 
-    const validated = ReserveDaySchema.parse(body)
-    await assertNoOverlap(validated.employeeName, validated.startDate, validated.endDate, id)
+    const validated = ReserveDayUpdateSchema.parse(body)
+
+    const employeeName = validated.employeeName ?? String(existing.employeeName)
+    const startDate = validated.startDate ?? existing.startDate
+    const endDate = validated.endDate ?? existing.endDate
+    await assertNoOverlap(employeeName, startDate, endDate, id)
 
     Object.assign(existing, validated)
     await existing.save()

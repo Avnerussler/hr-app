@@ -6,6 +6,7 @@ import logger from '../../config/logger'
 import { asyncHandler, validate, schemas } from '../../middleware'
 import { isEmployeeEndingToday, isSameDay } from '../../utils'
 import { eachDayOfInterval } from 'date-fns'
+import { INACTIVE_REQUEST_STATUSES } from '@hr-app/shared-types'
 
 const router = Router()
 
@@ -246,7 +247,7 @@ router.get(
             // First, find all reservations that include this specific date to get the employee IDs
             const reservationsForDate = await ReserveDayModel.find({
                 isDeleted: false,
-                requestStatus: { $ne: 'denied' },
+                requestStatus: { $nin: INACTIVE_REQUEST_STATUSES },
                 $or: [
                     {
                         startDate: { $lte: date },
@@ -276,7 +277,7 @@ router.get(
                     }).lean(),
                     ReserveDayModel.find({
                         isDeleted: false,
-                        requestStatus: { $ne: 'denied' },
+                        requestStatus: { $nin: INACTIVE_REQUEST_STATUSES },
                         employeeName: { $in: employeeDocIds },
                     }).lean(),
                 ])

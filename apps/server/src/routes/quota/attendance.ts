@@ -5,6 +5,7 @@ import { ReserveDayModel } from '../../models/ReserveDay'
 import { PersonnelModel } from '../../models/Personnel'
 import Quota from '../../models/Quota'
 import { format } from 'date-fns'
+import { INACTIVE_REQUEST_STATUSES } from '@hr-app/shared-types'
 
 const router = Router()
 
@@ -269,10 +270,10 @@ router.get(
             const { startDate, endDate } = req.params as unknown as { startDate: Date; endDate: Date }
 
             // Find all reservations that overlap with the date range
-            // Exclude denied requests
+            // Exclude denied/cancelled requests
             const reservations = await ReserveDayModel.find({
                 isDeleted: false,
-                requestStatus: { $ne: 'denied' },
+                requestStatus: { $nin: INACTIVE_REQUEST_STATUSES },
                 $or: [
                     {
                         startDate: { $lte: endDate },

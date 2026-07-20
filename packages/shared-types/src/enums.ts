@@ -146,6 +146,9 @@ export const REQUEST_STATUS_LABELS: Record<RequestStatus, string> = {
     denied: 'נדחה',
 }
 
+// Reserve days in these statuses should never count toward quota occupancy or statistics reports.
+export const INACTIVE_REQUEST_STATUSES = RequestStatus.extract(['denied', 'cancelled']).options
+
 export const BaseAccessApproval = z.enum(['pending', 'approved', 'rejected', 'amanGuard'])
 export type BaseAccessApproval = z.infer<typeof BaseAccessApproval>
 
