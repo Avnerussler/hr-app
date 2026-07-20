@@ -1,6 +1,7 @@
 import Quota from '../../models/Quota'
 import { ReserveDayModel } from '../../models/ReserveDay'
 import { PersonnelModel } from '../../models/Personnel'
+import { ProjectModel } from '../../models/Project'
 import { Request, Response, Router } from 'express'
 import logger from '../../config/logger'
 import { asyncHandler, validate, schemas } from '../../middleware'
@@ -201,6 +202,7 @@ router.get(
 interface EmployeeAttendanceRecord {
     _id: string
     employeeId: string
+    reserveDayId: string
     name: string
     lastName: string
     personalNumber: string
@@ -221,6 +223,8 @@ interface EmployeeAttendanceRecord {
     requestStatus: string
     fundingSource: string
     hasExpiredVehicleApproval: boolean
+    projectId: string | null
+    projectName: string | null
 }
 
 // Get employees scheduled for a specific date
@@ -235,14 +239,25 @@ router.get(
                 search = '',
                 page = '1',
                 limit = '30',
+                requestStatus = '',
+                projectId = '',
+                orderType = '',
             } = req.query as {
                 filter?: string
                 search?: string
                 page?: string
                 limit?: string
+                requestStatus?: string
+                projectId?: string
+                orderType?: string
             }
             const pageNum = Math.max(1, parseInt(page, 10) || 1)
             const limitNum = Math.max(1, Math.min(10000, parseInt(limit, 10) || 30))
+            const requestStatuses = requestStatus
+                ? requestStatus.split(',').filter(Boolean)
+                : []
+            const projectIds = projectId ? projectId.split(',').filter(Boolean) : []
+            const orderTypes = orderType ? orderType.split(',').filter(Boolean) : []
 
             // First, find all reservations that include this specific date to get the employee IDs
             const reservationsForDate = await ReserveDayModel.find({
@@ -288,6 +303,22 @@ router.get(
                 employeeDataMap.set(record._id.toString(), record)
             })
 
+            // Fetch project names for all assigned projects referenced by these employees
+            const assignedProjectIds = Array.from(
+                new Set(
+                    employeeRecords
+                        .map((record: any) => record.assignedProjects?.toString() ?? null)
+                        .filter((id: any) => id)
+                )
+            )
+            const projectRecords = assignedProjectIds.length
+                ? await ProjectModel.find({ _id: { $in: assignedProjectIds } }).lean()
+                : []
+            const projectNameMap = new Map<string, string>()
+            projectRecords.forEach((project: any) => {
+                projectNameMap.set(project._id.toString(), project.projectName)
+            })
+
             // Create a map of reservations by employee ID for checking consecutive orders
             const reservationsByEmployee = new Map<string, any[]>()
             allEmployeeReservations.forEach((reservation: any) => {
@@ -324,6 +355,8 @@ router.get(
                     let reserveUnit = ''
                     let workPlace = ''
                     let hasExpiredVehicleApproval = false
+                    let projectId: string | null = null
+                    let projectName: string | null = null
 
                     const fullEmployeeData = employeeDataMap.get(employeeId)
                     if (fullEmployeeData) {
@@ -336,6 +369,8 @@ router.get(
                         phone = fullEmployeeData.phone || ''
                         reserveUnit = fullEmployeeData.reserveUnit || ''
                         workPlace = fullEmployeeData.workPlace || ''
+                        projectId = fullEmployeeData.assignedProjects?.toString() || null
+                        projectName = projectId ? projectNameMap.get(projectId) || null : null
                         // Only flag when an approval range IS set but has already passed by this date.
                         // No range set, or date still within/before the range, is not a warning case.
                         hasExpiredVehicleApproval = !!(
@@ -381,6 +416,7 @@ router.get(
                     return {
                         _id: employeeId,
                         employeeId: employeeId,
+                        reserveDayId: reservation._id.toString(),
                         name: employeeName,
                         lastName: lastName,
                         personalNumber: personalNumber,
@@ -402,6 +438,8 @@ router.get(
                         requestStatus: reservation.requestStatus || '',
                         fundingSource: reservation.fundingSource || '',
                         hasExpiredVehicleApproval,
+                        projectId,
+                        projectName,
                     }
                 })
                 .filter((emp): emp is EmployeeAttendanceRecord => emp !== null) as EmployeeAttendanceRecord[]
@@ -414,6 +452,24 @@ router.get(
                 totalAttended: employees.filter((emp) => emp.hasAttended).length,
                 internalCount: employees.filter((emp) => emp.fundingSource === 'internal').length,
                 externalCount: employees.filter((emp) => emp.fundingSource === 'external').length,
+            }
+
+            // Distinct filter option values actually present in today's unfiltered employee list —
+            // so the filter dropdowns never offer a choice that would return zero results.
+            const availableFilters = {
+                requestStatuses: Array.from(
+                    new Set(employees.map((emp) => emp.requestStatus).filter(Boolean))
+                ),
+                orderTypes: Array.from(
+                    new Set(employees.map((emp) => emp.orderType).filter(Boolean))
+                ),
+                projects: Array.from(
+                    new Map(
+                        employees
+                            .filter((emp) => emp.projectId && emp.projectName)
+                            .map((emp) => [emp.projectId as string, emp.projectName as string])
+                    ).entries()
+                ).map(([value, label]) => ({ value, label })),
             }
 
             // Apply filter
@@ -434,6 +490,17 @@ router.get(
                 case 'external':
                     filtered = filtered.filter((emp) => emp.fundingSource === 'external')
                     break
+            }
+
+            // Apply additional independent filters (combinable with the quick filter above)
+            if (requestStatuses.length) {
+                filtered = filtered.filter((emp) => requestStatuses.includes(emp.requestStatus))
+            }
+            if (projectIds.length) {
+                filtered = filtered.filter((emp) => !!emp.projectId && projectIds.includes(emp.projectId))
+            }
+            if (orderTypes.length) {
+                filtered = filtered.filter((emp) => orderTypes.includes(emp.orderType))
             }
 
             // Apply text search
@@ -470,6 +537,7 @@ router.get(
                     date: dateStr,
                     employees: pagedEmployees,
                     statistics,
+                    availableFilters,
                     pagination: {
                         page: pageNum,
                         limit: limitNum,

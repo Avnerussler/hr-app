@@ -14,6 +14,7 @@ function invalidateCrossEntityQueries(queryClient: ReturnType<typeof useQueryCli
     queryClient.invalidateQueries({ queryKey: ['employeeAttendance'] })
     queryClient.invalidateQueries({ queryKey: ['quotas/attendance/range'] })
     queryClient.invalidateQueries({ queryKey: ['quotas/occupancy/range'] })
+    queryClient.invalidateQueries({ queryKey: ['quotas/employees'] })
 }
 
 function mapMutationError(error: unknown, onFieldError?: (field: string, message: string) => void) {

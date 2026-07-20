@@ -2,6 +2,7 @@ import { Box, HStack, VStack, Text, Badge, Flex } from '@chakra-ui/react'
 import { Checkbox } from '../ui/checkbox'
 import { UnapprovedReserveDaysWarning } from '../common/UnapprovedReserveDaysWarning'
 import { UnapprovedVehicleWarning } from '../common/UnapprovedVehicleWarning'
+import { ReserveDayStatusCell } from '../ReserveDay/ReserveDayStatusCell'
 import {
     FaIdBadge,
     FaUsers,
@@ -94,6 +95,12 @@ export function EmployeeAttendanceCard({
                                         iconSize={12}
                                     />
                                 )}
+                            {employee.reserveDayId && (
+                                <ReserveDayStatusCell
+                                    id={employee.reserveDayId}
+                                    status={employee.requestStatus}
+                                />
+                            )}
                             {employee.hasExpiredVehicleApproval && (
                                 <UnapprovedVehicleWarning
                                     employeeName={employee.name}

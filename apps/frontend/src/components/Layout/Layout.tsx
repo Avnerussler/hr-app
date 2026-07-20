@@ -182,13 +182,20 @@ export function Layout() {
                             key="project_management"
                             as={RouterLink}
                             // @ts-expect-error: 'to' is valid when 'as' is RouterLink
-                            to={generateFormPath('project_management', 'default')}
+                            to={generateFormPath(
+                                'project_management',
+                                'default'
+                            )}
                             variant="ghost"
                             justifyContent="flex-start"
                             h="48px"
                             px={3}
                             borderRadius="lg"
-                            bg={pathname.includes('project_management') ? 'sidebar.accent' : 'transparent'}
+                            bg={
+                                pathname.includes('project_management')
+                                    ? 'sidebar.accent'
+                                    : 'transparent'
+                            }
                             _hover={{ bg: 'sidebar.accent' }}
                             transition="all 0.2s"
                             role="group"
@@ -201,18 +208,35 @@ export function Layout() {
                                     w="32px"
                                     h="32px"
                                     borderRadius="lg"
-                                    bg={pathname.includes('project_management') ? 'sidebar.primary' : 'sidebar.accent'}
-                                    color={pathname.includes('project_management') ? 'sidebar.primary.foreground' : 'sidebar.accent.foreground'}
-                                    _groupHover={{ bg: 'sidebar.primary', color: 'sidebar.primary.foreground' }}
+                                    bg={
+                                        pathname.includes('project_management')
+                                            ? 'sidebar.primary'
+                                            : 'sidebar.accent'
+                                    }
+                                    color={
+                                        pathname.includes('project_management')
+                                            ? 'sidebar.primary.foreground'
+                                            : 'sidebar.accent.foreground'
+                                    }
+                                    _groupHover={{
+                                        bg: 'sidebar.primary',
+                                        color: 'sidebar.primary.foreground',
+                                    }}
                                     transition="colors 0.2s"
                                 >
                                     <FiFolder size="16px" />
                                 </Box>
                                 <Box flex="1" textAlign="left">
-                                    <Text fontWeight="medium" color="sidebar.foreground">
+                                    <Text
+                                        fontWeight="medium"
+                                        color="sidebar.foreground"
+                                    >
                                         ניהול פרויקטים
                                     </Text>
-                                    <Text fontSize="xs" color="muted.foreground">
+                                    <Text
+                                        fontSize="xs"
+                                        color="muted.foreground"
+                                    >
                                         Project Tracking
                                     </Text>
                                 </Box>
@@ -229,7 +253,11 @@ export function Layout() {
                             h="48px"
                             px={3}
                             borderRadius="lg"
-                            bg={pathname.includes('personnel') ? 'sidebar.accent' : 'transparent'}
+                            bg={
+                                pathname.includes('personnel')
+                                    ? 'sidebar.accent'
+                                    : 'transparent'
+                            }
                             _hover={{ bg: 'sidebar.accent' }}
                             transition="all 0.2s"
                             role="group"
@@ -242,18 +270,35 @@ export function Layout() {
                                     w="32px"
                                     h="32px"
                                     borderRadius="lg"
-                                    bg={pathname.includes('personnel') ? 'sidebar.primary' : 'sidebar.accent'}
-                                    color={pathname.includes('personnel') ? 'sidebar.primary.foreground' : 'sidebar.accent.foreground'}
-                                    _groupHover={{ bg: 'sidebar.primary', color: 'sidebar.primary.foreground' }}
+                                    bg={
+                                        pathname.includes('personnel')
+                                            ? 'sidebar.primary'
+                                            : 'sidebar.accent'
+                                    }
+                                    color={
+                                        pathname.includes('personnel')
+                                            ? 'sidebar.primary.foreground'
+                                            : 'sidebar.accent.foreground'
+                                    }
+                                    _groupHover={{
+                                        bg: 'sidebar.primary',
+                                        color: 'sidebar.primary.foreground',
+                                    }}
                                     transition="colors 0.2s"
                                 >
                                     <FiUsers size="16px" />
                                 </Box>
                                 <Box flex="1" textAlign="left">
-                                    <Text fontWeight="medium" color="sidebar.foreground">
+                                    <Text
+                                        fontWeight="medium"
+                                        color="sidebar.foreground"
+                                    >
                                         משאבי אנוש
                                     </Text>
-                                    <Text fontSize="xs" color="muted.foreground">
+                                    <Text
+                                        fontSize="xs"
+                                        color="muted.foreground"
+                                    >
                                         Employee Management
                                     </Text>
                                 </Box>
@@ -264,13 +309,20 @@ export function Layout() {
                             key="reserve_days_management"
                             as={RouterLink}
                             // @ts-expect-error: 'to' is valid when 'as' is RouterLink
-                            to={generateFormPath('reserve_days_management', 'default')}
+                            to={generateFormPath(
+                                'reserve_days_management',
+                                'default'
+                            )}
                             variant="ghost"
                             justifyContent="flex-start"
                             h="48px"
                             px={3}
                             borderRadius="lg"
-                            bg={pathname.includes('reserve_days_management') ? 'sidebar.accent' : 'transparent'}
+                            bg={
+                                pathname.includes('reserve_days_management')
+                                    ? 'sidebar.accent'
+                                    : 'transparent'
+                            }
                             _hover={{ bg: 'sidebar.accent' }}
                             transition="all 0.2s"
                             role="group"
@@ -283,24 +335,44 @@ export function Layout() {
                                     w="32px"
                                     h="32px"
                                     borderRadius="lg"
-                                    bg={pathname.includes('reserve_days_management') ? 'sidebar.primary' : 'sidebar.accent'}
-                                    color={pathname.includes('reserve_days_management') ? 'sidebar.primary.foreground' : 'sidebar.accent.foreground'}
-                                    _groupHover={{ bg: 'sidebar.primary', color: 'sidebar.primary.foreground' }}
+                                    bg={
+                                        pathname.includes(
+                                            'reserve_days_management'
+                                        )
+                                            ? 'sidebar.primary'
+                                            : 'sidebar.accent'
+                                    }
+                                    color={
+                                        pathname.includes(
+                                            'reserve_days_management'
+                                        )
+                                            ? 'sidebar.primary.foreground'
+                                            : 'sidebar.accent.foreground'
+                                    }
+                                    _groupHover={{
+                                        bg: 'sidebar.primary',
+                                        color: 'sidebar.primary.foreground',
+                                    }}
                                     transition="colors 0.2s"
                                 >
                                     <FiCalendar size="16px" />
                                 </Box>
                                 <Box flex="1" textAlign="left">
-                                    <Text fontWeight="medium" color="sidebar.foreground">
+                                    <Text
+                                        fontWeight="medium"
+                                        color="sidebar.foreground"
+                                    >
                                         צווי מילואים
                                     </Text>
-                                    <Text fontSize="xs" color="muted.foreground">
+                                    <Text
+                                        fontSize="xs"
+                                        color="muted.foreground"
+                                    >
                                         Reserve Days Management
                                     </Text>
                                 </Box>
                             </HStack>
                         </Button>
-
                     </VStack>
                 </Box>
 
