@@ -127,9 +127,16 @@ export function PersonalInformationSection({
             />
             <ControlledDateRangeField
                 control={control}
-                startName="vehicleEntryStartDate"
-                endName="vehicleEntryEndDate"
-                label="תוקף אישור כניסה עם רכב"
+                startName="entryStartDate"
+                endName="entryEndDate"
+                label="תוקף אישור כניסה לבסיס"
+            />
+            <ControlledRadioField
+                control={control}
+                name="hasVehicleApproval"
+                id="hasVehicleApproval"
+                label="האם קיים גם אישור כניסה עם רכב"
+                items={YES_NO_ITEMS}
             />
             <ControlledTextareaField
                 control={control}

@@ -43,12 +43,14 @@ async function fillDateRangeInputs(
 }
 
 /**
- * Create a personnel record directly via the API with a known vehicle-entry
- * approval date range (vehicleEntryStartDate/vehicleEntryEndDate — replaces the
- * old boolean vehicleEntry field). Defaults to a range covering today, so the
- * reserve-days vehicleStatus indicator (computed by full coverage of the
- * reserve day's own startDate/endDate, see reserveDay.service.ts:withVehicleStatus —
- * the approval range must fully contain the reserve day, not merely overlap it)
+ * Create a personnel record directly via the API with a known base-entry
+ * approval date range (entryStartDate/entryEndDate — replaces the old
+ * vehicle-specific vehicleEntryStartDate/vehicleEntryEndDate names now that
+ * this range models general base-entry approval, not just vehicle entry).
+ * Defaults to a range covering today, so the reserve-days vehicleStatus
+ * indicator (computed by full coverage of the reserve day's own
+ * startDate/endDate, see reserveDay.service.ts:withVehicleStatus — the
+ * approval range must fully contain the reserve day, not merely overlap it)
  * reads as approved unless overridden.
  */
 async function createPersonnelWithVehicle(
@@ -64,9 +66,10 @@ async function createPersonnelWithVehicle(
    firstName: 'בדיקה',
    lastName: 'רכבטסט',
    personalNumber,
-   vehicleEntryStartDate: yesterday,
-   vehicleEntryEndDate: nextWeek,
+   entryStartDate: yesterday,
+   entryEndDate: nextWeek,
    vehicleNumber,
+   hasVehicleApproval: true,
    isActive: true,
    ...overrides,
   },
@@ -679,8 +682,8 @@ test.describe('Module 3: Reserve Days Management', () => {
   const tenDaysAgo = new Date(Date.now() - 10 * 86400000).toISOString().split('T')[0];
   const fiveDaysAgo = new Date(Date.now() - 5 * 86400000).toISOString().split('T')[0];
   const { personalNumber, vehicleNumber } = await createPersonnelWithVehicle(request, {
-   vehicleEntryStartDate: tenDaysAgo,
-   vehicleEntryEndDate: fiveDaysAgo,
+   entryStartDate: tenDaysAgo,
+   entryEndDate: fiveDaysAgo,
   });
 
   await page.getByRole('button', { name: 'צווי מילואים' }).click();
@@ -732,8 +735,8 @@ test.describe('Module 3: Reserve Days Management', () => {
   const reserveStart = toIso(new Date(Date.now())); // overlaps the tail of the approval window
   const reserveEnd = toIso(new Date(Date.now() + 5 * 86400000)); // extends past approvalEnd
   const { personalNumber, vehicleNumber } = await createPersonnelWithVehicle(request, {
-   vehicleEntryStartDate: approvalStart,
-   vehicleEntryEndDate: approvalEnd,
+   entryStartDate: approvalStart,
+   entryEndDate: approvalEnd,
   });
 
   await page.getByRole('button', { name: 'צווי מילואים' }).click();

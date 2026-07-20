@@ -456,13 +456,13 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
   }
  });
 
- test('TC-DR-016: Employee card shows expired-vehicle-approval warning when the approval ended before today', async ({
+ test('TC-DR-016: Employee card shows expired-base-entry-approval warning when the approval ended before today', async ({
   page,
   request,
  }) => {
-  // Personnel whose vehicle-entry approval range ended 5 days ago — today's
+  // Personnel whose base-entry approval range ended 5 days ago — today's
   // reserve day therefore falls after the approval expired. This must surface
-  // the UnapprovedVehicleWarning badge on the card (see
+  // the UnapprovedBaseEntryWarning badge on the card (see
   // EmployeeAttendanceCard.tsx / routes/quota/get.ts hasExpiredVehicleApproval).
   const tenDaysAgo = new Date(Date.now() - 10 * 86400000).toISOString().split('T')[0];
   const fiveDaysAgo = new Date(Date.now() - 5 * 86400000).toISOString().split('T')[0];
@@ -473,8 +473,8 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
     firstName: 'פגתוקף',
     lastName: `רכב${Date.now()}`,
     personalNumber: `VEXP${Date.now()}`,
-    vehicleEntryStartDate: tenDaysAgo,
-    vehicleEntryEndDate: fiveDaysAgo,
+    entryStartDate: tenDaysAgo,
+    entryEndDate: fiveDaysAgo,
    });
    rid = await createReserveDay(request, personnel, {
     startDate: TODAY,
@@ -489,8 +489,8 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
    await expect(drawer).toBeVisible({ timeout: 5000 });
    await expect(drawer.getByText('פגתוקף')).toBeVisible({ timeout: 8000 });
 
-   // UnapprovedVehicleWarning renders react-icons' FaCarCrash in orange, with no
-   // other orange svg on the card — target it by fill color rather than a bare
+   // UnapprovedBaseEntryWarning renders react-icons' FaDoorClosed in orange, with
+   // no other orange svg on the card — target it by fill color rather than a bare
    // svg selector (the compact details row below also renders several svgs:
    // FaIdBadge/FaPhone/FaUsers/etc., so a plain `.locator('svg').first()` is
    // not reliably the warning icon).
@@ -498,17 +498,17 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
    const warningIcon = employeeCard.locator('svg[fill="orange"]').first();
    await expect(warningIcon).toBeVisible({ timeout: 5000 });
    await warningIcon.hover();
-   await expect(page.getByText('אישור כניסה עם רכב פג תוקף')).toBeVisible({ timeout: 5000 });
+   await expect(page.getByText('תוקף אישור כניסה לבסיס')).toBeVisible({ timeout: 5000 });
   } finally {
    if (rid) await deleteReserveDay(request, rid);
    if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
- test('TC-DR-017: Employee card has NO expired-vehicle warning when no vehicle-approval range is set', async ({
+ test('TC-DR-017: Employee card has NO expired-base-entry warning when no approval range is set', async ({
   page,
  }) => {
-  // sharedPersonnel (created in beforeAll) has no vehicleEntryStartDate/EndDate
+  // sharedPersonnel (created in beforeAll) has no entryStartDate/entryEndDate
   // at all — per the "only flag EXPIRED approvals" rule, no range configured
   // must never trigger the warning.
   await navigateToQuotaPage(page);
@@ -519,6 +519,6 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
   await expect(drawer.getByText('דרור')).toBeVisible({ timeout: 8000 });
 
   const employeeCard = drawer.locator('div').filter({ hasText: 'דרור' }).last();
-  await expect(employeeCard.getByText('אישור כניסה עם רכב פג תוקף')).not.toBeVisible();
+  await expect(employeeCard.getByText('תוקף אישור כניסה לבסיס')).not.toBeVisible();
  });
 });

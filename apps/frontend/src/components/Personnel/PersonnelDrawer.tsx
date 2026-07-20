@@ -20,6 +20,7 @@ import {
 } from './PersonnelForm'
 import {
     PersonnelFormSchema,
+    PersonnelUpdateFormSchema,
     PersonnelFormValues,
     PERSONNEL_DEFAULT_VALUES,
 } from './personnelSchema'
@@ -114,7 +115,9 @@ export function PersonnelDrawer({ isOpen, onClose }: PersonnelDrawerProps) {
         setError,
         formState: { isDirty: hasChanges },
     } = useForm<PersonnelFormValues>({
-        resolver: zodResolver(PersonnelFormSchema),
+        resolver: zodResolver(
+            formState === 'edit' ? PersonnelUpdateFormSchema : PersonnelFormSchema
+        ),
         defaultValues: PERSONNEL_DEFAULT_VALUES,
     })
 

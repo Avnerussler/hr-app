@@ -54,13 +54,13 @@ async function assertNoOverlap(employeeName: string, startDate: Date, endDate: D
 /** vehicleStatus is never stored — always computed from the linked Personnel doc at read time. */
 async function withVehicleStatus<T extends { employeeName: unknown; startDate: Date; endDate: Date }>(doc: T) {
     const personnel = await PersonnelModel.findById(doc.employeeName as string)
-        .select('vehicleEntryStartDate vehicleEntryEndDate vehicleNumber')
+        .select('entryStartDate entryEndDate vehicleNumber')
         .lean()
     const hasVehicleApproval = !!(
-        personnel?.vehicleEntryStartDate &&
-        personnel?.vehicleEntryEndDate &&
-        personnel.vehicleEntryStartDate <= doc.startDate &&
-        personnel.vehicleEntryEndDate >= doc.endDate
+        personnel?.entryStartDate &&
+        personnel?.entryEndDate &&
+        personnel.entryStartDate <= doc.startDate &&
+        personnel.entryEndDate >= doc.endDate
     )
     return {
         ...doc,

@@ -94,8 +94,8 @@ export function useEmployeeVehicleStatusQuery(
         queryKey: ['personnel', 'detail', employeeId, 'vehicleStatus', startDate, endDate],
         queryFn: async () => {
             const { data } = await axios.get(`${BASE_URL}/personnel/${employeeId}`)
-            const approvalStart = data.vehicleEntryStartDate ? new Date(data.vehicleEntryStartDate) : null
-            const approvalEnd = data.vehicleEntryEndDate ? new Date(data.vehicleEntryEndDate) : null
+            const approvalStart = data.entryStartDate ? new Date(data.entryStartDate) : null
+            const approvalEnd = data.entryEndDate ? new Date(data.entryEndDate) : null
             const rangeStart = startDate ? new Date(startDate) : null
             const rangeEnd = endDate ? new Date(endDate) : null
             const hasVehicleApproval = !!(

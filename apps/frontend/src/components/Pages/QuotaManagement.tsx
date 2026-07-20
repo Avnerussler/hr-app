@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react'
 import { ProgressRoot, ProgressBar } from '../ui/progress'
 import { UnapprovedReserveDaysWarning } from '../common/UnapprovedReserveDaysWarning'
-import { UnapprovedVehicleWarning } from '../common/UnapprovedVehicleWarning'
+import { UnapprovedBaseEntryWarning } from '../common/UnapprovedBaseEntryWarning'
 import {
     FaCalendarAlt,
     FaChevronLeft,
@@ -777,7 +777,7 @@ export default function QuotaManagement() {
                                             {/* Expired Vehicle Approval Warning */}
                                             {attendanceSummary?.[day.date]
                                                 ?.hasExpiredVehicleApproval && (
-                                                <UnapprovedVehicleWarning
+                                                <UnapprovedBaseEntryWarning
                                                     expiredVehicleApprovalEmployees={
                                                         attendanceSummary[
                                                             day.date
@@ -991,7 +991,7 @@ export default function QuotaManagement() {
                                                             day.date
                                                         ]
                                                             ?.hasExpiredVehicleApproval && (
-                                                            <UnapprovedVehicleWarning
+                                                            <UnapprovedBaseEntryWarning
                                                                 expiredVehicleApprovalEmployees={
                                                                     attendanceSummary[
                                                                         day.date

@@ -1,7 +1,6 @@
 import { Box, HStack, VStack, Text, Badge, Flex } from '@chakra-ui/react'
 import { Checkbox } from '../ui/checkbox'
-import { UnapprovedReserveDaysWarning } from '../common/UnapprovedReserveDaysWarning'
-import { UnapprovedVehicleWarning } from '../common/UnapprovedVehicleWarning'
+import { UnapprovedBaseEntryWarning } from '../common/UnapprovedBaseEntryWarning'
 import { ReserveDayStatusCell } from '../ReserveDay/ReserveDayStatusCell'
 import {
     FaIdBadge,
@@ -87,14 +86,7 @@ export function EmployeeAttendanceCard({
                                     מסיים
                                 </Badge>
                             )}
-                            {employee.requestStatus &&
-                                employee.requestStatus !== 'approved' && (
-                                    <UnapprovedReserveDaysWarning
-                                        employeeName={employee.name}
-                                        requestStatus={employee.requestStatus}
-                                        iconSize={12}
-                                    />
-                                )}
+
                             {employee.reserveDayId && (
                                 <ReserveDayStatusCell
                                     id={employee.reserveDayId}
@@ -102,7 +94,7 @@ export function EmployeeAttendanceCard({
                                 />
                             )}
                             {employee.hasExpiredVehicleApproval && (
-                                <UnapprovedVehicleWarning
+                                <UnapprovedBaseEntryWarning
                                     employeeName={employee.name}
                                     iconSize={12}
                                 />
@@ -168,7 +160,9 @@ export function EmployeeAttendanceCard({
                     size="sm"
                     px={2}
                     cursor="pointer"
-                    onClick={() => onAttendanceToggle(employee._id, !currentAttendance)}
+                    onClick={() =>
+                        onAttendanceToggle(employee._id, !currentAttendance)
+                    }
                     _hover={{ opacity: 0.75 }}
                 >
                     {currentAttendance ? 'נוכח' : 'לא הגיע'}

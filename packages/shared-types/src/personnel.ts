@@ -12,64 +12,65 @@ import { ObjectIdString } from './common'
 export const PersonnelObjectSchema = z.object({
     firstName: z.string().min(1, 'שם פרטי הוא שדה חובה'),
     lastName: z.string().min(1, 'שם משפחה הוא שדה חובה'),
-    userId: z.string().optional(),
+    userId: z.string().nullish(),
     personalNumber: z.string().min(1, 'מספר אישי הוא שדה חובה'),
-    phone: z.string().optional(),
-    email: z.string().email().optional().or(z.literal('')),
-    city: z.string().optional(),
-    linkedin: z.string().optional(),
-    vehicleNumber: z.string().optional(),
-    note: z.string().optional(),
-    details: z.string().optional(),
-    layer: Layer.optional(),
+    phone: z.string().nullish(),
+    email: z.string().email().nullish().or(z.literal('')),
+    city: z.string().nullish(),
+    linkedin: z.string().nullish(),
+    vehicleNumber: z.string().nullish(),
+    note: z.string().nullish(),
+    details: z.string().nullish(),
+    layer: Layer.nullish(),
     isActive: z.boolean().default(true),
 
-    reserveUnit: z.string().optional(),
-    studioRole: StudioRole.optional(),
-    reserveRole: z.string().optional(),
-    directBoss: z.string().optional(),
-    rank: z.string().optional(),
-    classificationClass: ClassificationClass.optional(),
-    canBeRecited: z.boolean().optional(),
-    reserveCategory: ReserveCategory.optional(),
+    reserveUnit: z.string().nullish(),
+    studioRole: StudioRole.nullish(),
+    reserveRole: z.string().nullish(),
+    directBoss: z.string().nullish(),
+    rank: z.string().nullish(),
+    classificationClass: ClassificationClass.nullish(),
+    canBeRecited: z.boolean().nullish(),
+    reserveCategory: ReserveCategory.nullish(),
     assignedProjects: ObjectIdString.nullable().default(null),
-    vehicleEntryStartDate: z.coerce.date().optional(),
-    vehicleEntryEndDate: z.coerce.date().optional(),
+    entryStartDate: z.coerce.date().nullish(),
+    entryEndDate: z.coerce.date().nullish(),
+    hasVehicleApproval: z.boolean().nullish(),
 
-    degree: z.string().optional(),
-    university: z.string().optional(),
-    studyArea: z.string().optional(),
-    yearOfGradation: z.coerce.date().optional(),
-    workExperience: z.string().optional(),
-    talentAndSkills: z.string().optional(),
-    referralSource: z.string().optional(),
-    fieldOfExpertise: FieldOfExpertise.optional(),
-    experience: Experience.optional(),
-    workPlace: z.string().optional(),
-    currentPosition: z.string().optional(),
-    resumeFileUrl: z.string().optional(),
+    degree: z.string().nullish(),
+    university: z.string().nullish(),
+    studyArea: z.string().nullish(),
+    yearOfGradation: z.coerce.date().nullish(),
+    workExperience: z.string().nullish(),
+    talentAndSkills: z.string().nullish(),
+    referralSource: z.string().nullish(),
+    fieldOfExpertise: FieldOfExpertise.nullish(),
+    experience: Experience.nullish(),
+    workPlace: z.string().nullish(),
+    currentPosition: z.string().nullish(),
+    resumeFileUrl: z.string().nullish(),
 })
 
 export const PersonnelSchema = PersonnelObjectSchema.refine(
     (data) =>
-        !data.vehicleEntryStartDate ||
-        !data.vehicleEntryEndDate ||
-        data.vehicleEntryEndDate >= data.vehicleEntryStartDate,
+        !data.entryStartDate ||
+        !data.entryEndDate ||
+        data.entryEndDate >= data.entryStartDate,
     {
         message: 'תאריך סיום חייב להיות אחרי תאריך התחלה',
-        path: ['vehicleEntryEndDate'],
+        path: ['entryEndDate'],
     }
 )
 export type Personnel = z.infer<typeof PersonnelSchema>
 
 export const PersonnelUpdateSchema = PersonnelObjectSchema.partial().refine(
     (data) =>
-        !data.vehicleEntryStartDate ||
-        !data.vehicleEntryEndDate ||
-        data.vehicleEntryEndDate >= data.vehicleEntryStartDate,
+        !data.entryStartDate ||
+        !data.entryEndDate ||
+        data.entryEndDate >= data.entryStartDate,
     {
         message: 'תאריך סיום חייב להיות אחרי תאריך התחלה',
-        path: ['vehicleEntryEndDate'],
+        path: ['entryEndDate'],
     }
 )
 

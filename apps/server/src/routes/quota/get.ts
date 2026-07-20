@@ -374,9 +374,9 @@ router.get(
                         // Only flag when an approval range IS set but has already passed by this date.
                         // No range set, or date still within/before the range, is not a warning case.
                         hasExpiredVehicleApproval = !!(
-                            fullEmployeeData.vehicleEntryStartDate &&
-                            fullEmployeeData.vehicleEntryEndDate &&
-                            new Date(fullEmployeeData.vehicleEntryEndDate) < date
+                            fullEmployeeData.entryStartDate &&
+                            fullEmployeeData.entryEndDate &&
+                            new Date(fullEmployeeData.entryEndDate) < date
                         )
                     }
 

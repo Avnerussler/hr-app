@@ -316,10 +316,10 @@ router.get(
                 )
                 employeeVehicleRangeMap.set(
                     record._id.toString(),
-                    record.vehicleEntryStartDate && record.vehicleEntryEndDate
+                    record.entryStartDate && record.entryEndDate
                         ? {
-                              start: new Date(record.vehicleEntryStartDate),
-                              end: new Date(record.vehicleEntryEndDate),
+                              start: new Date(record.entryStartDate),
+                              end: new Date(record.entryEndDate),
                           }
                         : null
                 )
