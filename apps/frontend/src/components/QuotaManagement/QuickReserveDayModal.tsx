@@ -59,7 +59,7 @@ export function QuickReserveDayModal({
             ...RESERVE_DAY_DEFAULT_VALUES,
             startDate,
             endDate,
-        } as ReserveDayFormValues)
+        } as unknown as ReserveDayFormValues)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen, selectedDate, selectedRange])
 
