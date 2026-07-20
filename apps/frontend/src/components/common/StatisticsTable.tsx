@@ -1,33 +1,41 @@
 import { Box, Text, Flex, Skeleton } from '@chakra-ui/react'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode, useMemo, useState } from 'react'
 import {
     useReactTable,
     getCoreRowModel,
+    getSortedRowModel,
+    getFilteredRowModel,
     flexRender,
     ColumnDef,
     FilterFn,
+    SortingState,
 } from '@tanstack/react-table'
-import { rankItem } from '@tanstack/match-sorter-utils'
-import { rankSort } from '@/components/common/Table/utils/rankSort'
+import { FiChevronUp, FiChevronDown, FiMinus } from 'react-icons/fi'
+import { DebouncedInput } from '@/components/DebounceInput'
 
-// Simple fuzzy filter for statistics
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-    const itemRank = rankItem(String(row.getValue(columnId)), value)
-    addMeta({ itemRank })
-    return itemRank.passed
+// Substring filter for a single column
+const fuzzyFilter: FilterFn<Record<string, unknown>> = (
+    row,
+    columnId,
+    value
+) => {
+    return String(row.getValue(columnId))
+        .toLowerCase()
+        .includes(String(value).toLowerCase())
 }
 
-// Simple global filter
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const globalFilter: FilterFn<any> = (row, _columnId, value, addMeta) => {
+// Substring filter across all columns
+const globalFilter: FilterFn<Record<string, unknown>> = (
+    row,
+    _columnId,
+    value
+) => {
     const searchableText = row
         .getAllCells()
         .map((cell) => String(cell.getValue()))
         .join(' ')
-    const itemRank = rankItem(searchableText, value)
-    addMeta({ itemRank })
-    return itemRank.passed
+        .toLowerCase()
+    return searchableText.includes(String(value).toLowerCase())
 }
 
 interface StatisticsTableProps {
@@ -49,6 +57,9 @@ export function StatisticsTable({
     isLoading = false,
     minHeight = '300px',
 }: StatisticsTableProps) {
+    const [sorting, setSorting] = useState<SortingState>([])
+    const [globalFilterValue, setGlobalFilterValue] = useState('')
+
     // Transform rows array into objects for TanStack Table
     const data = useMemo(() => {
         return rows.map((row) => {
@@ -76,13 +87,27 @@ export function StatisticsTable({
                 return value ?? '-'
             },
             size: index === 0 ? 200 : 120,
+            sortingFn: 'alphanumeric',
+            filterFn: fuzzyFilter,
         }))
     }, [headers])
 
     const table = useReactTable({
         data,
         columns,
+        state: {
+            sorting,
+            globalFilter: globalFilterValue,
+        },
+        onSortingChange: setSorting,
+        onGlobalFilterChange: setGlobalFilterValue,
         getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        globalFilterFn: 'global',
+        enableSortingRemoval: true,
+        enableMultiSort: false,
+        sortDescFirst: false,
         defaultColumn: {
             minSize: 80,
             maxSize: 300,
@@ -90,9 +115,6 @@ export function StatisticsTable({
         filterFns: {
             fuzzy: fuzzyFilter,
             global: globalFilter,
-        },
-        sortingFns: {
-            rank: rankSort,
         },
     })
 
@@ -148,6 +170,15 @@ export function StatisticsTable({
                         )}
                     </Box>
                 </Flex>
+                <Box mt={4} maxW="280px">
+                    <DebouncedInput
+                        value={globalFilterValue}
+                        onChange={(value) =>
+                            setGlobalFilterValue(String(value))
+                        }
+                        placeholder="חיפוש בטבלה..."
+                    />
+                </Box>
             </Box>
 
             <Box
@@ -166,30 +197,66 @@ export function StatisticsTable({
                                 borderBottomWidth="1px"
                                 borderColor="gray.200"
                             >
-                                {headerGroup.headers.map((header, index) => (
-                                    <Box
-                                        as="th"
-                                        key={header.id}
-                                        py={3}
-                                        px={4}
-                                        textAlign={
-                                            index === 0 ? 'right' : 'center'
-                                        }
-                                        fontSize="xs"
-                                        fontWeight="bold"
-                                        color="gray.700"
-                                        textTransform="none"
-                                        whiteSpace="nowrap"
-                                    >
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                  header.column.columnDef
-                                                      .header,
-                                                  header.getContext()
-                                              )}
-                                    </Box>
-                                ))}
+                                {headerGroup.headers.map((header, index) => {
+                                    const sortDirection =
+                                        header.column.getIsSorted()
+                                    return (
+                                        <Box
+                                            as="th"
+                                            key={header.id}
+                                            py={3}
+                                            px={4}
+                                            textAlign={
+                                                index === 0 ? 'right' : 'center'
+                                            }
+                                            fontSize="xs"
+                                            fontWeight="bold"
+                                            color="gray.700"
+                                            textTransform="none"
+                                            whiteSpace="nowrap"
+                                            cursor="pointer"
+                                            userSelect="none"
+                                            onClick={header.column.getToggleSortingHandler()}
+                                        >
+                                            <Flex
+                                                as="span"
+                                                align="center"
+                                                justify={
+                                                    index === 0
+                                                        ? 'flex-start'
+                                                        : 'center'
+                                                }
+                                                gap={1}
+                                            >
+                                                {header.isPlaceholder
+                                                    ? null
+                                                    : flexRender(
+                                                          header.column
+                                                              .columnDef.header,
+                                                          header.getContext()
+                                                      )}
+                                                <Box
+                                                    as="span"
+                                                    display="inline-flex"
+                                                    color={
+                                                        sortDirection
+                                                            ? 'blue.600'
+                                                            : 'gray.400'
+                                                    }
+                                                >
+                                                    {sortDirection === 'asc' ? (
+                                                        <FiChevronDown />
+                                                    ) : sortDirection ===
+                                                      'desc' ? (
+                                                        <FiChevronUp />
+                                                    ) : (
+                                                        <FiMinus />
+                                                    )}
+                                                </Box>
+                                            </Flex>
+                                        </Box>
+                                    )
+                                })}
                             </Box>
                         ))}
                     </Box>
