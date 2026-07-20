@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import { PersonnelModel, PersonnelDocument } from '../models/Personnel'
-import { PersonnelSchema } from '@hr-app/shared-types'
+import { PersonnelSchema, PersonnelUpdateSchema } from '@hr-app/shared-types'
 import {
     RESERVE_CATEGORY_LABELS,
     STUDIO_ROLE_LABELS,
@@ -167,7 +167,7 @@ export async function updatePersonnel(id: string, body: unknown) {
     const existing = await PersonnelModel.findById(id)
     if (!existing) throw new NotFoundError('Personnel')
 
-    const validated = PersonnelSchema.parse(body)
+    const validated = PersonnelUpdateSchema.parse(body)
     const previousProjectId = existing.assignedProjects ? String(existing.assignedProjects) : null
 
     Object.assign(existing, validated)
@@ -199,7 +199,11 @@ export async function searchPersonnelOptions(search: string | undefined, page: n
     }
     const skip = (page - 1) * limit
     const [docs, total] = await Promise.all([
-        PersonnelModel.find(query).skip(skip).limit(limit).lean(),
+        PersonnelModel.find(query)
+            .sort({ isActive: -1, firstName: 1, lastName: 1 })
+            .skip(skip)
+            .limit(limit)
+            .lean(),
         PersonnelModel.countDocuments(query),
     ])
     const options = docs.map((d) => ({
