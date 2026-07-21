@@ -2,63 +2,51 @@ import { useMemo } from 'react'
 import { DatePicker, Field, Portal } from '@chakra-ui/react'
 import type { DateValue } from '@chakra-ui/react'
 import { LuCalendar } from 'react-icons/lu'
-import { Control, FieldValues, useController } from 'react-hook-form'
+import { Control, FieldValues, RegisterOptions, useController } from 'react-hook-form'
 import { toCalendarDate, formatDate, parseDateInput } from './dateFieldUtils'
 
-interface ControlledDateRangeFieldProps {
+interface ControlledDateFieldProps {
     control: Control<FieldValues>
-    startName: string
-    endName: string
-    label?: string
+    name: string
+    label: string
     required?: boolean
+    rules?: RegisterOptions
     isDateUnavailable?: (date: DateValue) => boolean
-    /** Hide the picker's clear ("x") button — for fields that must always hold a range. */
+    /** Hide the picker's clear ("x") button — for fields that must always hold a date. */
     hideClearTrigger?: boolean
 }
 
-/** A generic date-range picker (dd/mm/yyyy) that reads/writes two separate RHF fields (startName, endName). */
-export function ControlledDateRangeField({
+/** A single date picker (dd/mm/yyyy) that reads/writes one RHF field. */
+export function ControlledDateField({
     control,
-    startName,
-    endName,
+    name,
     label,
     required,
+    rules,
     isDateUnavailable,
     hideClearTrigger,
-}: ControlledDateRangeFieldProps) {
+}: ControlledDateFieldProps) {
     const {
-        field: startField,
-        fieldState: { error: startError },
+        field,
+        fieldState: { error },
     } = useController({
-        name: startName,
+        name,
         control,
-        rules: { required: required ? `${label} הינו שדה חובה` : false },
-    })
-    const {
-        field: endField,
-        fieldState: { error: endError },
-    } = useController({
-        name: endName,
-        control,
-        rules: { required: required ? `${label} הינו שדה חובה` : false },
+        rules: {
+            required: required ? `${label} הינו שדה חובה` : false,
+            ...rules,
+        },
     })
 
     const value = useMemo(() => {
-        const start = toCalendarDate(startField.value)
-        const end = toCalendarDate(endField.value)
-        return [start, end].filter((d): d is DateValue => d !== null)
-    }, [startField.value, endField.value])
-
-    const error = startError || endError
+        const date = toCalendarDate(field.value)
+        return date ? [date] : []
+    }, [field.value])
 
     return (
-        <Field.Root
-            orientation="vertical"
-            invalid={!!error}
-            required={required}
-        >
+        <Field.Root orientation="vertical" invalid={!!error} required={required}>
             <DatePicker.Root
-                selectionMode="range"
+                selectionMode="single"
                 value={value}
                 format={formatDate}
                 parse={parseDateInput}
@@ -69,14 +57,12 @@ export function ControlledDateRangeField({
                 locale="en-GB"
                 isDateUnavailable={isDateUnavailable}
                 onValueChange={(details: DatePicker.ValueChangeDetails) => {
-                    const [start, end] = details.value
-                    startField.onChange(start ? start.toString() : '')
-                    endField.onChange(end ? end.toString() : '')
+                    const [date] = details.value
+                    field.onChange(date ? date.toString() : '')
                 }}
                 onOpenChange={(details: DatePicker.OpenChangeDetails) => {
                     if (!details.open) {
-                        startField.onBlur()
-                        endField.onBlur()
+                        field.onBlur()
                     }
                 }}
                 size="sm"
@@ -87,7 +73,6 @@ export function ControlledDateRangeField({
                 </DatePicker.Label>
                 <DatePicker.Control>
                     <DatePicker.Input index={0} placeholder="dd/mm/yyyy" />
-                    <DatePicker.Input index={1} placeholder="dd/mm/yyyy" />
                     <DatePicker.IndicatorGroup>
                         <DatePicker.Trigger>
                             <LuCalendar />

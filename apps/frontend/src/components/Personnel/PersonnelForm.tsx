@@ -4,6 +4,7 @@ import { ControlledInputField } from '@/components/ControlledFields/ControlledIn
 import { ControlledSelectField } from '@/components/ControlledFields/ControlledSelectField'
 import { ControlledRadioField } from '@/components/ControlledFields/ControlledRadioField'
 import { ControlledDateRangeField } from '@/components/ControlledFields/ControlledDateRangeField'
+import { ControlledDateField } from '@/components/ControlledFields/ControlledDateField'
 import { ControlledTextareaField } from '@/components/ControlledFields/ControlledTextareaField'
 import { ControlledFileInput } from '@/components/ControlledFields/ControlledFileField'
 import { ControlledAttendanceHistoryField } from '@/components/ControlledFields/ControlledAttendanceHistoryField'
@@ -292,13 +293,10 @@ export function ProfessionalInformationSection({
                 label="תחום לימודים"
                 placeholder="תחום לימודים"
             />
-            <ControlledInputField
+            <ControlledDateField
                 control={control}
                 name="yearOfGradation"
-                id="yearOfGradation"
-                type="date"
                 label="תאריך סיום לימודים"
-                placeholder="תאריך סיום לימודים"
             />
             <ControlledTextareaField
                 control={control}

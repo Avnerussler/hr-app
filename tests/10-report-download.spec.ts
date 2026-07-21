@@ -7,7 +7,27 @@
 // statistics endpoint response, causing every report fetch to silently fail
 // and the whole export to throw "לא ניתן לטעון את הדוחות מהשרת".
 
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Page, Locator } from '@playwright/test';
+
+/** Convert a "YYYY-MM-DD" date string to the "DD/MM/YYYY" format the DatePicker input expects. */
+function toPickerDate(isoDate: string): string {
+ const [year, month, day] = isoDate.split('-');
+ return `${day}/${month}/${year}`;
+}
+
+/**
+ * Fill one of the custom-range DatePicker's dd/mm/yyyy inputs (ControlledDateField —
+ * components/ControlledFields/ControlledDateField.tsx). Uses pressSequentially (not
+ * .fill()) — the ark-ui date-input parses keystrokes as they're typed, and a bulk
+ * .fill() can be silently dropped. The field defaults to pre-filled with today's date,
+ * so triple-click to select all of its text before typing, replacing it rather than
+ * interleaving with the existing digits.
+ */
+async function fillDateInput(input: Locator, isoDate: string): Promise<void> {
+ await input.click({ clickCount: 3 });
+ await input.pressSequentially(toPickerDate(isoDate));
+ await input.press('Tab');
+}
 
 async function openReportDialog(page: Page) {
  await page.goto('/dashboard');
@@ -90,8 +110,8 @@ test.describe('Module 10: Report Download (Excel export)', () => {
   await timeFrameCombo.click();
   await page.getByRole('option', { name: 'טווח מותאם' }).click();
 
-  await dialog.locator('input[name="startDate"]').fill('2026-06-01');
-  await dialog.locator('input[name="endDate"]').fill('2026-07-01');
+  await fillDateInput(dialog.getByPlaceholder('dd/mm/yyyy').nth(0), '2026-06-01');
+  await fillDateInput(dialog.getByPlaceholder('dd/mm/yyyy').nth(1), '2026-07-01');
 
   const submit = dialog.getByRole('button', { name: /הורד קובץ אקסל/ });
   await expect(submit).toBeEnabled();
@@ -114,8 +134,8 @@ test.describe('Module 10: Report Download (Excel export)', () => {
   await timeFrameCombo.click();
   await page.getByRole('option', { name: 'טווח מותאם' }).click();
 
-  await dialog.locator('input[name="startDate"]').fill('2026-07-10');
-  await dialog.locator('input[name="endDate"]').fill('2026-07-01');
+  await fillDateInput(dialog.getByPlaceholder('dd/mm/yyyy').nth(0), '2026-07-10');
+  await fillDateInput(dialog.getByPlaceholder('dd/mm/yyyy').nth(1), '2026-07-01');
 
   // RHF validation blocks submission; the dialog stays open.
   await expect(dialog.getByText('תאריך סיום חייב להיות אחרי תאריך התחלה')).toBeVisible();

@@ -11,10 +11,9 @@ import {
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { ControlledCheckboxGroup } from '../ControlledFields/ControlledCheckboxGroup'
 import { ControlledSelectField } from '../ControlledFields/ControlledSelectField'
-import { ControlledInputField } from '../ControlledFields/ControlledInputField'
+import { ControlledDateField } from '../ControlledFields/ControlledDateField'
 import { useState, useEffect } from 'react'
 import { FiDownload } from 'react-icons/fi'
-import { format } from 'date-fns'
 import { exportReportsToExcel } from './utils/exportReportsToExcel'
 import { useQueryClient } from '@tanstack/react-query'
 import { toaster } from '../ui/toaster'
@@ -105,13 +104,6 @@ export function ReportDownloadDialog({
         }
     }, [watchedTimeFrame, setValue])
 
-    // ControlledInputField emits a Date object for type="date" fields once the
-    // user interacts with them (its default values are plain "YYYY-MM-DD"
-    // strings), so normalize back to a string here to match ReportFormData's
-    // declared type and what exportReportsToExcel expects.
-    const toDateString = (value: string | Date): string =>
-        value instanceof Date ? format(value, 'yyyy-MM-dd') : value
-
     const onSubmit: SubmitHandler<ReportFormData> = async (data) => {
         if (data.selectedReports.length === 0) {
             toaster.create({
@@ -127,8 +119,8 @@ export function ReportDownloadDialog({
         try {
             await exportReportsToExcel({
                 selectedReports: data.selectedReports,
-                startDate: toDateString(data.startDate),
-                endDate: toDateString(data.endDate),
+                startDate: data.startDate,
+                endDate: data.endDate,
                 queryClient,
             })
 
@@ -204,10 +196,9 @@ export function ReportDownloadDialog({
                             {isCustomRange && (
                                 <HStack gap={4} align="flex-start">
                                     <Box flex={1}>
-                                        <ControlledInputField
+                                        <ControlledDateField
                                             control={control as any}
                                             name="startDate"
-                                            type="date"
                                             label="תאריך התחלה"
                                             required
                                             rules={{
@@ -216,10 +207,9 @@ export function ReportDownloadDialog({
                                         />
                                     </Box>
                                     <Box flex={1}>
-                                        <ControlledInputField
+                                        <ControlledDateField
                                             control={control as any}
                                             name="endDate"
-                                            type="date"
                                             label="תאריך סיום"
                                             required
                                             rules={{
