@@ -16,8 +16,8 @@ function toPickerDate(isoDate: string): string {
 }
 
 /**
- * Fill one of the custom-range DatePicker's dd/mm/yyyy inputs (ControlledDateField —
- * components/ControlledFields/ControlledDateField.tsx). Uses pressSequentially (not
+ * Fill one of the custom-range DatePicker's dd/mm/yyyy inputs (ControlledDateRangeField —
+ * components/ControlledFields/ControlledDateRangeField.tsx). Uses pressSequentially (not
  * .fill()) — the ark-ui date-input parses keystrokes as they're typed, and a bulk
  * .fill() can be silently dropped. The field defaults to pre-filled with today's date,
  * so triple-click to select all of its text before typing, replacing it rather than
@@ -124,9 +124,12 @@ test.describe('Module 10: Report Download (Excel export)', () => {
   await expect(page.getByText('הדוחות יוצאו בהצלחה')).toBeVisible({ timeout: 5000 });
  });
 
- test('TC-REPDL-005: Custom range with end date before start date is rejected client-side', async ({
+ test('TC-REPDL-005: Entering an end date before the start date auto-normalizes the range', async ({
   page,
  }) => {
+  // The single-field range picker (ControlledDateRangeField, selectionMode="range")
+  // always keeps [start, end] sorted — typing a later date into the first input and
+  // an earlier date into the second reorders them rather than producing a validation error.
   const dialog = await openReportDialog(page);
   await dialog.getByText('סכימת ימי מילואים יומית', { exact: true }).click();
 
@@ -137,9 +140,11 @@ test.describe('Module 10: Report Download (Excel export)', () => {
   await fillDateInput(dialog.getByPlaceholder('dd/mm/yyyy').nth(0), '2026-07-10');
   await fillDateInput(dialog.getByPlaceholder('dd/mm/yyyy').nth(1), '2026-07-01');
 
-  // RHF validation blocks submission; the dialog stays open.
-  await expect(dialog.getByText('תאריך סיום חייב להיות אחרי תאריך התחלה')).toBeVisible();
-  await expect(dialog).toBeVisible();
+  await expect(dialog.getByPlaceholder('dd/mm/yyyy').nth(0)).toHaveValue('01/07/2026');
+  await expect(dialog.getByPlaceholder('dd/mm/yyyy').nth(1)).toHaveValue('10/07/2026');
+
+  const submit = dialog.getByRole('button', { name: /הורד קובץ אקסל/ });
+  await expect(submit).toBeEnabled();
  });
 
  test('TC-REPDL-006: Cancel closes the dialog without downloading', async ({ page }) => {

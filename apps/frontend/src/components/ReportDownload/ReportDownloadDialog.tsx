@@ -11,7 +11,7 @@ import {
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { ControlledCheckboxGroup } from '../ControlledFields/ControlledCheckboxGroup'
 import { ControlledSelectField } from '../ControlledFields/ControlledSelectField'
-import { ControlledDateField } from '../ControlledFields/ControlledDateField'
+import { ControlledDateRangeField } from '../ControlledFields/ControlledDateRangeField'
 import { useState, useEffect } from 'react'
 import { FiDownload } from 'react-icons/fi'
 import { exportReportsToExcel } from './utils/exportReportsToExcel'
@@ -71,7 +71,6 @@ export function ReportDownloadDialog({
     })
 
     const watchedTimeFrame = watch('timeFrame')
-    const watchedStartDate = watch('startDate')
     const watchedSelectedReports = watch('selectedReports')
 
     // Update date range based on time frame selection
@@ -194,43 +193,14 @@ export function ReportDownloadDialog({
 
                             {/* Custom Date Range */}
                             {isCustomRange && (
-                                <HStack gap={4} align="flex-start">
-                                    <Box flex={1}>
-                                        <ControlledDateField
-                                            control={control as any}
-                                            name="startDate"
-                                            label="תאריך התחלה"
-                                            required
-                                            rules={{
-                                                required: 'שדה חובה',
-                                            }}
-                                        />
-                                    </Box>
-                                    <Box flex={1}>
-                                        <ControlledDateField
-                                            control={control as any}
-                                            name="endDate"
-                                            label="תאריך סיום"
-                                            required
-                                            rules={{
-                                                required: 'שדה חובה',
-                                                validate: (value: string) => {
-                                                    if (
-                                                        value &&
-                                                        watchedStartDate &&
-                                                        new Date(value) <
-                                                            new Date(
-                                                                watchedStartDate
-                                                            )
-                                                    ) {
-                                                        return 'תאריך סיום חייב להיות אחרי תאריך התחלה'
-                                                    }
-                                                    return true
-                                                },
-                                            }}
-                                        />
-                                    </Box>
-                                </HStack>
+                                <ControlledDateRangeField
+                                    control={control as any}
+                                    startName="startDate"
+                                    endName="endDate"
+                                    label="טווח תאריכים"
+                                    required
+                                    hideClearTrigger
+                                />
                             )}
                         </VStack>
                     </form>
