@@ -52,6 +52,7 @@ import {
 } from '../ui/pagination'
 import useDebounce from '@/hooks/useDebounce'
 import { useSettingOptions } from '@/hooks/queries/useSettingQueries'
+import { getHolidayNamesByDate } from '@/utils/holidays'
 
 interface DailyAttendanceDrawerProps {
     isOpen: boolean
@@ -300,6 +301,11 @@ export function DailyAttendanceDrawer({
         }
     }
 
+    const holidayNames = useMemo(
+        () => getHolidayNamesByDate(selectedDate),
+        [selectedDate]
+    )
+
     const hasManagerReported = managerReportStatus?.hasReported ?? false
     const isManagerReporting = managerReportMutation.isPending
     const hasActiveFilters =
@@ -329,6 +335,8 @@ export function DailyAttendanceDrawer({
                 <DrawerHeader borderBottomWidth="1px" flexShrink={0}>
                     <DrawerTitle>
                         נוכחות יומית - {formatDateDisplay(selectedDate)}
+                        {holidayNames.length > 0 &&
+                            ` (${holidayNames.join(', ')})`}
                     </DrawerTitle>
                     <DrawerCloseTrigger />
                 </DrawerHeader>

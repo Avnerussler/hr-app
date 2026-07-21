@@ -19,8 +19,7 @@ import {
     FaCalendarWeek,
     FaCog,
     FaCheckCircle,
-    FaStar,
-    FaPlus,
+    FaMenorah,
     FaTimes,
 } from 'react-icons/fa'
 import { useState, useMemo, useEffect } from 'react'
@@ -52,7 +51,6 @@ import {
 import {
     QuotaModal,
     DailyAttendanceDrawer,
-    HolidayManagementModal,
     QuickReserveDayModal,
 } from '../QuotaManagement'
 import {
@@ -65,7 +63,7 @@ import {
     formatQuotaDisplay,
     isIsraeliWeekend,
 } from '@/utils/quotaUtils'
-import { getHolidaysByDate } from '@/utils/israelHolidays'
+import { getHolidayNamesByDate } from '@/utils/holidays'
 
 export default function QuotaManagement() {
     const [currentDate, setCurrentDate] = useState(new Date())
@@ -73,7 +71,6 @@ export default function QuotaManagement() {
     const quotaModal = useDisclosure()
     const quickReserveModal = useDisclosure()
     const [isAttendanceDrawerOpen, setIsAttendanceDrawerOpen] = useState(false)
-    const [isHolidayModalOpen, setIsHolidayModalOpen] = useState(false)
     const [selectedDate, setSelectedDate] = useState<string>('')
     const [selectedQuota, setSelectedQuota] = useState<DailyQuota | undefined>(
         undefined
@@ -386,11 +383,6 @@ export default function QuotaManagement() {
                 onClick: handleContextSetQuota,
             })
             items.push({
-                label: `נהל חגים (${selectedRange.start} - ${selectedRange.end})`,
-                icon: <FaPlus />,
-                onClick: handleContextAddHoliday,
-            })
-            items.push({
                 label: `צור צו מילואים (${selectedRange.start} - ${selectedRange.end})`,
                 icon: <FaCalendarAlt />,
                 onClick: handleContextCreateReserveDay,
@@ -405,11 +397,6 @@ export default function QuotaManagement() {
                 label: 'ניהול כמויות',
                 icon: <FaCog />,
                 onClick: handleContextSetQuota,
-            })
-            items.push({
-                label: 'נהל חגים',
-                icon: <FaPlus />,
-                onClick: handleContextAddHoliday,
             })
             items.push({
                 label: 'צור צו מילואים',
@@ -437,16 +424,6 @@ export default function QuotaManagement() {
                 setShouldOpenModalAfterLoad(true)
             }
         }
-        handleContextMenuClose()
-    }
-
-    const handleContextAddHoliday = () => {
-        if (selectedRange.start && selectedRange.end) {
-            // Handle range holiday adding
-            setSelectedDate(`${selectedRange.start}:${selectedRange.end}`)
-        }
-        // selectedDate is already set by handleRightClick for single date
-        setIsHolidayModalOpen(true)
         handleContextMenuClose()
     }
 
@@ -552,15 +529,6 @@ export default function QuotaManagement() {
                         onClick: () => {
                             setSelectedDate(format(new Date(), 'yyyy-MM-dd'))
                             quotaModal.onOpen()
-                        },
-                    },
-                    {
-                        label: 'נהל חגים',
-                        icon: FaPlus,
-                        variant: 'outline',
-                        onClick: () => {
-                            setSelectedDate(format(new Date(), 'yyyy-MM-dd'))
-                            setIsHolidayModalOpen(true)
                         },
                     },
                 ]}
@@ -739,18 +707,14 @@ export default function QuotaManagement() {
                                         </Text>
                                         <HStack gap={1}>
                                             {/* Holiday Indicator */}
-                                            {getHolidaysByDate(day.date)
+                                            {getHolidayNamesByDate(day.date)
                                                 .length > 0 && (
-                                                <FaStar
+                                                <FaMenorah
                                                     size={8}
-                                                    color="gold"
-                                                    title={`חגים: ${getHolidaysByDate(
+                                                    color="purple"
+                                                    title={`חגים: ${getHolidayNamesByDate(
                                                         day.date
-                                                    )
-                                                        .map(
-                                                            (h) => h.nameHebrew
-                                                        )
-                                                        .join(', ')}`}
+                                                    ).join(', ')}`}
                                                 />
                                             )}
                                             {/* Attendance Status Indicator - Only show if attendance was reported */}
@@ -943,22 +907,15 @@ export default function QuotaManagement() {
                                                     </Text>
                                                     <HStack gap={1}>
                                                         {/* Holiday Indicator */}
-                                                        {getHolidaysByDate(
+                                                        {getHolidayNamesByDate(
                                                             day.date
                                                         ).length > 0 && (
-                                                            <FaStar
+                                                            <FaMenorah
                                                                 size={8}
-                                                                color="gold"
-                                                                title={`חגים: ${getHolidaysByDate(
+                                                                color="purple"
+                                                                title={`חגים: ${getHolidayNamesByDate(
                                                                     day.date
-                                                                )
-                                                                    .map(
-                                                                        (h) =>
-                                                                            h.nameHebrew
-                                                                    )
-                                                                    .join(
-                                                                        ', '
-                                                                    )}`}
+                                                                ).join(', ')}`}
                                                             />
                                                         )}
                                                         {/* Attendance Status Indicator - Only show if attendance was reported */}
@@ -1167,36 +1124,6 @@ export default function QuotaManagement() {
                 isOpen={isAttendanceDrawerOpen}
                 onClose={() => setIsAttendanceDrawerOpen(false)}
                 selectedDate={selectedDate}
-            />
-
-            <HolidayManagementModal
-                isOpen={isHolidayModalOpen}
-                onClose={() => {
-                    setIsHolidayModalOpen(false)
-                    setSelectedRange({
-                        start: null,
-                        end: null,
-                        isSelecting: false,
-                    })
-                }}
-                selectedDate={
-                    selectedDate.includes(':')
-                        ? selectedDate.split(':')[0]
-                        : selectedDate
-                }
-                dateRange={
-                    selectedDate.includes(':')
-                        ? {
-                              start: selectedDate.split(':')[0],
-                              end: selectedDate.split(':')[1],
-                          }
-                        : selectedRange.start && selectedRange.end
-                          ? {
-                                start: selectedRange.start,
-                                end: selectedRange.end,
-                            }
-                          : undefined
-                }
             />
 
             <QuickReserveDayModal
