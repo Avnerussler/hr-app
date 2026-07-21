@@ -178,7 +178,7 @@ export const globalErrorHandler = (
         error = handleCastErrorDB(err)
     } else if (err.code === 11000) {
         error = handleDuplicateFieldsDB(err)
-    } else if (err.name === 'ValidationError') {
+    } else if (err instanceof mongoose.Error.ValidationError) {
         error = handleValidationErrorDB(err)
     } else if (err instanceof ZodError) {
         error = handleZodError(err)

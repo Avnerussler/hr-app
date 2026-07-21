@@ -21,10 +21,10 @@ test.describe('Module 2: Project Management', () => {
  test('TC-PROJ-001: Project List Page Load', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'ניהול פרויקטים' })).toBeVisible();
 
-  // Verify metric cards
-  await expect(page.getByText('Total Projects').first()).toBeVisible();
-  await expect(page.getByText('Active Projects').first()).toBeVisible();
-  await expect(page.getByText('Inactive Projects').first()).toBeVisible();
+  // Verify metric cards (labels are Hebrew — see project.service.ts getProjectMetrics)
+  await expect(page.getByText('סה"כ פרויקטים').first()).toBeVisible();
+  await expect(page.getByText('פרויקטים פעילים').first()).toBeVisible();
+  await expect(page.getByText('פרויקטים לא פעילים').first()).toBeVisible();
 
   // Verify table is visible
   await expect(page.getByRole('table')).toBeVisible();

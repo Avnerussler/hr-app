@@ -7,26 +7,9 @@ import { ControlledDateRangeField } from '@/components/ControlledFields/Controll
 import { ControlledTextareaField } from '@/components/ControlledFields/ControlledTextareaField'
 import { ControlledFileInput } from '@/components/ControlledFields/ControlledFileField'
 import { ControlledAttendanceHistoryField } from '@/components/ControlledFields/ControlledAttendanceHistoryField'
-import {
-    STUDIO_ROLE_LABELS,
-    CLASSIFICATION_CLASS_LABELS,
-    RESERVE_CATEGORY_LABELS,
-    FIELD_OF_EXPERTISE_LABELS,
-    EXPERIENCE_LABELS,
-    LAYER_LABELS,
-} from '@hr-app/shared-types'
 import { AssignedProjectSelect } from './AssignedProjectSelect'
-import { PersonnelFormValues } from './personnelSchema'
+import { PersonnelFormValues, PersonnelSelectFieldKey } from './personnelSchema'
 
-const toOptions = (labels: Record<string, string>) =>
-    Object.entries(labels).map(([value, label]) => ({ value, label }))
-
-const STUDIO_ROLE_OPTIONS = toOptions(STUDIO_ROLE_LABELS)
-const CLASSIFICATION_CLASS_OPTIONS = toOptions(CLASSIFICATION_CLASS_LABELS)
-const RESERVE_CATEGORY_OPTIONS = toOptions(RESERVE_CATEGORY_LABELS)
-const FIELD_OF_EXPERTISE_OPTIONS = toOptions(FIELD_OF_EXPERTISE_LABELS)
-const EXPERIENCE_OPTIONS = toOptions(EXPERIENCE_LABELS)
-const LAYER_OPTIONS = toOptions(LAYER_LABELS)
 const ACTIVE_STATUS_ITEMS = [
     { value: 'true', label: 'פעיל' },
     { value: 'false', label: 'לא פעיל' },
@@ -38,6 +21,19 @@ const YES_NO_ITEMS = [
 
 interface PersonnelFormSectionProps {
     control: Control<PersonnelFormValues>
+}
+
+export type PersonnelSelectFieldOptions = Record<
+    PersonnelSelectFieldKey,
+    { value: string; label: string }[]
+>
+
+interface MilitaryInformationSectionProps extends PersonnelFormSectionProps {
+    selectOptions: PersonnelSelectFieldOptions
+}
+
+interface ProfessionalInformationSectionProps extends PersonnelFormSectionProps {
+    selectOptions: PersonnelSelectFieldOptions
 }
 
 function useUntypedControl(control: Control<PersonnelFormValues>) {
@@ -159,7 +155,8 @@ export function PersonalInformationSection({
 
 export function MilitaryInformationSection({
     control: typedControl,
-}: PersonnelFormSectionProps) {
+    selectOptions,
+}: MilitaryInformationSectionProps) {
     const control = useUntypedControl(typedControl)
     return (
         <VStack gap={4} align="stretch" p={6} pb={4}>
@@ -174,7 +171,7 @@ export function MilitaryInformationSection({
                 name="studioRole"
                 label="תפקיד בסטודיו"
                 placeholder="בחר תפקיד בסטודיו"
-                options={STUDIO_ROLE_OPTIONS}
+                options={selectOptions.studioRole}
             />
 
             <ControlledTextareaField
@@ -189,7 +186,7 @@ export function MilitaryInformationSection({
                 name="layer"
                 label="שכבה"
                 placeholder="בחר שכבה"
-                options={LAYER_OPTIONS}
+                options={selectOptions.layer}
             />
             <ControlledInputField
                 control={control}
@@ -204,7 +201,7 @@ export function MilitaryInformationSection({
                 name="classificationClass"
                 label="רמת סיווג"
                 placeholder="רמת סיווג"
-                options={CLASSIFICATION_CLASS_OPTIONS}
+                options={selectOptions.classificationClass}
             />
             <ControlledInputField
                 control={control}
@@ -242,7 +239,7 @@ export function MilitaryInformationSection({
                 name="reserveCategory"
                 label="סוג העסקה"
                 placeholder="בחר סוג העסקה"
-                options={RESERVE_CATEGORY_OPTIONS}
+                options={selectOptions.reserveCategory}
             />
         </VStack>
     )
@@ -266,7 +263,8 @@ export function AttendanceHistorySection({
 
 export function ProfessionalInformationSection({
     control: typedControl,
-}: PersonnelFormSectionProps) {
+    selectOptions,
+}: ProfessionalInformationSectionProps) {
     const control = useUntypedControl(typedControl)
     return (
         <VStack gap={4} align="stretch" p={6} pb={4}>
@@ -329,14 +327,14 @@ export function ProfessionalInformationSection({
                 name="fieldOfExpertise"
                 label="תחום מקצועי"
                 placeholder="תחום מקצועי"
-                options={FIELD_OF_EXPERTISE_OPTIONS}
+                options={selectOptions.fieldOfExpertise}
             />
             <ControlledSelectField
                 control={control}
                 name="experience"
                 label="שנות ניסיון"
                 placeholder="שנות ניסיון"
-                options={EXPERIENCE_OPTIONS}
+                options={selectOptions.experience}
             />
             <ControlledInputField
                 control={control}

@@ -20,9 +20,9 @@ import useDebounce from '@/hooks/useDebounce'
 import { useRouteContext, useDrawerState } from '@/hooks/useRouteContext'
 import { generateEditPath, generateFormPath, generateNewPath } from '@/types/routeTypes'
 import { TableFilter } from '@/types/fieldsType'
-import { PROJECT_STATUS_LABELS } from '@hr-app/shared-types'
 import { FaProjectDiagram, FaCheck, FaUserTimes, FaHourglassHalf } from 'react-icons/fa'
 import { useProjectListQuery, useProjectMetricsQuery } from '@/hooks/queries/useProjectQueries'
+import { useSettingOptions } from '@/hooks/queries/useSettingQueries'
 import { useProjectColumns } from '@/hooks/useProjectColumns'
 import { ProjectDrawer } from '@/components/Project/ProjectDrawer'
 import type { ProjectRecord } from '@/hooks/queries/useProjectQueries'
@@ -37,16 +37,6 @@ const METRIC_ICONS: Record<string, React.ElementType> = {
     FaHourglassHalf: FaHourglassHalf,
 }
 
-const PROJECT_STATUS_FILTER: TableFilter = {
-    id: 'projectStatusFilter',
-    label: 'סטטוס הפרוייקט',
-    fieldName: 'projectStatus',
-    type: 'select',
-    placeholder: 'בחר סטטוס',
-    defaultValue: 'all',
-    options: [{ value: 'all', label: 'הכל' }, ...Object.entries(PROJECT_STATUS_LABELS).map(([value, label]) => ({ value, label }))],
-}
-
 export function ProjectListPage() {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
@@ -59,6 +49,20 @@ export function ProjectListPage() {
     const [tableFilters, setTableFilters] = useState<Record<string, string | string[] | boolean>>({
         projectStatus: 'all',
     })
+
+    const { options: projectStatusOptions } = useSettingOptions('projectStatus')
+    const projectStatusFilter: TableFilter = useMemo(
+        () => ({
+            id: 'projectStatusFilter',
+            label: 'סטטוס הפרוייקט',
+            fieldName: 'projectStatus',
+            type: 'select',
+            placeholder: 'בחר סטטוס',
+            defaultValue: 'all',
+            options: [{ value: 'all', label: 'הכל' }, ...projectStatusOptions],
+        }),
+        [projectStatusOptions]
+    )
 
     const { globalFilter, setGlobalFilter, sorting, setSorting, columnFilters, setColumnFilters, handleClearFilters: clearFilters, syncColumnFilters } =
         useTableState({ id: PROJECT_FORM_NAME })
@@ -187,7 +191,7 @@ export function ProjectListPage() {
                     sorting={sorting}
                     columnFilters={columnFilters}
                     tableFilters={tableFilters}
-                    filters={[PROJECT_STATUS_FILTER]}
+                    filters={[projectStatusFilter]}
                     filterValues={tableFilters}
                     onFilterChange={handleFilterChange}
                 />

@@ -1,13 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose'
-import {
-    ClassificationClass,
-    Experience,
-    FieldOfExpertise,
-    Layer,
-    Personnel,
-    ReserveCategory,
-    StudioRole,
-} from '@hr-app/shared-types'
+import { Personnel } from '@hr-app/shared-types'
 
 export type PersonnelDocument = Omit<Personnel, 'assignedProjects'> &
     Document & {
@@ -27,17 +19,17 @@ const PersonnelSchema = new Schema<PersonnelDocument>(
         vehicleNumber: { type: String },
         note: { type: String },
         details: { type: String },
-        layer: { type: String, enum: Layer.options },
+        layer: { type: String },
         isActive: { type: Boolean, default: true },
 
         reserveUnit: { type: String },
-        studioRole: { type: String, enum: StudioRole.options },
+        studioRole: { type: String },
         reserveRole: { type: String },
         directBoss: { type: String },
         rank: { type: String },
-        classificationClass: { type: String, enum: ClassificationClass.options },
+        classificationClass: { type: String },
         canBeRecited: { type: Boolean },
-        reserveCategory: { type: String, enum: ReserveCategory.options },
+        reserveCategory: { type: String },
         assignedProjects: { type: Schema.Types.ObjectId, ref: 'projects', default: null },
         entryStartDate: { type: Date },
         entryEndDate: { type: Date },
@@ -50,8 +42,8 @@ const PersonnelSchema = new Schema<PersonnelDocument>(
         workExperience: { type: String },
         talentAndSkills: { type: String },
         referralSource: { type: String },
-        fieldOfExpertise: { type: String, enum: FieldOfExpertise.options },
-        experience: { type: String, enum: Experience.options },
+        fieldOfExpertise: { type: String },
+        experience: { type: String },
         workPlace: { type: String },
         currentPosition: { type: String },
         resumeFileUrl: { type: String },

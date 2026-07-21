@@ -3,8 +3,6 @@
  * Extracted from query files for better organization
  */
 
-import type { RequestStatus } from '@hr-app/shared-types'
-
 // ============================================
 // Employee Attendance Types
 // ============================================
@@ -29,7 +27,7 @@ export interface EmployeeAttendance {
     hasAttended: boolean
     workDays?: string[] // Array of dates this employee should work
     reserveDays?: string[] // Array of reserve duty dates
-    requestStatus?: RequestStatus // Status of the reserve days request (pending, approved, denied)
+    requestStatus?: string // Status of the reserve days request (pending, approved, denied, ...)
     fundingSource?: 'internal' | 'external' // Funding source (internal, external)
     projectId?: string | null
     projectName?: string | null
@@ -39,7 +37,7 @@ export interface EmployeeAttendance {
 }
 
 export interface AvailableAttendanceFilters {
-    requestStatuses: RequestStatus[]
+    requestStatuses: string[]
     orderTypes: string[]
     projects: Array<{ value: string; label: string }>
 }

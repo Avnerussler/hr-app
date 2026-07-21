@@ -1,11 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose'
-import {
-    BaseAccessApproval,
-    FundingSource,
-    OrderType,
-    RequestStatus,
-    ReserveDay,
-} from '@hr-app/shared-types'
+import { ReserveDay } from '@hr-app/shared-types'
 
 export type ReserveDayDocument = Omit<ReserveDay, 'employeeName'> &
     Document & {
@@ -19,11 +13,11 @@ const ReserveDaySchema = new Schema<ReserveDayDocument>(
         employeeName: { type: Schema.Types.ObjectId, ref: 'personnel', required: true },
         startDate: { type: Date, required: true },
         endDate: { type: Date, required: true },
-        fundingSource: { type: String, enum: FundingSource.options, default: 'internal' },
+        fundingSource: { type: String, default: 'internal' },
         fundingName: { type: String },
-        orderType: { type: String, enum: OrderType.options, required: true },
-        requestStatus: { type: String, enum: RequestStatus.options, default: 'pending', required: true },
-        baseAccessApproval: { type: String, enum: BaseAccessApproval.options, default: 'pending' },
+        orderType: { type: String, required: true },
+        requestStatus: { type: String, default: 'pending', required: true },
+        baseAccessApproval: { type: String, default: 'pending' },
         notes: { type: String },
         attendance: { type: Map, of: Boolean, default: {} },
         isDeleted: { type: Boolean, default: false },

@@ -20,9 +20,9 @@ import useDebounce from '@/hooks/useDebounce'
 import { useRouteContext, useDrawerState } from '@/hooks/useRouteContext'
 import { generateEditPath, generateFormPath, generateNewPath } from '@/types/routeTypes'
 import { TableFilter } from '@/types/fieldsType'
-import { REQUEST_STATUS_LABELS, ORDER_TYPE_LABELS } from '@hr-app/shared-types'
 import { FaList, FaHourglassHalf, FaCheck, FaTimes } from 'react-icons/fa'
 import { useReserveDayListQuery, useReserveDayMetricsQuery } from '@/hooks/queries/useReserveDayQueries'
+import { useSettingOptions } from '@/hooks/queries/useSettingQueries'
 import { useReserveDayColumns } from '@/hooks/useReserveDayColumns'
 import { ReserveDayDrawer } from '@/components/ReserveDay/ReserveDayDrawer'
 import type { ReserveDayRecord } from '@/hooks/queries/useReserveDayQueries'
@@ -37,27 +37,6 @@ const METRIC_ICONS: Record<string, React.ElementType> = {
 const RESERVE_DAY_FORM_NAME = 'reserve_days_management'
 const RESERVE_DAY_ROUTE_ID = 'default'
 
-const FILTERS: TableFilter[] = [
-    {
-        id: 'requestStatus',
-        label: 'סטטוס בקשה',
-        fieldName: 'requestStatus',
-        type: 'select',
-        placeholder: 'בחר סטטוס בקשה',
-        defaultValue: 'all',
-        options: [{ value: 'all', label: 'כל הבקשות' }, ...Object.entries(REQUEST_STATUS_LABELS).map(([value, label]) => ({ value, label }))],
-    },
-    {
-        id: 'orderTypeFilter',
-        label: 'סוג צו',
-        fieldName: 'orderType',
-        type: 'select',
-        placeholder: 'בחר סוג צו',
-        defaultValue: 'all',
-        options: [{ value: 'all', label: 'כל הסוגים' }, ...Object.entries(ORDER_TYPE_LABELS).map(([value, label]) => ({ value, label }))],
-    },
-]
-
 export function ReserveDayListPage() {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
@@ -71,6 +50,32 @@ export function ReserveDayListPage() {
         requestStatus: 'all',
         orderType: 'all',
     })
+
+    const { options: requestStatusOptions } = useSettingOptions('requestStatus')
+    const { options: orderTypeOptions } = useSettingOptions('orderType')
+    const filters: TableFilter[] = useMemo(
+        () => [
+            {
+                id: 'requestStatus',
+                label: 'סטטוס בקשה',
+                fieldName: 'requestStatus',
+                type: 'select',
+                placeholder: 'בחר סטטוס בקשה',
+                defaultValue: 'all',
+                options: [{ value: 'all', label: 'כל הבקשות' }, ...requestStatusOptions],
+            },
+            {
+                id: 'orderTypeFilter',
+                label: 'סוג צו',
+                fieldName: 'orderType',
+                type: 'select',
+                placeholder: 'בחר סוג צו',
+                defaultValue: 'all',
+                options: [{ value: 'all', label: 'כל הסוגים' }, ...orderTypeOptions],
+            },
+        ],
+        [requestStatusOptions, orderTypeOptions]
+    )
 
     const { globalFilter, setGlobalFilter, sorting, setSorting, columnFilters, setColumnFilters, handleClearFilters: clearFilters, syncColumnFilters } =
         useTableState({ id: RESERVE_DAY_FORM_NAME })
@@ -199,7 +204,7 @@ export function ReserveDayListPage() {
                     sorting={sorting}
                     columnFilters={columnFilters}
                     tableFilters={tableFilters}
-                    filters={FILTERS}
+                    filters={filters}
                     filterValues={tableFilters}
                     onFilterChange={handleFilterChange}
                 />

@@ -38,22 +38,47 @@ interface CalculatedMetric {
 // Generic helpers
 // -----------------------------------------------------------------------------
 
+/** Convert a "YYYY-MM-DD" date string to the "DD/MM/YYYY" format the DatePicker range input expects. */
+function toPickerDate(isoDate: string): string {
+ const [year, month, day] = isoDate.split('-');
+ return `${day}/${month}/${year}`;
+}
+
+/**
+ * Fill the date-range picker's two "dd/mm/yyyy" inputs within `scope` (the
+ * shared ControlledDateRangeField — components/ControlledFields/ControlledDateRangeField.tsx —
+ * always renders dd/mm/yyyy, regardless of which entity's form embeds it).
+ * Uses pressSequentially (not .fill()) — the ark-ui date-input parses
+ * keystrokes as they're typed, and a bulk .fill() on the second (end) input
+ * is silently dropped, leaving only the start date registered.
+ */
+async function fillDateRangeInputs(
+ scope: import('@playwright/test').Locator,
+ startDate: string,
+ endDate: string
+): Promise<void> {
+ const dateInputs = scope.getByPlaceholder('dd/mm/yyyy');
+ await dateInputs.nth(0).click();
+ await dateInputs.nth(0).pressSequentially(toPickerDate(startDate));
+ // Blur+re-focus between the two inputs — typing into the end input
+ // immediately after the start input can race ark-ui's own commit of the
+ // just-typed start value, silently dropping a leading digit from it
+ // (observed: "10" committed as "02"). Tabbing off the start input first
+ // forces its value to commit before the end input's keystrokes begin.
+ await dateInputs.nth(0).press('Tab');
+ await dateInputs.nth(1).click();
+ await dateInputs.nth(1).pressSequentially(toPickerDate(endDate));
+ // Blur the end input — ark-ui's date-input commits/parses the typed value on
+ // blur (fixOnBlur), which is also what triggers the field's onChange into RHF.
+ await dateInputs.nth(1).press('Tab');
+}
+
 const today = () => new Date().toISOString().split('T')[0];
 const daysAgo = (n: number) => {
  const d = new Date();
  d.setDate(d.getDate() - n);
  return d.toISOString().split('T')[0];
 };
-
-/** All form definitions (formName + formId) from the server. */
-async function fetchForms(
- request: APIRequestContext
-): Promise<Array<{ formName: string; _id: string; displayName: string }>> {
- const res = await request.get(`${API_ORIGIN}/api/formFields/get/partialData`);
- expect(res.ok(), `formFields/get/partialData failed: ${res.status()}`).toBe(true);
- const body = await res.json();
- return body.forms ?? body;
-}
 
 /** Fetch every reserve-day order via the new /api/reserve-days REST endpoint. */
 async function fetchAllReserveDays(
@@ -150,39 +175,21 @@ async function findConflictFreeEmployee(
  };
 }
 
-async function formIdFor(
- request: APIRequestContext,
- formName: string
-): Promise<string> {
- const forms = await fetchForms(request);
- const form = forms.find((f) => f.formName === formName);
- expect(form, `form "${formName}" not found`).toBeTruthy();
- return form!._id;
-}
-
-/** Ground-truth metric values from GET /api/formSubmission/metrics/:formId. */
-async function fetchMetrics(
- request: APIRequestContext,
- formId: string
-): Promise<CalculatedMetric[]> {
- const res = await request.get(`${API_ORIGIN}/api/formSubmission/metrics/${formId}`);
- expect(res.ok(), `metrics request failed: ${res.status()}`).toBe(true);
- return (await res.json()) as CalculatedMetric[];
-}
-
 /**
- * Ground-truth metric values from the NEW, fully-cut-over REST endpoints.
- * project_management and reserve_days_management no longer write to the
- * frozen FormSubmissions collection, so their metrics must be read from
- * GET /api/projects/metrics and GET /api/reserve-days/metrics respectively.
- * personnel is NOT cut over yet — keep using `fetchMetrics`/`formIdFor` for it.
+ * Ground-truth metric values from the fully-cut-over REST endpoints. personnel,
+ * project_management, and reserve_days_management each have their own explicit
+ * model/service (no generic FormSubmissions store — see apps/server/CLAUDE.md),
+ * so their metrics are read from GET /api/personnel/metrics,
+ * /api/projects/metrics, and /api/reserve-days/metrics respectively.
  */
 async function fetchMetricsForEntity(
  request: APIRequestContext,
  formName: string
 ): Promise<CalculatedMetric[]> {
  const path =
-  formName === 'project_management'
+  formName === 'personnel'
+   ? '/api/personnel/metrics'
+   : formName === 'project_management'
    ? '/api/projects/metrics'
    : formName === 'reserve_days_management'
    ? '/api/reserve-days/metrics'
@@ -307,8 +314,7 @@ async function fillReserveDayDrawer(
   .first()
   .click();
 
- await drawer.locator('input[name="startDate"]').fill(startDate);
- await drawer.locator('input[name="endDate"]').fill(endDate);
+ await fillDateRangeInputs(drawer, startDate, endDate);
  // Chakra renders a visually-hidden control span that can intercept the radio
  // click; click the radio's visible label to avoid flakiness.
  await drawer.getByText('צו 8 פתוח', { exact: true }).click();
@@ -438,10 +444,7 @@ test.describe('Module 9A: MetricCard reliability (all metric types)', () => {
    page,
    request,
   }) => {
-   const metrics =
-    form.formName === 'personnel'
-     ? await fetchMetrics(request, await formIdFor(request, form.formName))
-     : await fetchMetricsForEntity(request, form.formName);
+   const metrics = await fetchMetricsForEntity(request, form.formName);
 
    // Forms without metrics configured render no cards — skip cleanly.
    test.skip(metrics.length === 0, `${form.formName} has no metrics configured`);

@@ -69,7 +69,7 @@ test.describe('Module 4: Quota Management Calendar', () => {
   await expect(page.getByRole('button', { name: 'חודשי' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'היום' })).toBeVisible();
 
-  for (const day of ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ז׳']) {
+  for (const day of ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'שבת']) {
    await expect(page.getByText(day).first()).toBeVisible();
   }
  });

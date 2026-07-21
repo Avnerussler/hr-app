@@ -363,10 +363,19 @@ test.describe('Module 3: Reserve Days Management', () => {
   // The Create button stays disabled until the form is dirty; make it dirty by
   // selecting an order type (label click — see TC-RES-002 for why), while
   // leaving the other required fields empty to trigger validation.
-  await drawer.getByText('צו 8 פתוח', { exact: true }).click();
+  // orderType's radio options come from useSettingOptions and render empty
+  // until that fetch resolves — wait for the radio's real input to actually
+  // be checked (not just the label visible) before relying on isDirty/the
+  // Create button's enabled state, otherwise the click can land while the
+  // options are still being swapped in from [] to the fetched list.
+  const orderTypeOption = drawer.getByText('צו 8 פתוח', { exact: true });
+  await orderTypeOption.click();
+  await expect(drawer.getByRole('radio', { name: 'צו 8 פתוח' })).toBeChecked();
 
   // Submit without filling the other required fields
-  await drawer.getByRole('button', { name: /✨ Create/i }).click();
+  const createButton = drawer.getByRole('button', { name: /✨ Create/i });
+  await expect(createButton).toBeEnabled();
+  await createButton.click();
 
   // Form stays on /new page (validation failed)
   await expect(page).toHaveURL(/\/new$/);

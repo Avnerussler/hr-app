@@ -545,7 +545,7 @@ class StatisticsService {
                     personalNumber: personnel.personalNumber || '',
                     unitName: personnel.reserveUnit || '',
                     fundingSource: reserve.fundingSource === 'internal' ? 'סטודיו' : 'חיצוני',
-                    orderType: ORDER_TYPE_LABELS[reserve.orderType] ?? reserve.orderType ?? '',
+                    orderType: (ORDER_TYPE_LABELS as Record<string, string>)[reserve.orderType] ?? reserve.orderType ?? '',
                     startDate: format(asDate(reserve.startDate), 'dd/MM/yyyy'),
                     endDate: format(asDate(reserve.endDate), 'dd/MM/yyyy'),
                     projectId: actualProjectId,

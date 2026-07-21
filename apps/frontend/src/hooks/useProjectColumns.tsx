@@ -3,8 +3,8 @@ import { createColumnHelper } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { VStack, HStack, Text, Box } from '@chakra-ui/react'
 import { LuChevronUp, LuChevronDown, LuChevronsUpDown } from 'react-icons/lu'
-import { PROJECT_STATUS_LABELS } from '@hr-app/shared-types'
 import { EntityLink } from '@/components/common/EntityLink'
+import { SettingLabelCell } from '@/components/common/SettingLabelCell'
 import { ProjectRecord } from './queries/useProjectQueries'
 import type { Column } from '@tanstack/react-table'
 import type { KeyboardEvent } from 'react'
@@ -89,7 +89,7 @@ export function useProjectColumns() {
                 header: ({ column }) => <SortableHeader label="סטטוס הפרוייקט" column={column} />,
                 enableSorting: true,
                 sortDescFirst: false,
-                cell: (info) => <Text color="foreground">{PROJECT_STATUS_LABELS[info.getValue()]}</Text>,
+                cell: (info) => <SettingLabelCell settingKey="projectStatus" value={info.getValue()} />,
             }),
             columnHelper.accessor('createdAt', {
                 id: 'createdAt',

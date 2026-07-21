@@ -7,8 +7,9 @@ import { DrawerRoot, DrawerContent, DrawerHeader, DrawerBody, DrawerFooter } fro
 import { IconButton } from '@chakra-ui/react'
 import { useRouteContext } from '@/hooks/useRouteContext'
 import { ProjectForm } from './ProjectForm'
-import { ProjectFormSchema, ProjectFormValues, PROJECT_DEFAULT_VALUES } from './projectSchema'
+import { buildProjectFormSchema, ProjectFormValues, PROJECT_DEFAULT_VALUES } from './projectSchema'
 import { useProjectDetailQuery } from '@/hooks/queries/useProjectQueries'
+import { useSettingOptions } from '@/hooks/queries/useSettingQueries'
 import { useCreateProject, useUpdateProject, useDeleteProject } from '@/hooks/mutations/useProjectMutations'
 
 interface ProjectDrawerProps {
@@ -19,6 +20,7 @@ interface ProjectDrawerProps {
 export function ProjectDrawer({ isOpen, onClose }: ProjectDrawerProps) {
     const { formState, itemId } = useRouteContext()
     const { data: project } = useProjectDetailQuery(formState === 'edit' ? itemId : undefined)
+    const projectStatus = useSettingOptions('projectStatus')
 
     const {
         control,
@@ -27,7 +29,7 @@ export function ProjectDrawer({ isOpen, onClose }: ProjectDrawerProps) {
         setError,
         formState: { isDirty: hasChanges },
     } = useForm<ProjectFormValues>({
-        resolver: zodResolver(ProjectFormSchema),
+        resolver: zodResolver(buildProjectFormSchema(projectStatus.allowedValues)),
         defaultValues: PROJECT_DEFAULT_VALUES,
     })
 
@@ -90,7 +92,7 @@ export function ProjectDrawer({ isOpen, onClose }: ProjectDrawerProps) {
                 <Box as="form" onSubmit={handleSubmit(onSubmit)} display="flex" flexDirection="column" flex="1" overflow="hidden">
                     <DrawerBody bg="white" _dark={{ bg: 'gray.800' }} p={0} flex="1" overflow="auto">
                         <VStack gap={0} align="stretch">
-                            <ProjectForm control={control} />
+                            <ProjectForm control={control} projectStatusOptions={projectStatus.options} />
                         </VStack>
                     </DrawerBody>
                     <DrawerFooter
