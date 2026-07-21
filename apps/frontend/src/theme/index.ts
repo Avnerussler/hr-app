@@ -1,8 +1,28 @@
-import { createSystem, defaultConfig, defineConfig } from '@chakra-ui/react'
+import { createSystem, defaultConfig, defineConfig, defineSlotRecipe } from '@chakra-ui/react'
+import { datePickerAnatomy } from '@chakra-ui/react/anatomy'
+
+// The app is RTL (he-IL); Chakra's DatePicker prev/next chevrons are hardcoded
+// LTR (ChevronLeftIcon for prev, ChevronRightIcon for next) and don't flip for
+// RTL, so mirror them here to point the visually-correct direction.
+const datePickerSlotRecipe = defineSlotRecipe({
+    slots: datePickerAnatomy.keys(),
+    base: {
+        prevTrigger: {
+            transform: 'scaleX(-1)',
+        },
+        nextTrigger: {
+            transform: 'scaleX(-1)',
+        },
+    },
+})
 
 // Custom theme configuration based on Figma CSS variables
 const customConfig = defineConfig({
     theme: {
+        slotRecipes: {
+            datePicker: datePickerSlotRecipe,
+        },
+
         tokens: {
             colors: {
                 // Light mode colors (root variables)

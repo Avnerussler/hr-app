@@ -4,29 +4,16 @@ import { ControlledInputField } from '@/components/ControlledFields/ControlledIn
 import { ControlledSelectField } from '@/components/ControlledFields/ControlledSelectField'
 import { ControlledRadioField } from '@/components/ControlledFields/ControlledRadioField'
 import { ControlledTextareaField } from '@/components/ControlledFields/ControlledTextareaField'
-import {
-    FUNDING_SOURCE_LABELS,
-    ORDER_TYPE_LABELS,
-    REQUEST_STATUS_LABELS,
-    BASE_ACCESS_APPROVAL_LABELS,
-} from '@hr-app/shared-types'
 import { EmployeeSelect } from './EmployeeSelect'
 import { VehicleStatusDisplay } from './VehicleStatusDisplay'
 import { ReserveDayDateRangeField } from './ReserveDayDateRangeField'
-import { ReserveDayFormValues } from './reserveDaySchema'
-
-const toOptions = (labels: Record<string, string>) =>
-    Object.entries(labels).map(([value, label]) => ({ value, label }))
-
-const FUNDING_SOURCE_OPTIONS = toOptions(FUNDING_SOURCE_LABELS)
-const ORDER_TYPE_ITEMS = toOptions(ORDER_TYPE_LABELS)
-const REQUEST_STATUS_OPTIONS = toOptions(REQUEST_STATUS_LABELS)
-const BASE_ACCESS_APPROVAL_OPTIONS = toOptions(BASE_ACCESS_APPROVAL_LABELS)
+import { ReserveDayFormValues, ReserveDaySelectFieldKey } from './reserveDaySchema'
 
 interface ReserveDayFormSectionProps {
     control: Control<ReserveDayFormValues>
     /** The current record's own id (edit mode), excluded from the reserved-days lookup used to block already-reserved days. */
     excludeId?: string
+    selectOptions: Record<ReserveDaySelectFieldKey, { value: string; label: string }[]>
 }
 
 function useUntypedControl(control: Control<ReserveDayFormValues>) {
@@ -36,6 +23,7 @@ function useUntypedControl(control: Control<ReserveDayFormValues>) {
 export function ReserveDayInfoSection({
     control: typedControl,
     excludeId,
+    selectOptions,
 }: ReserveDayFormSectionProps) {
     const control = useUntypedControl(typedControl)
     return (
@@ -60,7 +48,7 @@ export function ReserveDayInfoSection({
                 name="fundingSource"
                 label="מקור מימון"
                 placeholder="בחר מקור מימון"
-                options={FUNDING_SOURCE_OPTIONS}
+                options={selectOptions.fundingSource}
             />
             <ControlledInputField
                 control={control}
@@ -75,7 +63,7 @@ export function ReserveDayInfoSection({
                 name="orderType"
                 id="orderType"
                 label="סוג צו"
-                items={ORDER_TYPE_ITEMS}
+                items={selectOptions.orderType}
                 required
             />
             <ControlledSelectField
@@ -83,7 +71,7 @@ export function ReserveDayInfoSection({
                 name="requestStatus"
                 label="סטטוס בקשה"
                 placeholder="בחר סטטוס בקשה"
-                options={REQUEST_STATUS_OPTIONS}
+                options={selectOptions.requestStatus}
                 required
             />
             <ControlledSelectField
@@ -91,7 +79,7 @@ export function ReserveDayInfoSection({
                 name="baseAccessApproval"
                 label="אישור כניסה לבסיס"
                 placeholder="בחר סטטוס אישור"
-                options={BASE_ACCESS_APPROVAL_OPTIONS}
+                options={selectOptions.baseAccessApproval}
             />
             <VehicleStatusDisplay
                 control={control}

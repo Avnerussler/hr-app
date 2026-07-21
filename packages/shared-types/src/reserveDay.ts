@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { BaseAccessApproval, FundingSource, OrderType, RequestStatus } from './enums'
 import { ObjectIdString } from './common'
 
 const ReserveDayObjectSchema = z.object({
@@ -13,11 +12,11 @@ const ReserveDayObjectSchema = z.object({
     endDate: z.coerce.date({
         errorMap: () => ({ message: 'תאריך סיום הוא שדה חובה' }),
     }),
-    fundingSource: FundingSource.default('internal'),
+    fundingSource: z.string().default('internal'),
     fundingName: z.string().optional(),
-    orderType: OrderType,
-    requestStatus: RequestStatus.default('pending'),
-    baseAccessApproval: BaseAccessApproval.default('pending'),
+    orderType: z.string().min(1, 'סוג צו הוא שדה חובה'),
+    requestStatus: z.string().default('pending'),
+    baseAccessApproval: z.string().default('pending'),
     notes: z.string().optional(),
     // vehicleStatus is intentionally excluded — always computed at read time
     // from the linked Personnel doc (vehicleEntry/vehicleNumber), never stored.

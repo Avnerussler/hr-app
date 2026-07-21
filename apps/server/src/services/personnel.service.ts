@@ -12,6 +12,7 @@ import { buildLabelSortKeyExpr } from '../utils/labelSortKey'
 import { buildLabelSearchClauses } from '../utils/searchQueryBuilder'
 import { NotFoundError } from '../middleware/errorHandler'
 import { syncProjectOnPersonnelUpdate, removePersonnelFromAllProjects } from './bidirectionalSync.service'
+import { validateSelectField } from './setting.service'
 
 export interface ListPersonnelParams {
     page: number
@@ -154,8 +155,25 @@ export async function getPersonnelById(id: string) {
     return doc
 }
 
+async function validatePersonnelSelectFields(validated: {
+    studioRole?: string | null
+    reserveCategory?: string | null
+    layer?: string | null
+    classificationClass?: string | null
+    fieldOfExpertise?: string | null
+    experience?: string | null
+}) {
+    await validateSelectField('studioRole', validated.studioRole)
+    await validateSelectField('reserveCategory', validated.reserveCategory)
+    await validateSelectField('layer', validated.layer)
+    await validateSelectField('classificationClass', validated.classificationClass)
+    await validateSelectField('fieldOfExpertise', validated.fieldOfExpertise)
+    await validateSelectField('experience', validated.experience)
+}
+
 export async function createPersonnel(body: unknown) {
     const validated = PersonnelSchema.parse(body)
+    await validatePersonnelSelectFields(validated)
     const created = await PersonnelModel.create(validated)
     if (created.assignedProjects) {
         await syncProjectOnPersonnelUpdate(String(created._id), null, String(created.assignedProjects))
@@ -168,6 +186,7 @@ export async function updatePersonnel(id: string, body: unknown) {
     if (!existing) throw new NotFoundError('Personnel')
 
     const validated = PersonnelUpdateSchema.parse(body)
+    await validatePersonnelSelectFields(validated)
     const previousProjectId = existing.assignedProjects ? String(existing.assignedProjects) : null
 
     Object.assign(existing, validated)

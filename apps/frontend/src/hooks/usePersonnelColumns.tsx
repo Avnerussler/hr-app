@@ -3,8 +3,8 @@ import { createColumnHelper } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { VStack, HStack, Text, Box } from '@chakra-ui/react'
 import { LuChevronUp, LuChevronDown, LuChevronsUpDown } from 'react-icons/lu'
-import { RESERVE_CATEGORY_LABELS, STUDIO_ROLE_LABELS } from '@hr-app/shared-types'
 import { EntityLink } from '@/components/common/EntityLink'
+import { SettingLabelCell } from '@/components/common/SettingLabelCell'
 import { PersonnelRecord } from './queries/usePersonnelQueries'
 import type { Column } from '@tanstack/react-table'
 import type { KeyboardEvent } from 'react'
@@ -78,10 +78,7 @@ export function usePersonnelColumns() {
                 header: ({ column }) => <SortableHeader label="סוג העסקה" column={column} />,
                 enableSorting: true,
                 sortDescFirst: false,
-                cell: (info) => {
-                    const val = info.getValue()
-                    return <Text color="foreground">{val ? RESERVE_CATEGORY_LABELS[val] : '—'}</Text>
-                },
+                cell: (info) => <SettingLabelCell settingKey="reserveCategory" value={info.getValue()} />,
             }),
             columnHelper.accessor('directBoss', {
                 id: 'directBoss',
@@ -110,10 +107,7 @@ export function usePersonnelColumns() {
                 header: ({ column }) => <SortableHeader label="תפקיד בסטודיו" column={column} />,
                 enableSorting: true,
                 sortDescFirst: false,
-                cell: (info) => {
-                    const val = info.getValue()
-                    return <Text color="foreground">{val ? STUDIO_ROLE_LABELS[val] : '—'}</Text>
-                },
+                cell: (info) => <SettingLabelCell settingKey="studioRole" value={info.getValue()} />,
             }),
             columnHelper.accessor('isActive', {
                 id: 'isActive',

@@ -2,21 +2,16 @@ import { Control, FieldValues } from 'react-hook-form'
 import { VStack } from '@chakra-ui/react'
 import { ControlledInputField } from '@/components/ControlledFields/ControlledInputField'
 import { ControlledSelectField } from '@/components/ControlledFields/ControlledSelectField'
-import { PROJECT_STATUS_LABELS } from '@hr-app/shared-types'
 import { ProjectManagerSelect } from './ProjectManagerSelect'
 import { ProjectPersonnelMultiSelect } from './ProjectPersonnelMultiSelect'
 import { ProjectFormValues } from './projectSchema'
 
-const PROJECT_STATUS_OPTIONS = Object.entries(PROJECT_STATUS_LABELS).map(([value, label]) => ({
-    value,
-    label,
-}))
-
 interface ProjectFormProps {
     control: Control<ProjectFormValues>
+    projectStatusOptions: { value: string; label: string }[]
 }
 
-export function ProjectForm({ control: typedControl }: ProjectFormProps) {
+export function ProjectForm({ control: typedControl, projectStatusOptions }: ProjectFormProps) {
     // ControlledFields primitives take an untyped RHF `Control` (they're reused across
     // entities with different form shapes) — cast once at this boundary.
     const control = typedControl as unknown as Control<FieldValues>
@@ -49,7 +44,7 @@ export function ProjectForm({ control: typedControl }: ProjectFormProps) {
                 name="projectStatus"
                 label="סטטוס הפרוייקט"
                 placeholder="בחר סטטוס"
-                options={PROJECT_STATUS_OPTIONS}
+                options={projectStatusOptions}
             />
         </VStack>
     )

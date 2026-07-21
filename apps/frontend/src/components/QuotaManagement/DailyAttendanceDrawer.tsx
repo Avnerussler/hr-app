@@ -51,7 +51,8 @@ import {
     PaginationNextTrigger,
 } from '../ui/pagination'
 import useDebounce from '@/hooks/useDebounce'
-import { REQUEST_STATUS_LABELS, ORDER_TYPE_LABELS } from '@hr-app/shared-types'
+import { useSettingOptions } from '@/hooks/queries/useSettingQueries'
+import { getHolidayNamesByDate } from '@/utils/holidays'
 
 interface DailyAttendanceDrawerProps {
     isOpen: boolean
@@ -188,15 +189,18 @@ export function DailyAttendanceDrawer({
 
     const availableFilters = statsData?.availableFilters
 
+    const { options: requestStatusOptions } = useSettingOptions('requestStatus')
+    const { options: orderTypeOptions } = useSettingOptions('orderType')
+
     const statusCollection = useMemo(
         () =>
             createListCollection({
                 items: (availableFilters?.requestStatuses ?? []).map((value) => ({
                     value,
-                    label: REQUEST_STATUS_LABELS[value] ?? value,
+                    label: requestStatusOptions.find((o) => o.value === value)?.label ?? value,
                 })),
             }),
-        [availableFilters?.requestStatuses]
+        [availableFilters?.requestStatuses, requestStatusOptions]
     )
 
     const projectCollection = useMemo(
@@ -212,10 +216,10 @@ export function DailyAttendanceDrawer({
             createListCollection({
                 items: (availableFilters?.orderTypes ?? []).map((value) => ({
                     value,
-                    label: ORDER_TYPE_LABELS[value as keyof typeof ORDER_TYPE_LABELS] ?? value,
+                    label: orderTypeOptions.find((o) => o.value === value)?.label ?? value,
                 })),
             }),
-        [availableFilters?.orderTypes]
+        [availableFilters?.orderTypes, orderTypeOptions]
     )
 
     // List query — responds to filter, search, and page
@@ -297,6 +301,11 @@ export function DailyAttendanceDrawer({
         }
     }
 
+    const holidayNames = useMemo(
+        () => getHolidayNamesByDate(selectedDate),
+        [selectedDate]
+    )
+
     const hasManagerReported = managerReportStatus?.hasReported ?? false
     const isManagerReporting = managerReportMutation.isPending
     const hasActiveFilters =
@@ -326,6 +335,8 @@ export function DailyAttendanceDrawer({
                 <DrawerHeader borderBottomWidth="1px" flexShrink={0}>
                     <DrawerTitle>
                         נוכחות יומית - {formatDateDisplay(selectedDate)}
+                        {holidayNames.length > 0 &&
+                            ` (${holidayNames.join(', ')})`}
                     </DrawerTitle>
                     <DrawerCloseTrigger />
                 </DrawerHeader>

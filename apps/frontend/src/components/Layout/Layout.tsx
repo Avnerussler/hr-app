@@ -16,6 +16,7 @@ import {
     FiClock,
     FiFolder,
     FiLogOut,
+    FiSettings,
     FiUser,
     FiUsers,
 } from 'react-icons/fi'
@@ -369,6 +370,68 @@ export function Layout() {
                                         color="muted.foreground"
                                     >
                                         Reserve Days Management
+                                    </Text>
+                                </Box>
+                            </HStack>
+                        </Button>
+
+                        <Button
+                            key="settings"
+                            as={RouterLink}
+                            // @ts-expect-error: 'to' is valid when 'as' is RouterLink
+                            to="/settings"
+                            variant="ghost"
+                            justifyContent="flex-start"
+                            h="48px"
+                            px={3}
+                            borderRadius="lg"
+                            bg={
+                                pathname.includes('settings')
+                                    ? 'sidebar.accent'
+                                    : 'transparent'
+                            }
+                            _hover={{ bg: 'sidebar.accent' }}
+                            transition="all 0.2s"
+                            role="group"
+                        >
+                            <HStack gap={3} w="full">
+                                <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    w="32px"
+                                    h="32px"
+                                    borderRadius="lg"
+                                    bg={
+                                        pathname.includes('settings')
+                                            ? 'sidebar.primary'
+                                            : 'sidebar.accent'
+                                    }
+                                    color={
+                                        pathname.includes('settings')
+                                            ? 'sidebar.primary.foreground'
+                                            : 'sidebar.accent.foreground'
+                                    }
+                                    _groupHover={{
+                                        bg: 'sidebar.primary',
+                                        color: 'sidebar.primary.foreground',
+                                    }}
+                                    transition="colors 0.2s"
+                                >
+                                    <FiSettings size="16px" />
+                                </Box>
+                                <Box flex="1" textAlign="left">
+                                    <Text
+                                        fontWeight="medium"
+                                        color="sidebar.foreground"
+                                    >
+                                        הגדרות
+                                    </Text>
+                                    <Text
+                                        fontSize="xs"
+                                        color="muted.foreground"
+                                    >
+                                        App Settings
                                     </Text>
                                 </Box>
                             </HStack>

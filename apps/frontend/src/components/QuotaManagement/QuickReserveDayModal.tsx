@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, HStack, VStack } from '@chakra-ui/react'
@@ -13,10 +13,12 @@ import {
 } from '@/components/ui/dialog'
 import { ReserveDayInfoSection } from '@/components/ReserveDay/ReserveDayForm'
 import {
-    ReserveDayFormSchema,
+    buildReserveDayFormSchema,
     ReserveDayFormValues,
     RESERVE_DAY_DEFAULT_VALUES,
+    ReserveDaySelectFieldKey,
 } from '@/components/ReserveDay/reserveDaySchema'
+import { useSettingOptions } from '@/hooks/queries/useSettingQueries'
 import { useCreateReserveDay } from '@/hooks/mutations/useReserveDayMutations'
 
 interface QuickReserveDayModalProps {
@@ -32,8 +34,33 @@ export function QuickReserveDayModal({
     selectedDate,
     selectedRange,
 }: QuickReserveDayModalProps) {
+    const fundingSource = useSettingOptions('fundingSource')
+    const orderType = useSettingOptions('orderType')
+    const requestStatus = useSettingOptions('requestStatus')
+    const baseAccessApproval = useSettingOptions('baseAccessApproval')
+
+    const selectOptions: Record<ReserveDaySelectFieldKey, { value: string; label: string }[]> = useMemo(
+        () => ({
+            fundingSource: fundingSource.options,
+            orderType: orderType.options,
+            requestStatus: requestStatus.options,
+            baseAccessApproval: baseAccessApproval.options,
+        }),
+        [fundingSource.options, orderType.options, requestStatus.options, baseAccessApproval.options]
+    )
+
+    const allowedSelectValues: Record<ReserveDaySelectFieldKey, string[]> = useMemo(
+        () => ({
+            fundingSource: fundingSource.allowedValues,
+            orderType: orderType.allowedValues,
+            requestStatus: requestStatus.allowedValues,
+            baseAccessApproval: baseAccessApproval.allowedValues,
+        }),
+        [fundingSource.allowedValues, orderType.allowedValues, requestStatus.allowedValues, baseAccessApproval.allowedValues]
+    )
+
     const methods = useForm<ReserveDayFormValues>({
-        resolver: zodResolver(ReserveDayFormSchema),
+        resolver: zodResolver(buildReserveDayFormSchema(allowedSelectValues)),
         defaultValues: RESERVE_DAY_DEFAULT_VALUES as ReserveDayFormValues,
     })
     const {
@@ -90,7 +117,7 @@ export function QuickReserveDayModal({
                     >
                         <DialogBody>
                             <VStack gap={0} align="stretch">
-                                <ReserveDayInfoSection control={control} />
+                                <ReserveDayInfoSection control={control} selectOptions={selectOptions} />
                             </VStack>
                         </DialogBody>
 

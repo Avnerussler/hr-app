@@ -1,5 +1,6 @@
 import { Box, Grid, Stack, Flex, Button, Text } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
 import { format } from 'date-fns'
 import {
     FiCalendar,
@@ -13,6 +14,8 @@ import { HiFolderOpen } from 'react-icons/hi'
 import { PageHeader } from '../common/PageHeader'
 import { MetricCard } from '../common/MetricCard'
 import { StatisticsTable } from '../common/StatisticsTable'
+import { ControlledDateRangeField } from '../ControlledFields/ControlledDateRangeField'
+import { ControlledDateField } from '../ControlledFields/ControlledDateField'
 import {
     useDailySummaryQuery,
     useDateRangeSummaryQuery,
@@ -34,13 +37,25 @@ const daysAgoUtc = (n: number) => {
 
 export function Dashboard() {
     // Date range state - default to last 30 days
-    const [dateRange, setDateRange] = useState({
-        startDate: daysAgoUtc(30),
-        endDate: todayUtc(),
+    const {
+        control: dateRangeControl,
+        watch: watchDateRange,
+        setValue: setDateRangeValue,
+    } = useForm<{ startDate: string; endDate: string }>({
+        defaultValues: {
+            startDate: daysAgoUtc(30),
+            endDate: todayUtc(),
+        },
     })
+    const dateRange = watchDateRange()
 
     // Selected date for employees on reserve report - default to today
-    const [selectedDate, setSelectedDate] = useState(todayUtc())
+    const { control: selectedDateControl, watch: watchSelectedDate } = useForm<{
+        selectedDate: string
+    }>({
+        defaultValues: { selectedDate: todayUtc() },
+    })
+    const selectedDate = watchSelectedDate('selectedDate')
 
     // Auto-refresh interval (5 minutes)
     const [lastRefreshed, setLastRefreshed] = useState(new Date())
@@ -116,7 +131,8 @@ export function Dashboard() {
     }
 
     const metrics = getDailyMetrics()
-    const activeProjectCount = projectAnalytics.data?.report.activeProjectCount ?? 0
+    const activeProjectCount =
+        projectAnalytics.data?.report.activeProjectCount ?? 0
 
     return (
         <Box p={6} w="full" h="full" overflow="auto">
@@ -204,63 +220,31 @@ export function Dashboard() {
                     borderColor="gray.200"
                 >
                     <Flex gap={4} align="center" wrap="wrap">
-                        <Text fontWeight="semibold" color="gray.700">
-                            טווח תאריכים לדוחות:
-                        </Text>
-                        <Flex gap={2} align="center">
-                            <input
-                                type="date"
-                                value={dateRange.startDate}
-                                onChange={(e) =>
-                                    setDateRange({
-                                        ...dateRange,
-                                        startDate: e.target.value,
-                                    })
-                                }
-                                style={{
-                                    padding: '0.5rem',
-                                    borderRadius: '0.375rem',
-                                    border: '1px solid #E2E8F0',
-                                }}
+                        <Box minW="280px">
+                            <ControlledDateRangeField
+                                control={dateRangeControl as any}
+                                startName="startDate"
+                                endName="endDate"
+                                hideClearTrigger
                             />
-                            <Text color="gray.500">עד</Text>
-                            <input
-                                type="date"
-                                value={dateRange.endDate}
-                                onChange={(e) =>
-                                    setDateRange({
-                                        ...dateRange,
-                                        endDate: e.target.value,
-                                    })
-                                }
-                                style={{
-                                    padding: '0.5rem',
-                                    borderRadius: '0.375rem',
-                                    border: '1px solid #E2E8F0',
-                                }}
-                            />
-                        </Flex>
+                        </Box>
                         <Button
                             size="sm"
                             variant="outline"
-                            onClick={() =>
-                                setDateRange({
-                                    startDate: daysAgoUtc(7),
-                                    endDate: todayUtc(),
-                                })
-                            }
+                            onClick={() => {
+                                setDateRangeValue('startDate', daysAgoUtc(7))
+                                setDateRangeValue('endDate', todayUtc())
+                            }}
                         >
                             7 ימים אחרונים
                         </Button>
                         <Button
                             size="sm"
                             variant="outline"
-                            onClick={() =>
-                                setDateRange({
-                                    startDate: daysAgoUtc(30),
-                                    endDate: todayUtc(),
-                                })
-                            }
+                            onClick={() => {
+                                setDateRangeValue('startDate', daysAgoUtc(30))
+                                setDateRangeValue('endDate', todayUtc())
+                            }}
                         >
                             30 ימים אחרונים
                         </Button>
@@ -310,19 +294,14 @@ export function Dashboard() {
                 {/* Report 5: Employees on Reserve */}
                 <Box>
                     <Flex gap={4} align="center" mb={4}>
-                        <Text fontWeight="semibold" color="gray.700">
-                            בחר תאריך לדוח עובדים על צו:
-                        </Text>
-                        <input
-                            type="date"
-                            value={selectedDate}
-                            onChange={(e) => setSelectedDate(e.target.value)}
-                            style={{
-                                padding: '0.5rem',
-                                borderRadius: '0.375rem',
-                                border: '1px solid #E2E8F0',
-                            }}
-                        />
+                        <Box minW="200px">
+                            <ControlledDateField
+                                control={selectedDateControl as any}
+                                name="selectedDate"
+                                label="בחר תאריך לדוח עובדים על צו"
+                                hideClearTrigger
+                            />
+                        </Box>
                     </Flex>
                     <StatisticsTable
                         title="עובדים על צו בתאריך מוגדר"

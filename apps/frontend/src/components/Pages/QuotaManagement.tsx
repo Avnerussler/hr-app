@@ -9,6 +9,7 @@ import {
     useDisclosure,
 } from '@chakra-ui/react'
 import { ProgressRoot, ProgressBar } from '../ui/progress'
+import { Tooltip } from '../ui/tooltip'
 import { UnapprovedReserveDaysWarning } from '../common/UnapprovedReserveDaysWarning'
 import { UnapprovedBaseEntryWarning } from '../common/UnapprovedBaseEntryWarning'
 import {
@@ -19,8 +20,7 @@ import {
     FaCalendarWeek,
     FaCog,
     FaCheckCircle,
-    FaStar,
-    FaPlus,
+    FaMenorah,
     FaTimes,
 } from 'react-icons/fa'
 import { useState, useMemo, useEffect } from 'react'
@@ -52,7 +52,6 @@ import {
 import {
     QuotaModal,
     DailyAttendanceDrawer,
-    HolidayManagementModal,
     QuickReserveDayModal,
 } from '../QuotaManagement'
 import {
@@ -65,7 +64,7 @@ import {
     formatQuotaDisplay,
     isIsraeliWeekend,
 } from '@/utils/quotaUtils'
-import { getHolidaysByDate } from '@/utils/israelHolidays'
+import { getHolidayNamesByDate } from '@/utils/holidays'
 
 export default function QuotaManagement() {
     const [currentDate, setCurrentDate] = useState(new Date())
@@ -73,7 +72,6 @@ export default function QuotaManagement() {
     const quotaModal = useDisclosure()
     const quickReserveModal = useDisclosure()
     const [isAttendanceDrawerOpen, setIsAttendanceDrawerOpen] = useState(false)
-    const [isHolidayModalOpen, setIsHolidayModalOpen] = useState(false)
     const [selectedDate, setSelectedDate] = useState<string>('')
     const [selectedQuota, setSelectedQuota] = useState<DailyQuota | undefined>(
         undefined
@@ -386,11 +384,6 @@ export default function QuotaManagement() {
                 onClick: handleContextSetQuota,
             })
             items.push({
-                label: `נהל חגים (${selectedRange.start} - ${selectedRange.end})`,
-                icon: <FaPlus />,
-                onClick: handleContextAddHoliday,
-            })
-            items.push({
                 label: `צור צו מילואים (${selectedRange.start} - ${selectedRange.end})`,
                 icon: <FaCalendarAlt />,
                 onClick: handleContextCreateReserveDay,
@@ -405,11 +398,6 @@ export default function QuotaManagement() {
                 label: 'ניהול כמויות',
                 icon: <FaCog />,
                 onClick: handleContextSetQuota,
-            })
-            items.push({
-                label: 'נהל חגים',
-                icon: <FaPlus />,
-                onClick: handleContextAddHoliday,
             })
             items.push({
                 label: 'צור צו מילואים',
@@ -437,16 +425,6 @@ export default function QuotaManagement() {
                 setShouldOpenModalAfterLoad(true)
             }
         }
-        handleContextMenuClose()
-    }
-
-    const handleContextAddHoliday = () => {
-        if (selectedRange.start && selectedRange.end) {
-            // Handle range holiday adding
-            setSelectedDate(`${selectedRange.start}:${selectedRange.end}`)
-        }
-        // selectedDate is already set by handleRightClick for single date
-        setIsHolidayModalOpen(true)
         handleContextMenuClose()
     }
 
@@ -552,15 +530,6 @@ export default function QuotaManagement() {
                         onClick: () => {
                             setSelectedDate(format(new Date(), 'yyyy-MM-dd'))
                             quotaModal.onOpen()
-                        },
-                    },
-                    {
-                        label: 'נהל חגים',
-                        icon: FaPlus,
-                        variant: 'outline',
-                        onClick: () => {
-                            setSelectedDate(format(new Date(), 'yyyy-MM-dd'))
-                            setIsHolidayModalOpen(true)
                         },
                     },
                 ]}
@@ -739,28 +708,42 @@ export default function QuotaManagement() {
                                         </Text>
                                         <HStack gap={1}>
                                             {/* Holiday Indicator */}
-                                            {getHolidaysByDate(day.date)
+                                            {getHolidayNamesByDate(day.date)
                                                 .length > 0 && (
-                                                <FaStar
-                                                    size={8}
-                                                    color="gold"
-                                                    title={`חגים: ${getHolidaysByDate(
+                                                <Tooltip
+                                                    showArrow
+                                                    positioning={{
+                                                        placement: 'top',
+                                                    }}
+                                                    content={`${getHolidayNamesByDate(
                                                         day.date
-                                                    )
-                                                        .map(
-                                                            (h) => h.nameHebrew
-                                                        )
-                                                        .join(', ')}`}
-                                                />
+                                                    ).join(', ')}`}
+                                                >
+                                                    <Box as="span">
+                                                        <FaMenorah
+                                                            size={12}
+                                                            color="purple"
+                                                        />
+                                                    </Box>
+                                                </Tooltip>
                                             )}
                                             {/* Attendance Status Indicator - Only show if attendance was reported */}
                                             {attendanceSummary?.[day.date]
                                                 ?.managerReported && (
-                                                <FaCheckCircle
-                                                    size={10}
-                                                    color="green"
-                                                    title={`נוכחות: ${attendanceSummary[day.date].attendanceRate}%`}
-                                                />
+                                                <Tooltip
+                                                    showArrow
+                                                    positioning={{
+                                                        placement: 'top',
+                                                    }}
+                                                    content={`נוכחות: ${attendanceSummary[day.date].attendanceRate}%`}
+                                                >
+                                                    <Box as="span">
+                                                        <FaCheckCircle
+                                                            size={12}
+                                                            color="green"
+                                                        />
+                                                    </Box>
+                                                </Tooltip>
                                             )}
                                             {/* Unapproved Reserve Days Warning */}
                                             {attendanceSummary?.[day.date]
@@ -771,7 +754,7 @@ export default function QuotaManagement() {
                                                             day.date
                                                         ].unapprovedEmployees
                                                     }
-                                                    iconSize={10}
+                                                    iconSize={12}
                                                 />
                                             )}
                                             {/* Expired Vehicle Approval Warning */}
@@ -784,7 +767,7 @@ export default function QuotaManagement() {
                                                         ]
                                                             .expiredVehicleApprovalEmployees
                                                     }
-                                                    iconSize={10}
+                                                    iconSize={12}
                                                 />
                                             )}
                                         </HStack>
@@ -943,33 +926,50 @@ export default function QuotaManagement() {
                                                     </Text>
                                                     <HStack gap={1}>
                                                         {/* Holiday Indicator */}
-                                                        {getHolidaysByDate(
+                                                        {getHolidayNamesByDate(
                                                             day.date
                                                         ).length > 0 && (
-                                                            <FaStar
-                                                                size={8}
-                                                                color="gold"
-                                                                title={`חגים: ${getHolidaysByDate(
+                                                            <Tooltip
+                                                                showArrow
+                                                                positioning={{
+                                                                    placement:
+                                                                        'top',
+                                                                }}
+                                                                content={`${getHolidayNamesByDate(
                                                                     day.date
-                                                                )
-                                                                    .map(
-                                                                        (h) =>
-                                                                            h.nameHebrew
-                                                                    )
-                                                                    .join(
-                                                                        ', '
-                                                                    )}`}
-                                                            />
+                                                                ).join(', ')}`}
+                                                            >
+                                                                <Box as="span">
+                                                                    <FaMenorah
+                                                                        size={
+                                                                            12
+                                                                        }
+                                                                        color="purple"
+                                                                    />
+                                                                </Box>
+                                                            </Tooltip>
                                                         )}
                                                         {/* Attendance Status Indicator - Only show if attendance was reported */}
                                                         {attendanceSummary?.[
                                                             day.date
                                                         ]?.managerReported && (
-                                                            <FaCheckCircle
-                                                                size={8}
-                                                                color="green"
-                                                                title={`נוכחות: ${attendanceSummary[day.date].attendanceRate}%`}
-                                                            />
+                                                            <Tooltip
+                                                                showArrow
+                                                                positioning={{
+                                                                    placement:
+                                                                        'top',
+                                                                }}
+                                                                content={`נוכחות: ${attendanceSummary[day.date].attendanceRate}%`}
+                                                            >
+                                                                <Box as="span">
+                                                                    <FaCheckCircle
+                                                                        size={
+                                                                            12
+                                                                        }
+                                                                        color="green"
+                                                                    />
+                                                                </Box>
+                                                            </Tooltip>
                                                         )}
                                                         {/* Unapproved Reserve Days Warning */}
                                                         {attendanceSummary?.[
@@ -983,7 +983,7 @@ export default function QuotaManagement() {
                                                                     ]
                                                                         .unapprovedEmployees
                                                                 }
-                                                                iconSize={8}
+                                                                iconSize={12}
                                                             />
                                                         )}
                                                         {/* Expired Vehicle Approval Warning */}
@@ -998,7 +998,7 @@ export default function QuotaManagement() {
                                                                     ]
                                                                         .expiredVehicleApprovalEmployees
                                                                 }
-                                                                iconSize={8}
+                                                                iconSize={12}
                                                             />
                                                         )}
                                                     </HStack>
@@ -1167,36 +1167,6 @@ export default function QuotaManagement() {
                 isOpen={isAttendanceDrawerOpen}
                 onClose={() => setIsAttendanceDrawerOpen(false)}
                 selectedDate={selectedDate}
-            />
-
-            <HolidayManagementModal
-                isOpen={isHolidayModalOpen}
-                onClose={() => {
-                    setIsHolidayModalOpen(false)
-                    setSelectedRange({
-                        start: null,
-                        end: null,
-                        isSelecting: false,
-                    })
-                }}
-                selectedDate={
-                    selectedDate.includes(':')
-                        ? selectedDate.split(':')[0]
-                        : selectedDate
-                }
-                dateRange={
-                    selectedDate.includes(':')
-                        ? {
-                              start: selectedDate.split(':')[0],
-                              end: selectedDate.split(':')[1],
-                          }
-                        : selectedRange.start && selectedRange.end
-                          ? {
-                                start: selectedRange.start,
-                                end: selectedRange.end,
-                            }
-                          : undefined
-                }
             />
 
             <QuickReserveDayModal

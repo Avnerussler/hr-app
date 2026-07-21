@@ -1,9 +1,10 @@
 // spec: tests/hr-app-comprehensive-test-plan.md
 // seed: seed.spec.ts
 
-import { test, expect } from '@playwright/test';
+import { test, expect, APIRequestContext } from '@playwright/test';
 
-const API = 'http://localhost:3001/api';
+const API_ORIGIN = 'http://localhost:3001';
+const API = `${API_ORIGIN}/api`;
 
 const TODAY = new Date().toISOString().split('T')[0];
 const RANGE_START = '2026-09-01';
@@ -21,83 +22,69 @@ interface PersonnelRecord {
  personalNumber: string;
 }
 
-async function getFormId(request: any, formName: string): Promise<string> {
- const res = await request.get(`${API}/formSubmission?formName=${formName}&page=1&limit=1`);
- const body = await res.json();
- return body.forms[0].formId;
-}
-
-async function createPersonnel(request: any, formId: string, overrides: Record<string, any> = {}): Promise<PersonnelRecord> {
+async function createPersonnel(
+ request: APIRequestContext,
+ overrides: Record<string, any> = {},
+): Promise<PersonnelRecord> {
  const firstName = overrides.firstName ?? `כלל${Date.now()}`;
  const lastName = overrides.lastName ?? `עסקי${Date.now()}`;
  const personalNumber = overrides.personalNumber ?? `BR${Date.now()}`;
- const res = await request.post(`${API}/formSubmission/create`, {
-  data: {
-   formId,
-   formName: 'personnel',
-   formData: { firstName, lastName, personalNumber, status: 'active', employmentType: 'reserves', ...overrides },
-  },
+ const res = await request.post(`${API}/personnel`, {
+  data: { firstName, lastName, personalNumber, isActive: true, ...overrides },
  });
- return { id: (await res.json()).form._id as string, firstName, lastName, personalNumber };
+ expect(res.ok(), `personnel create failed: ${res.status()}`).toBe(true);
+ const body = await res.json();
+ return { id: body._id as string, firstName, lastName, personalNumber };
 }
 
-async function createReserveDay(request: any, formId: string, personnel: PersonnelRecord, overrides: Record<string, any> = {}) {
- const res = await request.post(`${API}/formSubmission/create`, {
+async function createReserveDay(
+ request: APIRequestContext,
+ personnel: PersonnelRecord,
+ overrides: Record<string, any> = {},
+) {
+ const res = await request.post(`${API}/reserve-days`, {
   data: {
-   formId,
-   formName: 'reserve_days_management',
-   formData: {
-    employeeName: {
-     _id: personnel.id,
-     display: `${personnel.firstName} ${personnel.lastName} ${personnel.personalNumber}`,
-     metadata: { firstName: personnel.firstName, lastName: personnel.lastName, personalNumber: personnel.personalNumber },
-    },
-    startDate: TODAY,
-    endDate: TODAY,
-    fundingSource: 'internal',
-    orderType: '8open',
-    requestStatus: 'approved',
-    isActive: true,
-    vehicleEntry: false,
-    ...overrides,
-   },
+   employeeName: personnel.id,
+   startDate: TODAY,
+   endDate: TODAY,
+   fundingSource: 'internal',
+   orderType: '8open',
+   requestStatus: 'approved',
+   ...overrides,
   },
  });
- return { id: (await res.json()).form._id as string, status: res.status() };
+ const body = res.ok() ? await res.json() : null;
+ return { id: body?._id as string | undefined, status: res.status() };
 }
 
-async function deleteSubmission(request: any, id: string) {
- await request.post(`${API}/formSubmission/delete`, { data: { id } });
+async function deletePersonnel(request: APIRequestContext, id: string) {
+ await request.delete(`${API}/personnel/${id}`);
+}
+
+async function deleteReserveDay(request: APIRequestContext, id: string) {
+ await request.delete(`${API}/reserve-days/${id}`);
 }
 
 test.describe('Module 7: Quota Business Rules', () => {
- let personnelFormId: string;
- let reserveDaysFormId: string;
-
- test.beforeAll(async ({ request }) => {
-  personnelFormId = await getFormId(request, 'personnel');
-  reserveDaysFormId = await getFormId(request, 'reserve_days_management');
- });
-
  test('TC-BR-001: Denied employee is excluded from employee list', async ({ request }) => {
   let personnel: PersonnelRecord | null = null;
   let rid: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'נדחה',
     lastName: `סטטוס${Date.now()}`,
     personalNumber: `DENIED${Date.now()}`,
    });
-   const result = await createReserveDay(request, reserveDaysFormId, personnel, { requestStatus: 'denied' });
-   rid = result.id;
+   const result = await createReserveDay(request, personnel, { requestStatus: 'denied' });
+   rid = result.id ?? null;
 
    const res = await request.get(`${API}/quotas/employees/${TODAY}?filter=all&page=1&limit=100`);
    const body = await res.json();
-   const ids = body.employees.map((e: any) => e._id?.toString());
+   const ids = body.data.employees.map((e: any) => e._id?.toString());
    expect(ids).not.toContain(personnel.id);
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -105,21 +92,21 @@ test.describe('Module 7: Quota Business Rules', () => {
   let personnel: PersonnelRecord | null = null;
   let rid: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'ממתין',
     lastName: `בקשה${Date.now()}`,
     personalNumber: `PEND${Date.now()}`,
    });
-   const result = await createReserveDay(request, reserveDaysFormId, personnel, { requestStatus: 'pending' });
-   rid = result.id;
+   const result = await createReserveDay(request, personnel, { requestStatus: 'pending' });
+   rid = result.id ?? null;
 
    const res = await request.get(`${API}/quotas/employees/${TODAY}?filter=all&page=1&limit=100`);
    const body = await res.json();
-   const ids = body.employees.map((e: any) => e._id?.toString());
+   const ids = body.data.employees.map((e: any) => e._id?.toString());
    expect(ids).toContain(personnel.id);
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -127,21 +114,21 @@ test.describe('Module 7: Quota Business Rules', () => {
   let personnel: PersonnelRecord | null = null;
   let rid: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'מאושר',
     lastName: `עובד${Date.now()}`,
     personalNumber: `APPR${Date.now()}`,
    });
-   const result = await createReserveDay(request, reserveDaysFormId, personnel, { requestStatus: 'approved' });
-   rid = result.id;
+   const result = await createReserveDay(request, personnel, { requestStatus: 'approved' });
+   rid = result.id ?? null;
 
    const res = await request.get(`${API}/quotas/employees/${TODAY}?filter=all&page=1&limit=100`);
    const body = await res.json();
-   const emp = body.employees.find((e: any) => e._id?.toString() === personnel!.id);
+   const emp = body.data.employees.find((e: any) => e._id?.toString() === personnel!.id);
    expect(emp).toBeTruthy();
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -149,26 +136,26 @@ test.describe('Module 7: Quota Business Rules', () => {
   let personnel: PersonnelRecord | null = null;
   let rid: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'תאריך',
     lastName: `התחלה${Date.now()}`,
     personalNumber: `SDATE${Date.now()}`,
    });
-   const result = await createReserveDay(request, reserveDaysFormId, personnel, {
+   const result = await createReserveDay(request, personnel, {
     startDate: RANGE_START,
     endDate: RANGE_END,
     requestStatus: 'approved',
    });
-   rid = result.id;
+   rid = result.id ?? null;
 
    const res = await request.get(`${API}/quotas/employees/${RANGE_START}?filter=all&page=1&limit=100`);
    const body = await res.json();
-   const emp = body.employees.find((e: any) => e._id?.toString() === personnel!.id);
+   const emp = body.data.employees.find((e: any) => e._id?.toString() === personnel!.id);
    expect(emp).toBeTruthy();
    expect(emp.isStartingToday).toBe(true);
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -176,26 +163,26 @@ test.describe('Module 7: Quota Business Rules', () => {
   let personnel: PersonnelRecord | null = null;
   let rid: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'תאריך',
     lastName: `סיום${Date.now()}`,
     personalNumber: `EDATE${Date.now()}`,
    });
-   const result = await createReserveDay(request, reserveDaysFormId, personnel, {
+   const result = await createReserveDay(request, personnel, {
     startDate: RANGE_START,
     endDate: RANGE_END,
     requestStatus: 'approved',
    });
-   rid = result.id;
+   rid = result.id ?? null;
 
    const res = await request.get(`${API}/quotas/employees/${RANGE_END}?filter=all&page=1&limit=100`);
    const body = await res.json();
-   const emp = body.employees.find((e: any) => e._id?.toString() === personnel!.id);
+   const emp = body.data.employees.find((e: any) => e._id?.toString() === personnel!.id);
    expect(emp).toBeTruthy();
    expect(emp.isEndingToday).toBe(true);
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -203,27 +190,27 @@ test.describe('Module 7: Quota Business Rules', () => {
   let personnel: PersonnelRecord | null = null;
   let rid: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'תאריך',
     lastName: `אמצע${Date.now()}`,
     personalNumber: `MDATE${Date.now()}`,
    });
-   const result = await createReserveDay(request, reserveDaysFormId, personnel, {
+   const result = await createReserveDay(request, personnel, {
     startDate: RANGE_START,
     endDate: RANGE_END,
     requestStatus: 'approved',
    });
-   rid = result.id;
+   rid = result.id ?? null;
 
    const res = await request.get(`${API}/quotas/employees/${RANGE_MID}?filter=all&page=1&limit=100`);
    const body = await res.json();
-   const emp = body.employees.find((e: any) => e._id?.toString() === personnel!.id);
+   const emp = body.data.employees.find((e: any) => e._id?.toString() === personnel!.id);
    expect(emp).toBeTruthy();
    expect(emp.isStartingToday).toBe(false);
    expect(emp.isEndingToday).toBe(false);
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -231,25 +218,25 @@ test.describe('Module 7: Quota Business Rules', () => {
   let personnel: PersonnelRecord | null = null;
   let rid: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'לפני',
     lastName: `התחלה${Date.now()}`,
     personalNumber: `BFORE${Date.now()}`,
    });
-   const result = await createReserveDay(request, reserveDaysFormId, personnel, {
+   const result = await createReserveDay(request, personnel, {
     startDate: RANGE_START,
     endDate: RANGE_END,
     requestStatus: 'approved',
    });
-   rid = result.id;
+   rid = result.id ?? null;
 
    const res = await request.get(`${API}/quotas/employees/${BEFORE_RANGE}?filter=all&page=1&limit=100`);
    const body = await res.json();
-   const ids = body.employees.map((e: any) => e._id?.toString());
+   const ids = body.data.employees.map((e: any) => e._id?.toString());
    expect(ids).not.toContain(personnel.id);
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -257,25 +244,25 @@ test.describe('Module 7: Quota Business Rules', () => {
   let personnel: PersonnelRecord | null = null;
   let rid: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'אחרי',
     lastName: `סיום${Date.now()}`,
     personalNumber: `AFTER${Date.now()}`,
    });
-   const result = await createReserveDay(request, reserveDaysFormId, personnel, {
+   const result = await createReserveDay(request, personnel, {
     startDate: RANGE_START,
     endDate: RANGE_END,
     requestStatus: 'approved',
    });
-   rid = result.id;
+   rid = result.id ?? null;
 
    const res = await request.get(`${API}/quotas/employees/${AFTER_RANGE}?filter=all&page=1&limit=100`);
    const body = await res.json();
-   const ids = body.employees.map((e: any) => e._id?.toString());
+   const ids = body.data.employees.map((e: any) => e._id?.toString());
    expect(ids).not.toContain(personnel.id);
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -283,28 +270,28 @@ test.describe('Module 7: Quota Business Rules', () => {
   let personnel: PersonnelRecord | null = null;
   let rid: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'יום',
     lastName: `יחיד${Date.now()}`,
     personalNumber: `SINGLE${Date.now()}`,
    });
-   const result = await createReserveDay(request, reserveDaysFormId, personnel, {
+   const result = await createReserveDay(request, personnel, {
     startDate: SINGLE_DATE,
     endDate: SINGLE_DATE,
     requestStatus: 'approved',
    });
-   rid = result.id;
+   rid = result.id ?? null;
 
    const onDate = await request.get(`${API}/quotas/employees/${SINGLE_DATE}?filter=all&page=1&limit=100`);
-   const onIds = (await onDate.json()).employees.map((e: any) => e._id?.toString());
+   const onIds = (await onDate.json()).data.employees.map((e: any) => e._id?.toString());
    expect(onIds).toContain(personnel.id);
 
    const nextDay = await request.get(`${API}/quotas/employees/${SINGLE_DATE_NEXT}?filter=all&page=1&limit=100`);
-   const nextIds = (await nextDay.json()).employees.map((e: any) => e._id?.toString());
+   const nextIds = (await nextDay.json()).data.employees.map((e: any) => e._id?.toString());
    expect(nextIds).not.toContain(personnel.id);
   } finally {
-   if (rid) await deleteSubmission(request, rid);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid) await deleteReserveDay(request, rid);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -312,43 +299,33 @@ test.describe('Module 7: Quota Business Rules', () => {
   let personnel: PersonnelRecord | null = null;
   let rid1: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'חפיפה',
     lastName: `מניעה${Date.now()}`,
     personalNumber: `OVL${Date.now()}`,
    });
 
-   const r1 = await createReserveDay(request, reserveDaysFormId, personnel, {
+   const r1 = await createReserveDay(request, personnel, {
     startDate: '2026-10-01',
     endDate: '2026-10-10',
     requestStatus: 'approved',
    });
-   rid1 = r1.id;
+   rid1 = r1.id ?? null;
 
-   const res = await request.post(`${API}/formSubmission/create`, {
+   const res = await request.post(`${API}/reserve-days`, {
     data: {
-     formId: reserveDaysFormId,
-     formName: 'reserve_days_management',
-     formData: {
-      employeeName: {
-       _id: personnel.id,
-       display: `${personnel.firstName} ${personnel.lastName} ${personnel.personalNumber}`,
-       metadata: { firstName: personnel.firstName, lastName: personnel.lastName, personalNumber: personnel.personalNumber },
-      },
-      startDate: '2026-10-05',
-      endDate: '2026-10-15',
-      fundingSource: 'internal',
-      orderType: '8open',
-      requestStatus: 'approved',
-      isActive: true,
-      vehicleEntry: false,
-     },
+     employeeName: personnel.id,
+     startDate: '2026-10-05',
+     endDate: '2026-10-15',
+     fundingSource: 'internal',
+     orderType: '8open',
+     requestStatus: 'approved',
     },
    });
    expect(res.status()).toBe(409);
   } finally {
-   if (rid1) await deleteSubmission(request, rid1);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid1) await deleteReserveDay(request, rid1);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -357,45 +334,35 @@ test.describe('Module 7: Quota Business Rules', () => {
   let rid1: string | null = null;
   let rid2: string | null = null;
   try {
-   personnel = await createPersonnel(request, personnelFormId, {
+   personnel = await createPersonnel(request, {
     firstName: 'סמוך',
     lastName: `תאריכים${Date.now()}`,
     personalNumber: `ADJ${Date.now()}`,
    });
 
-   const r1 = await createReserveDay(request, reserveDaysFormId, personnel, {
+   const r1 = await createReserveDay(request, personnel, {
     startDate: '2026-11-01',
     endDate: '2026-11-05',
     requestStatus: 'approved',
    });
-   rid1 = r1.id;
+   rid1 = r1.id ?? null;
 
-   const res = await request.post(`${API}/formSubmission/create`, {
+   const res = await request.post(`${API}/reserve-days`, {
     data: {
-     formId: reserveDaysFormId,
-     formName: 'reserve_days_management',
-     formData: {
-      employeeName: {
-       _id: personnel.id,
-       display: `${personnel.firstName} ${personnel.lastName} ${personnel.personalNumber}`,
-       metadata: { firstName: personnel.firstName, lastName: personnel.lastName, personalNumber: personnel.personalNumber },
-      },
-      startDate: '2026-11-06',
-      endDate: '2026-11-10',
-      fundingSource: 'internal',
-      orderType: '8open',
-      requestStatus: 'approved',
-      isActive: true,
-      vehicleEntry: false,
-     },
+     employeeName: personnel.id,
+     startDate: '2026-11-06',
+     endDate: '2026-11-10',
+     fundingSource: 'internal',
+     orderType: '8open',
+     requestStatus: 'approved',
     },
    });
    expect([200, 201]).toContain(res.status());
-   rid2 = (await res.json()).form._id;
+   rid2 = (await res.json())._id;
   } finally {
-   if (rid2) await deleteSubmission(request, rid2);
-   if (rid1) await deleteSubmission(request, rid1);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (rid2) await deleteReserveDay(request, rid2);
+   if (rid1) await deleteReserveDay(request, rid1);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -405,51 +372,41 @@ test.describe('Module 7: Quota Business Rules', () => {
   let rid1: string | null = null;
   let rid2: string | null = null;
   try {
-   personnel1 = await createPersonnel(request, personnelFormId, {
+   personnel1 = await createPersonnel(request, {
     firstName: 'עובד',
     lastName: `א${Date.now()}`,
     personalNumber: `OVLA${Date.now()}`,
    });
-   personnel2 = await createPersonnel(request, personnelFormId, {
+   personnel2 = await createPersonnel(request, {
     firstName: 'עובד',
     lastName: `ב${Date.now()}`,
     personalNumber: `OVLB${Date.now()}`,
    });
 
-   const r1 = await createReserveDay(request, reserveDaysFormId, personnel1, {
+   const r1 = await createReserveDay(request, personnel1, {
     startDate: '2026-12-01',
     endDate: '2026-12-10',
     requestStatus: 'approved',
    });
-   rid1 = r1.id;
+   rid1 = r1.id ?? null;
 
-   const res = await request.post(`${API}/formSubmission/create`, {
+   const res = await request.post(`${API}/reserve-days`, {
     data: {
-     formId: reserveDaysFormId,
-     formName: 'reserve_days_management',
-     formData: {
-      employeeName: {
-       _id: personnel2.id,
-       display: `${personnel2.firstName} ${personnel2.lastName} ${personnel2.personalNumber}`,
-       metadata: { firstName: personnel2.firstName, lastName: personnel2.lastName, personalNumber: personnel2.personalNumber },
-      },
-      startDate: '2026-12-01',
-      endDate: '2026-12-10',
-      fundingSource: 'internal',
-      orderType: '8open',
-      requestStatus: 'approved',
-      isActive: true,
-      vehicleEntry: false,
-     },
+     employeeName: personnel2.id,
+     startDate: '2026-12-01',
+     endDate: '2026-12-10',
+     fundingSource: 'internal',
+     orderType: '8open',
+     requestStatus: 'approved',
     },
    });
    expect([200, 201]).toContain(res.status());
-   rid2 = (await res.json()).form._id;
+   rid2 = (await res.json())._id;
   } finally {
-   if (rid2) await deleteSubmission(request, rid2);
-   if (rid1) await deleteSubmission(request, rid1);
-   if (personnel2) await deleteSubmission(request, personnel2.id);
-   if (personnel1) await deleteSubmission(request, personnel1.id);
+   if (rid2) await deleteReserveDay(request, rid2);
+   if (rid1) await deleteReserveDay(request, rid1);
+   if (personnel2) await deletePersonnel(request, personnel2.id);
+   if (personnel1) await deletePersonnel(request, personnel1.id);
   }
  });
 });

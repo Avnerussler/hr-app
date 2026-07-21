@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { FieldErrors, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Box, Button, Flex, Heading, Badge, Tabs } from '@chakra-ui/react'
@@ -17,20 +17,25 @@ import {
     MilitaryInformationSection,
     AttendanceHistorySection,
     ProfessionalInformationSection,
+    PersonnelSelectFieldOptions,
 } from './PersonnelForm'
 import {
-    PersonnelFormSchema,
-    PersonnelUpdateFormSchema,
+    buildPersonnelFormSchema,
+    buildPersonnelUpdateFormSchema,
     PersonnelFormValues,
     PERSONNEL_DEFAULT_VALUES,
+    PersonnelSelectFieldKey,
 } from './personnelSchema'
 import { usePersonnelDetailQuery } from '@/hooks/queries/usePersonnelQueries'
+import { useSettingOptions } from '@/hooks/queries/useSettingQueries'
 import {
     useCreatePersonnel,
     useUpdatePersonnel,
     useDeletePersonnel,
 } from '@/hooks/mutations/usePersonnelMutations'
 
+// militaryInformation/professionalInformation are rendered separately below (need live
+// Settings options), so they have no Component here — SECTIONS only drives the tab list.
 const SECTIONS = [
     {
         id: 'personalInformation',
@@ -40,12 +45,12 @@ const SECTIONS = [
     {
         id: 'militaryInformation',
         name: 'מידע צבאי',
-        Component: MilitaryInformationSection,
+        Component: null,
     },
     {
         id: 'professionalInformation',
         name: 'מידע מקצועי',
-        Component: ProfessionalInformationSection,
+        Component: null,
     },
     {
         id: 'attendanceHistory',
@@ -108,6 +113,44 @@ export function PersonnelDrawer({ isOpen, onClose }: PersonnelDrawerProps) {
     )
     const [activeTab, setActiveTab] = useState<string>(SECTIONS[0].id)
 
+    const studioRole = useSettingOptions('studioRole')
+    const reserveCategory = useSettingOptions('reserveCategory')
+    const layer = useSettingOptions('layer')
+    const classificationClass = useSettingOptions('classificationClass')
+    const fieldOfExpertise = useSettingOptions('fieldOfExpertise')
+    const experience = useSettingOptions('experience')
+
+    const selectOptions: PersonnelSelectFieldOptions = useMemo(
+        () => ({
+            studioRole: studioRole.options,
+            reserveCategory: reserveCategory.options,
+            layer: layer.options,
+            classificationClass: classificationClass.options,
+            fieldOfExpertise: fieldOfExpertise.options,
+            experience: experience.options,
+        }),
+        [studioRole.options, reserveCategory.options, layer.options, classificationClass.options, fieldOfExpertise.options, experience.options]
+    )
+
+    const allowedSelectValues: Record<PersonnelSelectFieldKey, string[]> = useMemo(
+        () => ({
+            studioRole: studioRole.allowedValues,
+            reserveCategory: reserveCategory.allowedValues,
+            layer: layer.allowedValues,
+            classificationClass: classificationClass.allowedValues,
+            fieldOfExpertise: fieldOfExpertise.allowedValues,
+            experience: experience.allowedValues,
+        }),
+        [
+            studioRole.allowedValues,
+            reserveCategory.allowedValues,
+            layer.allowedValues,
+            classificationClass.allowedValues,
+            fieldOfExpertise.allowedValues,
+            experience.allowedValues,
+        ]
+    )
+
     const {
         control,
         handleSubmit,
@@ -116,7 +159,9 @@ export function PersonnelDrawer({ isOpen, onClose }: PersonnelDrawerProps) {
         formState: { isDirty: hasChanges },
     } = useForm<PersonnelFormValues>({
         resolver: zodResolver(
-            formState === 'edit' ? PersonnelUpdateFormSchema : PersonnelFormSchema
+            formState === 'edit'
+                ? buildPersonnelUpdateFormSchema(allowedSelectValues)
+                : buildPersonnelFormSchema(allowedSelectValues)
         ),
         defaultValues: PERSONNEL_DEFAULT_VALUES,
     })
@@ -278,7 +323,19 @@ export function PersonnelDrawer({ isOpen, onClose }: PersonnelDrawerProps) {
                                     maxH="calc(100vh - 190px)"
                                     minH="calc(100vh - 190px)"
                                 >
-                                    <section.Component control={control} />
+                                    {section.id === 'militaryInformation' ? (
+                                        <MilitaryInformationSection
+                                            control={control}
+                                            selectOptions={selectOptions}
+                                        />
+                                    ) : section.id === 'professionalInformation' ? (
+                                        <ProfessionalInformationSection
+                                            control={control}
+                                            selectOptions={selectOptions}
+                                        />
+                                    ) : section.Component ? (
+                                        <section.Component control={control} />
+                                    ) : null}
                                 </Tabs.Content>
                             ))}
                         </Tabs.Root>

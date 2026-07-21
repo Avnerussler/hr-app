@@ -1,54 +1,19 @@
 import { useMemo } from 'react'
-import { DatePicker, Field, Portal, parseDate } from '@chakra-ui/react'
+import { DatePicker, Field, Portal } from '@chakra-ui/react'
 import type { DateValue } from '@chakra-ui/react'
 import { LuCalendar } from 'react-icons/lu'
 import { Control, FieldValues, useController } from 'react-hook-form'
+import { toCalendarDate, formatDate, parseDateInput } from './dateFieldUtils'
 
 interface ControlledDateRangeFieldProps {
     control: Control<FieldValues>
     startName: string
     endName: string
-    label: string
+    label?: string
     required?: boolean
     isDateUnavailable?: (date: DateValue) => boolean
-}
-
-const toCalendarDate = (value: unknown): DateValue | null => {
-    if (typeof value === 'string' && value) {
-        try {
-            return parseDate(value.slice(0, 10))
-        } catch {
-            return null
-        }
-    }
-    if (value instanceof Date && !isNaN(value.getTime())) {
-        try {
-            return parseDate(value.toISOString().slice(0, 10))
-        } catch {
-            return null
-        }
-    }
-    return null
-}
-
-// dd/mm/yyyy display format — see https://chakra-ui.com/docs/components/date-picker#localization
-const formatDate = (date: DateValue) => {
-    const day = date.day.toString().padStart(2, '0')
-    const month = date.month.toString().padStart(2, '0')
-    return `${day}/${month}/${date.year}`
-}
-
-const parseDateInput = (value: string): DateValue | undefined => {
-    const match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
-    if (!match) return undefined
-    const [, day, month, year] = match
-    try {
-        return parseDate(
-            `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-        )
-    } catch {
-        return undefined
-    }
+    /** Hide the picker's clear ("x") button — for fields that must always hold a range. */
+    hideClearTrigger?: boolean
 }
 
 /** A generic date-range picker (dd/mm/yyyy) that reads/writes two separate RHF fields (startName, endName). */
@@ -59,6 +24,7 @@ export function ControlledDateRangeField({
     label,
     required,
     isDateUnavailable,
+    hideClearTrigger,
 }: ControlledDateRangeFieldProps) {
     const {
         field: startField,
@@ -86,7 +52,11 @@ export function ControlledDateRangeField({
     const error = startError || endError
 
     return (
-        <Field.Root orientation="vertical" invalid={!!error} required={required}>
+        <Field.Root
+            orientation="vertical"
+            invalid={!!error}
+            required={required}
+        >
             <DatePicker.Root
                 selectionMode="range"
                 value={value}
@@ -122,7 +92,7 @@ export function ControlledDateRangeField({
                         <DatePicker.Trigger>
                             <LuCalendar />
                         </DatePicker.Trigger>
-                        <DatePicker.ClearTrigger />
+                        {!hideClearTrigger && <DatePicker.ClearTrigger />}
                     </DatePicker.IndicatorGroup>
                 </DatePicker.Control>
                 <Portal>

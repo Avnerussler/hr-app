@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Box, Button, Flex, Heading, Badge, VStack } from '@chakra-ui/react'
@@ -7,8 +7,14 @@ import { DrawerRoot, DrawerContent, DrawerHeader, DrawerBody, DrawerFooter } fro
 import { IconButton } from '@chakra-ui/react'
 import { useRouteContext } from '@/hooks/useRouteContext'
 import { ReserveDayInfoSection } from './ReserveDayForm'
-import { ReserveDayFormSchema, ReserveDayFormValues, RESERVE_DAY_DEFAULT_VALUES } from './reserveDaySchema'
+import {
+    buildReserveDayFormSchema,
+    ReserveDayFormValues,
+    RESERVE_DAY_DEFAULT_VALUES,
+    ReserveDaySelectFieldKey,
+} from './reserveDaySchema'
 import { useReserveDayDetailQuery } from '@/hooks/queries/useReserveDayQueries'
+import { useSettingOptions } from '@/hooks/queries/useSettingQueries'
 import { useCreateReserveDay, useUpdateReserveDay, useDeleteReserveDay } from '@/hooks/mutations/useReserveDayMutations'
 
 interface ReserveDayDrawerProps {
@@ -20,8 +26,33 @@ export function ReserveDayDrawer({ isOpen, onClose }: ReserveDayDrawerProps) {
     const { formState, itemId } = useRouteContext()
     const { data: reserveDay } = useReserveDayDetailQuery(formState === 'edit' ? itemId : undefined)
 
+    const fundingSource = useSettingOptions('fundingSource')
+    const orderType = useSettingOptions('orderType')
+    const requestStatus = useSettingOptions('requestStatus')
+    const baseAccessApproval = useSettingOptions('baseAccessApproval')
+
+    const selectOptions: Record<ReserveDaySelectFieldKey, { value: string; label: string }[]> = useMemo(
+        () => ({
+            fundingSource: fundingSource.options,
+            orderType: orderType.options,
+            requestStatus: requestStatus.options,
+            baseAccessApproval: baseAccessApproval.options,
+        }),
+        [fundingSource.options, orderType.options, requestStatus.options, baseAccessApproval.options]
+    )
+
+    const allowedSelectValues: Record<ReserveDaySelectFieldKey, string[]> = useMemo(
+        () => ({
+            fundingSource: fundingSource.allowedValues,
+            orderType: orderType.allowedValues,
+            requestStatus: requestStatus.allowedValues,
+            baseAccessApproval: baseAccessApproval.allowedValues,
+        }),
+        [fundingSource.allowedValues, orderType.allowedValues, requestStatus.allowedValues, baseAccessApproval.allowedValues]
+    )
+
     const methods = useForm<ReserveDayFormValues>({
-        resolver: zodResolver(ReserveDayFormSchema),
+        resolver: zodResolver(buildReserveDayFormSchema(allowedSelectValues)),
         defaultValues: RESERVE_DAY_DEFAULT_VALUES,
     })
     const {
@@ -101,7 +132,11 @@ export function ReserveDayDrawer({ isOpen, onClose }: ReserveDayDrawerProps) {
                     <Box as="form" onSubmit={handleSubmit(onSubmit)} display="flex" flexDirection="column" flex="1" overflow="hidden">
                         <DrawerBody bg="white" _dark={{ bg: 'gray.800' }} p={0} flex="1" overflow="auto">
                             <VStack gap={0} align="stretch">
-                                <ReserveDayInfoSection control={control} excludeId={formState === 'edit' ? itemId : undefined} />
+                                <ReserveDayInfoSection
+                                    control={control}
+                                    excludeId={formState === 'edit' ? itemId : undefined}
+                                    selectOptions={selectOptions}
+                                />
                             </VStack>
                         </DrawerBody>
                         <DrawerFooter

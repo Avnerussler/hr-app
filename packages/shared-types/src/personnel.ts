@@ -1,12 +1,4 @@
 import { z } from 'zod'
-import {
-    ClassificationClass,
-    Experience,
-    FieldOfExpertise,
-    Layer,
-    ReserveCategory,
-    StudioRole,
-} from './enums'
 import { ObjectIdString } from './common'
 
 export const PersonnelObjectSchema = z.object({
@@ -21,17 +13,17 @@ export const PersonnelObjectSchema = z.object({
     vehicleNumber: z.string().nullish(),
     note: z.string().nullish(),
     details: z.string().nullish(),
-    layer: Layer.nullish(),
+    layer: z.string().nullish(),
     isActive: z.boolean().default(true),
 
     reserveUnit: z.string().nullish(),
-    studioRole: StudioRole.nullish(),
+    studioRole: z.string().nullish(),
     reserveRole: z.string().nullish(),
     directBoss: z.string().nullish(),
     rank: z.string().nullish(),
-    classificationClass: ClassificationClass.nullish(),
+    classificationClass: z.string().nullish(),
     canBeRecited: z.boolean().nullish(),
-    reserveCategory: ReserveCategory.nullish(),
+    reserveCategory: z.string().nullish(),
     assignedProjects: ObjectIdString.nullable().default(null),
     entryStartDate: z.coerce.date().nullish(),
     entryEndDate: z.coerce.date().nullish(),
@@ -44,8 +36,8 @@ export const PersonnelObjectSchema = z.object({
     workExperience: z.string().nullish(),
     talentAndSkills: z.string().nullish(),
     referralSource: z.string().nullish(),
-    fieldOfExpertise: FieldOfExpertise.nullish(),
-    experience: Experience.nullish(),
+    fieldOfExpertise: z.string().nullish(),
+    experience: z.string().nullish(),
     workPlace: z.string().nullish(),
     currentPosition: z.string().nullish(),
     resumeFileUrl: z.string().nullish(),

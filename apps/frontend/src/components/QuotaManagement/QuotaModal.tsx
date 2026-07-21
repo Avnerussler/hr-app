@@ -14,6 +14,7 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { format } from 'date-fns'
 import { he } from 'date-fns/locale'
 import { ControlledInputField } from '../ControlledFields/ControlledInputField'
+import { ControlledDateField } from '../ControlledFields/ControlledDateField'
 import { ControlledTextareaField } from '../ControlledFields/ControlledTextareaField'
 import {
     useCreateQuotaRange,
@@ -182,16 +183,14 @@ export function QuotaModal({
                             />
 
                             {!isEditing && (
-                                <ControlledInputField
+                                <ControlledDateField
                                     control={control as any}
                                     name="startDate"
-                                    type="date"
                                     label="תאריך התחלה"
                                     required
                                     rules={{
                                         required: 'שדה חובה',
                                     }}
-                                    helperText="הכמות תיושם החל מתאריך זה (ברירת המחדל: היום)"
                                 />
                             )}
 
@@ -217,10 +216,9 @@ export function QuotaModal({
                                     </Box>
 
                                     {hasEndDate && (
-                                        <ControlledInputField
+                                        <ControlledDateField
                                             control={control as any}
                                             name="endDate"
-                                            type="date"
                                             label="תאריך סיום"
                                             rules={{
                                                 required: hasEndDate
@@ -241,7 +239,6 @@ export function QuotaModal({
                                                     return true
                                                 },
                                             }}
-                                            helperText="אם לא מוגדר, הכמות תיושם עד סוף החודש"
                                         />
                                     )}
                                 </>

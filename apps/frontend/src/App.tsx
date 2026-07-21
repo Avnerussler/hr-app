@@ -8,6 +8,7 @@ import ErrorElement from './components/common/ErrorElement'
 import { ProjectListPage } from './components/Pages/ProjectListPage'
 import { PersonnelListPage } from './components/Pages/PersonnelListPage'
 import { ReserveDayListPage } from './components/Pages/ReserveDayListPage'
+import { SettingsListPage } from './components/Pages/SettingsListPage'
 
 // formName segment is kept literal for e2e URL parity; formId segment is a stable
 // placeholder (no longer a real "form definition" id).
@@ -68,6 +69,11 @@ const staticRoutes = [
     {
         path: 'dashboard',
         element: <Dashboard />,
+        errorElement: <ErrorElement />,
+    },
+    {
+        path: 'settings',
+        element: <SettingsListPage />,
         errorElement: <ErrorElement />,
     },
 ]

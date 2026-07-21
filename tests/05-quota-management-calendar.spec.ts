@@ -69,7 +69,7 @@ test.describe('Module 4: Quota Management Calendar', () => {
   await expect(page.getByRole('button', { name: 'חודשי' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'היום' })).toBeVisible();
 
-  for (const day of ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ז׳']) {
+  for (const day of ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'שבת']) {
    await expect(page.getByText(day).first()).toBeVisible();
   }
  });
@@ -216,10 +216,19 @@ test.describe('Module 4: Quota Management Calendar', () => {
 
    // QuotaModal's "start date" field defaults to today's date at first mount and is
    // only re-synced to the right-clicked day via a useEffect — explicitly set it here
-   // rather than relying on that effect's timing.
-   const startDateInput = modal.locator('input[type="date"]').first();
-   await startDateInput.fill(futureDateStr);
-   await expect(startDateInput).toHaveValue(futureDateStr);
+   // rather than relying on that effect's timing. The field is a Chakra DatePicker
+   // (dd/mm/yyyy) — use pressSequentially, not .fill(), since ark-ui's date-input
+   // parses keystrokes as they're typed and a bulk .fill() can be silently dropped.
+   const [isoYear, isoMonth, isoDay] = futureDateStr.split('-');
+   const futurePickerDate = `${isoDay}/${isoMonth}/${isoYear}`;
+   const startDateInput = modal.getByPlaceholder('dd/mm/yyyy').first();
+   // The field is pre-filled with today's date — triple-click to select all of its
+   // text before typing so the new keystrokes replace it instead of interleaving
+   // with the existing digits.
+   await startDateInput.click({ clickCount: 3 });
+   await startDateInput.pressSequentially(futurePickerDate);
+   await startDateInput.press('Tab');
+   await expect(startDateInput).toHaveValue(futurePickerDate);
 
    await modal.locator('input[type="number"]').first().fill('25');
    await modal.getByRole('button', { name: /שמור|צור|Create|Save/ }).click();

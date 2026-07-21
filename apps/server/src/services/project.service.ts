@@ -8,6 +8,7 @@ import {
     syncPersonnelOnProjectUpdate,
     clearProjectFromAllPersonnel,
 } from './bidirectionalSync.service'
+import { validateSelectField } from './setting.service'
 
 export interface ListProjectsParams {
     page: number
@@ -200,6 +201,7 @@ export async function getProjectById(id: string) {
 
 export async function createProject(body: unknown) {
     const validated = ProjectSchema.parse(body)
+    await validateSelectField('projectStatus', validated.projectStatus)
     const created = await ProjectModel.create(validated)
     if (created.projectPersonnel.length > 0) {
         await syncPersonnelOnProjectUpdate(
@@ -216,6 +218,7 @@ export async function updateProject(id: string, body: unknown) {
     if (!existing) throw new NotFoundError('Project')
 
     const validated = ProjectSchema.parse(body)
+    await validateSelectField('projectStatus', validated.projectStatus)
     const previousPersonnelIds = existing.projectPersonnel.map(String)
 
     Object.assign(existing, validated)

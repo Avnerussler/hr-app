@@ -32,6 +32,10 @@ tasks:
     dir: apps/server
     cmd: npm run docker:build
 
+  docker:ship:
+    desc: Build linux/amd64 images for frontend and server and save them as tar archives
+    cmd: npm run docker:ship
+
   install:
     desc: Install dependencies for both frontend and server
     cmds:
@@ -83,6 +87,14 @@ tasks:
     desc: Stop and remove Docker containers
     dir: apps/server
     cmd: docker compose -f 'docker/compose.yml' down
+
+  docker:seed:settings:
+    desc: Seed/reset default settings in the running Docker container (overwrites existing option edits)
+    cmd: docker exec hr-server-app npm run --workspace=apps/server seed:settings:docker
+
+  docker:seed:settings:dry-run:
+    desc: Dry-run the settings seed against the running Docker container
+    cmd: docker exec hr-server-app npm run --workspace=apps/server seed:settings:docker:dry-run
 
   test:
     desc: Run Playwright tests

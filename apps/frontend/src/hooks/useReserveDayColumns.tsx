@@ -3,8 +3,8 @@ import { createColumnHelper } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { VStack, HStack, Text, Box } from '@chakra-ui/react'
 import { LuChevronUp, LuChevronDown, LuChevronsUpDown } from 'react-icons/lu'
-import { ORDER_TYPE_LABELS, FUNDING_SOURCE_LABELS } from '@hr-app/shared-types'
 import { EntityLink } from '@/components/common/EntityLink'
+import { SettingLabelCell } from '@/components/common/SettingLabelCell'
 import { ReserveDayStatusCell } from '@/components/ReserveDay/ReserveDayStatusCell'
 import { ReserveDayRecord } from './queries/useReserveDayQueries'
 import type { Column } from '@tanstack/react-table'
@@ -82,17 +82,14 @@ export function useReserveDayColumns() {
                 header: ({ column }) => <SortableHeader label="סוג צו" column={column} />,
                 enableSorting: true,
                 sortDescFirst: false,
-                cell: (info) => <Text color="foreground">{ORDER_TYPE_LABELS[info.getValue()]}</Text>,
+                cell: (info) => <SettingLabelCell settingKey="orderType" value={info.getValue()} />,
             }),
             columnHelper.accessor('fundingSource', {
                 id: 'fundingSource',
                 header: ({ column }) => <SortableHeader label="מקור מימון" column={column} />,
                 enableSorting: true,
                 sortDescFirst: false,
-                cell: (info) => {
-                    const val = info.getValue()
-                    return <Text color="foreground">{val ? FUNDING_SOURCE_LABELS[val] : '—'}</Text>
-                },
+                cell: (info) => <SettingLabelCell settingKey="fundingSource" value={info.getValue()} />,
             }),
             columnHelper.accessor('requestStatus', {
                 id: 'requestStatus',

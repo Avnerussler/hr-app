@@ -19,10 +19,10 @@ test.describe('Module 1: Personnel Management', () => {
   // Verify page header displays "משאבי אנוש"
   await expect(page.getByRole('heading', { name: 'משאבי אנוש' })).toBeVisible();
 
-  // Verify metric cards display
-  await expect(page.getByText('Active Personnel').first()).toBeVisible();
-  await expect(page.getByText('Inactive Personnel').first()).toBeVisible();
-  await expect(page.getByText('Total Personnel').first()).toBeVisible();
+  // Verify metric cards display (labels are Hebrew — see personnel.service.ts getPersonnelMetrics)
+  await expect(page.getByText('משאבי אנוש פעילים').first()).toBeVisible();
+  await expect(page.getByText('משאבי אנוש לא פעילים').first()).toBeVisible();
+  await expect(page.getByText('סה"כ משאבי אנוש').first()).toBeVisible();
 
   // Verify table is visible and displays records
   await expect(page.getByRole('table')).toBeVisible();

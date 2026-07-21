@@ -20,9 +20,9 @@ import useDebounce from '@/hooks/useDebounce'
 import { useRouteContext, useDrawerState } from '@/hooks/useRouteContext'
 import { generateEditPath, generateFormPath, generateNewPath } from '@/types/routeTypes'
 import { TableFilter } from '@/types/fieldsType'
-import { STUDIO_ROLE_LABELS, RESERVE_CATEGORY_LABELS } from '@hr-app/shared-types'
 import { FaUserCheck, FaUserTimes, FaUsers } from 'react-icons/fa'
 import { usePersonnelListQuery, usePersonnelMetricsQuery, useProjectOptionsQuery } from '@/hooks/queries/usePersonnelQueries'
+import { useSettingOptions } from '@/hooks/queries/useSettingQueries'
 import { usePersonnelColumns } from '@/hooks/usePersonnelColumns'
 import { PersonnelDrawer } from '@/components/Personnel/PersonnelDrawer'
 import type { PersonnelRecord } from '@/hooks/queries/usePersonnelQueries'
@@ -48,26 +48,6 @@ const IS_ACTIVE_FILTER: TableFilter = {
         { value: 'true', label: 'פעיל' },
         { value: 'false', label: 'לא פעיל' },
     ],
-}
-
-const STUDIO_ROLE_FILTER: TableFilter = {
-    id: 'studioRoleFilter',
-    label: 'תפקיד בסטודיו',
-    fieldName: 'studioRole',
-    type: 'multiSelect',
-    placeholder: 'בחר תפקיד בסטודיו',
-    defaultValue: [],
-    options: Object.entries(STUDIO_ROLE_LABELS).map(([value, label]) => ({ value, label })),
-}
-
-const RESERVE_CATEGORY_FILTER: TableFilter = {
-    id: 'reserveCategoryFilter',
-    label: 'סוג העסקה',
-    fieldName: 'reserveCategory',
-    type: 'multiSelect',
-    placeholder: 'בחר סוג העסקה',
-    defaultValue: [],
-    options: Object.entries(RESERVE_CATEGORY_LABELS).map(([value, label]) => ({ value, label })),
 }
 
 export function PersonnelListPage() {
@@ -107,6 +87,34 @@ export function PersonnelListPage() {
             options: projectOptions.map((opt) => ({ value: opt.value, label: opt.label })),
         }),
         [projectOptions]
+    )
+
+    const { options: studioRoleOptions } = useSettingOptions('studioRole')
+    const studioRoleFilter: TableFilter = useMemo(
+        () => ({
+            id: 'studioRoleFilter',
+            label: 'תפקיד בסטודיו',
+            fieldName: 'studioRole',
+            type: 'multiSelect',
+            placeholder: 'בחר תפקיד בסטודיו',
+            defaultValue: [],
+            options: studioRoleOptions,
+        }),
+        [studioRoleOptions]
+    )
+
+    const { options: reserveCategoryOptions } = useSettingOptions('reserveCategory')
+    const reserveCategoryFilter: TableFilter = useMemo(
+        () => ({
+            id: 'reserveCategoryFilter',
+            label: 'סוג העסקה',
+            fieldName: 'reserveCategory',
+            type: 'multiSelect',
+            placeholder: 'בחר סוג העסקה',
+            defaultValue: [],
+            options: reserveCategoryOptions,
+        }),
+        [reserveCategoryOptions]
     )
 
     const { data, isLoading } = usePersonnelListQuery({
@@ -234,7 +242,7 @@ export function PersonnelListPage() {
                     columnFilters={columnFilters}
                     tableFilters={tableFilters}
                     onExportToExcel={handleExportToExcel}
-                    filters={[IS_ACTIVE_FILTER, STUDIO_ROLE_FILTER, RESERVE_CATEGORY_FILTER, assignedProjectsFilter]}
+                    filters={[IS_ACTIVE_FILTER, studioRoleFilter, reserveCategoryFilter, assignedProjectsFilter]}
                     filterValues={tableFilters}
                     onFilterChange={handleFilterChange}
                 />
