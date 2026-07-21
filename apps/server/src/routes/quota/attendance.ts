@@ -22,7 +22,8 @@ router.put(
                     .json({ message: 'Invalid attendance data' })
             }
 
-            const { value: dateObj, error: dateError } = schemas.dateParam.params.validate({ date: dateRaw })
+            const { value: dateObj, error: dateError } =
+                schemas.dateParam.params.validate({ date: dateRaw })
             if (dateError) {
                 return res.status(400).json({ message: 'Invalid date format' })
             }
@@ -267,7 +268,10 @@ router.get(
     validate(schemas.dateRangeParams),
     asyncHandler(async (req: Request, res: Response) => {
         try {
-            const { startDate, endDate } = req.params as unknown as { startDate: Date; endDate: Date }
+            const { startDate, endDate } = req.params as unknown as {
+                startDate: Date
+                endDate: Date
+            }
 
             // Find all reservations that overlap with the date range
             // Exclude denied/cancelled requests
@@ -403,6 +407,10 @@ router.get(
                     if (attendanceSummary[dateStr]) {
                         attendanceSummary[dateStr].totalRequired++
 
+                        if (reservation.attendance?.[dateStr]) {
+                            attendanceSummary[dateStr].totalAttended++
+                        }
+
                         // Track unapproved reserve days
                         if (isNotApproved) {
                             attendanceSummary[
@@ -523,7 +531,8 @@ router.get(
             // Get employee basic info from the personnel collection
             const personnel = await PersonnelModel.findById(employeeId).lean()
             const employeeName = personnel
-                ? `${personnel.firstName || ''} ${personnel.lastName || ''}`.trim() || 'לא ידוע'
+                ? `${personnel.firstName || ''} ${personnel.lastName || ''}`.trim() ||
+                  'לא ידוע'
                 : 'לא ידוע'
 
             // Collect all attendance data from all reservations

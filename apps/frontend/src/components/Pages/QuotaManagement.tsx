@@ -9,6 +9,7 @@ import {
     useDisclosure,
 } from '@chakra-ui/react'
 import { ProgressRoot, ProgressBar } from '../ui/progress'
+import { Tooltip } from '../ui/tooltip'
 import { UnapprovedReserveDaysWarning } from '../common/UnapprovedReserveDaysWarning'
 import { UnapprovedBaseEntryWarning } from '../common/UnapprovedBaseEntryWarning'
 import {
@@ -709,22 +710,40 @@ export default function QuotaManagement() {
                                             {/* Holiday Indicator */}
                                             {getHolidayNamesByDate(day.date)
                                                 .length > 0 && (
-                                                <FaMenorah
-                                                    size={8}
-                                                    color="purple"
-                                                    title={`חגים: ${getHolidayNamesByDate(
+                                                <Tooltip
+                                                    showArrow
+                                                    positioning={{
+                                                        placement: 'top',
+                                                    }}
+                                                    content={`${getHolidayNamesByDate(
                                                         day.date
                                                     ).join(', ')}`}
-                                                />
+                                                >
+                                                    <Box as="span">
+                                                        <FaMenorah
+                                                            size={12}
+                                                            color="purple"
+                                                        />
+                                                    </Box>
+                                                </Tooltip>
                                             )}
                                             {/* Attendance Status Indicator - Only show if attendance was reported */}
                                             {attendanceSummary?.[day.date]
                                                 ?.managerReported && (
-                                                <FaCheckCircle
-                                                    size={10}
-                                                    color="green"
-                                                    title={`נוכחות: ${attendanceSummary[day.date].attendanceRate}%`}
-                                                />
+                                                <Tooltip
+                                                    showArrow
+                                                    positioning={{
+                                                        placement: 'top',
+                                                    }}
+                                                    content={`נוכחות: ${attendanceSummary[day.date].attendanceRate}%`}
+                                                >
+                                                    <Box as="span">
+                                                        <FaCheckCircle
+                                                            size={12}
+                                                            color="green"
+                                                        />
+                                                    </Box>
+                                                </Tooltip>
                                             )}
                                             {/* Unapproved Reserve Days Warning */}
                                             {attendanceSummary?.[day.date]
@@ -735,7 +754,7 @@ export default function QuotaManagement() {
                                                             day.date
                                                         ].unapprovedEmployees
                                                     }
-                                                    iconSize={10}
+                                                    iconSize={12}
                                                 />
                                             )}
                                             {/* Expired Vehicle Approval Warning */}
@@ -748,7 +767,7 @@ export default function QuotaManagement() {
                                                         ]
                                                             .expiredVehicleApprovalEmployees
                                                     }
-                                                    iconSize={10}
+                                                    iconSize={12}
                                                 />
                                             )}
                                         </HStack>
@@ -910,23 +929,47 @@ export default function QuotaManagement() {
                                                         {getHolidayNamesByDate(
                                                             day.date
                                                         ).length > 0 && (
-                                                            <FaMenorah
-                                                                size={8}
-                                                                color="purple"
-                                                                title={`חגים: ${getHolidayNamesByDate(
+                                                            <Tooltip
+                                                                showArrow
+                                                                positioning={{
+                                                                    placement:
+                                                                        'top',
+                                                                }}
+                                                                content={`${getHolidayNamesByDate(
                                                                     day.date
                                                                 ).join(', ')}`}
-                                                            />
+                                                            >
+                                                                <Box as="span">
+                                                                    <FaMenorah
+                                                                        size={
+                                                                            12
+                                                                        }
+                                                                        color="purple"
+                                                                    />
+                                                                </Box>
+                                                            </Tooltip>
                                                         )}
                                                         {/* Attendance Status Indicator - Only show if attendance was reported */}
                                                         {attendanceSummary?.[
                                                             day.date
                                                         ]?.managerReported && (
-                                                            <FaCheckCircle
-                                                                size={8}
-                                                                color="green"
-                                                                title={`נוכחות: ${attendanceSummary[day.date].attendanceRate}%`}
-                                                            />
+                                                            <Tooltip
+                                                                showArrow
+                                                                positioning={{
+                                                                    placement:
+                                                                        'top',
+                                                                }}
+                                                                content={`נוכחות: ${attendanceSummary[day.date].attendanceRate}%`}
+                                                            >
+                                                                <Box as="span">
+                                                                    <FaCheckCircle
+                                                                        size={
+                                                                            12
+                                                                        }
+                                                                        color="green"
+                                                                    />
+                                                                </Box>
+                                                            </Tooltip>
                                                         )}
                                                         {/* Unapproved Reserve Days Warning */}
                                                         {attendanceSummary?.[
@@ -940,7 +983,7 @@ export default function QuotaManagement() {
                                                                     ]
                                                                         .unapprovedEmployees
                                                                 }
-                                                                iconSize={8}
+                                                                iconSize={12}
                                                             />
                                                         )}
                                                         {/* Expired Vehicle Approval Warning */}
@@ -955,7 +998,7 @@ export default function QuotaManagement() {
                                                                     ]
                                                                         .expiredVehicleApprovalEmployees
                                                                 }
-                                                                iconSize={8}
+                                                                iconSize={12}
                                                             />
                                                         )}
                                                     </HStack>
