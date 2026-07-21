@@ -18,15 +18,17 @@ This is an **IDF reserve-duty HR management system** (מערכת ניהול מי
 - **Request status** — `approved`, `pending`, or `denied`
 - **Attendance / נוכחות** — whether a reservist actually showed up on a given day
 
-### Data Model (simplified)
-All data is stored as `FormSubmissions` documents keyed by `formName`:
-- `formName: 'personnel'` → reservist records
-- `formName: 'reserve_days_management'` → duty period records; `formData.employeeName` references a personnel `_id`
-- `formName: 'project_management'` → project records; `formData.projectPersonnel` is an array of personnel `_id`s
+### Data Model
+
+Personnel, Project Management, and Reserve Days each have an explicit backend model/service/route (see `apps/server/CLAUDE.md`) — no generic schema-driven document store. Types are shared with the backend via `@hr-app/shared-types` (`packages/shared-types`), e.g. `Personnel`, `Project`, `ReserveDay`, plus label-map enums (`RESERVE_CATEGORY_LABELS`, etc.).
+
+- Personnel — reservist records (`components/Personnel/`)
+- Reserve Days — duty period records; `assignedProjects`/employee reference points at a personnel `_id` (`components/ReserveDay/`)
+- Project Management — project records; `projectPersonnel` is an array of personnel `_id`s (`components/Project/`)
 
 ### Main UI Areas
 - `/quota-management` — the primary view; calendar + `DailyAttendanceDrawer` + `QuotaManagement` page
-- `/:formName/:formId` — dynamic form list/create/edit views generated from form schema (`FormGenerator`)
+- `/personnel/default`, `/project_management/default`, `/reserve_days_management/default` (+ `/new`, `/edit/:itemId`) — the three entity list/create/edit pages. The `formName`/`default` URL segments are kept literal for e2e URL parity with the old dynamic-form routes; `default` is a stable placeholder, not a real form-definition id.
 - `/dashboard` — statistics and analytics
 
 ---
@@ -42,53 +44,53 @@ All data is stored as `FormSubmissions` documents keyed by `formName`:
 - axios via the centralized query client at `@/lib/queryClient.ts`
 - react-router-dom v7 for routing
 - Import alias: `@/*` → `src/*`
+- This package is part of an npm workspace — run `npm ci` and workspace-scoped commands (e.g. `npm run build --workspace=apps/frontend`) from the repo root
 
 ---
 
 ## TypeScript Rules
 
 - Everything must be typed — no `any`, no unannotated function parameters or return values
-- Reuse existing types before creating new ones — check `@/types/` and `@/hooks/queries/types.ts` first
-- Shared interfaces live in `@/types/` (field types, form types, mutation types) or alongside the hook that owns the data
+- Reuse existing types before creating new ones — check `@/types/`, `@hr-app/shared-types`, and each entity's query hooks (`@/hooks/queries/use<Entity>Queries.ts`) first
 - Local `type`/`interface` is fine inside a file when it is only used there
 - Use type predicates and explicit return type annotations when TypeScript cannot infer correctly
 
 ---
 
-## Hooks
+## Entities
 
-- **Always use the existing query/mutation hooks** before writing a new fetch or axios call directly
-- Query hooks live in `@/hooks/queries/` — covers forms, submissions, quotas, attendance, statistics, field options
-- Mutation hooks live in `@/hooks/mutations/` — covers form submission CRUD, attendance, quotas
-- Utility hooks: `useDebounce`, `useEnhancedSelectOptions`, `useErrorHandler`, `useMetrics`, `useRouteContext`
-- When adding a new data-fetching need, add a hook to the appropriate file in `@/hooks/queries/` or `@/hooks/mutations/`
+Personnel, Project, and Reserve Day each follow the same file layout, split by kind rather than colocated in a per-entity folder:
+
+- `hooks/queries/use<Entity>Queries.ts` — list/detail/metrics/options queries (React Query)
+- `hooks/mutations/use<Entity>Mutations.ts` — create/update/delete mutations
+- `hooks/use<Entity>Columns.tsx` — `@tanstack/react-table` column defs for the entity's list page
+- `components/<Entity>/<entity>Schema.ts` — zod schema (imported from or mirroring `@hr-app/shared-types`)
+- `components/<Entity>/<Entity>Form.tsx` — the React Hook Form fields for create/edit
+- `components/<Entity>/<Entity>Drawer.tsx` — the create/edit drawer shell
+- `components/<Entity>/` — entity-specific select components (e.g. `AssignedProjectSelect.tsx`, `ProjectManagerSelect.tsx`, `EmployeeSelect.tsx`) built on the paged option hooks in `@/hooks/usePagedPersonnelOptions.ts` / `usePagedProjectOptions.ts`
+- `components/Pages/<Entity>ListPage.tsx` — the routed list page: builds its own `@tanstack/react-table` instance from the shared `components/common/Table/` building blocks (see below) rather than using one shared generic table component
+
+When adding a new data-fetching or mutation need for an existing entity, add it to that entity's `use<Entity>Queries.ts`/`use<Entity>Mutations.ts` in `hooks/` — don't write inline `axios` calls in components.
 
 ---
 
 ## Component Rules
 
-- Reuse shared components from `@/components/common/` (`MetricCard`, `SummaryCard`, `SearchAndFilters`, `DataTable`, etc.) and `@/components/ui/` (Chakra wrappers)
+- Reuse shared components from `@/components/common/` (`MetricCard`, `SearchAndFilters`, `EntityLink`, etc.) and `@/components/ui/` (Chakra wrappers)
 - Controlled form fields live in `@/components/ControlledFields/` — use them instead of raw inputs inside React Hook Form
-- Dynamic forms are rendered via `FormGenerator` — do not reimplement form layout manually
-- Data tables use `GenericTable` — do not build custom table/pagination logic from scratch
+- List pages assemble their table from `@/components/common/Table/components/` (`TableControls`, `TableContainer`, `TablePagination`, `TableBody`, `TableFilters`) and `@/components/common/Table/hooks/useTableState`, `utils/fuzzyFilter`, `utils/globalFilter` — these are shared building blocks, not a single drop-in table component. Follow the pattern in an existing `components/Pages/<Entity>ListPage.tsx` when building a new one.
 - Dialogs/modals use the wrappers in `@/components/ui/dialog.tsx` (`DialogRoot`, `DialogContent`, etc.)
 - Drawers use `@/components/ui/drawer.tsx`
 - Pagination uses `@/components/ui/pagination.tsx`
-
-### Gotcha: schema `defaultValue` is not persisted on create
-
-`GenericForm` initializes React Hook Form with `{}` in create mode and does **not** wire each field's schema `defaultValue` into the form's `defaultValues`. The backend `formSubmission/create` route also saves `formData` verbatim without injecting defaults. So an untouched `select`/`radio` field is submitted as null/absent even though the schema declares a `defaultValue` (e.g. `projectStatus` → `'active'`, `fundingSource` → `'internal'`, `requestStatus` → `'pending'`).
-
-Consequences: a project created without picking a status is **not** counted in the "active projects" metric; a reserve order created without a funding source is invisible to the daily-summary statistics report. When creating records (in the UI or in e2e tests), select these fields explicitly rather than relying on the default.
+- `EntityLink` (`@/components/common/EntityLink.tsx`) renders a clickable link to a personnel/project record — use it instead of ad hoc navigation links in table columns or select option displays
 
 ---
 
 ## Data Fetching
 
 - All HTTP goes through the axios instance configured in `@/lib/queryClient.ts`
-- Query keys follow the pattern `['resource/sub-resource', id, { ...params }]`
-- Pass filter/search/page params as the third element of the query key — the default `queryFn` forwards them automatically
-- `staleTime: 0` for data that must always be fresh (attendance, quotas); `staleTime: 1000 * 60 * 5` for mostly-static data (form schemas)
+- Query keys follow the pattern `['<entity>', '<sub-resource>', ...params]` (e.g. `['personnel', 'metrics']`, `['projects', 'options', search, page]`)
+- `staleTime: 0` (or omitted) for data that must always be fresh (attendance, quotas); `staleTime: 1000 * 60 * 5` for mostly-static data
 - Invalidate related queries in mutation `onSuccess` callbacks — do not manually refetch
 
 ---
@@ -99,15 +101,14 @@ Consequences: a project created without picking a status is **not** counted in t
 - Hooks: `camelCase.ts` with `use` prefix
 - Types: `camelCase.ts` (e.g. `fieldsType.ts`)
 - UI primitives: `kebab-case.tsx` inside `components/ui/`
-- Feature folders: PascalCase (e.g. `QuotaManagement/`, `FormGenerator/`)
-- Utility files: camelCase (e.g. `formUtils.ts`)
+- Feature folders: PascalCase (e.g. `QuotaManagement/`) or the entity name (e.g. `components/Personnel/`)
 
 ---
 
 ## Do Not
 
-- Do not write inline `axios.get/post` calls inside components — use or create a hook
-- Do not duplicate types that already exist in `@/types/` or `@/hooks/queries/types.ts`
-- Do not build custom pagination, table, or filter logic when `GenericTable` covers the case
+- Do not write inline `axios.get/post` calls inside components — use or create a hook in `@/hooks/queries/` or `@/hooks/mutations/`
+- Do not duplicate types that already exist in `@hr-app/shared-types` or `@/types/`
+- Do not build a new table from scratch when the `components/common/Table/` building blocks (see Component Rules) cover the case
 - Do not use `leftIcon` prop on `Button` — it does not exist in this version of Chakra
 - Do not use `any` — use proper interfaces or generics

@@ -12,15 +12,39 @@ export interface EmployeeAttendanceQueryParams {
     search?: string
     page?: number
     limit?: number
+    requestStatus?: string[]
+    projectId?: string[]
+    orderType?: string[]
 }
 
 export const useEmployeeAttendanceQuery = (
     params: EmployeeAttendanceQueryParams,
     options?: { enabled?: boolean }
 ) => {
-    const { date, filter = 'all', search = '', page = 1, limit = 30 } = params
+    const {
+        date,
+        filter = 'all',
+        search = '',
+        page = 1,
+        limit = 30,
+        requestStatus = [],
+        projectId = [],
+        orderType = [],
+    } = params
     return useQuery<any, Error, DailyAttendanceData>({
-        queryKey: ['quotas/employees', date, { filter, search, page, limit }],
+        queryKey: [
+            'quotas/employees',
+            date,
+            {
+                filter,
+                search,
+                page,
+                limit,
+                requestStatus: requestStatus.join(','),
+                projectId: projectId.join(','),
+                orderType: orderType.join(','),
+            },
+        ],
         select: (data: any) => {
             const apiData = data.data
             return {
@@ -32,6 +56,11 @@ export const useEmployeeAttendanceQuery = (
                     totalAttended: 0,
                     internalCount: 0,
                     externalCount: 0,
+                },
+                availableFilters: apiData?.availableFilters || {
+                    requestStatuses: [],
+                    orderTypes: [],
+                    projects: [],
                 },
                 pagination: apiData?.pagination,
             }

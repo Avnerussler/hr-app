@@ -1,146 +1,98 @@
 # Server — CLAUDE.md
 
-Node.js/Express REST API, TypeScript, MongoDB (Mongoose), MinIO for file storage.
+Node.js/Express REST API, TypeScript, MongoDB (Mongoose), MinIO for file storage. npm workspace member (`apps/server`), depends on `@hr-app/shared-types` (`packages/shared-types`).
 
 ## Architecture
 
 ```
 src/
   server.ts              # Entry point — Express setup, route mounting, middleware
-  types.ts               # Shared TypeScript interfaces (IForm, BusinessRule, configs)
+  types.ts                # Shared TypeScript interfaces (BusinessRule, configs)
   config/
-    db.ts                # MongoDB connection (MONGO_URI env var)
-    logger.ts            # Winston logger
-    minio.ts             # MinIO S3-compatible storage
+    db.ts                 # MongoDB connection (MONGO_URI env var)
+    logger.ts             # Winston logger
+    minio.ts              # MinIO S3-compatible storage
   models/
-    FormFields.ts        # Form schema definitions (sections, fields, businessRules, filters)
-    FormSubmissions.ts   # Form submission records
-    Quota.ts             # Quota/reservation data
-    index.ts             # Re-exports all models
-  routes/
-    index.ts             # Mounts all routers under /api
-    formFields/get.ts    # GET /api/formFields/get
-    formSubmission/
-      create.ts          # POST /api/formSubmission/create — runs full validation
-      get.ts             # GET /api/formSubmission
-      update.ts          # POST /api/formSubmission/update — runs full validation
-      delete.ts          # DELETE /api/formSubmission/delete
-    quotas/              # CRUD + attendance endpoint
-    statistics/get.ts    # Aggregated stats
-    file/upload.ts       # MinIO upload
+    Personnel.ts          # Personnel (reservist) documents
+    Project.ts             # Project documents
+    ReserveDay.ts           # Reserve-duty reservation documents
+    Quota.ts               # Quota/reservation data
+    index.ts               # Re-exports all models
+  controllers/
+    personnel.controller.ts    # Thin HTTP handlers — parse req, call service, send res
+    project.controller.ts
+    reserveDay.controller.ts
   services/
-    formValidation.ts    # All validation logic (field rules + business rules)
-    bidirectionalSync.ts # Keeps related form records in sync
-    statisticsService.ts # Metric calculations
+    personnel.service.ts     # Business logic + Mongoose queries for Personnel
+    project.service.ts        # Business logic + Mongoose queries for Project
+    reserveDay.service.ts      # Business logic + Mongoose queries for ReserveDay
+    bidirectionalSync.service.ts # Keeps Personnel.assignedProjects and Project.projectPersonnel in sync
+    statisticsService.ts       # Aggregated stats across Personnel/Project/ReserveDay
+  routes/
+    index.ts                # Mounts all routers under /api
+    personnel/index.ts       # /personnel — list/get/create/update/delete/options/metrics
+    projects/index.ts         # /projects — same shape
+    reserveDays/index.ts       # /reserve-days — same shape
+    quota/                   # CRUD + attendance endpoint
+    statistics/get.ts         # Aggregated stats endpoint
+    file/upload.ts            # MinIO upload
   migrations/
-    personnel.ts         # Personnel form schema (upsert with version check)
-    projectManagement.ts # Project form schema
-    reserveDays.ts       # Reserve days form schema (includes noOverlap business rule)
-    addMetricsConfig.ts  # Metrics config migration
-    index.ts             # Runs all migrations on startup when RUN_MIGRATIONS=true
-    seedViaApi.ts        # 3-phase seed: 100 personnel → 10 projects → ~1000 reservations
+    toExplicitModels/        # One-time backfill: legacy FormSubmissions docs → Personnel/Project/ReserveDay
+                               # collections. NOT YET RUN in every environment — do not delete until confirmed.
   middleware/
-    validation.ts        # Joi-based input validation
-    errorHandler.ts      # Global error handler + 404 + uncaught exception handlers
-    requestLogger.ts     # HTTP request/response logging
+    validation.ts            # Joi-based input validation
+    errorHandler.ts           # Global error handler + asyncHandler wrapper + 404 + uncaught exception handlers
+    requestLogger.ts           # HTTP request/response logging
   utils/
-    formDataTransform.ts # Transform raw IDs to display objects when reading
-    dateUtils.ts         # Date helpers (+ dateUtils.test.ts)
-    uploadFileToMinio.ts # MinIO upload helper
-    index.ts             # Re-exports
+    labelSortKey.ts           # Sort by human-readable label instead of raw enum value
+    searchQueryBuilder.ts       # Builds Mongo $regex/$expr clauses for text + date search
+    buildSortSpec.ts             # Builds a Mongoose sort spec from sortField/sortOrder
+    dateUtils.ts                # Date helpers (+ dateUtils.test.ts)
+    uploadFileToMinio.ts          # MinIO upload helper
+    index.ts                     # Re-exports
 ```
 
 ## Data Model
 
-All user-facing data lives in two collections:
+Personnel, Project, and Reserve Days each have their own explicit Mongoose model (`models/Personnel.ts`, `Project.ts`, `ReserveDay.ts`) — no generic/dynamic schema layer. Each entity follows the same pattern end-to-end:
 
-- **FormFields** — one document per form, defines schema (sections/fields, businessRules, filters, overviewFields, metricsConfig). Versioned; migrations upsert via `FormFields.updateOne({ formName }, { $set: formData })`.
-- **FormSubmissions** — one document per submitted record. Raw field values stored (IDs, not display strings). Transformation to display objects happens at read time in `utils/formDataTransform.ts`.
+- **Model** — a typed Mongoose schema (see `models/Personnel.ts` etc.)
+- **Service** (`services/<entity>.service.ts`) — all business logic and queries: `list<Entity>`, `get<Entity>ById`, `create<Entity>`, `update<Entity>`, `delete<Entity>`, `get<Entity>Metrics`, `search<Entity>Options`, `get<Entity>sByIds`
+- **Controller** (`controllers/<entity>.controller.ts`) — thin: parses `req`, calls the service, sends `res`. No business logic here.
+- **Router** (`routes/<entity>/index.ts`) — wires HTTP verbs to controller functions via `asyncHandler`. Route order matters: static segments (`/options`, `/metrics`) must be registered before the `/:id` param route.
 
-## Form Validation Pipeline
+Validation uses `zod` schemas from `@hr-app/shared-types` (e.g. `PersonnelSchema.parse(body)` in `personnel.service.ts`), shared with the frontend.
 
-All creates and updates go through `formValidationService.validateFormSubmission(formData, formId, formName, excludeId?)`:
+### Legacy generic form engine (removed)
 
-1. **Field validation** — required checks, minLength/maxLength/pattern/min/max from field schema
-2. **Business rules** — runs each enabled rule from `formDefinition.businessRules`:
-   - `uniqueConstraint` — no duplicate values for specified fields
-   - `dateRange` — start ≤ end, optional maxDays/minDays
-   - `conditional` — if field A matches condition, field B must match condition
-   - `noOverlap` — no two records with same entity ID have overlapping date ranges
-   - `custom` — logs warning, returns valid (not implemented)
+An earlier version of this app stored all data as schema-less `FormSubmissions` documents validated against a `FormFields` schema definition, with generic CRUD routes and a dynamic-form frontend. That system has been fully replaced by the explicit models/controllers/services above — Personnel, Project Management, and Reserve Days were (and remain) the only three entity types in this app. `models/FormFields.ts` and `models/FormSubmissions.ts` still exist **only** to support `migrations/toExplicitModels/`, the one-time backfill script that has not yet been run in every environment. Once that migration is confirmed run and verified everywhere, delete `toExplicitModels/`, `models/FormFields.ts`, and `models/FormSubmissions.ts` — nothing else in the app depends on them.
 
-HTTP status codes come from `rule.statusCode ?? 400`. Never hardcode status codes in routes — they come from the DB rule config.
+## Bidirectional Sync
 
-## Business Rules in DB
-
-Business rules are stored on each form document:
-
-```typescript
-{
-  id: string,
-  name: string,
-  ruleType: 'uniqueConstraint' | 'dateRange' | 'conditional' | 'noOverlap' | 'custom',
-  enabled: boolean,
-  statusCode?: number,      // HTTP status when this rule fails (e.g. 409 for overlap)
-  errorMessage: string,     // User-facing Hebrew error message
-  config: {
-    // noOverlap:
-    entityField: string,    // e.g. 'employeeName'
-    startDateField: string, // e.g. 'startDate'
-    endDateField: string,   // e.g. 'endDate'
-    // uniqueConstraint:
-    fields: string[],
-    // dateRange:
-    startDateField, endDateField, maxDays?, minDays?
-  }
-}
-```
-
-To add overlap protection to a new form: add a `noOverlap` business rule to that form's migration. No code changes needed.
-
-## Migrations
-
-- Each migration file exports a `create<FormName>Form()` function
-- Pattern: check `existingForm.version === CURRENT_VERSION`, skip if up to date
-- Always use `{ $set: formData }` in `updateOne` — omitting `$set` silently drops nested fields like `businessRules`
-- Bump `CURRENT_VERSION` string whenever any field in the form schema changes
-- `index.ts` runs all migrations; triggered at server start when `RUN_MIGRATIONS=true`
-
-## Seed Script
-
-`migrations/seedViaApi.ts` — seeds via HTTP API (so validation runs):
-
-- Phase 1: 100 personnel (skips if ≥100 exist)
-- Phase 2: 10 projects, assigns 15-40% of personnel to each (skips if ≥10 projects exist)
-- Phase 3: ~1000 reservations spread across current month
-
-Rate limiting: 800ms between requests, retry-on-429 with 15s/20s/25s backoff.
-
-Run: `cd apps/server && npx ts-node src/migrations/seedViaApi.ts`
+`services/bidirectionalSync.service.ts` keeps `Personnel.assignedProjects` and `Project.projectPersonnel` consistent — when a personnel record's `assignedProjects` changes, the previous and next project's `projectPersonnel` arrays are updated via `$pull`/`$addToSet`. Called from `personnel.service.ts` and `project.service.ts` on create/update/delete.
 
 ## Key Patterns
 
-- **No hardcoded form names** in service/validation logic — always derive from DB definition
-- **No `any` types** in `formValidation.ts` — use `Record<string, unknown>` for formData, cast to specific config types inside switch cases
-- **Transformation on read, not write** — raw IDs stored in FormSubmissions, transformed to `{ _id, display, metadata }` objects when reading
-- **Bidirectional sync** — when a personnel record updates, related form submissions with that employee are updated automatically via `bidirectionalSync.ts`
-- **Rate limit**: 100 req/60s (enforced in `server.ts`)
+- **Thin controllers** — controllers only parse request params/query/body and call the corresponding service function. All logic lives in services.
+- **No `any` types** — use `Record<string, unknown>` for loosely-typed query/filter objects, cast to specific types inside switch/if branches.
+- **Validation via shared zod schemas** — `@hr-app/shared-types` defines `PersonnelSchema`/`ProjectSchema`/`ReserveDaySchema`, imported by both frontend and server so validation rules can't drift between them.
+- **Metrics endpoints** — each entity's `/metrics` route returns a fixed array of `{ id, title, icon, color, value }` computed via `countDocuments` in the service (see `project.service.ts:getProjectMetrics` as the reference pattern). Metric definitions are hardcoded in the service, not driven by a database config document.
 
 ## npm Scripts
 
 ```bash
-npm run dev              # nodemon dev server
-npm run build            # tsc compile → dist/
-npm run start            # run compiled dist/server.js
-npm run test             # Jest
-npm run import:personnel # import from personnel.xlsx
-npm run import:reserveDays
-npm run delete:reserveDays
+npm run dev                          # nodemon dev server (watches src/ and packages/shared-types/src)
+npm run build                        # tsc compile → dist/
+npm run start                        # run compiled dist/server.js
+npm run test                         # Jest
+npm run migrate:to-explicit-models   # one-time backfill from legacy FormSubmissions (see above)
+npm run migrate:to-explicit-models:dry-run
 ```
+
+This package is part of an npm workspace — run `npm ci` and `npm run build --workspace=apps/server` from the repo root, not from within `apps/server`.
 
 ## Environment Variables
 
 - `PORT` — server port
 - `MONGO_URI` — MongoDB connection string
-- `RUN_MIGRATIONS` — set to `true` to run migrations on startup
 - `MINIO_*` — MinIO connection config

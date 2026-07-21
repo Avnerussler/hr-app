@@ -1,5 +1,4 @@
 import { hasMoreThan1ConsecutiveDay, isEmployeeEndingToday } from './dateUtils'
-import { IFormSubmissions } from '../models/FormSubmissions'
 
 describe('dateUtils', () => {
     const d = (s: string) => new Date(s)
@@ -60,11 +59,9 @@ describe('dateUtils', () => {
             _id: {
                 toString: () => id,
             },
-            formData: {
-                startDate,
-                endDate,
-            },
-        }) as unknown as IFormSubmissions
+            startDate,
+            endDate,
+        })
 
         describe('basic ending scenarios', () => {
             it('should return false when today is not the end date', () => {

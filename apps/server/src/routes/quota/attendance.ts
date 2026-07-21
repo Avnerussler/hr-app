@@ -1,9 +1,11 @@
 import { Request, Response, Router } from 'express'
 import logger from '../../config/logger'
 import { asyncHandler, validate, schemas } from '../../middleware'
-import { FormSubmissions } from '../../models/FormSubmissions'
+import { ReserveDayModel } from '../../models/ReserveDay'
+import { PersonnelModel } from '../../models/Personnel'
 import Quota from '../../models/Quota'
 import { format } from 'date-fns'
+import { INACTIVE_REQUEST_STATUSES } from '@hr-app/shared-types'
 
 const router = Router()
 
@@ -28,24 +30,17 @@ router.put(
             const dateStr = format(date, 'yyyy-MM-dd')
 
             // Find ALL reservations for this employee covering this date, then update all of them
-            const reservations = await FormSubmissions.find({
+            const reservations = await ReserveDayModel.find({
                 isDeleted: false,
+                employeeName: employeeId,
                 $or: [
-                    { 'formData.employeeName._id': employeeId },
-                    { 'formData.employeeName': employeeId },
-                ],
-                $and: [
                     {
-                        $or: [
-                            {
-                                'formData.startDate': { $lte: date },
-                                'formData.endDate': { $gte: date },
-                            },
-                            {
-                                'formData.startDate': date,
-                                'formData.endDate': { $exists: false },
-                            },
-                        ],
+                        startDate: { $lte: date },
+                        endDate: { $gte: date },
+                    },
+                    {
+                        startDate: date,
+                        endDate: { $exists: false },
                     },
                 ],
             })
@@ -58,11 +53,7 @@ router.put(
 
             // Update attendance on ALL matching reservations so get.ts always reads the right value
             for (const reservation of reservations) {
-                if (!reservation.formData.attendance) {
-                    reservation.formData.attendance = {}
-                }
-                reservation.formData.attendance[dateStr] = hasAttended
-                reservation.markModified('formData')
+                reservation.attendance.set(dateStr, hasAttended)
                 await reservation.save()
             }
 
@@ -194,7 +185,7 @@ router.post(
     '/attendance/:date',
     asyncHandler(async (req: Request, res: Response) => {
         try {
-            const { date } = req.params
+            const date = String(req.params.date)
             const { attendanceChanges } = req.body // { employeeId: boolean, ... }
 
             if (!attendanceChanges || typeof attendanceChanges !== 'object') {
@@ -210,13 +201,10 @@ router.post(
                 attendanceChanges
             )) {
                 try {
-                    // Find any form submission where this employee has attendance data
-                    const reservation = await FormSubmissions.findOne({
+                    // Find any reserve day record where this employee has attendance data
+                    const reservation = await ReserveDayModel.findOne({
                         isDeleted: false,
-                        $or: [
-                            { 'formData.employeeName._id': employeeId },
-                            { 'formData.employeeName': employeeId },
-                        ],
+                        employeeName: employeeId,
                     })
 
                     if (!reservation) {
@@ -226,13 +214,7 @@ router.post(
                         continue
                     }
 
-                    // Update or create attendance record in the formData
-                    if (!reservation.formData.attendance) {
-                        reservation.formData.attendance = {}
-                    }
-
-                    reservation.formData.attendance[date] = hasAttended
-                    reservation.markModified('formData')
+                    reservation.attendance.set(date, hasAttended as boolean)
 
                     await reservation.save()
 
@@ -288,18 +270,18 @@ router.get(
             const { startDate, endDate } = req.params as unknown as { startDate: Date; endDate: Date }
 
             // Find all reservations that overlap with the date range
-            // Exclude denied requests
-            const reservations = await FormSubmissions.find({
+            // Exclude denied/cancelled requests
+            const reservations = await ReserveDayModel.find({
                 isDeleted: false,
-                'formData.requestStatus': { $ne: 'denied' },
+                requestStatus: { $nin: INACTIVE_REQUEST_STATUSES },
                 $or: [
                     {
-                        'formData.startDate': { $lte: endDate },
-                        'formData.endDate': { $gte: startDate },
+                        startDate: { $lte: endDate },
+                        endDate: { $gte: startDate },
                     },
                     {
-                        'formData.startDate': { $gte: startDate, $lte: endDate },
-                        'formData.endDate': { $exists: false },
+                        startDate: { $gte: startDate, $lte: endDate },
+                        endDate: { $exists: false },
                     },
                 ],
             }).lean()
@@ -308,35 +290,38 @@ router.get(
             const employeeIds = [
                 ...new Set(
                     reservations
-                        .map((r: any) => {
-                            const empName = r.formData.employeeName
-                            if (typeof empName === 'object' && empName?._id) {
-                                return empName._id.toString()
-                            } else if (typeof empName === 'string') {
-                                return empName
-                            }
-                            return null
-                        })
+                        .map((r: any) => r.employeeName?.toString() ?? null)
                         .filter((id: any) => id)
                 ),
             ]
 
             // Fetch personnel records for all employees
-            const personnelRecords = await FormSubmissions.find({
+            const personnelRecords = await PersonnelModel.find({
                 _id: { $in: employeeIds },
-
-                isDeleted: false,
             }).lean()
 
             // Create a map of employee data by ID
             const employeeDataMap = new Map()
+            const employeeVehicleRangeMap = new Map<
+                string,
+                { start: Date; end: Date } | null
+            >()
             personnelRecords.forEach((record: any) => {
-                const fullName = `${record.formData.firstName || ''} ${
-                    record.formData.lastName || ''
+                const fullName = `${record.firstName || ''} ${
+                    record.lastName || ''
                 }`.trim()
                 employeeDataMap.set(
                     record._id.toString(),
                     fullName || 'עובד לא ידוע'
+                )
+                employeeVehicleRangeMap.set(
+                    record._id.toString(),
+                    record.entryStartDate && record.entryEndDate
+                        ? {
+                              start: new Date(record.entryStartDate),
+                              end: new Date(record.entryEndDate),
+                          }
+                        : null
                 )
             })
 
@@ -350,6 +335,11 @@ router.get(
                     managerReported: boolean
                     hasUnapprovedReserveDays: boolean
                     unapprovedEmployees: Array<{
+                        name: string
+                        status: string
+                    }>
+                    hasExpiredVehicleApproval: boolean
+                    expiredVehicleApprovalEmployees: Array<{
                         name: string
                         status: string
                     }>
@@ -373,35 +363,31 @@ router.get(
                     managerReported: false,
                     hasUnapprovedReserveDays: false,
                     unapprovedEmployees: [],
+                    hasExpiredVehicleApproval: false,
+                    expiredVehicleApprovalEmployees: [],
                 }
             }
 
             // Process each reservation
             reservations.forEach((reservation: any) => {
-                const formData = reservation.formData
-                const resStartDate = new Date(formData.startDate)
-                const resEndDate = formData.endDate
-                    ? new Date(formData.endDate)
+                const resStartDate = new Date(reservation.startDate)
+                const resEndDate = reservation.endDate
+                    ? new Date(reservation.endDate)
                     : resStartDate
 
                 // Get employee ID and name from personnel data
-                let employeeId = null
-                if (
-                    typeof formData.employeeName === 'object' &&
-                    formData.employeeName?._id
-                ) {
-                    employeeId = formData.employeeName._id.toString()
-                } else if (typeof formData.employeeName === 'string') {
-                    employeeId = formData.employeeName
-                }
+                const employeeId = reservation.employeeName?.toString() ?? null
 
                 const employeeName = employeeId
                     ? employeeDataMap.get(employeeId) || 'עובד לא ידוע'
                     : 'עובד לא ידוע'
 
                 // Check if request status is not approved
-                const requestStatus = formData.requestStatus || 'pending'
+                const requestStatus = reservation.requestStatus || 'pending'
                 const isNotApproved = requestStatus !== 'approved'
+                const vehicleRange = employeeId
+                    ? employeeVehicleRangeMap.get(employeeId)
+                    : null
 
                 // Check each date this employee should work
                 for (
@@ -433,6 +419,31 @@ router.get(
                                 attendanceSummary[
                                     dateStr
                                 ].unapprovedEmployees.push({
+                                    name: employeeName,
+                                    status: requestStatus,
+                                })
+                            }
+                        }
+
+                        // Only flag when an approval range IS set but has already passed by this
+                        // date — no range set, or the date still within/before the range, is not a warning case.
+                        const hasExpiredVehicleApproval = !!(
+                            vehicleRange && vehicleRange.end < date
+                        )
+                        if (hasExpiredVehicleApproval) {
+                            attendanceSummary[
+                                dateStr
+                            ].hasExpiredVehicleApproval = true
+                            if (
+                                !attendanceSummary[
+                                    dateStr
+                                ].expiredVehicleApprovalEmployees.some(
+                                    (emp) => emp.name === employeeName
+                                )
+                            ) {
+                                attendanceSummary[
+                                    dateStr
+                                ].expiredVehicleApprovalEmployees.push({
                                     name: employeeName,
                                     status: requestStatus,
                                 })
@@ -491,12 +502,9 @@ router.get(
             const limit = parseInt(req.query.limit as string) || 30
 
             // Find all reservation records for this employee
-            const employeeReservations = await FormSubmissions.find({
+            const employeeReservations = await ReserveDayModel.find({
                 isDeleted: false,
-                $or: [
-                    { 'formData.employeeName._id': employeeId },
-                    { 'formData.employeeName': employeeId },
-                ],
+                employeeName: employeeId,
             }).lean()
 
             if (!employeeReservations || employeeReservations.length === 0) {
@@ -512,16 +520,17 @@ router.get(
                 })
             }
 
-            // Get employee basic info from the first reservation
-            const firstReservation = employeeReservations[0]
-            const employeeName =
-                firstReservation.formData.employeeName?.display || 'לא ידוע'
+            // Get employee basic info from the personnel collection
+            const personnel = await PersonnelModel.findById(employeeId).lean()
+            const employeeName = personnel
+                ? `${personnel.firstName || ''} ${personnel.lastName || ''}`.trim() || 'לא ידוע'
+                : 'לא ידוע'
 
             // Collect all attendance data from all reservations
             const allAttendanceData: Record<string, boolean> = {}
 
             employeeReservations.forEach((reservation: any) => {
-                const attendanceData = reservation.formData.attendance || {}
+                const attendanceData = reservation.attendance || {}
                 Object.entries(attendanceData).forEach(
                     ([date, hasAttended]) => {
                         allAttendanceData[date] = Boolean(hasAttended)

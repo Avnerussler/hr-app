@@ -1,10 +1,13 @@
 import Quota from '../../models/Quota'
-import { FormSubmissions } from '../../models/FormSubmissions'
+import { ReserveDayModel } from '../../models/ReserveDay'
+import { PersonnelModel } from '../../models/Personnel'
+import { ProjectModel } from '../../models/Project'
 import { Request, Response, Router } from 'express'
 import logger from '../../config/logger'
 import { asyncHandler, validate, schemas } from '../../middleware'
 import { isEmployeeEndingToday, isSameDay } from '../../utils'
 import { eachDayOfInterval } from 'date-fns'
+import { INACTIVE_REQUEST_STATUSES } from '@hr-app/shared-types'
 
 const router = Router()
 
@@ -81,7 +84,7 @@ router.get(
     '/date/:date',
     asyncHandler(async (req: Request, res: Response) => {
         try {
-            const { date } = req.params
+            const date = String(req.params.date)
 
             const result = await Quota.getQuotaWithOccupancy(date)
 
@@ -106,7 +109,8 @@ router.get(
     '/range/:startDate/:endDate',
     asyncHandler(async (req: Request, res: Response) => {
         try {
-            const { startDate, endDate } = req.params
+            const startDate = String(req.params.startDate)
+            const endDate = String(req.params.endDate)
 
             const quotas = await Quota.findByDateRange(startDate, endDate)
 
@@ -128,7 +132,8 @@ router.get(
     '/occupancy/range/:startDate/:endDate',
     asyncHandler(async (req: Request, res: Response) => {
         try {
-            const { startDate, endDate } = req.params
+            const startDate = String(req.params.startDate)
+            const endDate = String(req.params.endDate)
             const { occupancyOnly } = req.query
 
             if (occupancyOnly === 'true') {
@@ -197,6 +202,7 @@ router.get(
 interface EmployeeAttendanceRecord {
     _id: string
     employeeId: string
+    reserveDayId: string
     name: string
     lastName: string
     personalNumber: string
@@ -216,6 +222,9 @@ interface EmployeeAttendanceRecord {
     reserveDays: Date[]
     requestStatus: string
     fundingSource: string
+    hasExpiredVehicleApproval: boolean
+    projectId: string | null
+    projectName: string | null
 }
 
 // Get employees scheduled for a specific date
@@ -230,27 +239,38 @@ router.get(
                 search = '',
                 page = '1',
                 limit = '30',
+                requestStatus = '',
+                projectId = '',
+                orderType = '',
             } = req.query as {
                 filter?: string
                 search?: string
                 page?: string
                 limit?: string
+                requestStatus?: string
+                projectId?: string
+                orderType?: string
             }
             const pageNum = Math.max(1, parseInt(page, 10) || 1)
             const limitNum = Math.max(1, Math.min(10000, parseInt(limit, 10) || 30))
+            const requestStatuses = requestStatus
+                ? requestStatus.split(',').filter(Boolean)
+                : []
+            const projectIds = projectId ? projectId.split(',').filter(Boolean) : []
+            const orderTypes = orderType ? orderType.split(',').filter(Boolean) : []
 
             // First, find all reservations that include this specific date to get the employee IDs
-            const reservationsForDate = await FormSubmissions.find({
+            const reservationsForDate = await ReserveDayModel.find({
                 isDeleted: false,
-                'formData.requestStatus': { $ne: 'denied' },
+                requestStatus: { $nin: INACTIVE_REQUEST_STATUSES },
                 $or: [
                     {
-                        'formData.startDate': { $lte: date },
-                        'formData.endDate': { $gte: date },
+                        startDate: { $lte: date },
+                        endDate: { $gte: date },
                     },
                     {
-                        'formData.startDate': date,
-                        'formData.endDate': { $exists: false },
+                        startDate: date,
+                        endDate: { $exists: false },
                     },
                 ],
             }).lean()
@@ -259,16 +279,7 @@ router.get(
             const employeeDocIds = Array.from(
                 new Set(
                     reservationsForDate
-                        .map((r: any) => {
-                            const empName = r.formData.employeeName
-                            // Handle both object with _id and direct ID string
-                            if (typeof empName === 'object' && empName?._id) {
-                                return empName._id.toString()
-                            } else if (typeof empName === 'string') {
-                                return empName
-                            }
-                            return null
-                        })
+                        .map((r: any) => r.employeeName?.toString() ?? null)
                         .filter((id: any) => id)
                 )
             )
@@ -276,36 +287,42 @@ router.get(
             // Fetch full employee data AND all their reservations in parallel
             const [employeeRecords, allEmployeeReservations] =
                 await Promise.all([
-                    FormSubmissions.find({
+                    PersonnelModel.find({
                         _id: { $in: employeeDocIds },
-                        isDeleted: false,
                     }).lean(),
-                    FormSubmissions.find({
+                    ReserveDayModel.find({
                         isDeleted: false,
-                        'formData.requestStatus': { $ne: 'denied' },
-                        'formData.employeeName': { $in: employeeDocIds },
+                        requestStatus: { $nin: INACTIVE_REQUEST_STATUSES },
+                        employeeName: { $in: employeeDocIds },
                     }).lean(),
                 ])
 
             // Create a map of employee data by document ID
             const employeeDataMap = new Map()
             employeeRecords.forEach((record: any) => {
-                employeeDataMap.set(record._id.toString(), record.formData)
+                employeeDataMap.set(record._id.toString(), record)
+            })
+
+            // Fetch project names for all assigned projects referenced by these employees
+            const assignedProjectIds = Array.from(
+                new Set(
+                    employeeRecords
+                        .map((record: any) => record.assignedProjects?.toString() ?? null)
+                        .filter((id: any) => id)
+                )
+            )
+            const projectRecords = assignedProjectIds.length
+                ? await ProjectModel.find({ _id: { $in: assignedProjectIds } }).lean()
+                : []
+            const projectNameMap = new Map<string, string>()
+            projectRecords.forEach((project: any) => {
+                projectNameMap.set(project._id.toString(), project.projectName)
             })
 
             // Create a map of reservations by employee ID for checking consecutive orders
             const reservationsByEmployee = new Map<string, any[]>()
             allEmployeeReservations.forEach((reservation: any) => {
-                const formData = reservation.formData
-                let employeeId = null
-                if (
-                    typeof formData.employeeName === 'object' &&
-                    formData.employeeName?._id
-                ) {
-                    employeeId = formData.employeeName._id.toString()
-                } else if (typeof formData.employeeName === 'string') {
-                    employeeId = formData.employeeName
-                }
+                const employeeId = reservation.employeeName?.toString() ?? null
 
                 if (employeeId) {
                     if (!reservationsByEmployee.has(employeeId)) {
@@ -320,18 +337,7 @@ router.get(
             // Map reservations to employee attendance data
             const employees = reservationsForDate
                 .map((reservation: any): EmployeeAttendanceRecord | null => {
-                    const formData = reservation.formData
-
-                    // Get employee ID
-                    let employeeId = null
-                    if (
-                        typeof formData.employeeName === 'object' &&
-                        formData.employeeName?._id
-                    ) {
-                        employeeId = formData.employeeName._id.toString()
-                    } else if (typeof formData.employeeName === 'string') {
-                        employeeId = formData.employeeName
-                    }
+                    const employeeId = reservation.employeeName?.toString() ?? null
 
                     // Skip this reservation if no valid employee ID
                     if (!employeeId) {
@@ -346,41 +352,50 @@ router.get(
                     let lastName = ''
                     let personalNumber = ''
                     let phone = ''
+                    let reserveUnit = ''
+                    let workPlace = ''
+                    let hasExpiredVehicleApproval = false
+                    let projectId: string | null = null
+                    let projectName: string | null = null
 
-                    // Try to get full employee data from personnel
                     const fullEmployeeData = employeeDataMap.get(employeeId)
                     if (fullEmployeeData) {
-                        employeeName =
-                            fullEmployeeData.firstName || 'Unknown Employee'
+                        employeeName = fullEmployeeData.firstName || 'Unknown Employee'
                         lastName = fullEmployeeData.lastName || ''
                         personalNumber =
                             fullEmployeeData.personalNumber?.toString() ||
                             fullEmployeeData.userId?.toString() ||
                             ''
                         phone = fullEmployeeData.phone || ''
-                    } else if (
-                        typeof formData.employeeName === 'object' &&
-                        formData.employeeName?.display
-                    ) {
-                        employeeName = formData.employeeName.display
+                        reserveUnit = fullEmployeeData.reserveUnit || ''
+                        workPlace = fullEmployeeData.workPlace || ''
+                        projectId = fullEmployeeData.assignedProjects?.toString() || null
+                        projectName = projectId ? projectNameMap.get(projectId) || null : null
+                        // Only flag when an approval range IS set but has already passed by this date.
+                        // No range set, or date still within/before the range, is not a warning case.
+                        hasExpiredVehicleApproval = !!(
+                            fullEmployeeData.entryStartDate &&
+                            fullEmployeeData.entryEndDate &&
+                            new Date(fullEmployeeData.entryEndDate) < date
+                        )
                     }
 
                     const reserveDaysArray: Date[] = []
-                    if (formData.startDate && formData.endDate) {
+                    if (reservation.startDate && reservation.endDate) {
                         try {
                             reserveDaysArray.push(
                                 ...eachDayOfInterval({
-                                    start: new Date(formData.startDate),
-                                    end: new Date(formData.endDate),
+                                    start: new Date(reservation.startDate),
+                                    end: new Date(reservation.endDate),
                                 })
                             )
                         } catch (dateError) {
                             logger.warn(
-                                `Invalid date range for reservation ${reservation._id}: startDate=${formData.startDate}, endDate=${formData.endDate}`,
+                                `Invalid date range for reservation ${reservation._id}: startDate=${reservation.startDate}, endDate=${reservation.endDate}`,
                                 dateError
                             )
-                            if (formData.startDate) {
-                                reserveDaysArray.push(new Date(formData.startDate))
+                            if (reservation.startDate) {
+                                reserveDaysArray.push(new Date(reservation.startDate))
                             }
                         }
                     }
@@ -396,33 +411,35 @@ router.get(
                         hasConsecutiveDays
                     )
 
-                    const startDate = formData.startDate ? new Date(formData.startDate) : null
+                    const startDate = reservation.startDate ? new Date(reservation.startDate) : null
 
                     return {
                         _id: employeeId,
                         employeeId: employeeId,
+                        reserveDayId: reservation._id.toString(),
                         name: employeeName,
                         lastName: lastName,
                         personalNumber: personalNumber,
                         phone: phone,
-                        reserveUnit: formData.reserveUnit || '',
-                        workPlace: formData.workPlace || '',
-                        orderNumber: formData.orderNumber || '',
-                        orderType: formData.orderType || '',
+                        reserveUnit,
+                        workPlace,
+                        orderNumber: '',
+                        orderType: reservation.orderType || '',
                         isActive: true,
-                        startDate: formData.startDate,
-                        endDate: formData.endDate,
+                        startDate: reservation.startDate,
+                        endDate: reservation.endDate,
                         isStartingToday: startDate !== null && isSameDay(startDate, date),
                         isEndingToday: isEndingToday,
                         isAttendanceRequired: true,
-                        hasAttended:
-                            formData.attendance &&
-                            typeof formData.attendance === 'object' &&
-                            formData.attendance[dateStr] === true,
+                        hasAttended: reservation.attendance?.get?.(dateStr) === true ||
+                            reservation.attendance?.[dateStr] === true,
                         workDays: [], // Could be calculated from the date range
                         reserveDays: reserveDaysArray,
-                        requestStatus: formData.requestStatus || '',
-                        fundingSource: formData.fundingSource || '',
+                        requestStatus: reservation.requestStatus || '',
+                        fundingSource: reservation.fundingSource || '',
+                        hasExpiredVehicleApproval,
+                        projectId,
+                        projectName,
                     }
                 })
                 .filter((emp): emp is EmployeeAttendanceRecord => emp !== null) as EmployeeAttendanceRecord[]
@@ -435,6 +452,24 @@ router.get(
                 totalAttended: employees.filter((emp) => emp.hasAttended).length,
                 internalCount: employees.filter((emp) => emp.fundingSource === 'internal').length,
                 externalCount: employees.filter((emp) => emp.fundingSource === 'external').length,
+            }
+
+            // Distinct filter option values actually present in today's unfiltered employee list —
+            // so the filter dropdowns never offer a choice that would return zero results.
+            const availableFilters = {
+                requestStatuses: Array.from(
+                    new Set(employees.map((emp) => emp.requestStatus).filter(Boolean))
+                ),
+                orderTypes: Array.from(
+                    new Set(employees.map((emp) => emp.orderType).filter(Boolean))
+                ),
+                projects: Array.from(
+                    new Map(
+                        employees
+                            .filter((emp) => emp.projectId && emp.projectName)
+                            .map((emp) => [emp.projectId as string, emp.projectName as string])
+                    ).entries()
+                ).map(([value, label]) => ({ value, label })),
             }
 
             // Apply filter
@@ -455,6 +490,17 @@ router.get(
                 case 'external':
                     filtered = filtered.filter((emp) => emp.fundingSource === 'external')
                     break
+            }
+
+            // Apply additional independent filters (combinable with the quick filter above)
+            if (requestStatuses.length) {
+                filtered = filtered.filter((emp) => requestStatuses.includes(emp.requestStatus))
+            }
+            if (projectIds.length) {
+                filtered = filtered.filter((emp) => !!emp.projectId && projectIds.includes(emp.projectId))
+            }
+            if (orderTypes.length) {
+                filtered = filtered.filter((emp) => orderTypes.includes(emp.orderType))
             }
 
             // Apply text search
@@ -491,6 +537,7 @@ router.get(
                     date: dateStr,
                     employees: pagedEmployees,
                     statistics,
+                    availableFilters,
                     pagination: {
                         page: pageNum,
                         limit: limitNum,

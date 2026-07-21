@@ -1,5 +1,10 @@
 import { addDays } from 'date-fns'
-import { IFormSubmissions } from '../models/FormSubmissions'
+
+interface ReservationDateRange {
+    _id: unknown
+    startDate?: unknown
+    endDate?: unknown
+}
 
 export const isSameDay = (a: Date, b: Date): boolean =>
     a.getUTCFullYear() === b.getUTCFullYear() &&
@@ -33,23 +38,23 @@ export const hasMoreThan1ConsecutiveDay = (reserveDays: Date[]): boolean => {
 }
 
 export const isEmployeeEndingToday = (
-    currentReservation: IFormSubmissions,
-    allEmployeeReservations: IFormSubmissions[],
+    currentReservation: ReservationDateRange,
+    allEmployeeReservations: ReservationDateRange[],
     date: Date,
     hasConsecutiveDays: boolean
 ): boolean => {
     if (!hasConsecutiveDays) return false
 
-    const endDate = toDate(currentReservation.formData.endDate)
+    const endDate = toDate(currentReservation.endDate)
     if (!endDate || !isSameDay(endDate, date)) return false
 
     const nextDay = addDays(date, 1)
 
-    const hasConsecutiveOrder = allEmployeeReservations.some((otherRes: any) => {
-        if (otherRes._id.toString() === (currentReservation._id as unknown as { toString(): string }).toString()) {
+    const hasConsecutiveOrder = allEmployeeReservations.some((otherRes) => {
+        if (String(otherRes._id) === String(currentReservation._id)) {
             return false
         }
-        const startDate = toDate(otherRes.formData.startDate)
+        const startDate = toDate(otherRes.startDate)
         return startDate !== null && isSameDay(startDate, nextDay)
     })
 

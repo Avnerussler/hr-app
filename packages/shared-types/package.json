@@ -1,0 +1,19 @@
+{
+    "name": "@hr-app/shared-types",
+    "version": "1.0.0",
+    "private": true,
+    "main": "./dist/cjs/index.js",
+    "types": "./dist/cjs/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/esm/index.js",
+            "require": "./dist/cjs/index.js"
+        }
+    },
+    "scripts": {
+        "build": "tsc && tsc -p tsconfig.esm.json"
+    },
+    "dependencies": {
+        "zod": "^3.24.0"
+    }
+}

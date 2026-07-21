@@ -6,12 +6,6 @@ import { test, expect } from '@playwright/test';
 const API = 'http://localhost:3001/api';
 const BASE_URL = 'http://localhost:5173';
 
-async function getFormId(request: any, formName: string): Promise<string> {
- const res = await request.get(`${API}/formSubmission?formName=${formName}&page=1&limit=1`);
- const body = await res.json();
- return body.forms[0].formId;
-}
-
 interface PersonnelRecord {
  id: string;
  firstName: string;
@@ -19,48 +13,43 @@ interface PersonnelRecord {
  personalNumber: string;
 }
 
-async function createPersonnel(request: any, formId: string, overrides: Record<string, any> = {}): Promise<PersonnelRecord> {
+// Personnel and reserve-days now live in explicit REST resources (/api/personnel,
+// /api/reserve-days) backed by dedicated Mongoose models, not the legacy generic
+// /api/formSubmission endpoint. The quota-management calendar's occupancy calculation
+// reads exclusively from the new ReserveDay model, so records must be created via these
+// endpoints for the calendar to reflect them.
+async function createPersonnel(request: any, overrides: Record<string, any> = {}): Promise<PersonnelRecord> {
  const firstName = overrides.firstName ?? 'בדיקה';
  const lastName = overrides.lastName ?? `קאל${Date.now()}`;
  const personalNumber = overrides.personalNumber ?? `QM${Date.now()}`;
- const res = await request.post(`${API}/formSubmission/create`, {
-  data: {
-   formId,
-   formName: 'personnel',
-   formData: { firstName, lastName, personalNumber, status: 'active', employmentType: 'reserves', ...overrides },
-  },
+ const res = await request.post(`${API}/personnel`, {
+  data: { firstName, lastName, personalNumber, isActive: true, ...overrides },
  });
  const body = await res.json();
- return { id: body.form._id, firstName, lastName, personalNumber };
+ return { id: body._id, firstName, lastName, personalNumber };
 }
 
-async function createReserveDay(request: any, formId: string, personnel: PersonnelRecord, overrides: Record<string, any> = {}): Promise<string> {
- const res = await request.post(`${API}/formSubmission/create`, {
+async function createReserveDay(request: any, personnel: PersonnelRecord, overrides: Record<string, any> = {}): Promise<string> {
+ const res = await request.post(`${API}/reserve-days`, {
   data: {
-   formId,
-   formName: 'reserve_days_management',
-   formData: {
-    employeeName: {
-     _id: personnel.id,
-     display: `${personnel.firstName} ${personnel.lastName} ${personnel.personalNumber}`,
-     metadata: { firstName: personnel.firstName, lastName: personnel.lastName, personalNumber: personnel.personalNumber },
-    },
-    startDate: new Date().toISOString().split('T')[0],
-    endDate: new Date().toISOString().split('T')[0],
-    fundingSource: 'internal',
-    orderType: '8open',
-    requestStatus: 'approved',
-    isActive: true,
-    vehicleEntry: false,
-    ...overrides,
-   },
+   employeeName: personnel.id,
+   startDate: new Date().toISOString().split('T')[0],
+   endDate: new Date().toISOString().split('T')[0],
+   fundingSource: 'internal',
+   orderType: '8open',
+   requestStatus: 'approved',
+   ...overrides,
   },
  });
- return (await res.json()).form._id;
+ return (await res.json())._id;
 }
 
-async function deleteSubmission(request: any, id: string) {
- await request.post(`${API}/formSubmission/delete`, { data: { id } });
+async function deletePersonnel(request: any, id: string) {
+ await request.delete(`${API}/personnel/${id}`);
+}
+
+async function deleteReserveDay(request: any, id: string) {
+ await request.delete(`${API}/reserve-days/${id}`);
 }
 
 test.describe('Module 4: Quota Management Calendar', () => {
@@ -80,7 +69,7 @@ test.describe('Module 4: Quota Management Calendar', () => {
   await expect(page.getByRole('button', { name: 'חודשי' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'היום' })).toBeVisible();
 
-  for (const day of ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳']) {
+  for (const day of ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ז׳']) {
    await expect(page.getByText(day).first()).toBeVisible();
   }
  });
@@ -95,11 +84,17 @@ test.describe('Module 4: Quota Management Calendar', () => {
  });
 
  test('TC-QM-003: Prev/next month navigation', async ({ page }) => {
-  const monthLabel = page.locator('text=/\\d{4}/').first();
+  // Month label reads like "יולי 2026" — scope to the calendar header's paragraph
+  // to avoid matching unrelated 4-digit numbers elsewhere on the page (e.g. stat cards).
+  const monthLabel = page.getByText(/^[֐-׿]+ \d{4}$/).first();
   const initialText = await monthLabel.textContent();
 
-  // The nav arrows are icon buttons — target by being a button inside the header area
-  const navButtons = page.locator('button').filter({ has: page.locator('svg') });
+  // The nav arrows are icon buttons living in the same header row as the month label
+  // and the "היום" button. Walk up from the "היום" button to the shared header
+  // container (the Flex with justify="space-between") to avoid matching unrelated
+  // icon buttons elsewhere on the page (sidebar, logout, etc.).
+  const calendarHeader = page.getByRole('button', { name: 'היום' }).locator('xpath=ancestor::*[2]');
+  const navButtons = calendarHeader.locator('button').filter({ has: page.locator('svg') });
   await navButtons.first().click();
   await page.waitForTimeout(400);
   const nextText = await monthLabel.textContent();
@@ -112,19 +107,37 @@ test.describe('Module 4: Quota Management Calendar', () => {
 
  test('TC-QM-004: Occupancy count shown when reserveDay exists', async ({ page, request }) => {
   const today = new Date().toISOString().split('T')[0];
+  const todayDay = new Date().getDate().toString();
   let personnel: PersonnelRecord | null = null;
   let reserveDayId: string | null = null;
 
-  try {
-   const personnelFormId = await getFormId(request, 'personnel');
-   const reserveDaysFormId = await getFormId(request, 'reserve_days_management');
+  // The calendar day cell shows "assigned/quota (percent%)" (e.g. "62/25 (248%)") and a
+  // "סה״כ:" (total) count. There is no "פנימי:" (internal) label rendered on the cell —
+  // internal-funded reserve days are only reflected in the assigned/total counts, while a
+  // separate "מימון חיצוני:" line is shown only for external-funded days. So we assert that
+  // today's total occupancy count increments after creating an internal reserve day.
+  // Find the day-number paragraph (exact text match, e.g. "19") and walk up to its
+  // containing day-cell box, which also holds the "סה״כ:" total text.
+  const todayCell = page
+   .getByText(new RegExp(`^${todayDay}$`), { exact: true })
+   .locator('xpath=ancestor::*[self::div][3]');
+  const totalLocator = todayCell.locator('text=/סה״כ:\\d+/').first();
 
-   personnel = await createPersonnel(request, personnelFormId, {
+  const getTotal = async () => {
+   const text = await totalLocator.textContent();
+   const match = text?.match(/(\d+)/);
+   return match ? Number(match[1]) : 0;
+  };
+
+  const initialTotal = await getTotal();
+
+  try {
+   personnel = await createPersonnel(request, {
     firstName: 'תפוסה',
     lastName: `בדיקה${Date.now()}`,
     personalNumber: `QMOCC${Date.now()}`,
    });
-   reserveDayId = await createReserveDay(request, reserveDaysFormId, personnel, {
+   reserveDayId = await createReserveDay(request, personnel, {
     startDate: today,
     endDate: today,
     fundingSource: 'internal',
@@ -134,10 +147,13 @@ test.describe('Module 4: Quota Management Calendar', () => {
    await page.reload();
    await page.waitForLoadState('networkidle');
 
-   await expect(page.getByText('פנימי:').first()).toBeVisible({ timeout: 8000 });
+   await expect(totalLocator).toBeVisible({ timeout: 8000 });
+   await expect(async () => {
+    expect(await getTotal()).toBe(initialTotal + 1);
+   }).toPass({ timeout: 8000 });
   } finally {
-   if (reserveDayId) await deleteSubmission(request, reserveDayId);
-   if (personnel) await deleteSubmission(request, personnel.id);
+   if (reserveDayId) await deleteReserveDay(request, reserveDayId);
+   if (personnel) await deletePersonnel(request, personnel.id);
   }
  });
 
@@ -160,18 +176,35 @@ test.describe('Module 4: Quota Management Calendar', () => {
   futureDate.setDate(futureDate.getDate() + 20);
   const futureDateStr = futureDate.toISOString().split('T')[0];
   const futureDay = futureDate.getDate().toString();
-  let quotaId: string | null = null;
 
   try {
    const futureMonth = futureDate.getMonth();
    const currentMonth = new Date().getMonth();
    const monthDiff = futureMonth - currentMonth;
+   // Scope the nav-arrow buttons to the calendar header row (shared container with the
+   // "היום" button) to avoid matching unrelated icon buttons elsewhere on the page
+   // (sidebar, logout, etc.) — see TC-QM-003 for the same fix.
+   const calendarHeader = page.getByRole('button', { name: 'היום' }).locator('xpath=ancestor::*[2]');
+   const navButtons = calendarHeader.locator('button').filter({ has: page.locator('svg') });
+   const monthLabel = page.getByText(/^[֐-׿]+ \d{4}$/).first();
    for (let i = 0; i < monthDiff; i++) {
-    await page.locator('button').filter({ has: page.locator('svg') }).first().click();
-    await page.waitForTimeout(300);
+    const beforeNavText = await monthLabel.textContent();
+    await navButtons.first().click();
+    // Wait for the month label to actually change before proceeding — clicking the next
+    // day cell before the calendar has re-rendered for the new month risks right-clicking
+    // a stale element from the previous month's grid (which briefly shares day numbers,
+    // e.g. "8"), causing the QuotaModal to seed the wrong start date.
+    await expect(async () => {
+     expect(await monthLabel.textContent()).not.toBe(beforeNavText);
+    }).toPass({ timeout: 3000 });
    }
 
-   const dayCell = page.locator('div').filter({ hasText: new RegExp(`^${futureDay}$`) }).first();
+   // Anchor on the exact day-number text within the calendar grid, then dispatch the
+   // context menu on its containing day-cell box — matching the approach used in
+   // TC-QM-004 to avoid ambiguous substring/partial matches across the rendered grid.
+   const dayCell = page
+    .getByText(new RegExp(`^${futureDay}$`), { exact: true })
+    .locator('xpath=ancestor::*[self::div][3]');
    await dayCell.dispatchEvent('contextmenu');
    await page.waitForTimeout(300);
 
@@ -181,21 +214,28 @@ test.describe('Module 4: Quota Management Calendar', () => {
    const modal = page.getByRole('dialog');
    await expect(modal).toBeVisible();
 
+   // QuotaModal's "start date" field defaults to today's date at first mount and is
+   // only re-synced to the right-clicked day via a useEffect — explicitly set it here
+   // rather than relying on that effect's timing.
+   const startDateInput = modal.locator('input[type="date"]').first();
+   await startDateInput.fill(futureDateStr);
+   await expect(startDateInput).toHaveValue(futureDateStr);
+
    await modal.locator('input[type="number"]').first().fill('25');
    await modal.getByRole('button', { name: /שמור|צור|Create|Save/ }).click();
    await page.waitForTimeout(1000);
 
    await expect(modal).not.toBeVisible({ timeout: 5000 });
 
+   // GET /quotas/date/:date responds with { data: { date, quota, currentOccupancy,
+   // occupancyRate } } — there is no top-level _id on this endpoint's response, so
+   // cleanup below always deletes by date rather than by quota ID.
    const res = await request.get(`${API}/quotas/date/${futureDateStr}`);
-   if (res.ok()) {
-    const body = await res.json();
-    quotaId = body._id;
-    expect(body.quota).toBe(25);
-   }
+   expect(res.ok()).toBeTruthy();
+   const body = await res.json();
+   expect(body.data.quota).toBe(25);
   } finally {
-   if (quotaId) await request.delete(`${API}/quotas/${quotaId}`);
-   else await request.delete(`${API}/quotas/date/${futureDateStr}`);
+   await request.delete(`${API}/quotas/date/${futureDateStr}`);
   }
  });
 });

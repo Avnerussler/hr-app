@@ -1,4 +1,12 @@
-import { VStack, HStack, Text, Box, Button, Input } from '@chakra-ui/react'
+import {
+    VStack,
+    HStack,
+    Text,
+    Box,
+    Button,
+    Input,
+    createListCollection,
+} from '@chakra-ui/react'
 import {
     DrawerRoot,
     DrawerContent,
@@ -8,6 +16,13 @@ import {
     DrawerTitle,
     DrawerCloseTrigger,
 } from '../ui/drawer'
+import {
+    SelectRoot,
+    SelectTrigger,
+    SelectValueText,
+    SelectContent,
+    SelectItem,
+} from '../ui/select'
 import { memo, useMemo, useState } from 'react'
 import { format } from 'date-fns'
 import { he } from 'date-fns/locale'
@@ -36,6 +51,7 @@ import {
     PaginationNextTrigger,
 } from '../ui/pagination'
 import useDebounce from '@/hooks/useDebounce'
+import { REQUEST_STATUS_LABELS, ORDER_TYPE_LABELS } from '@hr-app/shared-types'
 
 interface DailyAttendanceDrawerProps {
     isOpen: boolean
@@ -149,6 +165,9 @@ export function DailyAttendanceDrawer({
 }: DailyAttendanceDrawerProps) {
     const [activeFilter, setActiveFilter] = useState<FilterType>('all')
     const [searchQuery, setSearchQuery] = useState<string>('')
+    const [statusFilter, setStatusFilter] = useState<string[]>([])
+    const [projectFilter, setProjectFilter] = useState<string[]>([])
+    const [orderTypeFilter, setOrderTypeFilter] = useState<string[]>([])
     const [page, setPage] = useState(1)
     const [isReportOpen, setIsReportOpen] = useState(false)
 
@@ -157,7 +176,8 @@ export function DailyAttendanceDrawer({
     const updateIndividualMutation = useUpdateIndividualAttendanceMutation()
     const managerReportMutation = useManagerReportMutation()
 
-    // Stats query — always fetches full-day totals, never re-fetches on filter/page change
+    // Stats query — always fetches full-day totals, never re-fetches on filter/page change.
+    // Also the source of truth for which filter values actually occur today.
     const { data: statsData } = useEmployeeAttendanceQuery({
         date: selectedDate,
         filter: 'all',
@@ -165,6 +185,38 @@ export function DailyAttendanceDrawer({
         page: 1,
         limit: 1,
     })
+
+    const availableFilters = statsData?.availableFilters
+
+    const statusCollection = useMemo(
+        () =>
+            createListCollection({
+                items: (availableFilters?.requestStatuses ?? []).map((value) => ({
+                    value,
+                    label: REQUEST_STATUS_LABELS[value] ?? value,
+                })),
+            }),
+        [availableFilters?.requestStatuses]
+    )
+
+    const projectCollection = useMemo(
+        () =>
+            createListCollection({
+                items: availableFilters?.projects ?? [],
+            }),
+        [availableFilters?.projects]
+    )
+
+    const orderTypeCollection = useMemo(
+        () =>
+            createListCollection({
+                items: (availableFilters?.orderTypes ?? []).map((value) => ({
+                    value,
+                    label: ORDER_TYPE_LABELS[value as keyof typeof ORDER_TYPE_LABELS] ?? value,
+                })),
+            }),
+        [availableFilters?.orderTypes]
+    )
 
     // List query — responds to filter, search, and page
     const {
@@ -177,6 +229,9 @@ export function DailyAttendanceDrawer({
         search: debouncedSearch,
         page,
         limit: PAGE_SIZE,
+        requestStatus: statusFilter,
+        projectId: projectFilter,
+        orderType: orderTypeFilter,
     })
 
     const { data: managerReportStatus, isLoading: isLoadingManagerStatus } =
@@ -200,6 +255,9 @@ export function DailyAttendanceDrawer({
     const handleClearFilter = () => {
         setActiveFilter('all')
         setSearchQuery('')
+        setStatusFilter([])
+        setProjectFilter([])
+        setOrderTypeFilter([])
         setPage(1)
     }
 
@@ -241,7 +299,12 @@ export function DailyAttendanceDrawer({
 
     const hasManagerReported = managerReportStatus?.hasReported ?? false
     const isManagerReporting = managerReportMutation.isPending
-    const hasActiveFilters = activeFilter !== 'all' || searchQuery !== ''
+    const hasActiveFilters =
+        activeFilter !== 'all' ||
+        searchQuery !== '' ||
+        statusFilter.length > 0 ||
+        projectFilter.length > 0 ||
+        orderTypeFilter.length > 0
 
     const formatDateDisplay = (dateStr: string) => {
         try {
@@ -302,6 +365,92 @@ export function DailyAttendanceDrawer({
                                     }
                                 />
                             </Box>
+
+                            <HStack gap={1} mb={3}>
+                                <SelectRoot
+                                    collection={statusCollection}
+                                    size="sm"
+                                    minW="180px"
+                                    multiple
+                                    value={statusFilter}
+                                    onValueChange={(details) => {
+                                        setStatusFilter(details.value)
+                                        setPage(1)
+                                    }}
+                                >
+                                    <SelectTrigger clearable>
+                                        <SelectValueText placeholder="סטטוס בקשה" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {statusCollection.items.map(
+                                            (option) => (
+                                                <SelectItem
+                                                    item={option}
+                                                    key={option.value}
+                                                >
+                                                    {option.label}
+                                                </SelectItem>
+                                            )
+                                        )}
+                                    </SelectContent>
+                                </SelectRoot>
+
+                                <SelectRoot
+                                    collection={projectCollection}
+                                    size="sm"
+                                    minW="180px"
+                                    multiple
+                                    value={projectFilter}
+                                    onValueChange={(details) => {
+                                        setProjectFilter(details.value)
+                                        setPage(1)
+                                    }}
+                                >
+                                    <SelectTrigger clearable>
+                                        <SelectValueText placeholder="פרויקט" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {projectCollection.items.map(
+                                            (option) => (
+                                                <SelectItem
+                                                    item={option}
+                                                    key={option.value}
+                                                >
+                                                    {option.label}
+                                                </SelectItem>
+                                            )
+                                        )}
+                                    </SelectContent>
+                                </SelectRoot>
+
+                                <SelectRoot
+                                    collection={orderTypeCollection}
+                                    size="sm"
+                                    minW="180px"
+                                    multiple
+                                    value={orderTypeFilter}
+                                    onValueChange={(details) => {
+                                        setOrderTypeFilter(details.value)
+                                        setPage(1)
+                                    }}
+                                >
+                                    <SelectTrigger clearable>
+                                        <SelectValueText placeholder="סוג צו" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {orderTypeCollection.items.map(
+                                            (option) => (
+                                                <SelectItem
+                                                    item={option}
+                                                    key={option.value}
+                                                >
+                                                    {option.label}
+                                                </SelectItem>
+                                            )
+                                        )}
+                                    </SelectContent>
+                                </SelectRoot>
+                            </HStack>
 
                             {isLoading ? (
                                 <Box textAlign="center" p={8}>

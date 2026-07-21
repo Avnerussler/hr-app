@@ -1,6 +1,11 @@
 {
  "name": "hr-app",
  "version": "1.0.0",
+ "private": true,
+ "workspaces": [
+  "apps/*",
+  "packages/*"
+ ],
  "scripts": {
   "pretest": "bash scripts/check-services.sh",
   "test": "playwright test",
@@ -17,7 +22,7 @@
   "services:start": "bash scripts/start-all-services.sh",
   "services:stop": "bash scripts/stop-all-services.sh",
   "services:check": "bash scripts/check-services.sh",
-  "docker:ship": "docker build --platform linux/amd64 -t hr-frontend-app apps/frontend && docker build --platform linux/amd64 -t hr-server-app apps/server && docker save hr-frontend-app -o 4airport/hr-frontend-app.tar && docker save hr-server-app -o 4airport/hr-server-app.tar"
+  "docker:ship": "docker build --platform linux/amd64 -f apps/frontend/Dockerfile -t hr-frontend-app . && docker build --platform linux/amd64 -f apps/server/Dockerfile -t hr-server-app . && docker save hr-frontend-app -o 4airport/hr-frontend-app.tar && docker save hr-server-app -o 4airport/hr-server-app.tar"
  },
  "devDependencies": {
   "@faker-js/faker": "^10.1.0",

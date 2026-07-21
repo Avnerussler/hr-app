@@ -24,15 +24,25 @@ export const ControlledRadioField: FC<ControlledRadioFieldProps> = ({
                 required: required ? `${label} הוא שדה חובה` : false,
             }}
             render={({ field, fieldState: { error } }) => (
-                <Field.Root invalid={!!error}>
+                <Field.Root data-field-name={name} invalid={!!error} required={required}>
                     <Fieldset.Root>
-                        <Fieldset.Legend>{label}</Fieldset.Legend>
+                        <Fieldset.Legend>
+                            {label}
+                            <Field.RequiredIndicator />
+                        </Fieldset.Legend>
                         <RadioGroup.Root
                             id={id}
                             name={field.name}
                             value={field.value != null ? String(field.value) : ''}
                             onValueChange={({ value }) => {
-                                field.onChange(value)
+                                // Boolean-convention radios (items valued 'true'/'false') must
+                                // submit real booleans — the shared Zod schemas type these
+                                // fields as z.boolean(), and a raw string fails validation.
+                                if (value === 'true' || value === 'false') {
+                                    field.onChange(value === 'true')
+                                } else {
+                                    field.onChange(value)
+                                }
                             }}
                             {...props}
                         >

@@ -1,129 +1,101 @@
 import './App.css'
 import { Layout } from './components/Layout'
-import { DynamicFormPage } from './components/Pages/DynamicFormPage'
 import DialogRefProvider from './providers/DialogRefProvider'
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
-import { useFormsQuery } from './hooks/queries/useFormQueries'
-import { Box, Spinner, Center } from '@chakra-ui/react'
 import { Dashboard } from './components/Pages/Dashboard'
 import QuotaManagement from './components/Pages/QuotaManagement'
 import ErrorElement from './components/common/ErrorElement'
-// import { TodaysOverview } from './components/Pages/TodaysOverview'
+import { ProjectListPage } from './components/Pages/ProjectListPage'
+import { PersonnelListPage } from './components/Pages/PersonnelListPage'
+import { ReserveDayListPage } from './components/Pages/ReserveDayListPage'
 
-const LoadingSpinner = () => (
-    <Center h="100vh">
-        <Box textAlign="center">
-            <Spinner size="xl" />
-            <Box mt={4}>Loading application...</Box>
-        </Box>
-    </Center>
-)
+// formName segment is kept literal for e2e URL parity; formId segment is a stable
+// placeholder (no longer a real "form definition" id).
+const entityRoutes = [
+    {
+        path: 'project_management/default',
+        element: <ProjectListPage />,
+        errorElement: <ErrorElement />,
+    },
+    {
+        path: 'project_management/default/new',
+        element: <ProjectListPage />,
+        errorElement: <ErrorElement />,
+    },
+    {
+        path: 'project_management/default/edit/:itemId',
+        element: <ProjectListPage />,
+        errorElement: <ErrorElement />,
+    },
+    {
+        path: 'personnel/default',
+        element: <PersonnelListPage />,
+        errorElement: <ErrorElement />,
+    },
+    {
+        path: 'personnel/default/new',
+        element: <PersonnelListPage />,
+        errorElement: <ErrorElement />,
+    },
+    {
+        path: 'personnel/default/edit/:itemId',
+        element: <PersonnelListPage />,
+        errorElement: <ErrorElement />,
+    },
+    {
+        path: 'reserve_days_management/default',
+        element: <ReserveDayListPage />,
+        errorElement: <ErrorElement />,
+    },
+    {
+        path: 'reserve_days_management/default/new',
+        element: <ReserveDayListPage />,
+        errorElement: <ErrorElement />,
+    },
+    {
+        path: 'reserve_days_management/default/edit/:itemId',
+        element: <ReserveDayListPage />,
+        errorElement: <ErrorElement />,
+    },
+]
 
-// Static routes
 const staticRoutes = [
     {
         path: 'quota-management',
         element: <QuotaManagement />,
         errorElement: <ErrorElement />,
     },
-    // {
-    //     path: 'overview',
-    //     element: <TodaysOverview />,
-    //     errorElement: <ErrorElement />,
-    // },
     {
         path: 'dashboard',
         element: <Dashboard />,
         errorElement: <ErrorElement />,
     },
 ]
-const createDynamicRouter = (formsData: any) => {
-    const dynamicRoutes = formsData?.forms
-        ? formsData.forms.flatMap((form: any) => [
-              {
-                  path: `${form.formName}/${form._id}`,
-                  element: (
-                      <DynamicFormPage
-                          formId={form._id}
-                          formName={form.formName}
-                          displayName={form.displayName}
-                      />
-                  ),
-                  errorElement: <ErrorElement />,
-              },
-              {
-                  path: `${form.formName}/${form._id}/edit/:itemId`,
-                  element: (
-                      <DynamicFormPage
-                          formId={form._id}
-                          formName={form.formName}
-                          displayName={form.displayName}
-                      />
-                  ),
-                  errorElement: <ErrorElement />,
-              },
-              {
-                  path: `${form.formName}/${form._id}/new`,
-                  element: (
-                      <DynamicFormPage
-                          formId={form._id}
-                          formName={form.formName}
-                          displayName={form.displayName}
-                      />
-                  ),
-                  errorElement: <ErrorElement />,
-              },
-          ])
-        : []
 
-    return createBrowserRouter([
-        {
-            path: '/',
-            element: <Layout />,
-            errorElement: <ErrorElement />,
-            children: [
-                {
-                    index: true,
-                    element: <Navigate to="/quota-management" replace />,
-                },
-                ...staticRoutes,
-                ...dynamicRoutes,
-                {
-                    path: '*',
-                    element: <Navigate to="/quota-management" replace />,
-                },
-            ],
-        },
-    ])
-}
+const router = createBrowserRouter([
+    {
+        path: '/',
+        element: <Layout />,
+        errorElement: <ErrorElement />,
+        children: [
+            {
+                index: true,
+                element: <Navigate to="/quota-management" replace />,
+            },
+            ...staticRoutes,
+            ...entityRoutes,
+            {
+                path: '*',
+                element: <Navigate to="/quota-management" replace />,
+            },
+        ],
+    },
+])
+
 function App() {
-    const { data: formsData, isSuccess, isLoading } = useFormsQuery()
-
-    // Show loading state while fetching forms
-    if (isLoading) {
-        return (
-            <DialogRefProvider>
-                <LoadingSpinner />
-            </DialogRefProvider>
-        )
-    }
-
-    // Show error state if query failed
-    if (!isSuccess) {
-        return (
-            <DialogRefProvider>
-                <Center h="100vh">
-                    <Box textAlign="center">
-                        <Box>Failed to load application</Box>
-                    </Box>
-                </Center>
-            </DialogRefProvider>
-        )
-    }
-
     return (
         <DialogRefProvider>
-            <RouterProvider router={createDynamicRouter(formsData)} />
+            <RouterProvider router={router} />
         </DialogRefProvider>
     )
 }

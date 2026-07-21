@@ -28,10 +28,10 @@ test.describe('Module 1: Personnel Management', () => {
   await expect(page.getByRole('table')).toBeVisible();
   await expect(page.getByText(/Showing 1 to \d+ of \d+ entries/)).toBeVisible();
 
-  // Verify table headers
-  await expect(page.getByRole('columnheader', { name: 'שם פרטי Sort column' })).toBeVisible();
-  await expect(page.getByRole('columnheader', { name: 'מספר אישי Sort column' })).toBeVisible();
-  await expect(page.getByRole('columnheader', { name: 'סטטוס Sort column' })).toBeVisible();
+  // Verify table headers (each header's sortable label includes its current sort state)
+  await expect(page.getByRole('columnheader', { name: /שם פרטי/ })).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: /מספר אישי/ })).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: /סטטוס/ })).toBeVisible();
  });
 
  test('TC-PERS-002: Search by first name', async ({ page }) => {
@@ -88,17 +88,33 @@ test.describe('Module 1: Personnel Management', () => {
  });
 
  test('TC-PERS-011: Table Sorting', async ({ page }) => {
-  // Click on "שם פרטי" (First Name) column header to sort
-  const sortButton = page
-   .getByRole('columnheader', { name: 'שם פרטי Sort column' })
-   .getByLabel('Sort column');
-  await sortButton.click();
+  // Click on "שם פרטי" (First Name) column header to sort — the sort control is the whole
+  // header (role="button"), whose accessible name reflects the current sort state.
+  const sortButton = page.getByRole('button', { name: /Sort by שם פרטי/ });
 
-  // Wait for sort to complete
-  await page.waitForTimeout(500);
+  const firstColumnCells = () => page.locator('tbody tr td:first-child');
+
+  await sortButton.click();
+  await expect(
+   page.getByRole('button', { name: /Sort by שם פרטי, currently ascending/ }),
+  ).toBeVisible();
+
+  await expect(page.getByText(/Showing 1 to \d+ of \d+ entries/)).toBeVisible();
+
+  // Row order should be ascending by first name on the current page
+  const ascValues = await firstColumnCells().allTextContents();
+  const sortedAsc = [...ascValues].sort((a, b) => a.localeCompare(b, 'he'));
+  expect(ascValues).toEqual(sortedAsc);
 
   // Click again to reverse sort
   await sortButton.click();
+  await expect(
+   page.getByRole('button', { name: /Sort by שם פרטי, currently descending/ }),
+  ).toBeVisible();
+
+  const descValues = await firstColumnCells().allTextContents();
+  const sortedDesc = [...descValues].sort((a, b) => b.localeCompare(a, 'he'));
+  expect(descValues).toEqual(sortedDesc);
 
   // Verify data persists through sort
   await expect(page.getByText(/Showing 1 to \d+ of \d+ entries/)).toBeVisible();
@@ -144,5 +160,38 @@ test.describe('Module 1: Personnel Management', () => {
   await searchBox.fill(hebrewSearchTerm);
   // Verify search works (results should be filtered)
   await expect(page.getByRole('table')).toBeVisible();
+ });
+
+ test('TC-PERS-015: Table Sorting spans across pages, not just the current page', async ({
+  page,
+ }) => {
+  // Regression test: sorting must be server-side and apply to the full dataset, not
+  // just re-order whatever rows happen to be loaded for the current page.
+  const sortButton = page.getByRole('button', { name: /Sort by שם פרטי/ });
+
+  const sortResponse = page.waitForResponse(
+   res => res.url().includes('/api/personnel') && res.url().includes('sortField='),
+  );
+  await sortButton.click();
+  await sortResponse;
+
+  const pagination = page.getByRole('navigation', { name: 'pagination' });
+  await expect(pagination).toBeVisible();
+
+  const firstColumnCells = () => page.locator('tbody tr td:first-child');
+  await expect(firstColumnCells().first()).toBeVisible();
+  const lastOnPage1 = (await firstColumnCells().allTextContents()).at(-1);
+
+  const page2Response = page.waitForResponse(
+   res => res.url().includes('/api/personnel') && res.url().includes('page=2'),
+  );
+  await page.getByRole('button', { name: 'page 2', exact: true }).click();
+  await page2Response;
+  await expect(page.getByText(/Showing 11 to \d+ of \d+ entries/)).toBeVisible();
+  await expect(firstColumnCells().first()).toBeVisible();
+
+  const firstOnPage2 = (await firstColumnCells().allTextContents()).at(0);
+
+  expect(lastOnPage1!.localeCompare(firstOnPage2!, 'he')).toBeLessThanOrEqual(0);
  });
 });

@@ -3,12 +3,15 @@
  * Extracted from query files for better organization
  */
 
+import type { RequestStatus } from '@hr-app/shared-types'
+
 // ============================================
 // Employee Attendance Types
 // ============================================
 
 export interface EmployeeAttendance {
     _id: string
+    reserveDayId?: string
     name: string
     lastName?: string
     personalNumber?: string
@@ -26,8 +29,19 @@ export interface EmployeeAttendance {
     hasAttended: boolean
     workDays?: string[] // Array of dates this employee should work
     reserveDays?: string[] // Array of reserve duty dates
-    requestStatus?: string // Status of the reserve days request (pending, approved, denied)
+    requestStatus?: RequestStatus // Status of the reserve days request (pending, approved, denied)
     fundingSource?: 'internal' | 'external' // Funding source (internal, external)
+    projectId?: string | null
+    projectName?: string | null
+    // Only true when the employee HAS a vehicle-approval range configured and it has already
+    // ended by this date. No range set, or the date still within/before the range, is false.
+    hasExpiredVehicleApproval: boolean
+}
+
+export interface AvailableAttendanceFilters {
+    requestStatuses: RequestStatus[]
+    orderTypes: string[]
+    projects: Array<{ value: string; label: string }>
 }
 
 export interface DailyAttendanceData {
@@ -40,6 +54,7 @@ export interface DailyAttendanceData {
         internalCount: number
         externalCount: number
     }
+    availableFilters: AvailableAttendanceFilters
     pagination?: {
         page: number
         limit: number
@@ -55,6 +70,11 @@ export interface AttendanceSummaryDay {
     managerReported: boolean
     hasUnapprovedReserveDays: boolean
     unapprovedEmployees: Array<{
+        name: string
+        status: string
+    }>
+    hasExpiredVehicleApproval: boolean
+    expiredVehicleApprovalEmployees: Array<{
         name: string
         status: string
     }>

@@ -1,35 +1,42 @@
 # Multi-stage build for Node.js server
+# NOTE: build context must be the monorepo root (not apps/server), since this
+# is an npm workspace and needs the root lockfile + packages/shared-types.
+#   docker build -f apps/server/Dockerfile -t hr-server-app .
 FROM node:20-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy workspace manifests first for better layer caching
+COPY package.json package-lock.json ./
+COPY apps/server/package.json apps/server/package.json
+COPY packages/shared-types/package.json packages/shared-types/package.json
 
 # Install all dependencies (including dev dependencies for build)
 RUN npm ci
 
 # Copy source code
-COPY . .
+COPY apps/server apps/server
+COPY packages/shared-types packages/shared-types
 
 # Build the application
-RUN npm run build
+RUN npm run build --workspace=packages/shared-types
+RUN npm run build --workspace=apps/server
 
 # Production stage
 FROM node:20-alpine AS production
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+COPY package.json package-lock.json ./
+COPY apps/server/package.json apps/server/package.json
+COPY packages/shared-types/package.json packages/shared-types/package.json
 
 # Install only production dependencies
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --omit=dev --workspace=apps/server && npm cache clean --force
 
 # Copy built application from builder stage
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/apps/server/dist ./apps/server/dist
+COPY --from=builder /app/packages/shared-types/dist ./packages/shared-types/dist
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
@@ -47,4 +54,4 @@ ENV NODE_ENV=production
 EXPOSE 3001
 
 # Start the application
-CMD ["node", "dist/server.js"]
+CMD ["node", "apps/server/dist/server.js"]

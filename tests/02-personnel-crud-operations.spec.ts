@@ -105,7 +105,8 @@ test.describe('Module 1: Personnel Management - CRUD Operations', () => {
   const drawer = page.getByRole('dialog');
   await expect(drawer).toBeVisible();
 
-  // "מידע אישי" (Personal Information) tab holds firstName/lastName/.../vehicleNumber
+  // "מידע אישי" (Personal Information) tab holds firstName/lastName/.../
+  // vehicleNumber AND, directly below it, the vehicle-entry-approval date range.
   const personalInfoTab = page.getByRole('tab', { name: 'מידע אישי' });
   if (await personalInfoTab.isVisible({ timeout: 2000 }).catch(() => false)) {
    await personalInfoTab.click();
@@ -119,21 +120,23 @@ test.describe('Module 1: Personnel Management - CRUD Operations', () => {
   await page.locator('input[name="phone"]').fill(testData.phone);
   await page.locator('input[name="vehicleNumber"]').fill(testData.vehicleNumber);
 
-  // "מידע צבאי" (Military Information) tab holds the vehicleEntry radio
-  await page.getByRole('tab', { name: 'מידע צבאי' }).click();
-  await page.waitForTimeout(500);
-
-  // Scope to the vehicleEntry radio group specifically — the tab also has
-  // another כן/לא radio (canBeRecited, "האם ניתן לזמן למילואים"), and both
-  // radios' visible labels share the same text, so a plain
-  // drawer.getByText('כן') would be ambiguous. Chakra renders each radio
-  // field as role=group with the field label as its accessible name, and
-  // the underlying <input> carries a real name="vehicleEntry" attribute —
-  // click the visible label text within that scoped group (not the
-  // visually-hidden input directly, which Chakra's overlay can intercept).
-  const vehicleEntryGroup = drawer.getByRole('group', { name: 'כניסה עם רכב' });
-  await vehicleEntryGroup.getByText('כן', { exact: true }).click();
-  await expect(vehicleEntryGroup.getByRole('radio', { name: 'כן' })).toBeChecked();
+  // Vehicle-entry-approval date range ("תוקף אישור כניסה עם רכב") — a
+  // ControlledDateRangeField (components/ControlledFields/ControlledDateRangeField.tsx)
+  // with two dd/mm/yyyy inputs. NOTE: this is a DIFFERENT date format than the
+  // reserve-days date-range field (ReserveDayDateRangeField), which renders
+  // mm/dd/yyyy placeholders — don't reuse that format here. Uses
+  // pressSequentially (not .fill()), matching fillDateRangeInputs in file 04:
+  // the ark-ui date-input parses keystrokes as typed, and a bulk .fill() on
+  // the second (end) input is silently dropped.
+  const vehicleApprovalDates = drawer.getByPlaceholder('dd/mm/yyyy');
+  const startDate = new Date();
+  const endDate = new Date(Date.now() + 30 * 86400000);
+  const toPickerDate = (d: Date) =>
+   `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+  await vehicleApprovalDates.nth(0).click();
+  await vehicleApprovalDates.nth(0).pressSequentially(toPickerDate(startDate));
+  await vehicleApprovalDates.nth(1).pressSequentially(toPickerDate(endDate));
+  await vehicleApprovalDates.nth(1).press('Tab');
 
   // Click Save/Create button
   const saveButton = page.getByRole('button', { name: /Create|שמור/i });
@@ -206,13 +209,14 @@ test.describe('Module 1: Personnel Management - CRUD Operations', () => {
  });
 
  test('TC-PERS-008: Personnel Form Validation', async ({ page }) => {
-  // Generate test data with Faker
+  // Generate test data with Faker - only the 3 truly-required fields
+  // (firstName, lastName, personalNumber). All other personnel fields
+  // (email, phone, city, etc.) are optional, so submitting with just these
+  // three filled in must succeed without any validation error.
   const validData = {
    firstName: faker.person.firstName(),
    lastName: faker.person.lastName(),
    personalNumber: faker.string.numeric(9),
-   email: faker.internet.email(),
-   phone: '050' + faker.string.numeric(7),
   };
 
   // Click the "משאבי אנוש" add button - the PageHeader action button uses the
@@ -231,20 +235,55 @@ test.describe('Module 1: Personnel Management - CRUD Operations', () => {
    await page.waitForTimeout(500);
   }
 
-  // Fill in valid data to test form submission
+  // Fill only the required fields - email/phone/etc. are intentionally left blank
   await page.locator('input[name="firstName"]').fill(validData.firstName);
   await page.locator('input[name="lastName"]').fill(validData.lastName);
   await page.locator('input[name="personalNumber"]').fill(validData.personalNumber);
-  await page.locator('input[name="email"]').fill(validData.email);
-  await page.locator('input[name="phone"]').fill(validData.phone);
 
   // Click Create/Save button
   const saveButton = page.getByRole('button', { name: /Create|שמור/i });
   await saveButton.click();
 
-  // Verify drawer closes and we're back on list page
+  // Verify drawer closes and we're back on list page - no validation error
+  // should block submission since only the 3 required fields matter.
   await expect(drawer).not.toBeVisible({ timeout: 10000 });
   await expect(page.getByRole('table')).toBeVisible();
+ });
+
+ test('TC-PERS-010: Missing Required Field Jumps To Its Section And Scrolls Into View', async ({ page }) => {
+  // Click the "משאבי אנוש" add button to open the create drawer.
+  await page.getByRole('button', { name: 'משאבי אנוש' }).click();
+
+  const drawer = page.getByRole('dialog');
+  await expect(drawer).toBeVisible();
+
+  // The Create/Update button stays disabled until the form is dirty. Fill
+  // one optional field (on the Personal Information tab, which is open by
+  // default) so the Save button becomes enabled without satisfying the
+  // required-field validation.
+  await page.locator('input[name="city"]').fill('תל אביב');
+
+  // Start from a tab other than "מידע אישי" (Personal Information) - the
+  // missing required fields (firstName/lastName/personalNumber) live on that
+  // tab, so submitting from elsewhere must switch back to it automatically.
+  const militaryInfoTab = page.getByRole('tab', { name: 'מידע צבאי' });
+  await militaryInfoTab.click();
+  await expect(militaryInfoTab).toHaveAttribute('aria-selected', 'true');
+
+  // Submit with all required fields empty.
+  const saveButton = page.getByRole('button', { name: /Create|שמור/i });
+  await expect(saveButton).toBeEnabled();
+  await saveButton.click();
+
+  // Drawer must stay open (validation blocked submission) and the form must
+  // switch back to the "מידע אישי" tab where the invalid fields live.
+  await expect(drawer).toBeVisible();
+  const personalInfoTab = page.getByRole('tab', { name: 'מידע אישי' });
+  await expect(personalInfoTab).toHaveAttribute('aria-selected', 'true', { timeout: 5000 });
+
+  // The first invalid field (firstName) must be scrolled into view.
+  const firstNameField = page.locator('[data-field-name="firstName"]');
+  await expect(firstNameField).toBeInViewport({ timeout: 5000 });
  });
 
  test('TC-PERS-003: Filter Personnel', async ({ page }) => {
