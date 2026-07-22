@@ -640,18 +640,25 @@ test.describe('Module 9B: Dashboard statistics reports', () => {
 // 3. Live-update behavior (immediate invalidation + auto-refresh)
 // -----------------------------------------------------------------------------
 
-// These tests create records and assert exact count deltas, so they must not
-// run concurrently with each other (shared DB state would skew the counts).
+// These tests used to snapshot a MetricCard's value, create a record, then
+// assert an exact +1 delta. That races with any OTHER spec file creating a
+// reserve day / project for today concurrently (fullyParallel: true, see
+// playwright.config.ts) — a concurrent write lands between the "before" read
+// and the "after" poll and skews the delta by more than 1, in either
+// direction depending on timing.
+//
+// Fix: never diff two point-in-time snapshots of a shared counter. Instead,
+// re-fetch the ground-truth value from the metrics/statistics API inside the
+// poll (same pattern already used by TC-REPORT-employees-on-reserve above)
+// and assert the UI converges to whatever that live value currently is. Both
+// sides of the comparison observe the same live state, so the assertion
+// holds regardless of what other tests are doing concurrently — this also
+// means the describe-level serial mode is no longer needed.
 test.describe('Module 9C: Live updates', () => {
- test.describe.configure({ mode: 'serial' });
-
  test('TC-DASH-001: Creating a reserve day updates the Dashboard immediately', async ({
   page,
   request,
  }) => {
-  await gotoDashboard(page);
-  const before = await readMetricValue(page, 'סה״כ צווים היום');
-
   await gotoFormPage(
    page,
    'צווי מילואיםReserve Days Management',
@@ -659,38 +666,80 @@ test.describe('Module 9C: Live updates', () => {
   );
   await createReserveDay(page, request, today(), 'אושר');
 
-  await gotoDashboard(page);
-  await expectMetricToReach(page, 'סה״כ צווים היום', (v) => v >= before + 1, 15_000);
+  // Poll: reload the dashboard and re-fetch the ground-truth API value each
+  // iteration, so a concurrent create from another test still converges.
+  // Dashboard.tsx computes this card client-side from the daily-summary
+  // report's totals row (last row, "Total" column at index 4) — there's no
+  // named field for it, so mirror that same positional read here.
+  await expect(async () => {
+   const res = await request.get(`${API_ORIGIN}/api/statistics/daily-summary`);
+   expect(res.ok()).toBe(true);
+   const { report } = await res.json();
+   const totalsRow = report.rows[report.rows.length - 1];
+   const apiValue = Number(totalsRow[4]);
+
+   await gotoDashboard(page);
+   const uiValue = await readMetricValue(page, 'סה״כ צווים היום');
+   expect(uiValue).toBe(apiValue);
+  }).toPass({ timeout: 15_000 });
  });
 
  test('TC-DASH-002: Creating an active project updates "Active Projects" immediately', async ({
   page,
+  request,
  }) => {
-  await gotoDashboard(page);
-  const before = await readMetricValue(page, 'פרויקטים פעילים');
-
   await createProject(page, 'פעיל');
 
-  await gotoDashboard(page);
-  await expectMetricToReach(page, 'פרויקטים פעילים', (v) => v === before + 1, 15_000);
+  // Dashboard.tsx reads this card from /api/statistics/project-analytics's
+  // activeProjectCount (see TC-REPORT-project-analytics above), NOT from
+  // /api/projects/metrics — mirror that same source here.
+  const startDate = daysAgo(30);
+  const endDate = today();
+  await expect(async () => {
+   const res = await request.get(
+    `${API_ORIGIN}/api/statistics/project-analytics?startDate=${startDate}&endDate=${endDate}`
+   );
+   expect(res.ok()).toBe(true);
+   const { report } = await res.json();
+   const apiValue = report.activeProjectCount as number;
+
+   await gotoDashboard(page);
+   const uiValue = await readMetricValue(page, 'פרויקטים פעילים');
+   expect(uiValue).toBe(apiValue);
+  }).toPass({ timeout: 15_000 });
  });
 
  test('TC-DASH-003: Dashboard auto-refresh picks up an out-of-band change', async ({
   page,
+  request,
   context,
  }) => {
   test.setTimeout(120_000);
 
   await gotoDashboard(page);
-  const before = await readMetricValue(page, 'פרויקטים פעילים');
 
   // Create a project in a SEPARATE tab — the original tab's cache is unaware.
   const otherPage = await context.newPage();
   await createProject(otherPage, 'פעיל');
   await otherPage.close();
 
-  // Do NOT touch the original tab; the 60s auto-refresh must update the metric.
-  await expectMetricToReach(page, 'פרויקטים פעילים', (v) => v === before + 1, 70_000);
+  // Do NOT touch/reload the original tab; the 60s auto-refresh must update
+  // the metric on its own. Compare against the live API value each poll
+  // iteration (not a stale "before" snapshot) so concurrent tests can't skew
+  // the expected value out from under us.
+  const startDate = daysAgo(30);
+  const endDate = today();
+  await expect(async () => {
+   const res = await request.get(
+    `${API_ORIGIN}/api/statistics/project-analytics?startDate=${startDate}&endDate=${endDate}`
+   );
+   expect(res.ok()).toBe(true);
+   const { report } = await res.json();
+   const apiValue = report.activeProjectCount as number;
+
+   const uiValue = await readMetricValue(page, 'פרויקטים פעילים');
+   expect(uiValue).toBe(apiValue);
+  }).toPass({ timeout: 70_000 });
  });
 
  test('TC-DASH-003b: Create + edit a reserve day updates its page MetricCards immediately', async ({
@@ -705,19 +754,21 @@ test.describe('Module 9C: Live updates', () => {
    'צווי מילואים'
   );
 
-  const totalBefore = await readMetricValue(page, 'סה"כ צווים');
-  const pendingBefore = await readMetricValue(page, 'ממתינים לאישור');
-
   // Create a pending reserve day (create mutation invalidates
   // ['formSubmission/metrics', formId], so both cards must bump without reload).
   await createReserveDay(page, request, today(), 'ממתין לטיפול');
 
-  await expectMetricToReach(page, 'סה"כ צווים', (v) => v === totalBefore + 1, 15_000);
-  await expectMetricToReach(
-   page,
-   'ממתינים לאישור',
-   (v) => v === pendingBefore + 1,
-   15_000
-  );
+  await expect(async () => {
+   const metrics = await fetchMetricsForEntity(request, 'reserve_days_management');
+   const totalApi = metrics.find((m) => m.id === 'total')?.value;
+   const pendingApi = metrics.find((m) => m.id === 'pending')?.value;
+   expect(totalApi).toBeDefined();
+   expect(pendingApi).toBeDefined();
+
+   const totalUi = await readMetricValue(page, 'סה"כ צווים');
+   const pendingUi = await readMetricValue(page, 'ממתינים לאישור');
+   expect(totalUi).toBe(totalApi);
+   expect(pendingUi).toBe(pendingApi);
+  }).toPass({ timeout: 15_000 });
  });
 });

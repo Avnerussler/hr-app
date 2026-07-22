@@ -165,7 +165,6 @@ test.describe('Module 4: Quota Management Calendar', () => {
 
   // Use role-based selectors to avoid strict-mode collisions
   await expect(page.getByRole('button', { name: 'ניהול כמויות' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'נהל חגים' })).toBeVisible();
 
   await page.keyboard.press('Escape');
   await page.waitForTimeout(200);

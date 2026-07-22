@@ -426,7 +426,10 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
    // scope the check by searching for this employee specifically.
    await searchInput.fill(personnel.personalNumber);
    await page.waitForTimeout(600);
-   await expect(drawer.getByText('חיצוני')).not.toBeVisible();
+   // Exact match — "מימון חיצוני" (the always-visible filter chip label) contains
+   // "חיצוני" as a substring, so a non-exact getByText would match the chip
+   // itself instead of the per-employee badge and always report "visible".
+   await expect(drawer.getByText('חיצוני', { exact: true })).not.toBeVisible();
    await searchInput.fill('');
 
    await drawer.getByRole('button', { name: 'נקה סינון' }).click();
