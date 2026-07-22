@@ -426,7 +426,10 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
    // scope the check by searching for this employee specifically.
    await searchInput.fill(personnel.personalNumber);
    await page.waitForTimeout(600);
-   await expect(drawer.getByText('חיצוני')).not.toBeVisible();
+   // Exact match — "מימון חיצוני" (the always-visible filter chip label) contains
+   // "חיצוני" as a substring, so a non-exact getByText would match the chip
+   // itself instead of the per-employee badge and always report "visible".
+   await expect(drawer.getByText('חיצוני', { exact: true })).not.toBeVisible();
    await searchInput.fill('');
 
    await drawer.getByRole('button', { name: 'נקה סינון' }).click();
@@ -449,7 +452,10 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
   await drawer.getByRole('button', { name: 'הצג דוח' }).click();
   await page.waitForTimeout(500);
 
-  const reportModal = page.getByRole('dialog').last();
+  // Scope by unique content, not `.last()` — once this dialog closes, `.last()`
+  // re-resolves to whatever dialog is now last in the DOM (e.g. the still-open
+  // drawer behind it), silently pointing the locator at the wrong element.
+  const reportModal = page.getByRole('dialog').filter({ hasText: 'שם פרטי' });
   await expect(reportModal).toBeVisible({ timeout: 5000 });
 
   await expect(reportModal.getByText('שם פרטי')).toBeVisible();
@@ -457,7 +463,10 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
   await expect(reportModal.getByText('מספר אישי')).toBeVisible();
   await expect(reportModal.getByText('ימי מילואים')).toBeVisible();
 
-  const closeBtn = reportModal.getByRole('button', { name: /סגור|Close/i });
+  // The modal has both an icon-only dialog close trigger (aria-label="סגור", no text
+  // content) and a visible footer button with the same accessible name — both match
+  // a role query, so target the one with visible text content specifically.
+  const closeBtn = reportModal.getByRole('button', { name: 'סגור', exact: true }).filter({ hasText: 'סגור' });
   await expect(closeBtn).toBeVisible();
   await closeBtn.click();
   await expect(reportModal).not.toBeVisible({ timeout: 3000 });
@@ -494,16 +503,26 @@ test.describe('Module 5: Daily Attendance Drawer', () => {
    // `search={debouncedSearch}` prop) to just this employee, since a bare
    // "5" count assertion would otherwise be ambiguous against other rows.
    await drawer.getByPlaceholder('חפש עובדים (שם, ת.ז., מייל...)').fill(personnel.personalNumber);
-   await expect(drawer.getByText('ימי')).toBeVisible({ timeout: 8000 });
+   // Match on the generated lastName instead of "ימי" — the employee's first
+   // name "ימי" is also a substring of always-visible chip labels like
+   // "מסיימים היום" and "מימון פנימי", so it can match those instead of the card.
+   await expect(drawer.getByText(personnel.lastName)).toBeVisible({ timeout: 8000 });
 
    await drawer.getByRole('button', { name: 'הצג דוח' }).click();
    await page.waitForTimeout(500);
 
-   const reportModal = page.getByRole('dialog').last();
+   // Scope by unique content, not `.last()` — once this dialog closes, `.last()`
+   // re-resolves to whatever dialog is now last in the DOM (e.g. the still-open
+   // drawer behind it), silently pointing the locator at the wrong element.
+   const reportModal = page.getByRole('dialog').filter({ hasText: 'שם פרטי' });
    await expect(reportModal).toBeVisible({ timeout: 5000 });
    await expect(reportModal.getByText('5')).toBeVisible({ timeout: 5000 });
 
-   await reportModal.getByRole('button', { name: /סגור|Close/i }).click();
+   // The modal has both an icon-only dialog close trigger (aria-label="סגור", no text
+   // content) and a visible footer button with the same accessible name — both match
+   // a role query, so target the one with visible text content specifically.
+   const closeBtn = reportModal.getByRole('button', { name: 'סגור', exact: true }).filter({ hasText: 'סגור' });
+   await closeBtn.click();
   } finally {
    if (rid) await deleteReserveDay(request, rid);
    if (personnel) await deletePersonnel(request, personnel.id);

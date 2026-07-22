@@ -65,6 +65,7 @@ import {
     isIsraeliWeekend,
 } from '@/utils/quotaUtils'
 import { getHolidayNamesByDate } from '@/utils/holidays'
+import { HEBREW_WEEKDAYS } from '../ControlledFields/dateFieldUtils'
 
 export default function QuotaManagement() {
     const [currentDate, setCurrentDate] = useState(new Date())
@@ -655,7 +656,7 @@ export default function QuotaManagement() {
             >
                 {/* Day Headers */}
                 <Grid templateColumns="repeat(7, 1fr)" gap={1} mb={2}>
-                    {['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'שבת'].map((day) => (
+                    {HEBREW_WEEKDAYS.map((day) => (
                         <Box key={day} textAlign="center" py={2}>
                             <Text fontSize="sm" fontWeight="bold">
                                 {day}

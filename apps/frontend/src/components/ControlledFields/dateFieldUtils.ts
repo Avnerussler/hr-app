@@ -1,6 +1,9 @@
 import { parseDate } from '@chakra-ui/react'
 import type { DateValue } from '@chakra-ui/react'
 
+// Hebrew weekday headers, Sunday → Saturday.
+export const HEBREW_WEEKDAYS = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'שבת']
+
 export const toCalendarDate = (value: unknown): DateValue | null => {
     if (typeof value === 'string' && value) {
         try {

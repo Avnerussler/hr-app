@@ -4,6 +4,7 @@ import type { DateValue } from '@chakra-ui/react'
 import { LuCalendar } from 'react-icons/lu'
 import { Control, FieldValues, useController } from 'react-hook-form'
 import { toCalendarDate, formatDate, parseDateInput } from './dateFieldUtils'
+import { HebrewDayTable, HebrewRangeText, HebrewMonthTable } from './HebrewDayTable'
 
 interface ControlledDateRangeFieldProps {
     control: Control<FieldValues>
@@ -67,6 +68,7 @@ export function ControlledDateRangeField({
                 // placeholder/format/parse above all use dd/mm/yyyy. Pin the picker's own
                 // locale to one that separates with "/" so typed input matches what's shown.
                 locale="en-GB"
+                startOfWeek={0}
                 isDateUnavailable={isDateUnavailable}
                 onValueChange={(details: DatePicker.ValueChangeDetails) => {
                     const [start, end] = details.value
@@ -99,16 +101,14 @@ export function ControlledDateRangeField({
                     <DatePicker.Positioner>
                         <DatePicker.Content>
                             <DatePicker.View view="day">
-                                <DatePicker.Header>
-                                    <DatePicker.ViewControl>
-                                        <DatePicker.PrevTrigger />
-                                        <DatePicker.ViewTrigger>
-                                            <DatePicker.RangeText />
-                                        </DatePicker.ViewTrigger>
-                                        <DatePicker.NextTrigger />
-                                    </DatePicker.ViewControl>
-                                </DatePicker.Header>
-                                <DatePicker.DayTable />
+                                <DatePicker.ViewControl>
+                                    <DatePicker.PrevTrigger />
+                                    <DatePicker.ViewTrigger>
+                                        <HebrewRangeText />
+                                    </DatePicker.ViewTrigger>
+                                    <DatePicker.NextTrigger />
+                                </DatePicker.ViewControl>
+                                <HebrewDayTable />
                             </DatePicker.View>
                             <DatePicker.View view="month">
                                 <DatePicker.Header>
@@ -118,7 +118,7 @@ export function ControlledDateRangeField({
                                         <DatePicker.NextTrigger />
                                     </DatePicker.ViewControl>
                                 </DatePicker.Header>
-                                <DatePicker.MonthTable columns={4} />
+                                <HebrewMonthTable columns={4} />
                             </DatePicker.View>
                             <DatePicker.View view="year">
                                 <DatePicker.Header>
