@@ -64,8 +64,18 @@ export function ProjectListPage() {
         [projectStatusOptions]
     )
 
-    const { globalFilter, setGlobalFilter, sorting, setSorting, columnFilters, setColumnFilters, handleClearFilters: clearFilters, syncColumnFilters } =
-        useTableState({ id: PROJECT_FORM_NAME })
+    const {
+        globalFilter,
+        setGlobalFilter,
+        sorting,
+        setSorting,
+        columnFilters,
+        setColumnFilters,
+        columnVisibility,
+        setColumnVisibility,
+        handleClearFilters: clearFilters,
+        syncColumnFilters,
+    } = useTableState({ id: PROJECT_FORM_NAME })
 
     const debouncedSearch = useDebounce(globalFilter, 300)
     const activeSort = sorting[0]
@@ -114,16 +124,18 @@ export function ProjectListPage() {
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
         getFacetedMinMaxValues: getFacetedMinMaxValues(),
-        state: { globalFilter, sorting, columnFilters, pagination },
+        state: { globalFilter, sorting, columnFilters, pagination, columnVisibility },
         onGlobalFilterChange: setGlobalFilter,
         onSortingChange: handleSortingChange,
         onColumnFiltersChange: setColumnFilters,
         onPaginationChange: setPagination,
+        onColumnVisibilityChange: setColumnVisibility,
         globalFilterFn: 'global',
         filterFns,
         enableSorting: true,
         enableColumnFilters: true,
         enableGlobalFilter: true,
+        enableHiding: true,
         manualPagination: true,
         manualFiltering: true,
         manualSorting: true,
@@ -194,6 +206,7 @@ export function ProjectListPage() {
                     filters={[projectStatusFilter]}
                     filterValues={tableFilters}
                     onFilterChange={handleFilterChange}
+                    table={table as never}
                 />
                 <Box flex="1" overflow="auto" minH="0">
                     {!isLoading && <TableContainer table={table as never} onRowClick={handleRowClick} />}

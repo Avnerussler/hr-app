@@ -22,7 +22,7 @@ export const TableContainer: FC<TableContainerProps> = ({
             borderColor="border"
             shadow="sm"
         >
-            <Box as="table" w="full" fontSize="sm">
+            <Box as="table" w="full" fontSize="sm" style={{ tableLayout: 'fixed' }}>
                 {/* Table Header */}
                 <Box as="thead">
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -47,6 +47,7 @@ export const TableContainer: FC<TableContainerProps> = ({
                                     top={0}
                                     bg="card"
                                     zIndex={1}
+                                    style={{ width: header.getSize() }}
                                 >
                                     {header.isPlaceholder
                                         ? null

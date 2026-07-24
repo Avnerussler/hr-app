@@ -9,7 +9,12 @@ import {
     CLASSIFICATION_CLASS_LABELS,
 } from '@hr-app/shared-types'
 import { buildLabelSortKeyExpr } from '../utils/labelSortKey'
-import { buildLabelSearchClauses } from '../utils/searchQueryBuilder'
+import {
+    buildDateSearchClauses,
+    buildLabelSearchClauses,
+    computeMatchedFields,
+    SearchableFieldDescriptor,
+} from '../utils/searchQueryBuilder'
 import { NotFoundError } from '../middleware/errorHandler'
 import { syncProjectOnPersonnelUpdate, removePersonnelFromAllProjects } from './bidirectionalSync.service'
 import { validateSelectField } from './setting.service'
@@ -37,17 +42,73 @@ function choicesFor(field: string): { value: unknown; label?: string }[] {
     return Object.entries(map).map(([value, label]) => ({ value, label }))
 }
 
+const FREE_TEXT_SEARCH_FIELDS = [
+    'firstName',
+    'lastName',
+    'personalNumber',
+    'userId',
+    'phone',
+    'email',
+    'city',
+    'linkedin',
+    'vehicleNumber',
+    'note',
+    'details',
+    'layer',
+    'reserveUnit',
+    'reserveRole',
+    'directBoss',
+    'rank',
+    'degree',
+    'university',
+    'studyArea',
+    'workExperience',
+    'talentAndSkills',
+    'referralSource',
+    'workPlace',
+    'currentPosition',
+]
+
+const LABEL_SEARCH_FIELDS = [
+    'reserveCategory',
+    'studioRole',
+    'fieldOfExpertise',
+    'experience',
+    'classificationClass',
+]
+
+const DATE_SEARCH_FIELDS = ['entryStartDate', 'entryEndDate', 'yearOfGradation']
+
+function searchFieldDescriptors(): SearchableFieldDescriptor[] {
+    return [
+        ...FREE_TEXT_SEARCH_FIELDS.map((field) => ({ field, kind: 'text' as const })),
+        ...LABEL_SEARCH_FIELDS.map((field) => ({
+            field,
+            kind: 'label' as const,
+            choices: choicesFor(field),
+        })),
+        ...DATE_SEARCH_FIELDS.map((field) => ({ field, kind: 'date' as const })),
+    ]
+}
+
 export async function listPersonnel(params: ListPersonnelParams) {
     const { page, limit, search, filters, sortField, sortOrder = 'asc' } = params
     const query: Record<string, unknown> = {}
     const andClauses: Record<string, unknown>[] = []
 
     if (search) {
-        const orClauses: Record<string, unknown>[] = [
-            { firstName: { $regex: search, $options: 'i' } },
-            { lastName: { $regex: search, $options: 'i' } },
-            { personalNumber: { $regex: search, $options: 'i' } },
-        ]
+        const orClauses: Record<string, unknown>[] = FREE_TEXT_SEARCH_FIELDS.map((field) => ({
+            [field]: { $regex: search, $options: 'i' },
+        }))
+
+        for (const field of LABEL_SEARCH_FIELDS) {
+            orClauses.push(...buildLabelSearchClauses(field, search, choicesFor(field)))
+        }
+
+        for (const field of DATE_SEARCH_FIELDS) {
+            orClauses.push(...buildDateSearchClauses(field, search))
+        }
+
         const tokens = search.trim().split(/\s+/).filter(Boolean)
         if (tokens.length > 1) {
             orClauses.push({
@@ -146,7 +207,18 @@ export async function listPersonnel(params: ListPersonnelParams) {
         ])
     }
 
-    return { items, total }
+    const resultItems = search
+        ? items.map((item) => ({
+              ...item,
+              matchedFields: computeMatchedFields(
+                  item as unknown as Record<string, unknown>,
+                  search,
+                  searchFieldDescriptors()
+              ),
+          }))
+        : items
+
+    return { items: resultItems, total }
 }
 
 export async function getPersonnelById(id: string) {

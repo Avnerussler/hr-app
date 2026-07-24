@@ -7,7 +7,7 @@
 // statistics endpoint response, causing every report fetch to silently fail
 // and the whole export to throw "לא ניתן לטעון את הדוחות מהשרת".
 
-import { test, expect, Page, Locator } from '@playwright/test';
+import { test, expect, Page, Locator } from './fixtures';
 
 /** Convert a "YYYY-MM-DD" date string to the "DD/MM/YYYY" format the DatePicker input expects. */
 function toPickerDate(isoDate: string): string {

@@ -1,12 +1,18 @@
 import { useState, useEffect, useMemo } from 'react'
-import { SortingState, ColumnFiltersState, Table } from '@tanstack/react-table'
+import { SortingState, ColumnFiltersState, VisibilityState, Table } from '@tanstack/react-table'
 import { createTableStateManager } from '@/utils/localStorage'
 
 interface UseTableStateProps {
     id: string
+    /** Column ids that should start hidden the first time this table is opened
+     *  (i.e. only when there's no persisted preference yet for that column). */
+    defaultHiddenColumnIds?: string[]
 }
 
-export const useTableState = ({ id }: UseTableStateProps) => {
+export const useTableState = ({
+    id,
+    defaultHiddenColumnIds = [],
+}: UseTableStateProps) => {
     // Create table state manager with unique ID
     const tableStateManager = useMemo(() => createTableStateManager(id), [id])
 
@@ -26,6 +32,16 @@ export const useTableState = ({ id }: UseTableStateProps) => {
     const [tableFilters, setTableFilters] = useState<
         Record<string, string | string[] | boolean>
     >(initialState.tableFilters || {})
+    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+        () => {
+            const persisted = initialState.columnVisibility || {}
+            const defaults: VisibilityState = {}
+            for (const columnId of defaultHiddenColumnIds) {
+                if (!(columnId in persisted)) defaults[columnId] = false
+            }
+            return { ...defaults, ...persisted }
+        }
+    )
 
     // Save state to localStorage whenever it changes
     useEffect(() => {
@@ -34,9 +50,10 @@ export const useTableState = ({ id }: UseTableStateProps) => {
             columnFilters,
             globalFilter,
             tableFilters,
+            columnVisibility,
         }
         tableStateManager.saveTableState(state)
-    }, [sorting, columnFilters, globalFilter, tableFilters, tableStateManager])
+    }, [sorting, columnFilters, globalFilter, tableFilters, columnVisibility, tableStateManager])
 
     // Reset all filters and sorting
     const handleClearFilters = (
@@ -73,6 +90,8 @@ export const useTableState = ({ id }: UseTableStateProps) => {
         setColumnFilters,
         tableFilters,
         setTableFilters,
+        columnVisibility,
+        setColumnVisibility,
         handleClearFilters,
         syncColumnFilters,
     }

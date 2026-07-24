@@ -11,6 +11,7 @@ import { buildLabelSortKeyExpr } from '../utils/labelSortKey'
 import {
     buildDateSearchClauses,
     buildLabelSearchClauses,
+    computeMatchedFields,
 } from '../utils/searchQueryBuilder'
 import { NotFoundError, ConflictError } from '../middleware/errorHandler'
 import { validateSelectField } from './setting.service'
@@ -95,18 +96,24 @@ export async function listReserveDays(params: ListReserveDaysParams) {
     } = params
     const query: Record<string, unknown> = { isDeleted: false }
     const andClauses: Record<string, unknown>[] = []
+    let matchingPersonnelIds: unknown[] = []
+
+    const LABEL_SEARCH_FIELDS = [
+        'fundingSource',
+        'orderType',
+        'requestStatus',
+        'baseAccessApproval',
+    ]
 
     if (search) {
-        const orClauses: Record<string, unknown>[] = []
+        const orClauses: Record<string, unknown>[] = [
+            { fundingName: { $regex: search, $options: 'i' } },
+            { notes: { $regex: search, $options: 'i' } },
+        ]
         orClauses.push(...buildDateSearchClauses('startDate', search))
         orClauses.push(...buildDateSearchClauses('endDate', search))
 
-        for (const field of [
-            'fundingSource',
-            'orderType',
-            'requestStatus',
-            'baseAccessApproval',
-        ]) {
+        for (const field of LABEL_SEARCH_FIELDS) {
             orClauses.push(
                 ...buildLabelSearchClauses(field, search, choicesFor(field))
             )
@@ -132,8 +139,9 @@ export async function listReserveDays(params: ListReserveDaysParams) {
             { $project: { _id: 1 } },
         ])
         if (matchingPersonnel.length > 0) {
+            matchingPersonnelIds = matchingPersonnel.map((p) => p._id)
             orClauses.push({
-                employeeName: { $in: matchingPersonnel.map((p) => p._id) },
+                employeeName: { $in: matchingPersonnelIds },
             })
         }
 

@@ -23,7 +23,7 @@ import { TableFilter } from '@/types/fieldsType'
 import { FaUserCheck, FaUserTimes, FaUsers } from 'react-icons/fa'
 import { usePersonnelListQuery, usePersonnelMetricsQuery, useProjectOptionsQuery } from '@/hooks/queries/usePersonnelQueries'
 import { useSettingOptions } from '@/hooks/queries/useSettingQueries'
-import { usePersonnelColumns } from '@/hooks/usePersonnelColumns'
+import { usePersonnelColumns, PERSONNEL_EXTRA_COLUMN_IDS } from '@/hooks/usePersonnelColumns'
 import { PersonnelDrawer } from '@/components/Personnel/PersonnelDrawer'
 import type { PersonnelRecord } from '@/hooks/queries/usePersonnelQueries'
 
@@ -66,8 +66,21 @@ export function PersonnelListPage() {
         assignedProjects: [],
     })
 
-    const { globalFilter, setGlobalFilter, sorting, setSorting, columnFilters, setColumnFilters, handleClearFilters: clearFilters, syncColumnFilters } =
-        useTableState({ id: PERSONNEL_FORM_NAME })
+    const {
+        globalFilter,
+        setGlobalFilter,
+        sorting,
+        setSorting,
+        columnFilters,
+        setColumnFilters,
+        columnVisibility,
+        setColumnVisibility,
+        handleClearFilters: clearFilters,
+        syncColumnFilters,
+    } = useTableState({
+        id: PERSONNEL_FORM_NAME,
+        defaultHiddenColumnIds: PERSONNEL_EXTRA_COLUMN_IDS,
+    })
 
     const debouncedSearch = useDebounce(globalFilter, 300)
     const activeSort = sorting[0]
@@ -159,16 +172,18 @@ export function PersonnelListPage() {
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
         getFacetedMinMaxValues: getFacetedMinMaxValues(),
-        state: { globalFilter, sorting, columnFilters, pagination },
+        state: { globalFilter, sorting, columnFilters, pagination, columnVisibility },
         onGlobalFilterChange: setGlobalFilter,
         onSortingChange: handleSortingChange,
         onColumnFiltersChange: setColumnFilters,
         onPaginationChange: setPagination,
+        onColumnVisibilityChange: setColumnVisibility,
         globalFilterFn: 'global',
         filterFns,
         enableSorting: true,
         enableColumnFilters: true,
         enableGlobalFilter: true,
+        enableHiding: true,
         manualPagination: true,
         manualFiltering: true,
         manualSorting: true,
@@ -245,6 +260,7 @@ export function PersonnelListPage() {
                     filters={[IS_ACTIVE_FILTER, studioRoleFilter, reserveCategoryFilter, assignedProjectsFilter]}
                     filterValues={tableFilters}
                     onFilterChange={handleFilterChange}
+                    table={table as never}
                 />
                 <Box flex="1" overflow="auto" minH="0">
                     {!isLoading && <TableContainer table={table as never} onRowClick={handleRowClick} />}

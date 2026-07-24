@@ -5,6 +5,11 @@ node_modules/
 
 # Testing
 coverage/
+coverage-e2e/
+coverage-e2e-server/
+coverage-e2e-all/
+.nyc_output_raw/
+.nyc_output_server/
 test-results/
 playwright-report/
 playwright/.cache/

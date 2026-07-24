@@ -24,6 +24,8 @@ export interface ReserveDayRecord extends Omit<ReserveDay, 'employeeName' | 'sta
     vehicleStatus: VehicleStatus | null
     createdAt: string
     updatedAt: string
+    /** Field ids the current search term matched on — only present when a search is active. */
+    matchedFields?: string[]
 }
 
 export interface ReserveDayListParams {

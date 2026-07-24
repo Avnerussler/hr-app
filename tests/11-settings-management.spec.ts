@@ -1,6 +1,6 @@
 // spec: tests/hr-app-comprehensive-test-plan.md
 
-import { test, expect, Page, Locator } from '@playwright/test';
+import { test, expect, Page, Locator } from './fixtures';
 import { faker } from '@faker-js/faker';
 
 // The Settings row-click occasionally races with the table's initial data hydration

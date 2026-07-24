@@ -118,3 +118,74 @@ export function buildLabelSearchClauses(
 
     return [{ [fieldPath]: { $in: matchingValues } }]
 }
+
+export type SearchableFieldKind = 'text' | 'label' | 'date'
+
+export interface SearchableFieldDescriptor {
+    field: string
+    kind: SearchableFieldKind
+    choices?: { value: unknown; label?: string }[]
+}
+
+/**
+ * Given a fetched document and the same field descriptors used to build the
+ * search `$or` clauses, re-checks each field against the search term to
+ * determine which field(s) the match actually came from. Mongo's `$or`
+ * doesn't report which branch matched, so this re-derives it in application
+ * code, applying the exact same matching rules per field kind.
+ *
+ * @returns field names (matching `SearchableFieldDescriptor.field`) that matched
+ */
+export function computeMatchedFields(
+    doc: Record<string, unknown>,
+    search: string,
+    descriptors: SearchableFieldDescriptor[]
+): string[] {
+    const searchLower = search.toLowerCase()
+    const matched: string[] = []
+
+    for (const { field, kind, choices } of descriptors) {
+        const rawValue = doc[field]
+        if (rawValue == null || rawValue === '') continue
+
+        if (kind === 'text') {
+            if (String(rawValue).toLowerCase().includes(searchLower)) {
+                matched.push(field)
+            }
+        } else if (kind === 'label') {
+            const label = (choices ?? []).find((c) => c.value === rawValue)?.label
+            if (label && label.toLowerCase().includes(searchLower)) {
+                matched.push(field)
+            }
+        } else if (kind === 'date') {
+            const clauses = buildDateSearchClauses(field, search)
+            if (clauses.length === 0) continue
+            const dateValue = rawValue instanceof Date ? rawValue : new Date(rawValue as string)
+            if (Number.isNaN(dateValue.getTime())) continue
+            const isMatch = clauses.some((clause) => {
+                const range = clause[field] as
+                    | { $gte?: Date; $lte?: Date; $lt?: Date }
+                    | undefined
+                if (range) {
+                    if (range.$gte && dateValue < range.$gte) return false
+                    if (range.$lte && dateValue > range.$lte) return false
+                    if (range.$lt && dateValue >= range.$lt) return false
+                    return true
+                }
+                // Partial day/month $expr clause — re-derive the "MM-DD" match directly.
+                const dmMatch = search.trim().match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.]?$/)
+                if (dmMatch) {
+                    const [, d, m] = dmMatch
+                    const mm = m.padStart(2, '0')
+                    const dd = d.padStart(2, '0')
+                    const actual = `${String(dateValue.getUTCMonth() + 1).padStart(2, '0')}-${String(dateValue.getUTCDate()).padStart(2, '0')}`
+                    return actual === `${mm}-${dd}`
+                }
+                return false
+            })
+            if (isMatch) matched.push(field)
+        }
+    }
+
+    return matched
+}

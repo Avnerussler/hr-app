@@ -1,8 +1,10 @@
 import mongoose from 'mongoose'
 import { ProjectModel, ProjectDocument } from '../models/Project'
+import { PersonnelModel } from '../models/Personnel'
 import { ProjectSchema } from '@hr-app/shared-types'
 import { PROJECT_STATUS_LABELS } from '@hr-app/shared-types'
 import { buildLabelSortKeyExpr } from '../utils/labelSortKey'
+import { buildLabelSearchClauses, computeMatchedFields } from '../utils/searchQueryBuilder'
 import { NotFoundError } from '../middleware/errorHandler'
 import {
     syncPersonnelOnProjectUpdate,
@@ -37,9 +39,43 @@ export async function listProjects(params: ListProjectsParams) {
     } = params
     const query: Record<string, unknown> = {}
     const andClauses: Record<string, unknown>[] = []
+    let matchingPersonnelIds: mongoose.Types.ObjectId[] = []
 
     if (search) {
-        andClauses.push({ projectName: { $regex: search, $options: 'i' } })
+        const orClauses: Record<string, unknown>[] = [
+            { projectName: { $regex: search, $options: 'i' } },
+        ]
+
+        orClauses.push(
+            ...buildLabelSearchClauses('projectStatus', search, choicesForProjectStatus())
+        )
+
+        const matchingPersonnel = await PersonnelModel.aggregate([
+            {
+                $addFields: {
+                    __concat: {
+                        $toLower: {
+                            $concat: [
+                                '$firstName',
+                                ' ',
+                                '$lastName',
+                                ' ',
+                                { $toString: '$personalNumber' },
+                            ],
+                        },
+                    },
+                },
+            },
+            { $match: { __concat: { $regex: search, $options: 'i' } } },
+            { $project: { _id: 1 } },
+        ])
+        if (matchingPersonnel.length > 0) {
+            matchingPersonnelIds = matchingPersonnel.map((p) => p._id)
+            orClauses.push({ projectManager: { $in: matchingPersonnelIds } })
+            orClauses.push({ projectPersonnel: { $in: matchingPersonnelIds } })
+        }
+
+        andClauses.push({ $or: orClauses })
     }
 
     if (filters) {
@@ -187,7 +223,43 @@ export async function listProjects(params: ListProjectsParams) {
         ])
     }
 
-    return { items, total }
+    const resultItems = search
+        ? items.map((item) => {
+              const matchedFields = computeMatchedFields(
+                  item as unknown as Record<string, unknown>,
+                  search,
+                  [
+                      { field: 'projectName', kind: 'text' },
+                      {
+                          field: 'projectStatus',
+                          kind: 'label',
+                          choices: choicesForProjectStatus(),
+                      },
+                  ]
+              )
+              if (matchingPersonnelIds.length > 0) {
+                  const managerId = (item as { projectManager?: { _id?: unknown } | string })
+                      .projectManager
+                  const managerIdStr =
+                      managerId && typeof managerId === 'object' ? String(managerId._id) : String(managerId)
+                  if (matchingPersonnelIds.some((id) => String(id) === managerIdStr)) {
+                      matchedFields.push('projectManager')
+                  }
+                  const personnel = (item as { projectPersonnel?: ({ _id?: unknown } | string)[] })
+                      .projectPersonnel
+                  const hasMatchingPersonnel = (personnel ?? []).some((p) => {
+                      const pId = typeof p === 'object' ? String(p._id) : String(p)
+                      return matchingPersonnelIds.some((id) => String(id) === pId)
+                  })
+                  if (hasMatchingPersonnel) {
+                      matchedFields.push('projectPersonnel')
+                  }
+              }
+              return { ...item, matchedFields }
+          })
+        : items
+
+    return { items: resultItems, total }
 }
 
 export async function getProjectById(id: string) {

@@ -23,7 +23,7 @@ import { TableFilter } from '@/types/fieldsType'
 import { FaList, FaHourglassHalf, FaCheck, FaTimes } from 'react-icons/fa'
 import { useReserveDayListQuery, useReserveDayMetricsQuery } from '@/hooks/queries/useReserveDayQueries'
 import { useSettingOptions } from '@/hooks/queries/useSettingQueries'
-import { useReserveDayColumns } from '@/hooks/useReserveDayColumns'
+import { useReserveDayColumns, RESERVE_DAY_EXTRA_COLUMN_IDS } from '@/hooks/useReserveDayColumns'
 import { ReserveDayDrawer } from '@/components/ReserveDay/ReserveDayDrawer'
 import type { ReserveDayRecord } from '@/hooks/queries/useReserveDayQueries'
 
@@ -77,8 +77,21 @@ export function ReserveDayListPage() {
         [requestStatusOptions, orderTypeOptions]
     )
 
-    const { globalFilter, setGlobalFilter, sorting, setSorting, columnFilters, setColumnFilters, handleClearFilters: clearFilters, syncColumnFilters } =
-        useTableState({ id: RESERVE_DAY_FORM_NAME })
+    const {
+        globalFilter,
+        setGlobalFilter,
+        sorting,
+        setSorting,
+        columnFilters,
+        setColumnFilters,
+        columnVisibility,
+        setColumnVisibility,
+        handleClearFilters: clearFilters,
+        syncColumnFilters,
+    } = useTableState({
+        id: RESERVE_DAY_FORM_NAME,
+        defaultHiddenColumnIds: RESERVE_DAY_EXTRA_COLUMN_IDS,
+    })
 
     const debouncedSearch = useDebounce(globalFilter, 300)
     const activeSort = sorting[0]
@@ -127,16 +140,18 @@ export function ReserveDayListPage() {
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
         getFacetedMinMaxValues: getFacetedMinMaxValues(),
-        state: { globalFilter, sorting, columnFilters, pagination },
+        state: { globalFilter, sorting, columnFilters, pagination, columnVisibility },
         onGlobalFilterChange: setGlobalFilter,
         onSortingChange: handleSortingChange,
         onColumnFiltersChange: setColumnFilters,
         onPaginationChange: setPagination,
+        onColumnVisibilityChange: setColumnVisibility,
         globalFilterFn: 'global',
         filterFns,
         enableSorting: true,
         enableColumnFilters: true,
         enableGlobalFilter: true,
+        enableHiding: true,
         manualPagination: true,
         manualFiltering: true,
         manualSorting: true,
@@ -207,6 +222,7 @@ export function ReserveDayListPage() {
                     filters={filters}
                     filterValues={tableFilters}
                     onFilterChange={handleFilterChange}
+                    table={table as never}
                 />
                 <Box flex="1" overflow="auto" minH="0">
                     {!isLoading && <TableContainer table={table as never} onRowClick={handleRowClick} />}
