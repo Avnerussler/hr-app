@@ -110,6 +110,7 @@ export interface TableState {
     columnFilters: { id: string; value: unknown }[]
     globalFilter: string
     tableFilters: Record<string, string | string[] | boolean>
+    columnVisibility: Record<string, boolean>
 }
 
 export const createTableStateManager = (tableId: string) => {
@@ -132,12 +133,11 @@ export const createTableStateManager = (tableId: string) => {
                 columnFilters: [],
                 globalFilter: '',
                 tableFilters: {},
+                columnVisibility: {},
             }
 
-            return (
-                localStorage.getItem<TableState>(STORAGE_KEY, defaultState) ||
-                defaultState
-            )
+            const loaded = localStorage.getItem<TableState>(STORAGE_KEY, defaultState)
+            return loaded ? { ...defaultState, ...loaded } : defaultState
         },
 
         /**

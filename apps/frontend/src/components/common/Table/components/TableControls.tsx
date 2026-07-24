@@ -1,8 +1,10 @@
 import { FC } from 'react'
+import { Table } from '@tanstack/react-table'
 import { Flex, Box, Button } from '@chakra-ui/react'
 import { FiX, FiDownload } from 'react-icons/fi'
 import { DebouncedInput } from '../../../DebounceInput'
 import { TableFilters } from './TableFilters'
+import { ColumnVisibilityMenu } from './ColumnVisibilityMenu'
 import { TableFilter } from '@/types/fieldsType'
 
 interface TableControlsProps {
@@ -19,6 +21,8 @@ interface TableControlsProps {
         filterId: string,
         value: string | string[] | boolean
     ) => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    table?: Table<any>
 }
 
 export const TableControls: FC<TableControlsProps> = ({
@@ -32,6 +36,7 @@ export const TableControls: FC<TableControlsProps> = ({
     filters,
     filterValues,
     onFilterChange,
+    table,
 }) => {
     const hasActiveTableFilters = tableFilters
         ? Object.values(tableFilters).some(
@@ -54,6 +59,7 @@ export const TableControls: FC<TableControlsProps> = ({
                     placeholder="חפש בכל העמודות..."
                 />
             </Box>
+            {table && <ColumnVisibilityMenu table={table} />}
             {onExportToExcel && (
                 <Button
                     variant="outline"

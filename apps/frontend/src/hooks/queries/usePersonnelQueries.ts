@@ -8,6 +8,8 @@ export interface PersonnelRecord extends Omit<Personnel, 'assignedProjects'> {
     assignedProjects: { _id: string; projectName: string } | null
     createdAt: string
     updatedAt: string
+    /** Field ids the current search term matched on — only present when a search is active. */
+    matchedFields?: string[]
 }
 
 export interface PersonnelListParams {

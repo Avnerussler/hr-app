@@ -21,7 +21,7 @@
 // statuses explicitly (e.g. projectStatus, requestStatus) rather than relying
 // on the schema default.
 
-import { test, expect, Page, APIRequestContext } from '@playwright/test';
+import { test, expect, Page, APIRequestContext } from './fixtures';
 import { faker } from '@faker-js/faker';
 
 const API_ORIGIN = 'http://localhost:3001';

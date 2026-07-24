@@ -1,7 +1,7 @@
 // spec: tests/hr-app-comprehensive-test-plan.md
 // seed: seed.spec.ts
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { faker } from '@faker-js/faker';
 
 test.describe('Module 1: Personnel Management', () => {

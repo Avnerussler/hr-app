@@ -1,7 +1,7 @@
 // spec: tests/hr-app-comprehensive-test-plan.md
 // seed: seed.spec.ts
 
-import { test, expect, Page, Locator } from '@playwright/test';
+import { test, expect, Page, Locator } from './fixtures';
 import { faker } from '@faker-js/faker';
 
 // The personnel row-click navigation (list -> /personnel/<formId>/edit/<itemId>)

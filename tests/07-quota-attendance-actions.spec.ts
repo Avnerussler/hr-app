@@ -1,7 +1,7 @@
 // spec: tests/hr-app-comprehensive-test-plan.md
 // seed: seed.spec.ts
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 const API = 'http://localhost:3001/api';
 const BASE_URL = 'http://localhost:5173';

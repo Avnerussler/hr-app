@@ -54,7 +54,7 @@ const rateLimitDisabled =
     process.env.NODE_ENV === 'development'
 
 if (!rateLimitDisabled) {
-    app.use(rateLimitLogger(60 * 1000, 100))
+    app.use(rateLimitLogger(60 * 1000, 200))
 } else {
     logger.info('Rate limiting disabled for this environment')
 }

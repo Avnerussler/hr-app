@@ -1,7 +1,7 @@
 // spec: tests/hr-app-comprehensive-test-plan.md
 // seed: seed.spec.ts
 
-import { test, expect, APIRequestContext } from '@playwright/test';
+import { test, expect, APIRequestContext } from './fixtures';
 
 const API_ORIGIN = 'http://localhost:3001';
 const API = `${API_ORIGIN}/api`;

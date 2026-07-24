@@ -1,4 +1,4 @@
-import { buildDateSearchClauses, buildLabelSearchClauses } from './searchQueryBuilder'
+import { buildDateSearchClauses, buildLabelSearchClauses, computeMatchedFields } from './searchQueryBuilder'
 
 describe('buildDateSearchClauses', () => {
     const field = 'formData.startDate'
@@ -122,5 +122,63 @@ describe('buildLabelSearchClauses', () => {
 
     it('returns [] for an empty choices array', () => {
         expect(buildLabelSearchClauses(field, 'anything', [])).toEqual([])
+    })
+})
+
+describe('computeMatchedFields', () => {
+    it('matches a text field case-insensitively', () => {
+        const doc = { note: 'Likes long walks', city: 'Haifa' }
+        const matched = computeMatchedFields(doc, 'HAIFA', [
+            { field: 'note', kind: 'text' },
+            { field: 'city', kind: 'text' },
+        ])
+        expect(matched).toEqual(['city'])
+    })
+
+    it('matches a label field by its label, not its raw value', () => {
+        const doc = { requestStatus: 'approved' }
+        const matched = computeMatchedFields(doc, 'אושר', [
+            {
+                field: 'requestStatus',
+                kind: 'label',
+                choices: [{ value: 'approved', label: 'אושר' }, { value: 'pending', label: 'ממתין' }],
+            },
+        ])
+        expect(matched).toEqual(['requestStatus'])
+    })
+
+    it('matches a date field within the search-derived range', () => {
+        const doc = { startDate: new Date('2026-08-26T10:00:00.000Z') }
+        const matched = computeMatchedFields(doc, '2026-08-26', [
+            { field: 'startDate', kind: 'date' },
+        ])
+        expect(matched).toEqual(['startDate'])
+    })
+
+    it('excludes a date field outside the search-derived range', () => {
+        const doc = { startDate: new Date('2026-08-27T10:00:00.000Z') }
+        const matched = computeMatchedFields(doc, '2026-08-26', [
+            { field: 'startDate', kind: 'date' },
+        ])
+        expect(matched).toEqual([])
+    })
+
+    it('skips null/undefined/empty field values', () => {
+        const doc = { note: null, city: undefined, details: '' }
+        const matched = computeMatchedFields(doc, 'anything', [
+            { field: 'note', kind: 'text' },
+            { field: 'city', kind: 'text' },
+            { field: 'details', kind: 'text' },
+        ])
+        expect(matched).toEqual([])
+    })
+
+    it('returns multiple matched fields when several fields match', () => {
+        const doc = { firstName: 'Dana', note: 'Dana is great' }
+        const matched = computeMatchedFields(doc, 'dana', [
+            { field: 'firstName', kind: 'text' },
+            { field: 'note', kind: 'text' },
+        ])
+        expect(matched).toEqual(['firstName', 'note'])
     })
 })

@@ -16,6 +16,8 @@ export interface ProjectRecord extends Omit<Project, 'projectManager' | 'project
     projectPersonnel: PersonnelSummary[]
     createdAt: string
     updatedAt: string
+    /** Field ids the current search term matched on — only present when a search is active. */
+    matchedFields?: string[]
 }
 
 export interface ProjectListParams {
